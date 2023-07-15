@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7864173986192232860
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6922569428052597472, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: transformPairs.Array.data[0].name
+      value: MainHurtbox
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -10.476495
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.9304714
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -10.660166
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256084785, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673791180256517969, guid: 7a85cf9331993f24194d0f0d00738b92,
+        type: 3}
+      propertyPath: m_Name
+      value: mdlSonicTheHedgehog
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7a85cf9331993f24194d0f0d00738b92, type: 3}
