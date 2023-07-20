@@ -33,7 +33,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "0.1.0";
+        public const string MODVERSION = "0.2.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -77,7 +77,7 @@ namespace SonicTheHedgehog
             {
                 if (self.HasBuff(Modules.Buffs.boostBuff))
                 {
-                    self.acceleration *= 3.5f;
+                    self.acceleration *= 6f;
                     if (!self.HasBuff(Modules.Buffs.superSonicBuff))
                     {
                         self.moveSpeed *= self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
@@ -95,12 +95,18 @@ namespace SonicTheHedgehog
                     self.attackSpeed*=StaticValues.superSonicAttackSpeed;
                     self.damage *= StaticValues.superSonicBaseDamage;
                     self.jumpPower *= StaticValues.superSonicJumpHeight;
-                    self.acceleration *= 4;
+                    self.acceleration *= 5;
                 }
 
                 if (self.HasBuff(Modules.Buffs.ballBuff))
                 {
                     self.armor += StaticValues.ballArmor;
+                }
+
+                Components.BoostLogic boost = self.GetComponent<Components.BoostLogic>();
+                if (boost)
+                {
+                    boost.CalculateBoostVariables();
                 }
             }
         }

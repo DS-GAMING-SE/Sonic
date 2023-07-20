@@ -17,6 +17,7 @@ namespace SonicTheHedgehog.Modules
             CreateSuperSonicBoom();
 
             AddProjectile(sonicBoomPrefab);
+            AddProjectile(superSonicBoomPrefab);
         }
 
         internal static void AddProjectile(GameObject projectileToAdd)
@@ -26,7 +27,7 @@ namespace SonicTheHedgehog.Modules
 
         private static void CreateSonicBoom()
         {
-            sonicBoomPrefab = CloneProjectilePrefab("LemurianBigFireball", "HenryBombProjectile");
+            sonicBoomPrefab = CloneProjectilePrefab("LemurianBigFireball", "SonicBoomProjectile");
 
             ProjectileImpactExplosion bombImpactExplosion = sonicBoomPrefab.GetComponent<ProjectileImpactExplosion>();
             InitializeImpactExplosion(bombImpactExplosion);
@@ -41,13 +42,13 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
             ProjectileController bombController = sonicBoomPrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("HenryBombGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("HenryBombGhost");
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
         }
 
         private static void CreateSuperSonicBoom()
         {
-            superSonicBoomPrefab = CloneProjectilePrefab("LemurianBigFireball", "HenryBombProjectile");
+            superSonicBoomPrefab = CloneProjectilePrefab("LemurianBigFireball", "SuperSonicBoomProjectile");
 
             ProjectileImpactExplosion bombImpactExplosion = superSonicBoomPrefab.GetComponent<ProjectileImpactExplosion>();
             InitializeImpactExplosion(bombImpactExplosion);
@@ -62,7 +63,7 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("HenryBombGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("HenryBombGhost");
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
         }
 

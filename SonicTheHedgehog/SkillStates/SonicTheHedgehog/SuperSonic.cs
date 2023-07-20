@@ -96,7 +96,7 @@ namespace SonicTheHedgehog.SkillStates
 
         SkillDef primarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_SLASH_NAME",
                                                                                       SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_SLASH_DESCRIPTION",
-                                                                                      Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoxingGlovesIcon"),
+                                                                                      Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
                                                                                       new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMelee)),
                                                                                       "Body",
                                                                                       false));
@@ -106,7 +106,7 @@ namespace SonicTheHedgehog.SkillStates
             skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME",
             skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME",
             skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSecondaryIcon"),
+            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicBoomIcon"),
             activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicBoom)),
             activationStateMachineName = "Body",
             baseMaxStock = 3,
@@ -154,7 +154,7 @@ namespace SonicTheHedgehog.SkillStates
             skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_BOMB_NAME",
             skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_BOMB_NAME",
             skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_BOMB_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSpecialIcon"),
+            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGrandSlamIcon"),
             activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.GrandSlamDash)),
             activationStateMachineName = "Body",
             baseMaxStock = 1,

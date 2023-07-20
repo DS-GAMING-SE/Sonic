@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using R2API;
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.SkillStates;
@@ -28,20 +29,33 @@ namespace SonicTheHedgehog.Components
         {
             body=GetComponent<CharacterBody>();
             body.characterMotor.onHitGroundAuthority += ResetAirBoost;
-            this.NetworkmaxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
+            CalculateBoostVariables();
+            this.NetworkmaxBoostMeter = maxBoostMeter;
             this.NetworkboostMeter = maxBoostMeter;
             this.boostAvailable = true;
         }
         
         public void FixedUpdate()
         {
-            this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
-            this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
+            //this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
+            //this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
             if (NetworkServer.active)
             {
                 this.AddBoost(boostRegen);
             }
         }
+
+        public void CalculateBoostVariables()
+        {
+            this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
+            this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
+            this.NetworkmaxBoostMeter = maxBoostMeter;
+            if (body.characterMotor.isGrounded && body.skillLocator.utility.stock!=body.skillLocator.utility.maxStock && boostAvailable)
+            {
+                body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+            }
+        }
+
 
         private void OnDestroy()
         {

@@ -20,8 +20,8 @@ namespace SonicTheHedgehog.SkillStates
         public static float range = 100f;
         public static float baseMovementReduction=0.3f;
         public static float baseSuperMovementReduction=0.7f;
-        public static GameObject tracerEffectPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerGoldGat");
-        public static GameObject projectilePrefab = Modules.Projectiles.sonicBoomPrefab;
+        public static GameObject projectilePrefab;
+        private static float offset = 0.4f;
 
         private float duration;
         private float fireTime;
@@ -52,10 +52,26 @@ namespace SonicTheHedgehog.SkillStates
                 StartAimMode();
                 this.firedCounter++;
                 base.characterBody.AddSpreadBloom(1.5f);
-                projectilePrefab = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? Modules.Projectiles.superSonicBoomPrefab : Modules.Projectiles.sonicBoomPrefab;
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
                 Util.PlaySound("HenryShootPistol", base.gameObject);
-                RoR2.Projectile.ProjectileManager.instance.FireProjectile(projectilePrefab, base.GetAimRay().origin, Util.QuaternionSafeLookRotation(base.GetAimRay().direction), base.gameObject, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superDamageCoefficient : damageCoefficient) * this.damageStat, force, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, 90f);
+
+                projectilePrefab = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? Modules.Projectiles.superSonicBoomPrefab : Modules.Projectiles.sonicBoomPrefab;
+                Quaternion direction = Util.QuaternionSafeLookRotation(base.GetAimRay().direction);
+                Vector3 up = direction * Vector3.up;
+                if (firedCounter==1)
+                {
+                    Vector3 right = direction * Vector3.right;
+                    up = Vector3.RotateTowards(up, right, offset, 1);
+                }
+                else
+                {
+                    Vector3 left = direction * Vector3.left;
+                    up = Vector3.RotateTowards(up, left, offset, 1);
+                }
+                direction= Util.QuaternionSafeLookRotation(base.GetAimRay().direction,up);
+
+
+                RoR2.Projectile.ProjectileManager.instance.FireProjectile(projectilePrefab, base.GetAimRay().origin, direction, base.gameObject, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superDamageCoefficient : damageCoefficient) * this.damageStat, force, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, 90f);
             }
         }
 

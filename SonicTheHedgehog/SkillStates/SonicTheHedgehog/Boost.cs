@@ -49,16 +49,13 @@ namespace SonicTheHedgehog.SkillStates
 
                 if (base.characterMotor && base.characterDirection)
                 {
-                    //base.characterMotor.rootMotion.x = this.forwardDirection.x * base.characterBody.moveSpeed*Time.fixedDeltaTime;
                     base.characterMotor.velocity.x = this.forwardDirection.x * base.characterBody.moveSpeed;
                     base.characterMotor.velocity.z = this.forwardDirection.z * base.characterBody.moveSpeed;
                     base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
-                    //base.characterMotor.rootMotion.z = this.forwardDirection.z * base.characterBody.moveSpeed*Time.fixedDeltaTime;
-                    base.PlayCrossfade("Body", "AirBoost", duration);
+                    base.PlayCrossfade("Body", "AirBoost", "Roll.playbackRate", duration, duration/3);
                     base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
                 }
                 base.skillLocator.utility.DeductStock(1);
-                //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", Boost.duration);
                 Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
             }
             else

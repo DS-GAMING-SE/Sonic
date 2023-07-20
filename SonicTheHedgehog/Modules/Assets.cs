@@ -90,9 +90,9 @@ namespace SonicTheHedgehog.Modules
             // feel free to delete everything in here and load in your own assets instead
             // it should work fine even if left as is- even if the assets aren't in the bundle
             
-            swordHitSoundEvent = CreateNetworkSoundEventDef("HenrySwordHit");
+            //swordHitSoundEvent = CreateNetworkSoundEventDef("HenrySwordHit");
 
-            bombExplosionEffect = LoadEffect("BombExplosionEffect", "HenryBombExplosion");
+            //bombExplosionEffect = LoadEffect("BombExplosionEffect", "HenryBombExplosion");
 
             if (bombExplosionEffect)
             {
