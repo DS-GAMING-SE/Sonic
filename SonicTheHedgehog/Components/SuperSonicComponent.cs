@@ -10,8 +10,6 @@ namespace SonicTheHedgehog.Components
 {
     public class SuperSonicComponent : NetworkBehaviour
     {
-        public Stage stage;
-        public Inventory inventory;
         public EntityStateMachine superSonicState;
         public Material superSonicMaterial;
         private CharacterBody body;
@@ -37,12 +35,10 @@ namespace SonicTheHedgehog.Components
         public void ResetSuperSonic(Stage stage)
         {
             
-            this.stage = stage;
         }
         public void OnInventoryChanged(Inventory inventory)
         {
-            
-            this.inventory = inventory;
+
         }
     }
 }

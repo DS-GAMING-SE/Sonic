@@ -1708,7 +1708,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 8507712610768555811, guid: 819e775615254224895c6cb4c612d05d, type: 3}
+  m_Mesh: {fileID: 8507712610768555811, guid: d23b84075c32d85479308efb34b423b9, type: 3}
   m_Bones:
   - {fileID: 2827471220557593876}
   - {fileID: 5998382897107283026}
@@ -3918,6 +3918,10 @@ MonoBehaviour:
     transform: {fileID: 4343665477583565469}
   - name: FootR
     transform: {fileID: 6796270626689647228}
+  - name: ToeL
+    transform: {fileID: 8199320506228887316}
+  - name: Chest
+    transform: {fileID: 5169383647352373664}
 --- !u!1 &8632744688007387857
 GameObject:
   m_ObjectHideFlags: 0

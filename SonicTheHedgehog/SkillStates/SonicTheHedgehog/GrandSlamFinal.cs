@@ -16,13 +16,15 @@ namespace SonicTheHedgehog.SkillStates
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient = Modules.StaticValues.grandSlamFinalDamageCoefficient;
         protected float procCoefficient = 1.5f;
-        protected float pushForce = 1500f;
+        protected float basePushForce = 3000f;
+        protected float superPushForce = 9000f;
         protected Vector3 bonusForce = Vector3.down;
-        protected float attackRecoil = 8f;
+        protected float attackRecoil = 11f;
         protected float startUpTime = 0.5f;
         protected float maxAttackTime = 0.75f;
-        protected float hitStopDuration=0.35f;
+        protected float hitStopDuration=0.2f;
         protected float endTime=0.5f;
+        protected float baseSpeedMultiplier = 6;
 
         public HurtBox target;
         protected Vector3 targetDirection;
@@ -46,6 +48,7 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
+        private float speedMultiplier;
 
         public override void OnEnter()
         {
@@ -54,7 +57,7 @@ namespace SonicTheHedgehog.SkillStates
             this.hasFired = false;
             this.hasHit = false;
             this.hitboxName = "Stomp";
-            //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.startUpTime);
+            base.PlayAnimation("FullBody, Override", "GrandSlam", "Roll.playbackRate", this.startUpTime*1.15f);
             Util.PlaySound("HenryRoll", base.gameObject);
 
             this.animator = base.GetModelAnimator();
@@ -67,6 +70,11 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+            if (!this.hasHit)
+            {
+                base.PlayAnimation("FullBody, Override", "BufferEmpty");
+                base.PlayAnimation("Body", "Backflip");
+            }
             if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
@@ -115,6 +123,8 @@ namespace SonicTheHedgehog.SkillStates
                 base.ConsumeHitStopCachedState(this.hitStopCachedState, base.characterMotor, this.animator);
                 this.inHitPause = false;
                 base.characterMotor.velocity = this.storedVelocity;
+                base.PlayAnimation("FullBody, Override", "BufferEmpty");
+                base.PlayAnimation("Body", "Backflip");
             }
 
             if (!this.inHitPause)
@@ -133,25 +143,30 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     if (fixedAge <= this.startUpTime)
                     {
-                        base.characterMotor.velocity = Vector3.up*(Mathf.Lerp(40f,7f,fixedAge/this.startUpTime));
+                        base.characterMotor.velocity = Vector3.up*(Mathf.Lerp(60f,3f,fixedAge/this.startUpTime));
                     }
                     else if (fixedAge <= this.startUpTime+this.maxAttackTime)
                     {   
                         if (!hasFired)
                         {
-                            base.PlayCrossfade("FullBody, Override", "Kick", "Slash.playbackRate", 0.5f, 0.05f);
+                            hasFired = true;
                         }
                         if (this.target!=null)
                         {
                             targetDirection = (this.target.transform.position - base.characterMotor.transform.position).normalized;
+                            speedMultiplier = Mathf.Clamp((this.target.transform.position - base.characterMotor.transform.position).magnitude, 1, baseSpeedMultiplier);
                         }
                         else
                         {
+                            speedMultiplier = baseSpeedMultiplier;
                             targetDirection = Vector3.down;
                         }
-                        base.characterMotor.velocity = targetDirection * base.characterBody.moveSpeed*6;
+                        if (Vector3.Dot(targetDirection,Vector3.down)<0.3f)
+                        {
+                            targetDirection = Vector3.down;
+                        }
+                        base.characterMotor.velocity = targetDirection * base.characterBody.moveSpeed*speedMultiplier;
                         FireAttack();
-                        hasFired= true;
                     }
                     else
                     {
@@ -193,7 +208,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.procCoefficient = this.procCoefficient;
             this.attack.hitEffectPrefab = this.hitEffectPrefab;
             this.attack.forceVector = this.bonusForce;
-            this.attack.pushAwayForce = this.pushForce;
+            this.attack.pushAwayForce = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superPushForce : basePushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;

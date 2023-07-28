@@ -33,6 +33,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
+            base.characterMotor.disableAirControlUntilCollision = false;
             this.firedCounter = 0;
             this.duration = SonicBoom.baseDuration / this.attackSpeedStat;
             this.fireTime = baseFireTime / this.attackSpeedStat;

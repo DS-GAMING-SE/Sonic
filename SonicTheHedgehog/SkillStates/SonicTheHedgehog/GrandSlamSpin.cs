@@ -14,11 +14,11 @@ namespace SonicTheHedgehog.SkillStates
     {
         protected string hitboxName = "Ball";
 
-        protected DamageType damageType = DamageType.Stun1s;
+        protected DamageType damageType = DamageType.Stun1s | DamageType.NonLethal;
         protected float damageCoefficient = Modules.StaticValues.grandSlamDashDamageCoefficient;
         protected float procCoefficient = 0.5f;
         protected float pushForce = 0f;
-        protected Vector3 bonusForce = Vector3.up;
+        protected Vector3 bonusForce = Vector3.up*5;
         protected int baseAttackCount=4;
         protected int maxAttackCount;
         protected int attackCount;
@@ -58,7 +58,7 @@ namespace SonicTheHedgehog.SkillStates
             this.hitboxName = "LargeBall";
             //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.attackDuration);
             Util.PlaySound("HenryRoll", base.gameObject);
-
+            base.PlayAnimation("FullBody, Override", "Ball", "Slash.playbackRate", this.attackDuration/maxAttackCount);
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);

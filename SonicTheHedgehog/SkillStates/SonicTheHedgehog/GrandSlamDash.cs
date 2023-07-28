@@ -14,7 +14,7 @@ namespace SonicTheHedgehog.SkillStates
     {
         protected string hitboxName = "Ball";
 
-        protected DamageType damageType = DamageType.Stun1s;
+        protected DamageType damageType = DamageType.Stun1s | DamageType.NonLethal;
         protected float damageCoefficient = Modules.StaticValues.grandSlamDashDamageCoefficient;
         protected float procCoefficient = 0.5f;
         protected float pushForce = 0f;
@@ -50,6 +50,7 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
+        private bool hasHit=false;
 
         public override void OnEnter()
         {
@@ -79,15 +80,19 @@ namespace SonicTheHedgehog.SkillStates
             {
                 this.targetDirection = (this.target.transform.position - base.transform.position);
             }
-            base.characterMotor.Motor.ForceUnground();
+            if (base.isAuthority)
+            {
+                base.characterMotor.Motor.ForceUnground();
+                Util.PlaySound("HenryRoll", base.gameObject);
+            }
             this.estimatedDashTime = (targetDirection.magnitude / dashSpeed) * dashOvershoot;
             this.hitboxName = "Ball";
-            //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.estimatedDashTime);
-            Util.PlaySound("HenryRoll", base.gameObject);
+            base.PlayAnimation("FullBody, Override", "Ball");
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
+            base.characterMotor.disableAirControlUntilCollision = false;
 
             PrepareOverlapAttack();
         }
@@ -95,6 +100,10 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+            if (!hasHit)
+            {
+                base.PlayAnimation("FullBody, Override", "BufferEmpty");
+            }
             if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(Modules.Buffs.ballBuff);
@@ -108,7 +117,7 @@ namespace SonicTheHedgehog.SkillStates
         protected virtual void OnHitEnemyAuthority()
         {
              Util.PlaySound(this.hitSoundString, base.gameObject);
-                  
+             hasHit = true;     
              SetNextState();
         }
 
@@ -124,6 +133,7 @@ namespace SonicTheHedgehog.SkillStates
                         {
                             this.target = this.attack.overlapList.FirstOrDefault().hurtBox;
                         }
+                        base.characterMotor.velocity=Vector3.zero;
                         this.OnHitEnemyAuthority();
                     }
                 }

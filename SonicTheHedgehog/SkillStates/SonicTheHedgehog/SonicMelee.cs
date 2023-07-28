@@ -36,6 +36,7 @@ namespace SonicTheHedgehog.SkillStates
         protected float estimatedHomingAttackTime;
         protected float homingAttackOvershoot;
         protected float baseHomingAttackEndLag = 0.3f;
+        protected float superHomingAttackEndLag = 0.1f;
         protected float homingAttackEndLag;
         protected float homingAttackHitHopVelocity = 10;
         private HurtBox target;
@@ -107,9 +108,10 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 base.characterMotor.Motor.ForceUnground();
                 this.estimatedHomingAttackTime = (targetDirection.magnitude / homingAttackSpeed) * homingAttackOvershoot;
-                this.homingAttackEndLag = baseHomingAttackEndLag / this.attackSpeedStat;
+                this.homingAttackEndLag = (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superHomingAttackEndLag : baseHomingAttackEndLag) / this.attackSpeedStat;
                 this.hitboxName = "Ball";
-                //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.estimatedHomingAttackTime);
+                base.PlayAnimation("FullBody, Override", "Ball");
+                base.characterMotor.disableAirControlUntilCollision = false;
                 Util.PlaySound("HenryRoll", base.gameObject);
             }
             else
@@ -152,6 +154,10 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
+            if (homingAttack && (!hasFired || inHitPause))
+            {
+                base.PlayAnimation("FullBody, Override", "BufferEmpty");
+            }
             if (base.characterBody.HasBuff(Modules.Buffs.ballBuff))
             {
                 if (NetworkServer.active)
@@ -304,6 +310,11 @@ namespace SonicTheHedgehog.SkillStates
                 base.ConsumeHitStopCachedState(this.hitStopCachedState, base.characterMotor, this.animator);
                 this.inHitPause = false;
                 base.characterMotor.velocity = this.storedVelocity;
+                if (homingAttack)
+                {
+                    base.PlayAnimation("FullBody, Override", "BufferEmpty");
+                    base.PlayAnimation("Body", "Backflip");
+                }
             }
 
             if (!this.inHitPause)
@@ -315,6 +326,7 @@ namespace SonicTheHedgehog.SkillStates
                 if (base.characterMotor) base.characterMotor.velocity = Vector3.zero;
                 if (this.animator) this.animator.SetFloat("Swing.playbackRate", 0f);
             }
+
             if (homingAttack&&base.isAuthority)
             {
                 if (this.hasFired)
@@ -344,7 +356,6 @@ namespace SonicTheHedgehog.SkillStates
                     else
                     {
                         base.characterMotor.velocity = Vector3.zero;
-                        this.homingAttack = false;
                         this.outer.SetNextStateToMain();
                         return;
                     }

@@ -58,7 +58,6 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override Type characterMainState => typeof(SonicEntityState);
 
         public override ItemDisplaysBase itemDisplays => null;
-
                                                                           //if you have more than one character, easily create a config to enable/disable them like this
         public override ConfigEntry<bool> characterEnabledConfig => null; //Modules.Config.CharacterEnableConfig(bodyName);
 
@@ -67,6 +66,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override void InitializeCharacter()
         {
             base.InitializeCharacter();
+            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Death));
         }
 
         public override void InitializeUnlockables()
@@ -157,7 +157,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texUtilityIcon"),
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Boost)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
@@ -213,7 +213,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSpecialIcon"),
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBazookaOutIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,

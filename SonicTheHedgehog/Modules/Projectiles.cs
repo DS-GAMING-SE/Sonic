@@ -28,6 +28,7 @@ namespace SonicTheHedgehog.Modules
         private static void CreateSonicBoom()
         {
             sonicBoomPrefab = CloneProjectilePrefab("LemurianBigFireball", "SonicBoomProjectile");
+            sonicBoomPrefab.transform.localScale *= 0.5f;
 
             ProjectileImpactExplosion bombImpactExplosion = sonicBoomPrefab.GetComponent<ProjectileImpactExplosion>();
             InitializeImpactExplosion(bombImpactExplosion);
@@ -49,6 +50,7 @@ namespace SonicTheHedgehog.Modules
         private static void CreateSuperSonicBoom()
         {
             superSonicBoomPrefab = CloneProjectilePrefab("LemurianBigFireball", "SuperSonicBoomProjectile");
+            superSonicBoomPrefab.transform.localScale *= 0.8f;
 
             ProjectileImpactExplosion bombImpactExplosion = superSonicBoomPrefab.GetComponent<ProjectileImpactExplosion>();
             InitializeImpactExplosion(bombImpactExplosion);

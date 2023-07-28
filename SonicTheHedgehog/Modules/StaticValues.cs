@@ -33,9 +33,9 @@ namespace SonicTheHedgehog.Modules
 
         // Boost
 
-        internal const float boostSpeedCoefficient = 1.4f;
+        internal const float boostSpeedCoefficient = 1.35f;
 
-        internal const float powerBoostSpeedCoefficient = 1.6f;
+        internal const float powerBoostSpeedCoefficient = 1.65f;
 
         internal const float boostArmor = 50f;
         

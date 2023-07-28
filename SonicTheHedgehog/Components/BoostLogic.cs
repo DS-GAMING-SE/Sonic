@@ -7,20 +7,18 @@ using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 namespace SonicTheHedgehog.Components
 {
     public class BoostLogic : NetworkBehaviour
     {
-        private CharacterMotor.HitGroundInfo hitGroundInfo;
         public CharacterBody body;
-        public GameObject boostUI;
-        public Slider boostUIFill;
         public float boostMeter;
         public float maxBoostMeter;
         public float boostRegen;
-        public bool boostAvailable;
+        public bool boostAvailable=true;
+        public float predictedMeter;
+        public bool boostDraining=false;
         private const float baseMaxBoostMeter=100f;
         private const float boostMeterPerFlatReduction = 10f;
         private const float baseBoostRegen = 0.38f;
@@ -30,29 +28,30 @@ namespace SonicTheHedgehog.Components
             body=GetComponent<CharacterBody>();
             body.characterMotor.onHitGroundAuthority += ResetAirBoost;
             CalculateBoostVariables();
-            this.NetworkmaxBoostMeter = maxBoostMeter;
+            this.NetworkboostAvailable = true;
             this.NetworkboostMeter = maxBoostMeter;
-            this.boostAvailable = true;
         }
         
         public void FixedUpdate()
         {
-            //this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
-            //this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
             if (NetworkServer.active)
             {
                 this.AddBoost(boostRegen);
             }
+            PredictMeter();
         }
 
         public void CalculateBoostVariables()
         {
-            this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
-            this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
-            this.NetworkmaxBoostMeter = maxBoostMeter;
-            if (body.characterMotor.isGrounded && body.skillLocator.utility.stock!=body.skillLocator.utility.maxStock && boostAvailable)
+            if (body)
             {
-                body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+                this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
+                this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
+                this.NetworkmaxBoostMeter = maxBoostMeter;
+                if (body.characterMotor.isGrounded && body.skillLocator.utility.stock != body.skillLocator.utility.maxStock && boostAvailable)
+                {
+                    body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+                }
             }
         }
 
@@ -72,10 +71,10 @@ namespace SonicTheHedgehog.Components
             }
             this.NetworkboostMeter = Mathf.Clamp(this.boostMeter + amount, 0, this.maxBoostMeter);
 
-            if (!boostAvailable&&boostMeter>=Math.Min(baseMaxBoostMeter,maxBoostMeter))
+            if (!boostAvailable&&boostMeter>=Math.Min(baseMaxBoostMeter,this.maxBoostMeter))
             {
-                this.boostAvailable = true;
-                body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+                this.NetworkboostAvailable = true;
+                //body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
             }
         }
 
@@ -91,8 +90,8 @@ namespace SonicTheHedgehog.Components
 
             if (boostMeter<=0)
             {
-                this.boostAvailable = false;
-                body.skillLocator.utility.stock = 0;
+                this.NetworkboostAvailable = false;
+                //body.skillLocator.utility.stock = 0;
             }
         }
 
@@ -102,10 +101,31 @@ namespace SonicTheHedgehog.Components
             {
                 body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
             }
-            this.hitGroundInfo = hitGroundInfo;
         }
 
+        private void OnBoostMeterChanged(float meter)
+        {
+            predictedMeter = meter;
+            NetworkboostMeter = meter;
+        }
 
+        private void OnBoostAvailableChanged(bool available)
+        {
+            if (available)
+            {
+                body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+            }
+            else
+            {
+                body.skillLocator.utility.stock = 0;
+            }
+            NetworkboostAvailable = available;
+        }
+
+        private void PredictMeter()
+        {
+            predictedMeter = Mathf.Clamp(this.predictedMeter + (boostDraining ? -Boost.boostMeterDrain : boostRegen), 0, this.maxBoostMeter);
+        }
 
         // I have no fucking clue how to network I am just copying viend and red mist
         public float NetworkboostMeter
@@ -120,7 +140,7 @@ namespace SonicTheHedgehog.Components
                 if (NetworkServer.localClientActive && !base.syncVarHookGuard)
                 {
                     base.syncVarHookGuard = true;
-                    NetworkboostMeter = value;
+                    OnBoostMeterChanged(value);
                     base.syncVarHookGuard = false;
                 }
                 base.SetSyncVar<float>(value, ref this.boostMeter, 1U);
@@ -143,6 +163,25 @@ namespace SonicTheHedgehog.Components
                     base.syncVarHookGuard = false;
                 }
                 base.SetSyncVar<float>(value, ref this.maxBoostMeter, 2U);
+            }
+        }
+
+        public bool NetworkboostAvailable
+        {
+            get
+            {
+                return this.boostAvailable;
+            }
+            [param: In]
+            set
+            {
+                if (NetworkServer.localClientActive && !base.syncVarHookGuard)
+                {
+                    base.syncVarHookGuard = true;
+                    OnBoostAvailableChanged(value);
+                    base.syncVarHookGuard = false;
+                }
+                base.SetSyncVar<bool>(value, ref this.boostAvailable, 4U);
             }
         }
 
@@ -173,6 +212,15 @@ namespace SonicTheHedgehog.Components
                 }
                 writer.Write(this.maxBoostMeter);
             }
+            if ((base.syncVarDirtyBits & 4U) != 0U)
+            {
+                if (!flag)
+                {
+                    writer.WritePackedUInt32(base.syncVarDirtyBits);
+                    flag = true;
+                }
+                writer.Write(this.boostAvailable);
+            }
             if (!flag)
             {
                 writer.WritePackedUInt32(base.syncVarDirtyBits);
@@ -196,6 +244,10 @@ namespace SonicTheHedgehog.Components
             if ((num & 2U) != 0U)
             {
                 this.maxBoostMeter = reader.ReadSingle();
+            }
+            if ((num & 4U) != 0U)
+            {
+                this.boostAvailable = reader.ReadBoolean();
             }
         }
     }

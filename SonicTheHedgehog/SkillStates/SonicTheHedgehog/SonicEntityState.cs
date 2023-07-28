@@ -9,16 +9,29 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SonicEntityState : GenericCharacterMain
     {
+        private float idleExtraTimer;
+        private int idleExtraCount;
+        private const float idleExtraDefault=10;
+        
         public override void OnEnter()
         {
             base.OnEnter();
+            idleExtraTimer = idleExtraDefault;
+            idleExtraCount = 0;
             if (base.isGrounded && base.characterBody.isSprinting)
             {
                 base.PlayCrossfade("Body", "Sprint", 0.3f);
             }
-            else if (base.isGrounded && base.modelAnimator.GetBool("isMoving"))
+            else if (base.isGrounded)
             {
-                base.PlayCrossfade("Body", "Run", 0.1f);
+                if (base.modelAnimator.GetBool("isMoving"))
+                {
+                    base.PlayCrossfade("Body", "Run", 0.1f);
+                }
+                else
+                {
+                    base.PlayCrossfade("Body", "Idle", 0.3f);
+                }
             }
             if (base.modelLocator)
             {
@@ -40,7 +53,27 @@ namespace SonicTheHedgehog.SkillStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+            IdleExtraAnimation();
             
+        }
+
+        private void IdleExtraAnimation()
+        {
+            if (base.characterBody.inputBank.moveVector!=Vector3.zero || base.characterBody.inputBank.jump.down)
+            {
+                idleExtraTimer = idleExtraDefault;
+                idleExtraCount = 0;
+            }
+            else
+            {
+                idleExtraTimer -= Time.fixedDeltaTime;
+                if (idleExtraTimer<=0 && base.characterMotor.isGrounded)
+                {
+                    base.PlayAnimation("Body", "IdleExtra");
+                    idleExtraCount += 1;
+                    idleExtraTimer = idleExtraDefault*((2+idleExtraCount)/2f);
+                }
+            }
         }
     }
 }

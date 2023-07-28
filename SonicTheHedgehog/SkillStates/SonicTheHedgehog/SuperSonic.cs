@@ -28,8 +28,9 @@ namespace SonicTheHedgehog.SkillStates
             //this.superAura = PrefabAPI.InstantiateClone(Modules.Assets.superSonicAura, "SuperAura", true);
             this.superAura.transform.parent = transform;
 
-            //prevMaterial = base.modelLocator.transform.Find("SonicMesh").gameObject.GetComponent<SkinnedMeshRenderer>().material;
-            //base.characterBody.transform.Find("SonicMesh").gameObject.GetComponent<SkinnedMeshRenderer>().material = superSonicComponent.superSonicMaterial;
+            //prevMaterial = base.characterBody.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial;
+            //base.characterBody.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial = superSonicComponent.superSonicMaterial;
+
             if (base.isAuthority && base.characterBody.healthComponent)
             {
                 base.characterBody.healthComponent.HealFraction(1, new ProcChainMask());
@@ -57,8 +58,13 @@ namespace SonicTheHedgehog.SkillStates
             {
                 Destroy(this.superAura);
             }
+            else
+            {
+                Chat.AddMessage("no aura found");
+            }
 
-            //base.characterBody.transform.Find("SonicMesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0] = prevMaterial;
+            //base.characterBody.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial = prevMaterial;
+
             if (base.isAuthority && base.skillLocator)
             {
                 base.skillLocator.primary.UnsetSkillOverride(this, primarySkillDef, GenericSkill.SkillOverridePriority.Upgrade);
@@ -130,7 +136,7 @@ namespace SonicTheHedgehog.SkillStates
             skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME",
             skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME",
             skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texUtilityIcon"),
+            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
             activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Boost)),
             activationStateMachineName = "Body",
             baseMaxStock = 1,

@@ -14,6 +14,8 @@ namespace SonicTheHedgehog.Components
     public class BoostHUD : MonoBehaviour
     {
         //thanks red mist
+        private BoostLogic boostLogic;
+        private Slider slider;
         public GameObject boostMeter;
         public GameObject boostMeterFillInfinite;
         public Image boostMeterFill;
@@ -35,7 +37,7 @@ namespace SonicTheHedgehog.Components
             {
                 return;
             }
-            BoostLogic boostLogic = this.hud.targetBodyObject.GetComponent<BoostLogic>();
+            boostLogic = this.hud.targetBodyObject.GetComponent<BoostLogic>();
             if (boostLogic)
             {
                 if (this.hud.targetMaster)
@@ -45,12 +47,14 @@ namespace SonicTheHedgehog.Components
                 if (this.boostMeter)
                 {
                     this.boostMeter.gameObject.SetActive(true);
-                    boostMeter.GetComponent<Slider>().value = boostLogic.boostMeter;
+                    slider=boostMeter.GetComponent<Slider>();
+                    slider.value = boostLogic.predictedMeter;
                     if (boostLogic.boostRegen < Boost.boostMeterDrain)
                     {
                         boostMeterFillInfinite.GetComponent<Image>().enabled = false;
                         if (boostLogic.boostMeter >= boostLogic.maxBoostMeter)
                         {
+                            slider.value=boostLogic.maxBoostMeter;
                             fadeTimer += Time.fixedDeltaTime;
                             boostMeterFill.color = Color.Lerp(fillDefaultColor, fillFadeColor, fadeTimer);
                             boostMeterBackground.color = Color.Lerp(backgroundDefaultColor, new Color(0, 0, 0, 0), fadeTimer);
