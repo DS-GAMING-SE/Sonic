@@ -100,10 +100,8 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
-            if (!hasHit)
-            {
-                base.PlayAnimation("FullBody, Override", "BufferEmpty");
-            }
+            //base.characterBody.bodyFlags -= CharacterBody.BodyFlags.IgnoreFallDamage;
+            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(Modules.Buffs.ballBuff);

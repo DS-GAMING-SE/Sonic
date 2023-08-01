@@ -11,8 +11,8 @@ namespace SonicTheHedgehog.SkillStates
     {
         private float idleExtraTimer;
         private int idleExtraCount;
-        private const float idleExtraDefault=10;
-        
+        private const float idleExtraDefault=8;
+        // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
         {
             base.OnEnter();
@@ -54,7 +54,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.FixedUpdate();
             IdleExtraAnimation();
-            
         }
 
         private void IdleExtraAnimation()
@@ -71,7 +70,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.PlayAnimation("Body", "IdleExtra");
                     idleExtraCount += 1;
-                    idleExtraTimer = idleExtraDefault*((2+idleExtraCount)/2f);
+                    idleExtraTimer = idleExtraDefault*(idleExtraCount*1.5f);
                 }
             }
         }

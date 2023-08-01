@@ -164,6 +164,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private void OnPowerBoostChanged()
         {
+            boostLogic.powerBoosting = powerBoosting;
             if (powerBoosting)
             {
                 if (boostEffectCooldown <= 0)
@@ -217,6 +218,8 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.GetModelAnimator().SetBool("isBoosting", false);
+            boostLogic.boostDraining = false;
+            boostLogic.powerBoosting = false;
             if (base.cameraTargetParams) base.cameraTargetParams.fovOverride = -1f;
             if (base.modelLocator)
             {

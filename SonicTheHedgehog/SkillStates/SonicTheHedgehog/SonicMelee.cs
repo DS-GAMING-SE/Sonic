@@ -61,6 +61,7 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
+        private bool animationEnded=false;
 
         public override void OnEnter()
         {
@@ -154,7 +155,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
-            if (homingAttack && (!hasFired || inHitPause))
+            if (homingAttack && !animationEnded)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
             }
@@ -168,6 +169,7 @@ namespace SonicTheHedgehog.SkillStates
             if (base.characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreFallDamage))
             {
                 base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+                //base.characterBody.bodyFlags -= CharacterBody.BodyFlags.IgnoreFallDamage;
             }
             base.OnExit();
 
@@ -312,6 +314,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterMotor.velocity = this.storedVelocity;
                 if (homingAttack)
                 {
+                    animationEnded = true;
                     base.PlayAnimation("FullBody, Override", "BufferEmpty");
                     base.PlayAnimation("Body", "Backflip");
                 }

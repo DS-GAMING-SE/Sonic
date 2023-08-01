@@ -18,18 +18,21 @@ namespace SonicTheHedgehog.SkillStates
         Material prevMaterial;
         GameObject superAura;
         bool superBuffApplied;
+        CharacterModel model;
         public override void OnEnter()
         {
             base.OnEnter();
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
+            //model = base.characterBody.modelLocator.GetComponent<CharacterModel>();
 
             Transform transform = base.gameObject.transform;
             this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, transform.position, transform.rotation);
             //this.superAura = PrefabAPI.InstantiateClone(Modules.Assets.superSonicAura, "SuperAura", true);
             this.superAura.transform.parent = transform;
 
-            //prevMaterial = base.characterBody.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial;
-            //base.characterBody.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial = superSonicComponent.superSonicMaterial;
+            //this.model.baseRendererInfos[0].defaultMaterial = Assets.mainAssetBundle.LoadAsset<Material>("matSuperSonic");
+
+
 
             if (base.isAuthority && base.characterBody.healthComponent)
             {
@@ -63,7 +66,7 @@ namespace SonicTheHedgehog.SkillStates
                 Chat.AddMessage("no aura found");
             }
 
-            //base.characterBody.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial = prevMaterial;
+            //this.model.baseRendererInfos[0].defaultMaterial = this.model.gameObject.GetComponent<ModelSkinController>().skins[this.characterBody.skinIndex].rendererInfos[0].defaultMaterial;
 
             if (base.isAuthority && base.skillLocator)
             {

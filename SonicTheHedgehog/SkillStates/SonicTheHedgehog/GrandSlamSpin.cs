@@ -68,6 +68,11 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.OnExit();
             this.animator.SetBool("attacking", false);
+            if (NetworkServer.active)
+            {
+                base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
+            }
+            base.PlayAnimation("FullBody, Override", "BufferEmpty");
         }
 
 

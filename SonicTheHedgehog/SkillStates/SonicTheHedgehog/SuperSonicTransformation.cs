@@ -26,8 +26,6 @@ namespace SonicTheHedgehog.SkillStates
             if (!base.HasBuff(Modules.Buffs.superSonicBuff))
             {
                 this.duration = this.baseDuration;
-                this.animator = base.GetModelAnimator();
-                this.animator.SetBool("attacking", true);
                 if (NetworkServer.active)
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
@@ -45,8 +43,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.OnExit();
-
-            this.animator.SetBool("attacking", false);
         }
 
         public override void FixedUpdate()

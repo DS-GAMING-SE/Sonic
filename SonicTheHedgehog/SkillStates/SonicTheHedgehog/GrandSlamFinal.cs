@@ -49,16 +49,24 @@ namespace SonicTheHedgehog.SkillStates
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
         private float speedMultiplier;
+        private bool animationEnded=false;
 
         public override void OnEnter()
         {
             base.OnEnter();
+            if (NetworkServer.active)
+            {
+                base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
+            }
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             this.hasFired = false;
             this.hasHit = false;
             this.hitboxName = "Stomp";
             base.PlayAnimation("FullBody, Override", "GrandSlam", "Roll.playbackRate", this.startUpTime*1.15f);
-            Util.PlaySound("HenryRoll", base.gameObject);
+            if (base.isAuthority)
+            {
+                Util.PlaySound("HenryRoll", base.gameObject);
+            }
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
@@ -70,7 +78,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
-            if (!this.hasHit)
+            if (!this.animationEnded)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
                 base.PlayAnimation("Body", "Backflip");
@@ -123,6 +131,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.ConsumeHitStopCachedState(this.hitStopCachedState, base.characterMotor, this.animator);
                 this.inHitPause = false;
                 base.characterMotor.velocity = this.storedVelocity;
+                animationEnded = true;
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
                 base.PlayAnimation("Body", "Backflip");
             }

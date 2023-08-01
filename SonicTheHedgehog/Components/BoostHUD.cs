@@ -15,17 +15,35 @@ namespace SonicTheHedgehog.Components
     {
         //thanks red mist
         private BoostLogic boostLogic;
-        private Slider slider;
+
         public GameObject boostMeter;
-        public GameObject boostMeterFillInfinite;
-        public Image boostMeterFill;
-        public Image boostMeterBackground;
+
+        public Image meterBackground;
+        public Image meterFill;
+
+        public Image meterBackgroundOuter;
+        public Image meterFillOuter;
+
+        public RawImage meterBackgroundBackup;
+        public RawImage meterFillBackup;
+
+        public Image infiniteFill;
+        public Image infiniteBackground;
+
+        public ParticleSystem powerBoostParticle;
+
         private Color fillDefaultColor = new Color(0, 0.9f, 1, 1);
         private Color fillFadeColor = new Color(0, 0.9f, 1, 0);
         private Color fillUnavailableColor = new Color(0.8f, 0, 0, 1);
         private Color backgroundDefaultColor = new Color (0, 0, 0, 0.5f);
+
         private HUD hud;
         private float fadeTimer;
+
+        private bool powerBoostParticlePlaying=false;
+
+        private int backupBackgroundNum;
+        private int backupFillNum;
 
         private void Awake()
         {
@@ -47,29 +65,56 @@ namespace SonicTheHedgehog.Components
                 if (this.boostMeter)
                 {
                     this.boostMeter.gameObject.SetActive(true);
-                    slider=boostMeter.GetComponent<Slider>();
-                    slider.value = boostLogic.predictedMeter;
-                    if (boostLogic.boostRegen < Boost.boostMeterDrain)
+                    UpdateMeterBackground();
+                    UpdateMeterFill();
+                    //UpdatePowerParticles();
+                    if (boostLogic.boostMeter >= boostLogic.maxBoostMeter && !boostLogic.boostDraining)
                     {
-                        boostMeterFillInfinite.GetComponent<Image>().enabled = false;
-                        if (boostLogic.boostMeter >= boostLogic.maxBoostMeter)
+                        meterFill.fillAmount = 1;
+                        fadeTimer += Time.fixedDeltaTime;
+                        Color fill = Color.Lerp(fillDefaultColor, fillFadeColor, fadeTimer);
+                        Color background = Color.Lerp(backgroundDefaultColor, new Color(0, 0, 0, 0), fadeTimer);
+                        if (boostLogic.boostRegen < Boost.boostMeterDrain)
                         {
-                            slider.value=boostLogic.maxBoostMeter;
-                            fadeTimer += Time.fixedDeltaTime;
-                            boostMeterFill.color = Color.Lerp(fillDefaultColor, fillFadeColor, fadeTimer);
-                            boostMeterBackground.color = Color.Lerp(backgroundDefaultColor, new Color(0, 0, 0, 0), fadeTimer);
-
+                            meterBackground.gameObject.SetActive(true);
+                            meterFill.color = fill;
+                            meterBackground.color = background;
+                            infiniteBackground.gameObject.SetActive(false);
                         }
                         else
                         {
-                            fadeTimer = 0;
-                            boostMeterFill.color = boostLogic.boostAvailable ? fillDefaultColor : fillUnavailableColor;
-                            boostMeterBackground.color = backgroundDefaultColor;
+                            infiniteBackground.gameObject.SetActive(true);
+                            infiniteFill.color = fill;
+                            infiniteBackground.color = background;
+                            meterBackground.gameObject.SetActive(false);
                         }
+                        meterFillOuter.color = fill;
+                        meterBackgroundOuter.color = background;
+                        meterFillBackup.color = fill;
+                        meterBackgroundBackup.color = background;
+
                     }
                     else
                     {
-                        boostMeterFillInfinite.GetComponent<Image>().enabled = true;
+                        fadeTimer = 0;
+                        if (boostLogic.boostRegen < Boost.boostMeterDrain)
+                        {
+                            meterBackground.gameObject.SetActive(true);
+                            meterFill.color = boostLogic.boostAvailable ? fillDefaultColor : fillUnavailableColor;
+                            meterBackground.color = backgroundDefaultColor;
+                            infiniteBackground.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            infiniteBackground.gameObject.SetActive(true);
+                            infiniteFill.color = fillDefaultColor;
+                            infiniteBackground.color = backgroundDefaultColor;
+                            meterBackground.gameObject.SetActive(false);
+                        }
+                        meterFillOuter.color = boostLogic.boostAvailable ? fillDefaultColor : fillUnavailableColor;
+                        meterBackgroundOuter.color = backgroundDefaultColor;
+                        meterFillBackup.color = boostLogic.boostAvailable ? fillDefaultColor : fillUnavailableColor;
+                        meterBackgroundBackup.color = backgroundDefaultColor;
                     }
                     return;
                 }
@@ -77,6 +122,62 @@ namespace SonicTheHedgehog.Components
             else if (this.boostMeter)
             {
                 this.boostMeter.gameObject.SetActive(false);
+            }
+        }
+
+        private void UpdateMeterFill()
+        {
+            meterFill.fillAmount = boostLogic.predictedMeter / 100;
+
+            meterFillOuter.fillAmount = ((boostLogic.predictedMeter - 100) % 100) / 100;
+            if (boostLogic.maxBoostMeter>100 && boostLogic.maxBoostMeter%100==0 && boostLogic.predictedMeter>=boostLogic.maxBoostMeter)
+            {
+                meterFillOuter.fillAmount = 1;
+            }
+
+            backupFillNum = Math.Max(Mathf.CeilToInt((boostLogic.predictedMeter - 200) / 100),0);
+            if (backupFillNum==0)
+            {
+                meterFillBackup.gameObject.SetActive(false);
+            }
+            else
+            {
+                meterFillBackup.uvRect = new Rect(meterBackgroundBackup.uvRect.x, meterBackgroundBackup.uvRect.y, backupFillNum, meterBackgroundBackup.uvRect.height);
+                meterFillBackup.gameObject.SetActive(true);
+                meterFillBackup.gameObject.GetComponent<RectTransform>().localScale = new Vector3((float)backupFillNum/backupBackgroundNum, 1, 1);
+            }
+        }
+
+        private void UpdateMeterBackground()
+        {
+            meterBackground.fillAmount = boostLogic.maxBoostMeter / 100;
+
+            meterBackgroundOuter.fillAmount = ((boostLogic.maxBoostMeter - 100) / 100) - Mathf.Max((Mathf.Floor((boostLogic.predictedMeter - 100) / 100)),0);
+
+            backupBackgroundNum = Math.Max(Mathf.CeilToInt((boostLogic.maxBoostMeter - 200) / 100), 0);
+            if (backupBackgroundNum == 0)
+            {
+                meterBackgroundBackup.gameObject.SetActive(false);
+            }
+            else
+            {
+                meterBackgroundBackup.uvRect = new Rect(meterBackgroundBackup.uvRect.x, meterBackgroundBackup.uvRect.y, backupBackgroundNum, meterBackgroundBackup.uvRect.height);
+                meterBackgroundBackup.gameObject.SetActive(true);
+                meterBackgroundBackup.gameObject.GetComponent<RectTransform>().localScale = new Vector3(0.3f * backupBackgroundNum, 0.3f, 0.3f);
+            }
+        }
+
+        private void UpdatePowerParticles()
+        {
+            if (boostLogic.powerBoosting && !powerBoostParticlePlaying)
+            {
+                powerBoostParticle.Play();
+                powerBoostParticlePlaying = true;
+            }
+            else if (!boostLogic.powerBoosting && powerBoostParticlePlaying)
+            {
+                powerBoostParticle.Stop();
+                powerBoostParticlePlaying = false;
             }
         }
     }

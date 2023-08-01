@@ -2,6 +2,7 @@
 using R2API;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.SkillStates;
 using System;
 using System.Runtime.InteropServices;
@@ -16,11 +17,12 @@ namespace SonicTheHedgehog.Components
         public float boostMeter;
         public float maxBoostMeter;
         public float boostRegen;
-        public bool boostAvailable=true;
+        public bool boostAvailable = true;
         public float predictedMeter;
-        public bool boostDraining=false;
+        public bool boostDraining = false;
+        public bool powerBoosting = false;
         private const float baseMaxBoostMeter=100f;
-        private const float boostMeterPerFlatReduction = 10f;
+        private const float boostMeterPerFlatReduction = 25f;
         private const float baseBoostRegen = 0.38f;
 
         private void Start()
@@ -34,11 +36,18 @@ namespace SonicTheHedgehog.Components
         
         public void FixedUpdate()
         {
+            PredictMeter();
             if (NetworkServer.active)
             {
-                this.AddBoost(boostRegen);
+                if (this.boostRegen >= Boost.boostMeterDrain || body.HasBuff(Buffs.superSonicBuff))
+                {
+                    this.AddBoost(maxBoostMeter);
+                }
+                else
+                {
+                    this.AddBoost(boostRegen);
+                }
             }
-            PredictMeter();
         }
 
         public void CalculateBoostVariables()
@@ -124,10 +133,18 @@ namespace SonicTheHedgehog.Components
 
         private void PredictMeter()
         {
-            predictedMeter = Mathf.Clamp(this.predictedMeter + (boostDraining ? -Boost.boostMeterDrain : boostRegen), 0, this.maxBoostMeter);
+            if (this.boostRegen >= Boost.boostMeterDrain || body.HasBuff(Buffs.superSonicBuff))
+            {
+                predictedMeter = maxBoostMeter;
+            }
+            else
+            {
+                predictedMeter = Mathf.Clamp(this.predictedMeter + (boostDraining ? -Boost.boostMeterDrain : boostRegen), 0, this.maxBoostMeter);
+            }
         }
 
         // I have no fucking clue how to network I am just copying viend and red mist
+        // now doing the one thing more dangerous than copying, trying to be original
         public float NetworkboostMeter
         {
             get
@@ -191,6 +208,7 @@ namespace SonicTheHedgehog.Components
             {
                 writer.Write(this.boostMeter);
                 writer.Write(this.maxBoostMeter);
+                writer.Write(this.boostAvailable);
                 return true;
             }
             bool flag = false;
@@ -234,6 +252,7 @@ namespace SonicTheHedgehog.Components
             {
                 this.boostMeter = reader.ReadSingle();
                 this.maxBoostMeter = reader.ReadSingle();
+                this.boostAvailable = reader.ReadBoolean();
                 return;
             }
             int num = (int)reader.ReadPackedUInt32();

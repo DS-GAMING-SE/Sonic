@@ -240,18 +240,23 @@ namespace SonicTheHedgehog.Modules.Survivors
         {
             orig.Invoke(self);
             BoostHUD boostHud = self.gameObject.AddComponent<BoostHUD>();
-            GameObject boostUI = UnityEngine.Object.Instantiate<GameObject>(Assets.mainAssetBundle.LoadAsset<GameObject>("BoostMeter"), self.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas"));
+            GameObject boostUI = UnityEngine.Object.Instantiate<GameObject>(Assets.mainAssetBundle.LoadAsset<GameObject>("BoostMeter2"), self.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas"));
             RectTransform rectTransform=boostUI.GetComponent<RectTransform>();
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;
-            rectTransform.sizeDelta = new Vector2(-999,-999);
-            rectTransform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+            rectTransform.localScale = new Vector3(1f, 1f, 1f);
             rectTransform.localPosition= Vector3.zero;
             rectTransform.anchoredPosition = new Vector2(90f, -50f);
             boostHud.boostMeter = boostUI;
-            boostHud.boostMeterBackground = boostUI.transform.Find("Background").gameObject.GetComponent<Image>();
-            boostHud.boostMeterFill = boostUI.transform.Find("Fill Area/Fill").gameObject.GetComponent<Image>();
-            boostHud.boostMeterFillInfinite = boostUI.transform.Find("Fill Area/Infinite").gameObject;
+            boostHud.meterBackground = boostUI.transform.Find("Background").gameObject.GetComponent<Image>();
+            boostHud.meterFill = boostUI.transform.Find("Background/Fill").gameObject.GetComponent<Image>();
+            boostHud.meterBackgroundOuter = boostUI.transform.Find("BackgroundOuter").gameObject.GetComponent<Image>();
+            boostHud.meterFillOuter = boostUI.transform.Find("BackgroundOuter/FillOuter").gameObject.GetComponent<Image>();
+            boostHud.meterBackgroundBackup = boostUI.transform.Find("BackgroundBackup").gameObject.GetComponent<RawImage>();
+            boostHud.meterFillBackup = boostUI.transform.Find("BackgroundBackup/FillBackup").gameObject.GetComponent<RawImage>();
+            boostHud.powerBoostParticle = boostUI.transform.Find("PowerParticles").gameObject.GetComponent<ParticleSystem>();
+            boostHud.infiniteBackground = boostUI.transform.Find("InfiniteBackground").gameObject.GetComponent<Image>();
+            boostHud.infiniteFill = boostUI.transform.Find("InfiniteBackground/InfiniteFill").gameObject.GetComponent<Image>();
 
         }
 
