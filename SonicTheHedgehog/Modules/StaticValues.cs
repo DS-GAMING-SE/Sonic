@@ -4,7 +4,7 @@ namespace SonicTheHedgehog.Modules
 {
     internal static class StaticValues
     {
-        internal static string descriptionText = "Henry is a skilled fighter who makes use of a wide arsenal of weaponry to take down his foes.<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine
+        internal static string descriptionText = "Sonic is a fast melee fighter who specializes in movement and single target damage.<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine
              + "< ! > Homing attack lets you quickly close the distance between you and an enemy, letting you quickly rack up damage with melee attacks." + Environment.NewLine + Environment.NewLine
              + "< ! > Sonic Boom is a fast projectile that lets you attack from a distance." + Environment.NewLine + Environment.NewLine
              + "< ! > Boost lets you move significantly faster than normal. Use it to dodge attacks or traverse the map." + Environment.NewLine + Environment.NewLine
@@ -49,13 +49,13 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superSonicDuration = 50f;
         
-        internal const float superSonicMovementSpeed = 1.6f;
+        internal const float superSonicMovementSpeed = 1.8f;
 
         internal const float superSonicAttackSpeed = 1.3f;
 
         internal const float superSonicBaseDamage = 1.7f;
 
-        internal const float superSonicJumpHeight = 1.3f;
+        internal const float superSonicJumpHeight = 1.5f;
 
         // Super Melee
 
@@ -71,7 +71,7 @@ namespace SonicTheHedgehog.Modules
 
         // Super Sonic Grand Slam
 
-        internal const float superGrandSlamDOTDamage = 3.2f;
+        internal const float superGrandSlamDOTDamage = 3f;
 
     }
 }

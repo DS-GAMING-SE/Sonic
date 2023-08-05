@@ -22,6 +22,11 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject superSonicTransformationEffect;
         internal static GameObject superSonicAura;
         internal static GameObject meleeHitEffect;
+        internal static GameObject meleeImpactEffect;
+        internal static GameObject homingAttackLaunchEffect;
+        internal static GameObject homingAttackHitEffect;
+        internal static GameObject powerBoostFlashEffect;
+        internal static GameObject boostFlashEffect;
 
         internal static GameObject bombExplosionEffect;
 
@@ -116,6 +121,11 @@ namespace SonicTheHedgehog.Modules
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
             superSonicAura = Assets.LoadEffect("SonicSuperAura", true);
             meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", true);
+            meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
+            homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");
+            homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", true);
+            powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
+            boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
         }
 
         private static GameObject CreateTracer(string originalTracerName, string newTracerName)

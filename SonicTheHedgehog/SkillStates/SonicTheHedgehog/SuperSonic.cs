@@ -31,8 +31,7 @@ namespace SonicTheHedgehog.SkillStates
             this.superAura.transform.parent = transform;
 
             //this.model.baseRendererInfos[0].defaultMaterial = Assets.mainAssetBundle.LoadAsset<Material>("matSuperSonic");
-
-
+            UpdateFlight(true);
 
             if (base.isAuthority && base.characterBody.healthComponent)
             {
@@ -57,6 +56,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void OnExit()
         {
+            UpdateFlight(false);
             if (this.superAura)
             {
                 Destroy(this.superAura);
@@ -101,6 +101,22 @@ namespace SonicTheHedgehog.SkillStates
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.Skill;
+        }
+
+        private void UpdateFlight(bool flying)
+        {
+            if (base.characterBody.GetComponent<ICharacterFlightParameterProvider>() != null)
+            {
+                CharacterFlightParameters flightParameters = base.characterBody.GetComponent<ICharacterFlightParameterProvider>().flightParameters;
+                flightParameters.channeledFlightGranterCount += flying ? 1 : -1;
+                base.characterBody.GetComponent<ICharacterFlightParameterProvider>().flightParameters = flightParameters;
+            }
+            if (base.characterBody.GetComponent<ICharacterGravityParameterProvider>() != null)
+            {
+                CharacterGravityParameters gravityParameters = base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters;
+                gravityParameters.channeledAntiGravityGranterCount += flying ? 1 : -1;
+                base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters = gravityParameters;
+            }
         }
 
         SkillDef primarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_SLASH_NAME",

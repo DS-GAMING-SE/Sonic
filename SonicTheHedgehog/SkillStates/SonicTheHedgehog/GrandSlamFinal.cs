@@ -21,10 +21,11 @@ namespace SonicTheHedgehog.SkillStates
         protected Vector3 bonusForce = Vector3.down;
         protected float attackRecoil = 11f;
         protected float startUpTime = 0.5f;
+        private float baseMaxAttackTime = 0.75f;
         protected float maxAttackTime = 0.75f;
         protected float hitStopDuration=0.2f;
         protected float endTime=0.5f;
-        protected float baseSpeedMultiplier = 6;
+        protected float baseSpeedMultiplier = 4.5f;
 
         public HurtBox target;
         protected Vector3 targetDirection;
@@ -33,7 +34,7 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab;
+        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
         protected NetworkSoundEventIndex impactSound;
 
         private float earlyExitTime;
@@ -59,6 +60,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
+            this.maxAttackTime = this.baseMaxAttackTime / ((base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier)/12);
             this.hasFired = false;
             this.hasHit = false;
             this.hitboxName = "Stomp";
@@ -152,13 +154,14 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     if (fixedAge <= this.startUpTime)
                     {
-                        base.characterMotor.velocity = Vector3.up*(Mathf.Lerp(60f,3f,fixedAge/this.startUpTime));
+                        base.characterMotor.velocity = base.characterBody.HasBuff(Buffs.superSonicBuff) ? Vector3.up * (Mathf.Lerp(100f, 20f, fixedAge / this.startUpTime)) : Vector3.up*(Mathf.Lerp(60f,3f,fixedAge/this.startUpTime));
                     }
                     else if (fixedAge <= this.startUpTime+this.maxAttackTime)
                     {   
                         if (!hasFired)
                         {
                             hasFired = true;
+                            EndChrysalis();
                         }
                         if (this.target!=null)
                         {
@@ -174,7 +177,7 @@ namespace SonicTheHedgehog.SkillStates
                         {
                             targetDirection = Vector3.down;
                         }
-                        base.characterMotor.velocity = targetDirection * base.characterBody.moveSpeed*speedMultiplier;
+                        base.characterMotor.velocity = targetDirection * base.characterBody.moveSpeed * speedMultiplier * base.characterBody.sprintingSpeedMultiplier;
                         FireAttack();
                     }
                     else
@@ -220,7 +223,19 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.pushAwayForce = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superPushForce : basePushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
-            this.attack.impactSound = this.impactSound;
+            //this.attack.impactSound = this.impactSound;
+        }
+
+        private void EndChrysalis()
+        {
+            JetpackController chrysalis = JetpackController.FindJetpackController(base.gameObject);
+            if (chrysalis)
+            {
+                if (chrysalis.stopwatch >= chrysalis.duration && NetworkServer.active)
+                {
+                    UnityEngine.Object.Destroy(chrysalis.gameObject);
+                }
+            }
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

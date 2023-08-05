@@ -18,7 +18,7 @@ namespace SonicTheHedgehog.SkillStates
         public static float finalSpeedCoefficient = 1f;
         public static float boostMeterDrain = 0.88f;
         public static float airBoostY = 8;
-        public static float screenShake = 2.5f;
+        public static float screenShake = 3.5f;
 
         public static string dodgeSoundString = "HenryRoll";
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
@@ -27,6 +27,7 @@ namespace SonicTheHedgehog.SkillStates
         private BoostLogic boostLogic;
         private TemporaryOverlay temporaryOverlay;
         private float boostEffectCooldown;
+        private ICharacterFlightParameterProvider flight;
 
         public bool powerBoosting = false;
 
@@ -34,9 +35,10 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
+            flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             base.GetModelAnimator().SetBool("isBoosting", true);
             boostLogic = GetComponent<BoostLogic>();
-            if (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && base.characterBody.inputBank.moveVector != Vector3.zero)
+            if (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving())
             {
                 powerBoosting = true;
             }
@@ -54,17 +56,27 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (base.isAuthority && base.inputBank && base.characterDirection)
                 {
-                    this.forwardDirection = ((base.inputBank.moveVector == Vector3.zero) ? base.characterDirection.forward : base.inputBank.moveVector).normalized;
+                    this.forwardDirection = ((base.inputBank.moveVector == Vector3.zero || Flying()) ? base.characterDirection.forward : base.inputBank.moveVector).normalized;
                 }
 
                 if (base.characterMotor && base.characterDirection)
                 {
                     base.characterMotor.velocity.x = this.forwardDirection.x * base.characterBody.moveSpeed;
                     base.characterMotor.velocity.z = this.forwardDirection.z * base.characterBody.moveSpeed;
-                    base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
+                    if (Flying())
+                    {
+                        base.characterMotor.velocity.y = this.forwardDirection.y * base.characterBody.moveSpeed;
+                    }
+                    else
+                    {
+                        base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
+                    }
                     base.PlayCrossfade("Body", "AirBoost", "Roll.playbackRate", duration, duration/3);
                 }
-                base.skillLocator.utility.DeductStock(1);
+                if (!Flying())
+                {
+                    base.skillLocator.utility.DeductStock(1);
+                }
                 Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
             }
             else
@@ -90,9 +102,9 @@ namespace SonicTheHedgehog.SkillStates
 
             UpdatePowerBoosting();
 
-            ProcessJump();
+            //ProcessJump();
 
-            if (base.characterBody.inputBank.moveVector!=Vector3.zero)
+            if (Moving())
             {
                 if (!base.HasBuff(Modules.Buffs.superSonicBuff))
                 {
@@ -125,12 +137,19 @@ namespace SonicTheHedgehog.SkillStates
 
             UpdateDirection();
 
-            if (base.isAuthority&&((base.fixedAge < duration)||(base.fixedAge<extendedDuration&&base.inputBank.skill3.down))&&!base.isGrounded)
+            if (base.isAuthority && base.fixedAge < extendedDuration && !base.isGrounded)
             {
                 //base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
                 base.characterMotor.velocity.x = this.forwardDirection.x * base.characterBody.moveSpeed;
                 base.characterMotor.velocity.z = this.forwardDirection.z * base.characterBody.moveSpeed;
-                base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
+                if (Flying())
+                {
+                    base.characterMotor.velocity.y = this.forwardDirection.y * base.characterBody.moveSpeed;
+                }
+                else
+                {
+                    base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
+                }
             }
             if (base.isAuthority && base.fixedAge>duration && !base.inputBank.skill3.down)
             {
@@ -146,14 +165,14 @@ namespace SonicTheHedgehog.SkillStates
 
         private void UpdatePowerBoosting()
         {
-            if (!powerBoosting && base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && base.characterBody.inputBank.moveVector != Vector3.zero)
+            if (!powerBoosting && base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving())
             {
                 base.characterBody.RecalculateStats();
                 powerBoosting = true;
                 OnPowerBoostChanged();
                 return;
             }
-            if (powerBoosting && (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth < 0.9f || base.characterBody.inputBank.moveVector == Vector3.zero))
+            if (powerBoosting && (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth < 0.9f || !Moving()))
             {
                 base.characterBody.RecalculateStats();
                 powerBoosting = false;
@@ -167,10 +186,14 @@ namespace SonicTheHedgehog.SkillStates
             boostLogic.powerBoosting = powerBoosting;
             if (powerBoosting)
             {
-                if (boostEffectCooldown <= 0)
+                if (boostEffectCooldown <= 0 && base.isAuthority)
                 {
                     boostEffectCooldown = 0.6f;
+
                     base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
+
+                    EffectManager.SimpleMuzzleFlash(Assets.powerBoostFlashEffect, base.gameObject, "BallHitbox", true);
+
                     if (temporaryOverlay)
                     {
                         EntityState.Destroy(temporaryOverlay);
@@ -199,6 +222,14 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     temporaryOverlay.RemoveFromCharacterModel();
                 }
+                if (boostEffectCooldown <= 0 && Moving() && base.isAuthority)
+                {
+                    boostEffectCooldown = 0.6f;
+
+                    base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
+
+                    EffectManager.SimpleMuzzleFlash(Assets.boostFlashEffect, base.gameObject, "BallHitbox", true);
+                }
             }
         }
 
@@ -206,12 +237,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (base.inputBank)
             {
-                Vector2 vector = Util.Vector3XZToVector2XY(base.inputBank.moveVector);
-                if (vector != Vector2.zero)
-                {
-                    vector.Normalize();
-                    this.forwardDirection = new Vector3(vector.x, 0f, vector.y).normalized;
-                }
+                this.forwardDirection = base.inputBank.moveVector != Vector3.zero ? base.inputBank.moveVector : base.characterDirection.forward;
             }
         }
 
@@ -234,6 +260,16 @@ namespace SonicTheHedgehog.SkillStates
                 EntityState.Destroy(temporaryOverlay);
             }
             base.OnExit();
+        }
+
+        private bool Flying()
+        {
+            return flight != null && flight.isFlying;
+        }
+
+        private bool Moving()
+        {
+            return base.characterBody.inputBank.moveVector != Vector3.zero || (!base.isGrounded && (!Flying() || base.fixedAge < extendedDuration));
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

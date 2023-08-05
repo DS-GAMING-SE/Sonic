@@ -3,6 +3,7 @@ using R2API.Networking.Interfaces;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.Modules;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab;
+        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
         protected NetworkSoundEventIndex impactSound;
 
         private float earlyExitTime;
@@ -148,7 +149,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.pushAwayForce = this.pushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
-            this.attack.impactSound = this.impactSound;
+            //this.attack.impactSound = this.impactSound;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

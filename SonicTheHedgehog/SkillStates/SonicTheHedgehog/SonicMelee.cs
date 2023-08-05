@@ -47,7 +47,7 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "";
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab;
+        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
         protected NetworkSoundEventIndex impactSound;
 
         private float earlyExitTime;
@@ -62,10 +62,12 @@ namespace SonicTheHedgehog.SkillStates
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
         private bool animationEnded=false;
+        private ICharacterFlightParameterProvider flight;
 
         public override void OnEnter()
         {
             base.OnEnter();
+            flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             this.hasFired = false;
             this.homingAttack = false;
             this.maxHomingAttackRange = 15f+(base.characterBody.moveSpeed*base.characterBody.sprintingSpeedMultiplier)*2f;
@@ -107,13 +109,21 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     this.targetDirection = (this.target.transform.position - base.transform.position);
                 }
-                base.characterMotor.Motor.ForceUnground();
+                if (base.isAuthority)
+                {
+                    Util.PlaySound("HenryRoll", base.gameObject);
+                    base.characterMotor.Motor.ForceUnground();
+                    if (targetDirection!=Vector3.zero)
+                    {
+                        EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+                    }
+                }
+                EndChrysalis();
                 this.estimatedHomingAttackTime = (targetDirection.magnitude / homingAttackSpeed) * homingAttackOvershoot;
                 this.homingAttackEndLag = (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superHomingAttackEndLag : baseHomingAttackEndLag) / this.attackSpeedStat;
                 this.hitboxName = "Ball";
                 base.PlayAnimation("FullBody, Override", "Ball");
                 base.characterMotor.disableAirControlUntilCollision = false;
-                Util.PlaySound("HenryRoll", base.gameObject);
             }
             else
             {
@@ -126,7 +136,7 @@ namespace SonicTheHedgehog.SkillStates
                 this.attackStartTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.6f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.45f / this.attackSpeedStat;
                 this.attackEndTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.8f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.7f / this.attackSpeedStat;
                 this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
-                this.hitHopVelocity=3+(3/this.attackSpeedStat);
+                this.hitHopVelocity= Flying() ? 0 : 3+(3/this.attackSpeedStat);
                 StartAimMode();
                 PlayAttackAnimation();
             }
@@ -155,7 +165,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
-            if (homingAttack && !animationEnded)
+            if ((homingAttack && !animationEnded) || cancelled)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
             }
@@ -182,16 +192,22 @@ namespace SonicTheHedgehog.SkillStates
             EffectManager.SimpleMuzzleFlash(Modules.Assets.meleeHitEffect, base.gameObject, this.muzzleString, true);
         }
 
+        protected virtual void PlayHomingAttackHitEffect()
+        {
+            EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+        }
+
         protected virtual void OnHitEnemyAuthority()
         {
             if (homingAttack)
             {
                 Util.PlaySound(this.hitSoundString, base.gameObject);
+                PlayHomingAttackHitEffect();
 
                 if (base.characterMotor)
                 {
                     base.characterMotor.velocity = Vector3.zero;
-                    base.characterMotor.velocity.y = homingAttackHitHopVelocity;
+                    base.characterMotor.velocity.y = Flying() ? 0 : homingAttackHitHopVelocity;
                 }
 
                 if (NetworkServer.active)
@@ -388,7 +404,9 @@ namespace SonicTheHedgehog.SkillStates
 
                 if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
                 {
-                    this.outer.SetNextState(new Boost());
+                    //this.outer.SetNextState(EntityStateCatalog.InstantiateState(base.skillLocator.utility.activationState));
+                    cancelled = true;
+                    base.skillLocator.utility.OnExecute();
                     return;
                 }
                 if (this.stopwatch >= this.duration && base.isAuthority)
@@ -399,6 +417,22 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+        private void EndChrysalis()
+        {
+            JetpackController chrysalis = JetpackController.FindJetpackController(base.gameObject);
+            if (chrysalis)
+            {
+                if (chrysalis.stopwatch >= chrysalis.duration && NetworkServer.active)
+                {
+                    UnityEngine.Object.Destroy(chrysalis.gameObject);
+                }
+            }
+        }
+
+        private bool Flying()
+        {
+            return flight != null && flight.isFlying;
+        }
         public void PrepareOverlapAttack()
         {
             HitBoxGroup hitBoxGroup = null;
@@ -421,12 +455,12 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.pushAwayForce = this.pushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
-            this.attack.impactSound = this.impactSound;
+            //this.attack.impactSound = this.impactSound;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
-            return InterruptPriority.PrioritySkill;
+            return homingAttack ? InterruptPriority.PrioritySkill : InterruptPriority.Skill;
         }
 
         public override void OnSerialize(NetworkWriter writer)

@@ -56,7 +56,7 @@ namespace SonicTheHedgehog.Components
                 return;
             }
             boostLogic = this.hud.targetBodyObject.GetComponent<BoostLogic>();
-            if (boostLogic)
+            if (boostLogic && boostLogic.boostExists)
             {
                 if (this.hud.targetMaster)
                 {
@@ -67,7 +67,7 @@ namespace SonicTheHedgehog.Components
                     this.boostMeter.gameObject.SetActive(true);
                     UpdateMeterBackground();
                     UpdateMeterFill();
-                    //UpdatePowerParticles();
+                    UpdatePowerParticles();
                     if (boostLogic.boostMeter >= boostLogic.maxBoostMeter && !boostLogic.boostDraining)
                     {
                         meterFill.fillAmount = 1;
@@ -169,12 +169,12 @@ namespace SonicTheHedgehog.Components
 
         private void UpdatePowerParticles()
         {
-            if (boostLogic.powerBoosting && !powerBoostParticlePlaying)
+            if (boostLogic.powerBoosting && !powerBoostParticlePlaying && boostLogic.boostDraining)
             {
                 powerBoostParticle.Play();
                 powerBoostParticlePlaying = true;
             }
-            else if (!boostLogic.powerBoosting && powerBoostParticlePlaying)
+            else if ((!boostLogic.powerBoosting || !boostLogic.boostDraining) && powerBoostParticlePlaying)
             {
                 powerBoostParticle.Stop();
                 powerBoostParticlePlaying = false;

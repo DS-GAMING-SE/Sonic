@@ -7,6 +7,9 @@ using System.Security;
 using System.Security.Permissions;
 using SonicTheHedgehog.Modules;
 using IL.RoR2.UI;
+using UnityEngine;
+using EmotesAPI;
+using System.Runtime.CompilerServices;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -15,6 +18,7 @@ using IL.RoR2.UI;
 namespace SonicTheHedgehog
 {
     [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.weliveinasociety.CustomEmotesAPI", BepInDependency.DependencyFlags.SoftDependency)]
     //[BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
@@ -39,6 +43,7 @@ namespace SonicTheHedgehog
         public const string DEVELOPER_PREFIX = "DS_GAMING";
 
         public static SonicTheHedgehogPlugin instance;
+        public static bool emoteAPILoaded = false;
 
         private void Awake()
         {
@@ -59,6 +64,9 @@ namespace SonicTheHedgehog
             // now make a content pack and add it- this part will change with the next update
             new Modules.ContentPacks().Initialize();
 
+            emoteAPILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.weliveinasociety.CustomEmotesAPI");
+            Log.Message("Emote API exists? "+emoteAPILoaded);
+
             Hook();
         }
 
@@ -66,6 +74,28 @@ namespace SonicTheHedgehog
         {
             // run hooks here, disabling one is as simple as commenting out the line
             On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
+            if (emoteAPILoaded)
+            {
+                EmoteSkeleton();
+            }
+        }
+
+        private void EmoteSkeleton()
+        {
+            //CustomEmotesAPI.CreateNameTokenSpritePair(DEVELOPER_PREFIX+"_SONIC_THE_HEDGEHOG_BODY_NAME", Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicEmoteIcon"));
+            On.RoR2.SurvivorCatalog.Init += (orig) =>
+            {
+                orig();
+                foreach (var item in SurvivorCatalog.allSurvivorDefs)
+                {
+                    if (item.bodyPrefab.name == "SonicTheHedgehog")
+                    {
+                        var skele = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicEmoteSupport.prefab");
+                        CustomEmotesAPI.ImportArmature(item.bodyPrefab, skele);
+                        skele.GetComponentInChildren<BoneMapper>().scale = 1f;
+                    }
+                }
+            };
         }
 
         private void CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

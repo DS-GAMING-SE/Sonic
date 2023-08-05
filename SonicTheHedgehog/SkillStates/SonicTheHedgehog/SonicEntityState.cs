@@ -4,6 +4,7 @@ using RoR2.Audio;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using EmotesAPI;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -11,6 +12,7 @@ namespace SonicTheHedgehog.SkillStates
     {
         private float idleExtraTimer;
         private int idleExtraCount;
+        private bool emoting = false;
         private const float idleExtraDefault=8;
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
@@ -37,6 +39,10 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.modelLocator.normalizeToFloor = true;
             }
+            if (SonicTheHedgehogPlugin.emoteAPILoaded)
+            {
+                EmoteAPI(true);
+            }
         }
 
         public override void OnExit()
@@ -45,6 +51,10 @@ namespace SonicTheHedgehog.SkillStates
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = false;
+            }
+            if (SonicTheHedgehogPlugin.emoteAPILoaded)
+            {
+                EmoteAPI(false);
             }
         }
 
@@ -58,7 +68,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private void IdleExtraAnimation()
         {
-            if (base.characterBody.inputBank.moveVector!=Vector3.zero || base.characterBody.inputBank.jump.down)
+            if (base.characterBody.inputBank.moveVector!=Vector3.zero || base.characterBody.inputBank.jump.down || emoting)
             {
                 idleExtraTimer = idleExtraDefault;
                 idleExtraCount = 0;
@@ -73,6 +83,23 @@ namespace SonicTheHedgehog.SkillStates
                     idleExtraTimer = idleExtraDefault*(idleExtraCount*1.5f);
                 }
             }
+        }
+
+        private void EmoteAPI(bool subscribe)
+        {
+            if (subscribe)
+            {
+                CustomEmotesAPI.animChanged += Emoting;
+            }
+            else
+            {
+                CustomEmotesAPI.animChanged -= Emoting;
+            }
+        }
+
+        private void Emoting(String anim, BoneMapper bones)
+        {
+            emoting = !anim.Equals("none");
         }
     }
 }

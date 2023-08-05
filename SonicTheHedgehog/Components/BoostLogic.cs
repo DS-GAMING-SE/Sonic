@@ -14,13 +14,18 @@ namespace SonicTheHedgehog.Components
     public class BoostLogic : NetworkBehaviour
     {
         public CharacterBody body;
+
         public float boostMeter;
         public float maxBoostMeter;
         public float boostRegen;
         public bool boostAvailable = true;
         public float predictedMeter;
+
         public bool boostDraining = false;
         public bool powerBoosting = false;
+
+        public bool boostExists = true;
+
         private const float baseMaxBoostMeter=100f;
         private const float boostMeterPerFlatReduction = 25f;
         private const float baseBoostRegen = 0.38f;
@@ -29,6 +34,8 @@ namespace SonicTheHedgehog.Components
         {
             body=GetComponent<CharacterBody>();
             body.characterMotor.onHitGroundAuthority += ResetAirBoost;
+            body.skillLocator.utility.onSkillChanged += OnSkillChanged;
+            BoostExists();
             CalculateBoostVariables();
             this.NetworkboostAvailable = true;
             this.NetworkboostMeter = maxBoostMeter;
@@ -36,38 +43,51 @@ namespace SonicTheHedgehog.Components
         
         public void FixedUpdate()
         {
-            PredictMeter();
-            if (NetworkServer.active)
+            if (boostExists)
             {
-                if (this.boostRegen >= Boost.boostMeterDrain || body.HasBuff(Buffs.superSonicBuff))
+                PredictMeter();
+                if (NetworkServer.active)
                 {
-                    this.AddBoost(maxBoostMeter);
-                }
-                else
-                {
-                    this.AddBoost(boostRegen);
+                    if (this.boostRegen >= Boost.boostMeterDrain || body.HasBuff(Buffs.superSonicBuff))
+                    {
+                        this.AddBoost(maxBoostMeter);
+                    }
+                    else
+                    {
+                        this.AddBoost(boostRegen);
+                    }
                 }
             }
         }
 
         public void CalculateBoostVariables()
         {
-            if (body)
+            if (body && boostExists)
             {
                 this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
                 this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
                 this.NetworkmaxBoostMeter = maxBoostMeter;
-                if (body.characterMotor.isGrounded && body.skillLocator.utility.stock != body.skillLocator.utility.maxStock && boostAvailable)
+                if ((body.characterMotor.isGrounded || (body.GetComponent<ICharacterFlightParameterProvider>().isFlying)) && body.skillLocator.utility.stock != body.skillLocator.utility.maxStock && boostAvailable)
                 {
                     body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
                 }
             }
         }
 
+        public void OnSkillChanged(GenericSkill skill)
+        {
+            BoostExists();
+        }
+
+        private void BoostExists()
+        {
+            boostExists = body.skillLocator.utility.activationState.stateType == typeof(Boost);
+        }
 
         private void OnDestroy()
         {
             body.characterMotor.onHitGroundAuthority -= ResetAirBoost;
+            body.skillLocator.utility.onSkillChanged -= OnSkillChanged;
         }
 
         [Server]
@@ -106,7 +126,7 @@ namespace SonicTheHedgehog.Components
 
         public void ResetAirBoost(ref CharacterMotor.HitGroundInfo hitGroundInfo)
         {
-            if (boostAvailable)
+            if (boostExists && boostAvailable)
             {
                 body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
             }

@@ -19,7 +19,7 @@ namespace SonicTheHedgehog.SkillStates
         public static float recoil = 0f;
         public static float range = 100f;
         public static float baseMovementReduction=0.3f;
-        public static float baseSuperMovementReduction=0.7f;
+        public static float baseSuperMovementReduction=0.85f;
         public static GameObject projectilePrefab;
         private static float offset = 0.4f;
 
@@ -43,6 +43,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void OnExit()
         {
+            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             base.OnExit();
         }
 
@@ -98,7 +99,8 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
             {
-                this.outer.SetNextState(new Boost());
+                //this.outer.SetNextState(EntityStateCatalog.InstantiateState(base.skillLocator.utility.activationState));
+                base.skillLocator.utility.OnExecute();
                 return;
             }
             if (base.fixedAge >= this.duration && base.isAuthority)
