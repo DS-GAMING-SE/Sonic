@@ -45,7 +45,7 @@ namespace SonicTheHedgehog.Modules
             string superSonicColor = "<color=#ffee00>";
             #region Passives
             LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_NAME", "Momentum");
-            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION", $"<style=cIsUtility>Build up speed</style> by running down hill to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier*100}% faster</style>. <style=cIsHealth>BUT lose speed by running up hill moving up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100)/3)}% slower.");
+            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION", $"<style=cIsUtility>Build up speed</style> by running down hill to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier*100}% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100)/3)}% slower.</style>");
             #endregion
 
             #region Primary

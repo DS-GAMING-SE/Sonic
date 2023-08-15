@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.SkillStates;
+using R2API;
 
 namespace SonicTheHedgehog.Components
 {

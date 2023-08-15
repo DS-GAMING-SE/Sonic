@@ -123,9 +123,13 @@ namespace SonicTheHedgehog.SkillStates
                     base.characterDirection.moveVector = this.forwardDirection;
                 }
             }
-            else if (base.isGrounded)
+            else
             {
-                base.characterBody.isSprinting = false;
+                boostLogic.boostDraining = false;
+                if (base.isGrounded)
+                {
+                    base.characterBody.isSprinting = false;
+                }
             }
 
             if (base.cameraTargetParams)

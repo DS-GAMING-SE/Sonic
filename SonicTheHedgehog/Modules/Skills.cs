@@ -13,7 +13,7 @@ namespace SonicTheHedgehog.Modules
     {
         #region genericskills
 
-        //static GenericSkill passiveFamily;
+        static GenericSkill passiveFamily;
         public static void CreateSkillFamilies(GameObject targetPrefab, bool destroyExisting = true)
         {
             if (destroyExisting)
@@ -26,7 +26,7 @@ namespace SonicTheHedgehog.Modules
 
             SkillLocator skillLocator = targetPrefab.GetComponent<SkillLocator>();
 
-            //passiveFamily = CreateGenericSkillWithSkillFamily(targetPrefab, "Misc");
+            passiveFamily = CreateGenericSkillWithSkillFamily(targetPrefab, "Misc");
             skillLocator.primary = CreateGenericSkillWithSkillFamily(targetPrefab, "Primary");
             skillLocator.secondary = CreateGenericSkillWithSkillFamily(targetPrefab, "Secondary");
             skillLocator.utility = CreateGenericSkillWithSkillFamily(targetPrefab, "Utility");
@@ -89,11 +89,11 @@ namespace SonicTheHedgehog.Modules
         {
             AddSkillsToFamily(targetPrefab.GetComponent<SkillLocator>().special.skillFamily, skillDefs);
         }
-        /*public static void AddMiscSkills(GameObject targetPrefab, params SkillDef[] skillDefs)
+        public static void AddMiscSkills(GameObject targetPrefab, params SkillDef[] skillDefs)
         {
             AddSkillsToFamily(passiveFamily.skillFamily, skillDefs);
         }
-        */
+        
 
         /// <summary>
         /// pass in an amount of unlockables equal to or less than skill variants, null for skills that aren't locked

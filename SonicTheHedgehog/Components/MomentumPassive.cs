@@ -39,8 +39,8 @@ namespace SonicTheHedgehog.Components
         {
             body = GetComponent<CharacterBody>();
             bodyStateMachine = EntityStateMachine.FindByCustomName(body.gameObject, "Body");
-            //MomentumEquipped();
-            //body.skillLocator.FindSkillByFamilyName("Misc").onSkillChanged += OnSkillChanged;
+            MomentumEquipped();
+            body.skillLocator.FindSkillByFamilyName("Misc").onSkillChanged += OnSkillChanged;
         }
 
         private void FixedUpdate()

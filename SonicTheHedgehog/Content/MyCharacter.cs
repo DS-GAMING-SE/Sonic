@@ -237,7 +237,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
 
             // PASSIVES
-            /*
+            
             #region
             SkillDef momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
@@ -265,7 +265,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef);
             #endregion
-            */
+            
         }
 
         private void MakeSuperSonicStuff()

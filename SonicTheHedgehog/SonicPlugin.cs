@@ -69,12 +69,15 @@ namespace SonicTheHedgehog
             emoteAPILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.weliveinasociety.CustomEmotesAPI");
             Log.Message("Emote API exists? "+emoteAPILoaded);
 
+            //On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; //Magic multiplayer line, COMMENT OUT BEFORE RELEASE
+
             Hook();
         }
 
         private void Hook()
         {
             // run hooks here, disabling one is as simple as commenting out the line
+            On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
             if (emoteAPILoaded)
             {
@@ -106,7 +109,6 @@ namespace SonicTheHedgehog
             {
                 if (self.HasBuff(Modules.Buffs.boostBuff))
                 {
-                    self.acceleration *= 6f;
                     if (!self.HasBuff(Modules.Buffs.superSonicBuff))
                     {
                         stats.moveSpeedMultAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
@@ -124,7 +126,6 @@ namespace SonicTheHedgehog
                     stats.attackSpeedMultAdd += StaticValues.superSonicAttackSpeed;
                     stats.damageMultAdd += StaticValues.superSonicBaseDamage;
                     stats.jumpPowerMultAdd += StaticValues.superSonicJumpHeight;
-                    self.acceleration *= 5;
                 }
 
                 if (self.HasBuff(Modules.Buffs.ballBuff))
@@ -150,6 +151,20 @@ namespace SonicTheHedgehog
                         stats.moveSpeedReductionMultAdd += (Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier / 3));
                     }
                 }
+            }
+        }
+        private void WhereIsRecalcStatAPIAcceleration(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+
+            if (self.HasBuff(Modules.Buffs.superSonicBuff))
+            {
+                self.acceleration *= 5;
+            }
+
+            if (self.HasBuff(Modules.Buffs.boostBuff))
+            {
+                self.acceleration *= 6f;
             }
         }
     }
