@@ -10,6 +10,8 @@ using IL.RoR2.UI;
 using UnityEngine;
 using EmotesAPI;
 using System.Runtime.CompilerServices;
+using R2API;
+using SonicTheHedgehog.Components;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -37,7 +39,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "0.2.0";
+        public const string MODVERSION = "0.4.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -73,7 +75,7 @@ namespace SonicTheHedgehog
         private void Hook()
         {
             // run hooks here, disabling one is as simple as commenting out the line
-            On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
+            RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
             if (emoteAPILoaded)
             {
                 EmoteSkeleton();
@@ -98,11 +100,8 @@ namespace SonicTheHedgehog
             };
         }
 
-        private void CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
         {
-            orig(self);
-
-            // a simple stat hook, adds armor after stats are recalculated
             if (self)
             {
                 if (self.HasBuff(Modules.Buffs.boostBuff))
@@ -110,33 +109,46 @@ namespace SonicTheHedgehog
                     self.acceleration *= 6f;
                     if (!self.HasBuff(Modules.Buffs.superSonicBuff))
                     {
-                        self.moveSpeed *= self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
-                        self.armor += StaticValues.boostArmor;
+                        stats.moveSpeedMultAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
+                        stats.armorAdd += StaticValues.boostArmor;
                     }
                     else
                     {
-                        self.moveSpeed *= StaticValues.superBoostSpeedCoefficient;
+                        stats.moveSpeedMultAdd += StaticValues.superBoostSpeedCoefficient;
                     }
                 }
 
                 if (self.HasBuff(Modules.Buffs.superSonicBuff))
                 {
-                    self.moveSpeed *= StaticValues.superSonicMovementSpeed;
-                    self.attackSpeed*=StaticValues.superSonicAttackSpeed;
-                    self.damage *= StaticValues.superSonicBaseDamage;
-                    self.jumpPower *= StaticValues.superSonicJumpHeight;
+                    stats.moveSpeedMultAdd += StaticValues.superSonicMovementSpeed;
+                    stats.attackSpeedMultAdd += StaticValues.superSonicAttackSpeed;
+                    stats.damageMultAdd += StaticValues.superSonicBaseDamage;
+                    stats.jumpPowerMultAdd += StaticValues.superSonicJumpHeight;
                     self.acceleration *= 5;
                 }
 
                 if (self.HasBuff(Modules.Buffs.ballBuff))
                 {
-                    self.armor += StaticValues.ballArmor;
+                    stats.armorAdd += StaticValues.ballArmor;
                 }
 
                 Components.BoostLogic boost = self.GetComponent<Components.BoostLogic>();
                 if (boost)
                 {
                     boost.CalculateBoostVariables();
+                }
+
+                MomentumPassive momentum = self.GetComponent<MomentumPassive>();
+                if (momentum && momentum.momentumEquipped)
+                {
+                    if (momentum.momentum >= 0)
+                    {
+                        stats.moveSpeedMultAdd += (momentum.momentum * MomentumPassive.speedMultiplier);
+                    }
+                    else
+                    {
+                        stats.moveSpeedReductionMultAdd += (Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier / 3));
+                    }
                 }
             }
         }

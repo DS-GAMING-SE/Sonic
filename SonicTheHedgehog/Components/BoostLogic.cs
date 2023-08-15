@@ -1,7 +1,4 @@
-﻿using EntityStates;
-using R2API;
-using RoR2;
-using RoR2.Audio;
+﻿using RoR2;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.SkillStates;
 using System;
@@ -13,18 +10,26 @@ namespace SonicTheHedgehog.Components
 {
     public class BoostLogic : NetworkBehaviour
     {
+        // I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING I HATE NETWORKING 
         public CharacterBody body;
 
+        [SyncVar(hook = nameof(OnBoostMeterChanged))]
         public float boostMeter;
+
+        [SyncVar]
         public float maxBoostMeter;
+
         public float boostRegen;
+
+        [SyncVar(hook = nameof(OnBoostAvailableChanged))]
         public bool boostAvailable = true;
+
         public float predictedMeter;
 
         public bool boostDraining = false;
         public bool powerBoosting = false;
 
-        public bool boostExists = true;
+        public bool boostExists;
 
         private const float baseMaxBoostMeter=100f;
         private const float boostMeterPerFlatReduction = 25f;
@@ -132,23 +137,26 @@ namespace SonicTheHedgehog.Components
             }
         }
 
-        private void OnBoostMeterChanged(float meter)
+        private void OnBoostMeterChanged(float newBoostMeter)
         {
-            predictedMeter = meter;
-            NetworkboostMeter = meter;
+            predictedMeter = newBoostMeter;
+            this.NetworkboostMeter = newBoostMeter;
         }
 
-        private void OnBoostAvailableChanged(bool available)
+        private void OnBoostAvailableChanged(bool newBoostAvailable)
         {
-            if (available)
+            if (body)
             {
-                body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+                if (newBoostAvailable)
+                {
+                    body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;
+                }
+                else
+                {
+                    body.skillLocator.utility.stock = 0;
+                }
             }
-            else
-            {
-                body.skillLocator.utility.stock = 0;
-            }
-            NetworkboostAvailable = available;
+            this.NetworkboostAvailable = newBoostAvailable;
         }
 
         private void PredictMeter()
@@ -159,11 +167,11 @@ namespace SonicTheHedgehog.Components
             }
             else
             {
-                predictedMeter = Mathf.Clamp(this.predictedMeter + (boostDraining ? -Boost.boostMeterDrain : boostRegen), 0, this.maxBoostMeter);
+                predictedMeter = Mathf.Clamp(this.predictedMeter + (boostDraining ? boostRegen-Boost.boostMeterDrain : boostRegen), 0, this.maxBoostMeter);
             }
         }
 
-        // I have no fucking clue how to network I am just copying viend and red mist
+        // I have no clue how to network I am just copying viend and red mist
         // now doing the one thing more dangerous than copying, trying to be original
         public float NetworkboostMeter
         {
@@ -177,7 +185,8 @@ namespace SonicTheHedgehog.Components
                 if (NetworkServer.localClientActive && !base.syncVarHookGuard)
                 {
                     base.syncVarHookGuard = true;
-                    OnBoostMeterChanged(value);
+                    this.OnBoostMeterChanged(value);
+                    //NetworkboostMeter = value;
                     base.syncVarHookGuard = false;
                 }
                 base.SetSyncVar<float>(value, ref this.boostMeter, 1U);
@@ -215,7 +224,8 @@ namespace SonicTheHedgehog.Components
                 if (NetworkServer.localClientActive && !base.syncVarHookGuard)
                 {
                     base.syncVarHookGuard = true;
-                    OnBoostAvailableChanged(value);
+                    this.OnBoostAvailableChanged(value);
+                    //NetworkboostAvailable = value;
                     base.syncVarHookGuard = false;
                 }
                 base.SetSyncVar<bool>(value, ref this.boostAvailable, 4U);
@@ -271,14 +281,17 @@ namespace SonicTheHedgehog.Components
             if (initialState)
             {
                 this.boostMeter = reader.ReadSingle();
+                //this.OnBoostMeterChanged(reader.ReadSingle());
                 this.maxBoostMeter = reader.ReadSingle();
                 this.boostAvailable = reader.ReadBoolean();
+                //this.OnBoostAvailableChanged(reader.ReadBoolean());
                 return;
             }
             int num = (int)reader.ReadPackedUInt32();
             if ((num & 1U) != 0U)
             {
-                this.boostMeter = reader.ReadSingle();
+                //this.boostMeter = reader.ReadSingle();
+                this.OnBoostMeterChanged(reader.ReadSingle());
             }
             if ((num & 2U) != 0U)
             {
@@ -286,8 +299,12 @@ namespace SonicTheHedgehog.Components
             }
             if ((num & 4U) != 0U)
             {
-                this.boostAvailable = reader.ReadBoolean();
+                //this.boostAvailable = reader.ReadBoolean();
+                this.OnBoostAvailableChanged(reader.ReadBoolean());
             }
+        }
+        private void UNetVersion()
+        {
         }
     }
 }

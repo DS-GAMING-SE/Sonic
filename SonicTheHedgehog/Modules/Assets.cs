@@ -27,6 +27,7 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject homingAttackHitEffect;
         internal static GameObject powerBoostFlashEffect;
         internal static GameObject boostFlashEffect;
+        internal static GameObject grandSlamHitEffect;
 
         internal static GameObject bombExplosionEffect;
 
@@ -126,6 +127,7 @@ namespace SonicTheHedgehog.Modules
             homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", true);
             powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
+            grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
         }
 
         private static GameObject CreateTracer(string originalTracerName, string newTracerName)

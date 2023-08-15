@@ -68,7 +68,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private void IdleExtraAnimation()
         {
-            if (base.characterBody.inputBank.moveVector!=Vector3.zero || base.characterBody.inputBank.jump.down || emoting)
+            if (base.characterBody.inputBank.moveVector!=Vector3.zero || !base.characterMotor.isGrounded || base.characterBody.inputBank.jump.down || emoting)
             {
                 idleExtraTimer = idleExtraDefault;
                 idleExtraCount = 0;
@@ -76,7 +76,7 @@ namespace SonicTheHedgehog.SkillStates
             else
             {
                 idleExtraTimer -= Time.fixedDeltaTime;
-                if (idleExtraTimer<=0 && base.characterMotor.isGrounded)
+                if (idleExtraTimer<=0)
                 {
                     base.PlayAnimation("Body", "IdleExtra");
                     idleExtraCount += 1;

@@ -1,6 +1,8 @@
 ﻿using EntityStates;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Survivors;
 using SonicTheHedgehog.SkillStates;
 using System;
 using UnityEngine;

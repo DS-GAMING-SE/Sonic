@@ -33,9 +33,9 @@ namespace SonicTheHedgehog.Modules
 
         // Boost
 
-        internal const float boostSpeedCoefficient = 1.35f;
+        internal const float boostSpeedCoefficient = 0.35f;
 
-        internal const float powerBoostSpeedCoefficient = 1.65f;
+        internal const float powerBoostSpeedCoefficient = 0.65f;
 
         internal const float boostArmor = 50f;
         
@@ -49,13 +49,13 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superSonicDuration = 50f;
         
-        internal const float superSonicMovementSpeed = 1.8f;
+        internal const float superSonicMovementSpeed = 0.8f;
 
-        internal const float superSonicAttackSpeed = 1.3f;
+        internal const float superSonicAttackSpeed = 0.3f;
 
-        internal const float superSonicBaseDamage = 1.7f;
+        internal const float superSonicBaseDamage = 0.7f;
 
-        internal const float superSonicJumpHeight = 1.5f;
+        internal const float superSonicJumpHeight = 0.5f;
 
         // Super Melee
 

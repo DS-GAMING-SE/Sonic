@@ -102,8 +102,6 @@ namespace SonicTheHedgehog.SkillStates
 
             UpdatePowerBoosting();
 
-            //ProcessJump();
-
             if (Moving())
             {
                 if (!base.HasBuff(Modules.Buffs.superSonicBuff))

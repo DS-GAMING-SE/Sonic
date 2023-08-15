@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using RoR2;
+using SonicTheHedgehog.Modules;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -60,15 +61,18 @@ namespace SonicTheHedgehog.SkillStates
                 projectilePrefab = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? Modules.Projectiles.superSonicBoomPrefab : Modules.Projectiles.sonicBoomPrefab;
                 Quaternion direction = Util.QuaternionSafeLookRotation(base.GetAimRay().direction);
                 Vector3 up = direction * Vector3.up;
-                if (firedCounter==1)
+                if (!base.characterBody.HasBuff(Buffs.superSonicBuff))
                 {
-                    Vector3 right = direction * Vector3.right;
-                    up = Vector3.RotateTowards(up, right, offset, 1);
-                }
-                else
-                {
-                    Vector3 left = direction * Vector3.left;
-                    up = Vector3.RotateTowards(up, left, offset, 1);
+                    if (firedCounter == 1)
+                    {
+                        Vector3 right = direction * Vector3.right;
+                        up = Vector3.RotateTowards(up, right, offset, 1);
+                    }
+                    else
+                    {
+                        Vector3 left = direction * Vector3.left;
+                        up = Vector3.RotateTowards(up, left, offset, 1);
+                    }
                 }
                 direction= Util.QuaternionSafeLookRotation(base.GetAimRay().direction,up);
 
@@ -99,7 +103,6 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
             {
-                //this.outer.SetNextState(EntityStateCatalog.InstantiateState(base.skillLocator.utility.activationState));
                 base.skillLocator.utility.OnExecute();
                 return;
             }

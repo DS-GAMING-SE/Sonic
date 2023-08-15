@@ -17,7 +17,7 @@ namespace SonicTheHedgehog.SkillStates
         protected float damageCoefficient = Modules.StaticValues.grandSlamFinalDamageCoefficient;
         protected float procCoefficient = 1.5f;
         protected float basePushForce = 3000f;
-        protected float superPushForce = 9000f;
+        protected float superPushForce = 11000f;
         protected Vector3 bonusForce = Vector3.down;
         protected float attackRecoil = 11f;
         protected float startUpTime = 0.5f;
@@ -32,7 +32,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected string swingSoundString = "";
         protected string hitSoundString = "";
-        protected string muzzleString = "SwingCenter";
+        protected string muzzleString = "SwingBottom";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
         protected NetworkSoundEventIndex impactSound;
@@ -51,6 +51,7 @@ namespace SonicTheHedgehog.SkillStates
         private Vector3 storedVelocity;
         private float speedMultiplier;
         private bool animationEnded=false;
+        private bool effectFired = false;
 
         public override void OnEnter()
         {
@@ -97,7 +98,12 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void OnHitEnemyAuthority()
         {
-            Util.PlaySound(this.hitSoundString, base.gameObject);
+            if (!effectFired)
+            {
+                Util.PlaySound(this.hitSoundString, base.gameObject);
+                EffectManager.SimpleMuzzleFlash(Modules.Assets.grandSlamHitEffect, base.gameObject, this.muzzleString, true);
+                effectFired = true;
+            }
             base.characterMotor.velocity = Vector3.up * 9f;
             this.hasHit = true;
             this.stopwatch = 0f;
@@ -154,7 +160,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     if (fixedAge <= this.startUpTime)
                     {
-                        base.characterMotor.velocity = base.characterBody.HasBuff(Buffs.superSonicBuff) ? Vector3.up * (Mathf.Lerp(100f, 20f, fixedAge / this.startUpTime)) : Vector3.up*(Mathf.Lerp(60f,3f,fixedAge/this.startUpTime));
+                        base.characterMotor.velocity = base.characterBody.HasBuff(Buffs.superSonicBuff) ? Vector3.up * (Mathf.Lerp(110f, 10f, fixedAge / this.startUpTime)) : Vector3.up*(Mathf.Lerp(60f,3f,fixedAge/this.startUpTime));
                     }
                     else if (fixedAge <= this.startUpTime+this.maxAttackTime)
                     {   
@@ -241,25 +247,6 @@ namespace SonicTheHedgehog.SkillStates
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return hasHit ? InterruptPriority.Skill : InterruptPriority.Frozen;
-        }
-
-        public override void OnSerialize(NetworkWriter writer)
-        {
-            base.OnSerialize(writer);
-            writer.Write(this.target);
-        }
-
-        public override void OnDeserialize(NetworkReader reader)
-        {
-            base.OnDeserialize(reader);
-            if (reader.ReadHurtBoxReference().ResolveHurtBox() != null)
-            {
-                this.target = reader.ReadHurtBoxReference().ResolveHurtBox();
-            }
-            else
-            {
-                this.target = null;
-            }
         }
     }
 }

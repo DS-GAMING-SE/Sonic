@@ -12,7 +12,7 @@ namespace SonicTheHedgehog.Modules.Achievements
         //the token of your character's unlock achievement if you have one
         public override string PrerequisiteUnlockableIdentifier => SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_UNLOCKABLE_REWARD_ID";
 
-        public override string RequiredCharacterBody => "HenryBody";
+        public override string RequiredCharacterBody => "SonicTheHedgehog";
         //difficulty coeff 3 is monsoon. 3.5 is typhoon for grandmastery skins
         public override float RequiredDifficultyCoefficient => 3;
     }

@@ -46,6 +46,7 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
+        private bool effectFired;
 
         public override void OnEnter()
         {
@@ -79,7 +80,13 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void OnHitEnemyAuthority()
         {
-             Util.PlaySound(this.hitSoundString, base.gameObject);
+            if (!effectFired)
+            {
+                Util.PlaySound(this.hitSoundString, base.gameObject);
+                Quaternion direction = Quaternion.Lerp(Util.QuaternionSafeLookRotation(base.characterDirection.forward), Util.QuaternionSafeLookRotation(Vector3.up, base.characterDirection.forward*-1),0.6f);
+                EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, direction, true);
+                effectFired = true;
+            }
         }
 
         private void FireAttack()
@@ -129,6 +136,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public void PrepareOverlapAttack()
         {
+            effectFired = false;
             HitBoxGroup hitBoxGroup = null;
             Transform modelTransform = base.GetModelTransform();
 
@@ -155,25 +163,6 @@ namespace SonicTheHedgehog.SkillStates
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.Frozen;
-        }
-
-        public override void OnSerialize(NetworkWriter writer)
-        {
-            base.OnSerialize(writer);
-            writer.Write(this.target);
-        }
-
-        public override void OnDeserialize(NetworkReader reader)
-        {
-            base.OnDeserialize(reader);
-            if (reader.ReadHurtBoxReference().ResolveHurtBox() != null)
-            {
-                this.target = reader.ReadHurtBoxReference().ResolveHurtBox();
-            }
-            else
-            {
-                this.target = null;
-            }
         }
     }
 }

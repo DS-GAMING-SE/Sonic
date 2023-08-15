@@ -1,5 +1,7 @@
 ﻿using R2API;
+using SonicTheHedgehog.Components;
 using System;
+using UnityEngine;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -41,9 +43,9 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             string superSonicColor = "<color=#ffee00>";
-            #region Passive
-            LanguageAPI.Add(prefix + "PASSIVE_NAME", "Sonic passive");
-            LanguageAPI.Add(prefix + "PASSIVE_DESCRIPTION", "I got plans for super forms and chaos emeralds and stuff that'll be a part of Sonic's passive, but I probably won't get to that for a while :)");
+            #region Passives
+            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_NAME", "Momentum");
+            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION", $"<style=cIsUtility>Build up speed</style> by running down hill to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier*100}% faster</style>. <style=cIsHealth>BUT lose speed by running up hill moving up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100)/3)}% slower.");
             #endregion
 
             #region Primary
@@ -69,12 +71,12 @@ namespace SonicTheHedgehog.Modules
 
             #region Utility
             LanguageAPI.Add(prefix + "UTILITY_BOOST_NAME", "Boost");
-            LanguageAPI.Add(prefix + "UTILITY_BOOST_DESCRIPTION", $"Spend boost meter to <style=cIsUtility>move {(100f * StaticValues.boostSpeedCoefficient)-100}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {(100f * StaticValues.powerBoostSpeedCoefficient) - 100}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.");
+            LanguageAPI.Add(prefix + "UTILITY_BOOST_DESCRIPTION", $"Spend boost meter to <style=cIsUtility>move {100f * StaticValues.boostSpeedCoefficient}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {100f * StaticValues.powerBoostSpeedCoefficient}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.");
             #endregion
 
             #region Super Utility
             LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_NAME", $"{superSonicColor}Super Boost</color>");
-            LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_DESCRIPTION", $"<style=cIsUtility>Move {superSonicColor}{(100f * StaticValues.superBoostSpeedCoefficient) - 100}%</color> faster</style> than normal.");
+            LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_DESCRIPTION", $"<style=cIsUtility>Move {superSonicColor}{100f * StaticValues.superBoostSpeedCoefficient}%</color> faster</style> than normal.");
             #endregion
 
             #region Special
@@ -90,7 +92,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Special #2
             LanguageAPI.Add(prefix + "SPECIAL_SUPER_TRANSFORMATION_NAME", $"{superSonicColor}Super Sonic</color>");
-            LanguageAPI.Add(prefix + "SPECIAL_SUPER_TRANSFORMATION_DESCRIPTION", $"Transform into {superSonicColor}Super Sonic</color> for {Modules.StaticValues.superSonicDuration} seconds. {superSonicColor}Upgrades all of your skills</color>. Increases <style=cIsDamage>damage</style> by <style=cIsDamage>+{(100f * StaticValues.superSonicBaseDamage) - 100}%</style>. Increases <style=cIsDamage>attack speed</style> by <style=cIsDamage>+{(100f * StaticValues.superSonicAttackSpeed) - 100}%</style>. Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>+{(100f * StaticValues.superSonicMovementSpeed) - 100}%</style>. Gain <style=cIsHealing>complete invincibility</style> and <style=cIsUtility>flight</style>." + Environment.NewLine + Environment.NewLine + "This can only be used once per stage.");
+            LanguageAPI.Add(prefix + "SPECIAL_SUPER_TRANSFORMATION_DESCRIPTION", $"Transform into {superSonicColor}Super Sonic</color> for {Modules.StaticValues.superSonicDuration} seconds. {superSonicColor}Upgrades all of your skills</color>. Increases <style=cIsDamage>damage</style> by <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}%</style>. Increases <style=cIsDamage>attack speed</style> by <style=cIsDamage>+{100f * StaticValues.superSonicAttackSpeed}%</style>. Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}%</style>. Gain <style=cIsHealing>complete invincibility</style> and <style=cIsUtility>flight</style>." + Environment.NewLine + Environment.NewLine + "This can only be used once per stage.");
             #endregion
 
             #region Achievements

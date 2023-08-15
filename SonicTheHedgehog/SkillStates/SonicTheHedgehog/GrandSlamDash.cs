@@ -13,6 +13,8 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class GrandSlamDash : BaseSkillState
     {
+        // WHY ARE ALL THE GRAND SLAM SKILL STATES JUST NOT NETWORKED?!?!?!?!!? HUHH?!?!?!?!??!?!?!
+        
         protected string hitboxName = "Ball";
 
         protected DamageType damageType = DamageType.Stun1s | DamageType.NonLethal;
@@ -102,7 +104,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
-            //base.characterBody.bodyFlags -= CharacterBody.BodyFlags.IgnoreFallDamage;
             base.PlayAnimation("FullBody, Override", "BufferEmpty");
             if (NetworkServer.active)
             {
@@ -116,9 +117,13 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void OnHitEnemyAuthority()
         {
-             Util.PlaySound(this.hitSoundString, base.gameObject);
-             hasHit = true;     
-             SetNextState();
+            Util.PlaySound(this.hitSoundString, base.gameObject);
+            if (!hasHit)
+            {
+                hasHit= true;
+                EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+            }    
+            SetNextState();
         }
 
         private void FireAttack()
@@ -159,12 +164,6 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.characterMotor.velocity = Vector3.Lerp(base.characterMotor.velocity, Vector3.zero, fixedAge/(this.attackStartTime * 0.6f));
                 }
-                //else if (!dashCalced)
-                //{
-                //    dashCalced= true;
-                //    this.dashSpeed = (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 5;
-                //    this.maxDashRange = 15f + (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 2f;
-                //}
                 else if (fixedAge < this.estimatedDashTime+this.attackStartTime && fixedAge > this.attackStartTime)
                 {
                     if (this.target != null)
@@ -183,7 +182,6 @@ namespace SonicTheHedgehog.SkillStates
                 if (fixedAge>this.estimatedDashTime+this.attackStartTime)
                 {
                     base.characterMotor.velocity = Vector3.zero;
-                    base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
                     this.outer.SetNextStateToMain();
                     return;
                 }
@@ -230,26 +228,6 @@ namespace SonicTheHedgehog.SkillStates
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.PrioritySkill;
-        }
-
-        public override void OnSerialize(NetworkWriter writer)
-        {
-            base.OnSerialize(writer);
-            writer.Write(this.target);
-        }
-
-        public override void OnDeserialize(NetworkReader reader)
-        {
-            base.OnDeserialize(reader);
-            if (reader.ReadHurtBoxReference().ResolveHurtBox()!=null)
-            {
-                this.target = reader.ReadHurtBoxReference().ResolveHurtBox();
-            }
-            else
-            {
-                this.target = null;
-            }
-            
         }
     }
 }

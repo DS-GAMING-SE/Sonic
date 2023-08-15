@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using R2API;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
@@ -63,6 +64,7 @@ namespace SonicTheHedgehog.SkillStates
         private Vector3 storedVelocity;
         private bool animationEnded=false;
         private ICharacterFlightParameterProvider flight;
+        private bool effectPlayed = false;
 
         public override void OnEnter()
         {
@@ -92,7 +94,7 @@ namespace SonicTheHedgehog.SkillStates
             sphereSearch.RefreshCandidates();
             sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
 
-            if (search.GetResults().Any()&&!sphereSearch.GetHurtBoxes().Any())
+            if (search.GetResults().Any()&&!sphereSearch.GetHurtBoxes().Any()) // Homing Attack
             {
                 if (NetworkServer.active)
                 {
@@ -125,7 +127,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.PlayAnimation("FullBody, Override", "Ball");
                 base.characterMotor.disableAirControlUntilCollision = false;
             }
-            else
+            else // Normal Melee
             {
                 
                 this.hitboxName = "Sword";
@@ -179,7 +181,6 @@ namespace SonicTheHedgehog.SkillStates
             if (base.characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreFallDamage))
             {
                 base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
-                //base.characterBody.bodyFlags -= CharacterBody.BodyFlags.IgnoreFallDamage;
             }
             base.OnExit();
 
@@ -201,8 +202,12 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (homingAttack)
             {
-                Util.PlaySound(this.hitSoundString, base.gameObject);
-                PlayHomingAttackHitEffect();
+                if (!effectPlayed)
+                {
+                    Util.PlaySound(this.hitSoundString, base.gameObject);
+                    PlayHomingAttackHitEffect();
+                    effectPlayed = true;
+                }
 
                 if (base.characterMotor)
                 {
@@ -228,8 +233,12 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
-                Util.PlaySound(this.hitSoundString, base.gameObject);
-                PlaySwingEffect();
+                if (!effectPlayed)
+                {
+                    Util.PlaySound(this.hitSoundString, base.gameObject);
+                    PlaySwingEffect();
+                    effectPlayed = true;
+                }
                 if (!this.hasHopped)
                 {
                     if (base.characterMotor && !base.characterMotor.isGrounded && this.hitHopVelocity > 0f)
@@ -365,7 +374,7 @@ namespace SonicTheHedgehog.SkillStates
                         {
                             targetDirection = this.target.transform.position - base.transform.position;
                         }
-                        base.characterMotor.velocity = targetDirection.normalized * homingAttackSpeed;
+                        base.characterMotor.velocity = targetDirection.normalized * this.homingAttackSpeed;
                         base.characterDirection.forward = targetDirection.normalized;
                         if (fixedAge>this.estimatedHomingAttackTime/2.5f)
                         {
@@ -404,7 +413,6 @@ namespace SonicTheHedgehog.SkillStates
 
                 if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
                 {
-                    //this.outer.SetNextState(EntityStateCatalog.InstantiateState(base.skillLocator.utility.activationState));
                     cancelled = true;
                     base.skillLocator.utility.OnExecute();
                     return;

@@ -99,16 +99,13 @@ namespace SonicTheHedgehog.Modules.Survivors
             string prefix = SonicTheHedgehogPlugin.DEVELOPER_PREFIX;
 
             bodyPrefab.AddComponent<Components.BoostLogic>();
+            bodyPrefab.AddComponent<Components.MomentumPassive>();
 
-            EntityStateMachine superSonicState = bodyPrefab.AddComponent<EntityStateMachine>();
-            superSonicState.customName = "SonicForms";
-            superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
+            MakeSuperSonicStuff();
+
+            bodyPrefab.AddComponent<Components.SuperSonicComponent>().superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
-
-            bodyPrefab.AddComponent<Components.SuperSonicComponent>().superSonicMaterial= Materials.CreateHopooMaterial("matSuperSonic");
-
-            bodyPrefab.GetComponent<CharacterBody>().bodyFlags |= CharacterBody.BodyFlags.SprintAnyDirection;
 
             #region Primary
             //Creates a skilldef for a typical primary 
@@ -234,6 +231,54 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
             #endregion
+
+
+
+
+
+            // PASSIVES
+            /*
+            #region
+            SkillDef momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            {
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_DESCRIPTION",
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMomentumIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicEntityState)),
+                activationStateMachineName = "Body",
+                baseMaxStock = 1,
+                baseRechargeInterval = 0f,
+                beginSkillCooldownOnSkillEnd = false,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = false,
+                interruptPriority = EntityStates.InterruptPriority.Any,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = false,
+                mustKeyPress = false,
+                cancelSprintingOnActivation = false,
+                rechargeStock = 1,
+                requiredStock = 1,
+                stockToConsume = 1,
+            });
+
+            Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef);
+            #endregion
+            */
+        }
+
+        private void MakeSuperSonicStuff()
+        {
+            EntityStateMachine superSonicState = bodyPrefab.AddComponent<EntityStateMachine>();
+            superSonicState.customName = "SonicForms";
+            superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
+
+
+            bodyPrefab.AddComponent<Components.SuperSonicComponent>().superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+
+            //NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
+            //Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
         }
 
         internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
