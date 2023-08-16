@@ -31,7 +31,7 @@ namespace SonicTheHedgehog.SkillStates
         protected Vector3 targetDirection;
 
         protected string swingSoundString = "";
-        protected string hitSoundString = "";
+        protected string hitSoundString = "Play_strong_impact";
         protected string muzzleString = "SwingBottom";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;

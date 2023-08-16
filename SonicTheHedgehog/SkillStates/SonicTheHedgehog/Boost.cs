@@ -20,7 +20,8 @@ namespace SonicTheHedgehog.SkillStates
         public static float airBoostY = 8;
         public static float screenShake = 3.5f;
 
-        public static string dodgeSoundString = "HenryRoll";
+        private string jumpSoundString = "Play_jump";
+        public static string dodgeSoundString = "Play_boost";
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
 
         private Vector3 forwardDirection;
@@ -31,6 +32,10 @@ namespace SonicTheHedgehog.SkillStates
 
         public bool powerBoosting = false;
 
+        private bool boosting = false;
+
+        private bool checkBoostEffects = false;
+        private bool playBoostEffects = true;
 
         public override void OnEnter()
         {
@@ -72,18 +77,21 @@ namespace SonicTheHedgehog.SkillStates
                         base.characterMotor.velocity.y = Mathf.Max(airBoostY, base.characterMotor.velocity.y);
                     }
                     base.PlayCrossfade("Body", "AirBoost", "Roll.playbackRate", duration, duration/3);
+                    boosting = true;
+                    OnBoostingChanged();
                 }
                 if (!Flying())
                 {
                     base.skillLocator.utility.DeductStock(1);
                 }
-                Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
             }
             else
             {
                 if (base.inputBank.moveVector!=Vector3.zero)
                 {
                     base.PlayCrossfade("Body", "Boost", 0.1f);
+                    boosting = true;
+                    OnBoostingChanged();
                 }
                 else
                 {
@@ -100,7 +108,13 @@ namespace SonicTheHedgehog.SkillStates
 
             boostEffectCooldown -= Time.fixedDeltaTime;
 
+            UpdateBoosting();
             UpdatePowerBoosting();
+            if (checkBoostEffects)
+            {
+                checkBoostEffects = false;
+                PlayBoostEffects(playBoostEffects);
+            }
 
             if (Moving())
             {
@@ -169,16 +183,34 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (!powerBoosting && base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving())
             {
-                base.characterBody.RecalculateStats();
+                //base.characterBody.RecalculateStats();
+                base.characterBody.MarkAllStatsDirty();
                 powerBoosting = true;
                 OnPowerBoostChanged();
                 return;
             }
             if (powerBoosting && (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth < 0.9f || !Moving()))
             {
-                base.characterBody.RecalculateStats();
+                //base.characterBody.RecalculateStats();
+                base.characterBody.MarkAllStatsDirty();
                 powerBoosting = false;
                 OnPowerBoostChanged();
+                return;
+            }
+        }
+
+        private void UpdateBoosting()
+        {
+            if (!boosting && Moving())
+            {
+                boosting = true;
+                OnBoostingChanged();
+                return;
+            }
+            if (boosting && !Moving())
+            {
+                boosting = false;
+                OnBoostingChanged();
                 return;
             }
         }
@@ -190,10 +222,53 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (boostEffectCooldown <= 0 && base.isAuthority)
                 {
+                    checkBoostEffects = true;
+                    playBoostEffects = true;
+                }
+                else if (temporaryOverlay)
+                {
+                    temporaryOverlay.AddToCharacerModel(base.GetModelTransform().GetComponent<CharacterModel>());
+                }
+            }
+            else
+            {
+                if (boostEffectCooldown <= 0 && boosting && base.isAuthority)
+                {
+                    checkBoostEffects = true;
+                    playBoostEffects = true;
+                }
+                else
+                {
+                    checkBoostEffects = true;
+                    playBoostEffects = false;
+                }
+            }
+        }
+
+        private void OnBoostingChanged()
+        {
+            if (boostEffectCooldown <= 0 && boosting && base.isAuthority)
+            {
+                checkBoostEffects = true;
+                playBoostEffects = true;
+            }
+            else
+            {
+                checkBoostEffects = true;
+                playBoostEffects = false;
+            }
+        }
+
+        private void PlayBoostEffects(bool play)
+        {
+            if (play)
+            {
+                if (powerBoosting)
+                {
                     boostEffectCooldown = 0.6f;
 
                     base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
-
+                    Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
                     EffectManager.SimpleMuzzleFlash(Assets.powerBoostFlashEffect, base.gameObject, "BallHitbox", true);
 
                     if (temporaryOverlay)
@@ -213,9 +288,13 @@ namespace SonicTheHedgehog.SkillStates
                         temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());
                     }
                 }
-                else if (temporaryOverlay)
+                else
                 {
-                    temporaryOverlay.AddToCharacerModel(base.GetModelTransform().GetComponent<CharacterModel>());
+                    boostEffectCooldown = 0.6f;
+
+                    base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
+                    Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
+                    EffectManager.SimpleMuzzleFlash(Assets.boostFlashEffect, base.gameObject, "BallHitbox", true);
                 }
             }
             else
@@ -223,14 +302,6 @@ namespace SonicTheHedgehog.SkillStates
                 if (temporaryOverlay)
                 {
                     temporaryOverlay.RemoveFromCharacterModel();
-                }
-                if (boostEffectCooldown <= 0 && Moving() && base.isAuthority)
-                {
-                    boostEffectCooldown = 0.6f;
-
-                    base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
-
-                    EffectManager.SimpleMuzzleFlash(Assets.boostFlashEffect, base.gameObject, "BallHitbox", true);
                 }
             }
         }
@@ -243,11 +314,21 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+        public override void ProcessJump()
+        {
+            base.ProcessJump();
+            if (this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
+            {
+                Util.PlaySound(jumpSoundString, base.gameObject);
+            }
+        }
+
         public override void OnExit()
         {
             base.GetModelAnimator().SetBool("isBoosting", false);
             boostLogic.boostDraining = false;
             boostLogic.powerBoosting = false;
+            boosting = false;
             if (base.cameraTargetParams) base.cameraTargetParams.fovOverride = -1f;
             if (base.modelLocator)
             {

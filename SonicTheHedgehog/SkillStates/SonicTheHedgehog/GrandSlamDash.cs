@@ -35,7 +35,8 @@ namespace SonicTheHedgehog.SkillStates
         protected HurtBox target;
         private Vector3 targetDirection;
 
-        protected string swingSoundString = "";
+        protected string chargeSoundString = "Play_spindash_charge";
+        protected string launchSoundString = "Play_spindash_release";
         protected string hitSoundString = "";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
@@ -86,7 +87,10 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority)
             {
                 base.characterMotor.Motor.ForceUnground();
-                Util.PlaySound("HenryRoll", base.gameObject);
+                if (this.attackStartTime>=0.2f)
+                {
+                    Util.PlayAttackSpeedSound(this.chargeSoundString, base.gameObject, base.attackSpeedStat);
+                }
             }
             EndChrysalis();
             this.estimatedDashTime = (targetDirection.magnitude / dashSpeed) * dashOvershoot;
@@ -174,6 +178,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         hasFired = true;
                         EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+                        Util.PlaySound(launchSoundString, base.gameObject);
                     }
                     base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
                     base.characterDirection.forward = targetDirection.normalized;

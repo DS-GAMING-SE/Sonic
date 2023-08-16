@@ -13,7 +13,8 @@ namespace SonicTheHedgehog.Modules
     {
         #region genericskills
 
-        static GenericSkill passiveFamily;
+        public static GenericSkill passiveFamily;
+        public static GenericSkill transformFamily;
         public static void CreateSkillFamilies(GameObject targetPrefab, bool destroyExisting = true)
         {
             if (destroyExisting)
@@ -26,11 +27,13 @@ namespace SonicTheHedgehog.Modules
 
             SkillLocator skillLocator = targetPrefab.GetComponent<SkillLocator>();
 
+
             passiveFamily = CreateGenericSkillWithSkillFamily(targetPrefab, "Misc");
             skillLocator.primary = CreateGenericSkillWithSkillFamily(targetPrefab, "Primary");
             skillLocator.secondary = CreateGenericSkillWithSkillFamily(targetPrefab, "Secondary");
             skillLocator.utility = CreateGenericSkillWithSkillFamily(targetPrefab, "Utility");
             skillLocator.special = CreateGenericSkillWithSkillFamily(targetPrefab, "Special");
+            transformFamily = CreateGenericSkillWithSkillFamily(targetPrefab, "Transformation", true);
         }
 
         public static GenericSkill CreateGenericSkillWithSkillFamily(GameObject targetPrefab, string familyName, bool hidden = false)
@@ -93,7 +96,11 @@ namespace SonicTheHedgehog.Modules
         {
             AddSkillsToFamily(passiveFamily.skillFamily, skillDefs);
         }
-        
+        public static void AddTransformSkills(GameObject targetPrefab, params SkillDef[] skillDefs)
+        {
+            AddSkillsToFamily(transformFamily.skillFamily, skillDefs);
+        }
+
 
         /// <summary>
         /// pass in an amount of unlockables equal to or less than skill variants, null for skills that aren't locked

@@ -11,11 +11,12 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class Death : GenericCharacterDeath
     {
-        
+        protected string soundString = "Play_death";
         private const float destroyTime=1.6f;
         public override void OnEnter()
         {
             base.OnEnter();
+            Util.PlaySound(soundString, base.gameObject);
             cameraTargetParams.cameraPivotTransform = base.gameObject.transform;
         }
 

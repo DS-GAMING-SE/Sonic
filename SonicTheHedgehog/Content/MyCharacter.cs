@@ -93,6 +93,15 @@ namespace SonicTheHedgehog.Modules.Survivors
             Modules.Prefabs.SetupHitbox(prefabCharacterModel.gameObject, hitboxTransform, "Stomp");
         }
 
+        public static SkillDef primarySkillDef;
+        public static SkillDef sonicBoomSkillDef;
+        public static SkillDef boostSkillDef;
+        public static SkillDef grandSlamSkillDef;
+
+        public static SkillDef superSonicSkillDef;
+
+        public static SkillDef momentumPassiveDef;
+
         public override void InitializeSkills()
         {
             Modules.Skills.CreateSkillFamilies(bodyPrefab);
@@ -109,7 +118,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #region Primary
             //Creates a skilldef for a typical primary 
-            SkillDef primarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo(prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_SLASH_NAME",
+            primarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo(prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_SLASH_NAME",
                                                                                       prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_SLASH_DESCRIPTION",
                                                                                       Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
                                                                                       new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMelee)),
@@ -121,7 +130,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             #endregion
 
             #region Secondary
-            SkillDef shootSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            sonicBoomSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME",
@@ -145,11 +154,11 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Modules.Skills.AddSecondarySkills(bodyPrefab, shootSkillDef);
+            Modules.Skills.AddSecondarySkills(bodyPrefab, sonicBoomSkillDef);
             #endregion
 
             #region Utility
-            SkillDef rollSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            boostSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
@@ -173,11 +182,11 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 0
             });
 
-            Modules.Skills.AddUtilitySkills(bodyPrefab, rollSkillDef);
+            Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
             #endregion
 
             #region Special
-            SkillDef bombSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            grandSlamSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_BOMB_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_BOMB_NAME",
@@ -201,11 +210,11 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1
             });
 
-            Modules.Skills.AddSpecialSkills(bodyPrefab, bombSkillDef);
+            Modules.Skills.AddSpecialSkills(bodyPrefab, grandSlamSkillDef);
             #endregion
 
             #region Special #2
-            SkillDef superSonicSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            superSonicSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
@@ -229,7 +238,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1
             });
 
-            //Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
+            Modules.Skills.AddTransformSkills(bodyPrefab, superSonicSkillDef);
             #endregion
 
 
@@ -239,7 +248,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             // PASSIVES
             
             #region
-            SkillDef momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_NAME",

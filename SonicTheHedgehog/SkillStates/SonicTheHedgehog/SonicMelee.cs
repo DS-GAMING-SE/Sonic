@@ -46,6 +46,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected string swingSoundString = "";
         protected string hitSoundString = "";
+        protected string homingAttackSoundString = "Play_homing_attack";
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
@@ -113,7 +114,7 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 if (base.isAuthority)
                 {
-                    Util.PlaySound("HenryRoll", base.gameObject);
+                    Util.PlaySound(homingAttackSoundString, base.gameObject);
                     base.characterMotor.Motor.ForceUnground();
                     if (targetDirection!=Vector3.zero)
                     {

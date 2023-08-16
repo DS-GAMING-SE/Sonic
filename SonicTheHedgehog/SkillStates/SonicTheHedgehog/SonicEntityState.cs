@@ -12,8 +12,12 @@ namespace SonicTheHedgehog.SkillStates
     {
         private float idleExtraTimer;
         private int idleExtraCount;
+
         private bool emoting = false;
+
         private const float idleExtraDefault=8;
+
+        private string jumpSoundString = "Play_jump";
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
         {
@@ -43,6 +47,15 @@ namespace SonicTheHedgehog.SkillStates
             {
                 EmoteAPI(true);
             }
+        }
+
+        public override void ProcessJump()
+        {
+            base.ProcessJump();
+            if (this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
+            {
+                Util.PlaySound(jumpSoundString, base.gameObject);
+            }    
         }
 
         public override void OnExit()
