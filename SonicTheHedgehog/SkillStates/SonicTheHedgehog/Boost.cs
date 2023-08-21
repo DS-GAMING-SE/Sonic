@@ -21,7 +21,8 @@ namespace SonicTheHedgehog.SkillStates
         public static float screenShake = 3.5f;
 
         private string jumpSoundString = "Play_jump";
-        public static string dodgeSoundString = "Play_boost";
+        public static string boostSoundString = "Play_boost";
+        public static string boostChangeSoundString = "Play_boost_change";
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
 
         private Vector3 forwardDirection;
@@ -35,7 +36,7 @@ namespace SonicTheHedgehog.SkillStates
         private bool boosting = false;
 
         private bool checkBoostEffects = false;
-        private bool playBoostEffects = true;
+        private bool boostChangedEffect = false;
 
         public override void OnEnter()
         {
@@ -113,7 +114,7 @@ namespace SonicTheHedgehog.SkillStates
             if (checkBoostEffects)
             {
                 checkBoostEffects = false;
-                PlayBoostEffects(playBoostEffects);
+                PlayBoostEffects();
             }
 
             if (Moving())
@@ -183,7 +184,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (!powerBoosting && base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving())
             {
-                //base.characterBody.RecalculateStats();
                 base.characterBody.MarkAllStatsDirty();
                 powerBoosting = true;
                 OnPowerBoostChanged();
@@ -191,7 +191,6 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (powerBoosting && (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth < 0.9f || !Moving()))
             {
-                //base.characterBody.RecalculateStats();
                 base.characterBody.MarkAllStatsDirty();
                 powerBoosting = false;
                 OnPowerBoostChanged();
@@ -223,7 +222,6 @@ namespace SonicTheHedgehog.SkillStates
                 if (boostEffectCooldown <= 0 && base.isAuthority)
                 {
                     checkBoostEffects = true;
-                    playBoostEffects = true;
                 }
                 else if (temporaryOverlay)
                 {
@@ -235,40 +233,30 @@ namespace SonicTheHedgehog.SkillStates
                 if (boostEffectCooldown <= 0 && boosting && base.isAuthority)
                 {
                     checkBoostEffects = true;
-                    playBoostEffects = true;
                 }
                 else
                 {
                     checkBoostEffects = true;
-                    playBoostEffects = false;
                 }
             }
         }
 
         private void OnBoostingChanged()
         {
-            if (boostEffectCooldown <= 0 && boosting && base.isAuthority)
-            {
-                checkBoostEffects = true;
-                playBoostEffects = true;
-            }
-            else
-            {
-                checkBoostEffects = true;
-                playBoostEffects = false;
-            }
+            checkBoostEffects = true;
+            boostChangedEffect = true;
         }
 
-        private void PlayBoostEffects(bool play)
+        private void PlayBoostEffects()
         {
-            if (play)
+            if (boosting && boostEffectCooldown <= 0)
             {
                 if (powerBoosting)
                 {
                     boostEffectCooldown = 0.6f;
 
                     base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
-                    Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
+                    Util.PlaySound(boostChangedEffect ? Boost.boostSoundString : Boost.boostChangeSoundString, base.gameObject);
                     EffectManager.SimpleMuzzleFlash(Assets.powerBoostFlashEffect, base.gameObject, "BallHitbox", true);
 
                     if (temporaryOverlay)
@@ -293,17 +281,22 @@ namespace SonicTheHedgehog.SkillStates
                     boostEffectCooldown = 0.6f;
 
                     base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
-                    Util.PlaySound(Boost.dodgeSoundString, base.gameObject);
+                    Util.PlaySound(boostChangedEffect ? Boost.boostSoundString : Boost.boostChangeSoundString, base.gameObject);
                     EffectManager.SimpleMuzzleFlash(Assets.boostFlashEffect, base.gameObject, "BallHitbox", true);
+                    if (temporaryOverlay)
+                    {
+                        temporaryOverlay.RemoveFromCharacterModel();
+                    }
                 }
             }
             else
             {
-                if (temporaryOverlay)
+                if (temporaryOverlay && !powerBoosting)
                 {
                     temporaryOverlay.RemoveFromCharacterModel();
                 }
             }
+            boostChangedEffect = false;
         }
 
         private void UpdateDirection()
@@ -316,11 +309,11 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void ProcessJump()
         {
-            base.ProcessJump();
-            if (this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
+            if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
                 Util.PlaySound(jumpSoundString, base.gameObject);
             }
+            base.ProcessJump();
         }
 
         public override void OnExit()

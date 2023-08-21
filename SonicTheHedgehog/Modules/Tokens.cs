@@ -49,14 +49,14 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #region Primary
-            LanguageAPI.Add(prefix + "PRIMARY_SLASH_NAME", "Melee");
+            LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
             string meleeDescription = $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>homing attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
-            LanguageAPI.Add(prefix + "PRIMARY_SLASH_DESCRIPTION", meleeDescription);
+            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription);
             #endregion
 
             #region Super Primary
-            LanguageAPI.Add(prefix + "SUPER_PRIMARY_SLASH_NAME", $"{superSonicColor}Super Melee</color>");
-            LanguageAPI.Add(prefix + "SUPER_PRIMARY_SLASH_DESCRIPTION", meleeDescription+$" {superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
+            LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", $"{superSonicColor}Super Melee</color>");
+            LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION", meleeDescription+$" {superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
             #endregion
 
             #region Secondary
@@ -80,14 +80,14 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #region Special
-            LanguageAPI.Add(prefix + "SPECIAL_BOMB_NAME", "Grand Slam");
-            string grandSlamDescription = $"<style=cIsUtility>Dash forward</style> into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamDashDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style>.";
-            LanguageAPI.Add(prefix + "SPECIAL_BOMB_DESCRIPTION", grandSlamDescription);
+            LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_NAME", "Grand Slam");
+            string grandSlamDescription = $"<style=cIsUtility>Dash forward</style> into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style>.";
+            LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription);
             #endregion
 
             #region Super Special
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_BOMB_NAME", $"{superSonicColor}Super Grand Slam</color>");
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_BOMB_DESCRIPTION", grandSlamDescription + $"{superSonicColor} Create afterimages that rain down for {100f * (Modules.StaticValues.superGrandSlamDOTDamage*2)}% damage per second.</color>");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", $"{superSonicColor}Super Grand Slam</color>");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription + $"{superSonicColor} Create afterimages that rain down for {100f * (Modules.StaticValues.superGrandSlamDOTDamage*2)}% damage per second.</color>");
             #endregion
 
             #region Special #2

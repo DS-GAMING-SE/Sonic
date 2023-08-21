@@ -32,16 +32,22 @@ namespace SonicTheHedgehog.SkillStates
             //this.model.baseRendererInfos[0].defaultMaterial = Assets.mainAssetBundle.LoadAsset<Material>("matSuperSonic");
             UpdateFlight(true);
 
-            if (base.isAuthority && base.characterBody.healthComponent)
+            if (base.isAuthority)
             {
-                base.characterBody.healthComponent.HealFraction(1, new ProcChainMask());
-            }
-            if (base.isAuthority && base.skillLocator)
-            {
-                base.skillLocator.primary.SetSkillOverride(this, primarySkillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.secondary.SetSkillOverride(this, shootSkillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.utility.SetSkillOverride(this, rollSkillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.special.SetSkillOverride(this, bombSkillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                if (base.characterBody.healthComponent)
+                {
+                    ProcChainMask proc = default(ProcChainMask);
+                    proc.AddProc(ProcType.RepeatHeal);
+                    proc.AddProc(ProcType.CritHeal);
+                    base.characterBody.healthComponent.HealFraction(1, proc);
+                }
+                if (base.skillLocator)
+                {
+                    base.skillLocator.primary.SetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
+                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
+                    base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
+                    base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
+                }
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicTransformationEffect, base.gameObject, "MainHurtbox", true);
             }
             if (NetworkServer.active)
@@ -69,10 +75,10 @@ namespace SonicTheHedgehog.SkillStates
 
             if (base.isAuthority && base.skillLocator)
             {
-                base.skillLocator.primary.UnsetSkillOverride(this, primarySkillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.secondary.UnsetSkillOverride(this, shootSkillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.utility.UnsetSkillOverride(this, rollSkillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.special.UnsetSkillOverride(this, bombSkillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                base.skillLocator.primary.UnsetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
+                base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
+                base.skillLocator.utility.UnsetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
+                base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
             }
             base.OnExit();
         }
@@ -97,11 +103,6 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        public override InterruptPriority GetMinimumInterruptPriority()
-        {
-            return InterruptPriority.Skill;
-        }
-
         private void UpdateFlight(bool flying)
         {
             if (base.characterBody.GetComponent<ICharacterFlightParameterProvider>() != null)
@@ -117,84 +118,5 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters = gravityParameters;
             }
         }
-
-        SkillDef primarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_SLASH_NAME",
-                                                                                      SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_SLASH_DESCRIPTION",
-                                                                                      Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
-                                                                                      new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMelee)),
-                                                                                      "Body",
-                                                                                      false));
-
-        SkillDef shootSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-        {
-            skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME",
-            skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME",
-            skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicBoomIcon"),
-            activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicBoom)),
-            activationStateMachineName = "Body",
-            baseMaxStock = 3,
-            baseRechargeInterval = 5f,
-            beginSkillCooldownOnSkillEnd = true,
-            canceledFromSprinting = true,
-            forceSprintDuringState = false,
-            fullRestockOnAssign = true,
-            interruptPriority = EntityStates.InterruptPriority.Skill,
-            resetCooldownTimerOnUse = true,
-            isCombatSkill = true,
-            mustKeyPress = true,
-            cancelSprintingOnActivation = true,
-            rechargeStock = 99999,
-            requiredStock = 1,
-            stockToConsume = 1,
-        });
-
-        SkillDef rollSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-        {
-            skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME",
-            skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME",
-            skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
-            activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Boost)),
-            activationStateMachineName = "Body",
-            baseMaxStock = 1,
-            baseRechargeInterval = 0f,
-            beginSkillCooldownOnSkillEnd = true,
-            canceledFromSprinting = false,
-            forceSprintDuringState = false,
-            fullRestockOnAssign = true,
-            interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
-            resetCooldownTimerOnUse = false,
-            isCombatSkill = false,
-            mustKeyPress = true,
-            cancelSprintingOnActivation = false,
-            rechargeStock = 0,
-            requiredStock = 1,
-            stockToConsume = 0
-        });
-
-        SkillDef bombSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-        {
-            skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_BOMB_NAME",
-            skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_BOMB_NAME",
-            skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_BOMB_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGrandSlamIcon"),
-            activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.GrandSlamDash)),
-            activationStateMachineName = "Body",
-            baseMaxStock = 1,
-            baseRechargeInterval = 12f,
-            beginSkillCooldownOnSkillEnd = true,
-            canceledFromSprinting = false,
-            forceSprintDuringState = false,
-            fullRestockOnAssign = true,
-            interruptPriority = EntityStates.InterruptPriority.Skill,
-            resetCooldownTimerOnUse = false,
-            isCombatSkill = true,
-            mustKeyPress = true,
-            cancelSprintingOnActivation = true,
-            rechargeStock = 1,
-            requiredStock = 1,
-            stockToConsume = 1
-        });
     }
 }

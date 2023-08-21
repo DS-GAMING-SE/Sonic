@@ -13,6 +13,9 @@ using System.Runtime.CompilerServices;
 using R2API;
 using SonicTheHedgehog.Components;
 
+using static BetterUI.ProcCoefficientCatalog;
+using static BetterUI.Buffs;
+
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
@@ -21,6 +24,7 @@ namespace SonicTheHedgehog
 {
     [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.weliveinasociety.CustomEmotesAPI", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
     //[BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
@@ -39,13 +43,14 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "0.4.1";
+        public const string MODVERSION = "1.0.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
 
         public static SonicTheHedgehogPlugin instance;
         public static bool emoteAPILoaded = false;
+        public static bool betterUILoaded = false;
 
         private void Awake()
         {
@@ -68,6 +73,14 @@ namespace SonicTheHedgehog
 
             emoteAPILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.weliveinasociety.CustomEmotesAPI");
             Log.Message("Emote API exists? "+emoteAPILoaded);
+
+            betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
+            Log.Message("Better UI exists? " + betterUILoaded);
+
+            if (betterUILoaded)
+            {
+                BetterUISetup();
+            }
 
             //On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; //Magic multiplayer line, COMMENT OUT BEFORE RELEASE
 
@@ -101,6 +114,48 @@ namespace SonicTheHedgehog
                     }
                 }
             };
+        }
+
+        private static void BetterUISetup()
+        {
+            ProcCoefficientInfo melee = new ProcCoefficientInfo
+            {
+                name = "Melee / Homing Attack",
+                procCoefficient = StaticValues.meleeProcCoefficient
+            };
+            /*ProcCoefficientInfo homing = new ProcCoefficientInfo
+            {
+                name = "Homing Attack",
+                procCoefficient = StaticValues.homingAttackProcCoefficient
+            };
+            */
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME", melee); /*new List<ProcCoefficientInfo>
+            {
+                melee//,homing
+            });*/
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME", new ProcCoefficientInfo
+            {
+                name = "Sonic Boom",
+                procCoefficient = StaticValues.sonicBoomProcCoefficient
+            });
+            ProcCoefficientInfo spin = new ProcCoefficientInfo
+            {
+                name = "Repeated Attack",
+                procCoefficient = StaticValues.grandSlamSpinProcCoefficient
+            };
+            ProcCoefficientInfo kick = new ProcCoefficientInfo
+            {
+                name = "Final Attack",
+                procCoefficient = StaticValues.grandSlamFinalProcCoefficient
+            };
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME", new List<ProcCoefficientInfo>
+            {
+                spin,kick
+            });
+
+            RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostSpeedCoefficient*100}% movement speed");
+            RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor}. Armor");
+            RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Movement speed. Complete invincibility and flight.");
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
@@ -148,7 +203,7 @@ namespace SonicTheHedgehog
                     }
                     else
                     {
-                        stats.moveSpeedReductionMultAdd += (Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier / 3));
+                        stats.moveSpeedReductionMultAdd += Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier/3);
                     }
                 }
             }

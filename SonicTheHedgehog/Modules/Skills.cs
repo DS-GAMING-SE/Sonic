@@ -14,7 +14,6 @@ namespace SonicTheHedgehog.Modules
         #region genericskills
 
         public static GenericSkill passiveFamily;
-        public static GenericSkill transformFamily;
         public static void CreateSkillFamilies(GameObject targetPrefab, bool destroyExisting = true)
         {
             if (destroyExisting)
@@ -33,7 +32,6 @@ namespace SonicTheHedgehog.Modules
             skillLocator.secondary = CreateGenericSkillWithSkillFamily(targetPrefab, "Secondary");
             skillLocator.utility = CreateGenericSkillWithSkillFamily(targetPrefab, "Utility");
             skillLocator.special = CreateGenericSkillWithSkillFamily(targetPrefab, "Special");
-            transformFamily = CreateGenericSkillWithSkillFamily(targetPrefab, "Transformation", true);
         }
 
         public static GenericSkill CreateGenericSkillWithSkillFamily(GameObject targetPrefab, string familyName, bool hidden = false)
@@ -95,10 +93,6 @@ namespace SonicTheHedgehog.Modules
         public static void AddMiscSkills(GameObject targetPrefab, params SkillDef[] skillDefs)
         {
             AddSkillsToFamily(passiveFamily.skillFamily, skillDefs);
-        }
-        public static void AddTransformSkills(GameObject targetPrefab, params SkillDef[] skillDefs)
-        {
-            AddSkillsToFamily(transformFamily.skillFamily, skillDefs);
         }
 
 

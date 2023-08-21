@@ -12,6 +12,8 @@ using SonicTheHedgehog.Components;
 using System.Runtime.CompilerServices;
 using UnityEngine.UI;
 
+using static BetterUI.ProcCoefficientCatalog;
+
 namespace SonicTheHedgehog.Modules.Survivors
 {
     internal class SonicTheHedgehogCharacter : SurvivorBase
@@ -110,27 +112,22 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<Components.BoostLogic>();
             bodyPrefab.AddComponent<Components.MomentumPassive>();
 
-            MakeSuperSonicStuff();
-
-            bodyPrefab.AddComponent<Components.SuperSonicComponent>().superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
-
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 
             #region Primary
-            //Creates a skilldef for a typical primary 
-            primarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo(prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_SLASH_NAME",
-                                                                                      prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_SLASH_DESCRIPTION",
+            //Creates a skilldef for a typical primary
+            SkillDefInfo primary = new SkillDefInfo(prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
+                                                                                      prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
                                                                                       Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
                                                                                       new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMelee)),
                                                                                       "Body",
-                                                                                      false));
+                                                                                      false);
+            primarySkillDef = Modules.Skills.CreateSkillDef(primary);
 
 
             Modules.Skills.AddPrimarySkills(bodyPrefab, primarySkillDef);
             #endregion
-
-            #region Secondary
-            sonicBoomSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            SkillDefInfo sonicBoom = new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME",
@@ -152,13 +149,15 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rechargeStock = 99999,
                 requiredStock = 1,
                 stockToConsume = 1,
-            });
+            };
+            #region Secondary
+            sonicBoomSkillDef = Modules.Skills.CreateSkillDef(sonicBoom);
 
             Modules.Skills.AddSecondarySkills(bodyPrefab, sonicBoomSkillDef);
             #endregion
 
             #region Utility
-            boostSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            SkillDefInfo boost = new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
@@ -180,17 +179,18 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rechargeStock = 0,
                 requiredStock = 1,
                 stockToConsume = 0
-            });
+            };
+            boostSkillDef = Modules.Skills.CreateSkillDef(boost);
 
             Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
             #endregion
 
             #region Special
-            grandSlamSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            SkillDefInfo grandSlam = new SkillDefInfo
             {
-                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_BOMB_NAME",
-                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_BOMB_NAME",
-                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_BOMB_DESCRIPTION",
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_DESCRIPTION",
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGrandSlamIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.GrandSlamDash)),
                 activationStateMachineName = "Body",
@@ -208,12 +208,13 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 1,
                 stockToConsume = 1
-            });
+            };
+            grandSlamSkillDef = Modules.Skills.CreateSkillDef(grandSlam);
 
             Modules.Skills.AddSpecialSkills(bodyPrefab, grandSlamSkillDef);
             #endregion
 
-            #region Special #2
+            #region Super Transformation
             superSonicSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
@@ -238,7 +239,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1
             });
 
-            Modules.Skills.AddTransformSkills(bodyPrefab, superSonicSkillDef);
+            Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
             #endregion
 
 
@@ -274,20 +275,42 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef);
             #endregion
-            
+
+            MakeSuperSonicStuff(primary, sonicBoom, boost, grandSlam);
         }
 
-        private void MakeSuperSonicStuff()
+        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo boost, SkillDefInfo grandSlam)
         {
             EntityStateMachine superSonicState = bodyPrefab.AddComponent<EntityStateMachine>();
             superSonicState.customName = "SonicForms";
             superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
 
+            SuperSonicComponent superSonicComponent = bodyPrefab.AddComponent<Components.SuperSonicComponent>();
 
-            bodyPrefab.AddComponent<Components.SuperSonicComponent>().superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+            primary.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME";
+            primary.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME";
+            primary.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_DESCRIPTION";
+            SuperSonicComponent.melee = Modules.Skills.CreateSkillDef(primary);
 
-            //NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
-            //Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
+            sonicBoom.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME";
+            sonicBoom.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME";
+            sonicBoom.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION";
+            SuperSonicComponent.sonicBoom = Modules.Skills.CreateSkillDef(sonicBoom);
+
+            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
+            boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
+            boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION";
+            SuperSonicComponent.boost = Modules.Skills.CreateSkillDef(boost);
+
+            grandSlam.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME";
+            grandSlam.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME";
+            grandSlam.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION";
+            SuperSonicComponent.grandSlam = Modules.Skills.CreateSkillDef(grandSlam);
+
+            superSonicComponent.superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+
+            NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
+            Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
         }
 
         internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
@@ -313,8 +336,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             boostHud.infiniteFill = boostUI.transform.Find("InfiniteBackground/InfiniteFill").gameObject.GetComponent<Image>();
 
         }
-
-
 
         public override void InitializeSkins()
         {

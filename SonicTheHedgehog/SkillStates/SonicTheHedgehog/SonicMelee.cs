@@ -19,7 +19,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient;
-        protected float procCoefficient = 1f;
+        protected float procCoefficient;
         protected float pushForce = 50f;
         protected Vector3 bonusForce = Vector3.zero;
         protected float attackStartTime;
@@ -95,13 +95,14 @@ namespace SonicTheHedgehog.SkillStates
             sphereSearch.RefreshCandidates();
             sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
 
-            if (search.GetResults().Any()&&!sphereSearch.GetHurtBoxes().Any()) // Homing Attack
+            if (search.GetResults().Any() && !sphereSearch.GetHurtBoxes().Any() && base.characterBody.moveSpeed>0.1) // Homing Attack
             {
                 if (NetworkServer.active)
                 {
                     base.characterBody.AddBuff(Modules.Buffs.ballBuff);
                 }
                 this.damageCoefficient = Modules.StaticValues.homingAttackDamageCoefficient;
+                this.procCoefficient = StaticValues.homingAttackProcCoefficient;
                 this.attackRecoil = 3;
                 this.hitStopDuration = 0.07f;
                 this.target = search.GetResults().First<HurtBox>();
@@ -125,13 +126,16 @@ namespace SonicTheHedgehog.SkillStates
                 this.estimatedHomingAttackTime = (targetDirection.magnitude / homingAttackSpeed) * homingAttackOvershoot;
                 this.homingAttackEndLag = (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superHomingAttackEndLag : baseHomingAttackEndLag) / this.attackSpeedStat;
                 this.hitboxName = "Ball";
+                this.hitSoundString = "Play_homing_impact";
                 base.PlayAnimation("FullBody, Override", "Ball");
                 base.characterMotor.disableAirControlUntilCollision = false;
             }
             else // Normal Melee
             {
-                
+
+                this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
                 this.hitboxName = "Sword";
+                this.procCoefficient = StaticValues.meleeProcCoefficient;
                 this.damageCoefficient = swingIndex == 4 ? Modules.StaticValues.finalMeleeDamageCoefficient : Modules.StaticValues.meleeDamageCoefficient;
                 this.attackRecoil = swingIndex == 4 ? 2.5f : 0.6f;
                 this.duration = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed / this.attackSpeedStat;
@@ -240,7 +244,7 @@ namespace SonicTheHedgehog.SkillStates
                     PlaySwingEffect();
                     effectPlayed = true;
                 }
-                if (!this.hasHopped)
+                if (!this.hasHopped && this.hitHopVelocity>0f)
                 {
                     if (base.characterMotor && !base.characterMotor.isGrounded && this.hitHopVelocity > 0f)
                     {

@@ -1,6 +1,7 @@
 ﻿using EntityStates;
 using RoR2;
 using RoR2.Audio;
+using RoR2.Skills;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
 using SonicTheHedgehog.SkillStates;
@@ -15,6 +16,12 @@ namespace SonicTheHedgehog.Components
         public EntityStateMachine superSonicState;
         public Material superSonicMaterial;
         private CharacterBody body;
+
+        public static SkillDef melee;
+        public static SkillDef sonicBoom;
+        public static SkillDef boost;
+        public static SkillDef grandSlam;
+
 
         private void Start()
         {

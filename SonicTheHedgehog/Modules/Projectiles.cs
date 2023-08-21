@@ -72,7 +72,7 @@ namespace SonicTheHedgehog.Modules
         private static void InitializeImpactExplosion(ProjectileImpactExplosion projectileImpactExplosion)
         {
             projectileImpactExplosion.blastDamageCoefficient = 1;
-            projectileImpactExplosion.blastProcCoefficient = 0.5f;
+            projectileImpactExplosion.blastProcCoefficient = StaticValues.sonicBoomProcCoefficient;
             projectileImpactExplosion.blastRadius = 1f;
             projectileImpactExplosion.bonusBlastForce = Vector3.zero;
             projectileImpactExplosion.childrenCount = 0;

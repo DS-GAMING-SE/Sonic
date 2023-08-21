@@ -78,8 +78,8 @@ namespace SonicTheHedgehog.Components
                     Vector3 lastVelocity = prevVelocity;
                     if (body.characterMotor.isGrounded)
                     {
-                        velocity = VelocityOnGround(ref velocity);
-                        lastVelocity = VelocityOnGround(ref prevVelocity);
+                        velocity = VelocityOnGround(velocity);
+                        lastVelocity = VelocityOnGround(prevVelocity);
                     }
                     float dot = Vector3.Dot(velocity, lastVelocity);
                     float accuracy = dot * Time.fixedDeltaTime * framesBetweenRecalc;
@@ -136,7 +136,7 @@ namespace SonicTheHedgehog.Components
             if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost)))
             {
                 calced = false;
-                Vector3 forward = VelocityOnGround(ref body.characterMotor.velocity); //body.characterMotor.moveDirection.normalized;
+                Vector3 forward = VelocityOnGround(body.characterMotor.velocity); //body.characterMotor.moveDirection.normalized;
                 float dot = Vector3.Dot(forward, Vector3.down);
                 desiredMomentum = Mathf.Clamp(dot * 2f, -1f, 1f);
                 if (Mathf.Abs(desiredMomentum - momentum) > 0.1f)
@@ -205,7 +205,7 @@ namespace SonicTheHedgehog.Components
             this.momentumEquipped = this.passiveSkill.skillDef == Modules.Survivors.SonicTheHedgehogCharacter.momentumPassiveDef;
         }
 
-        private Vector3 VelocityOnGround(ref Vector3 velocity)
+        private Vector3 VelocityOnGround(Vector3 velocity)
         {
             velocity.y = 0;
             return Vector3.ProjectOnPlane(velocity, body.characterMotor.estimatedGroundNormal).normalized;

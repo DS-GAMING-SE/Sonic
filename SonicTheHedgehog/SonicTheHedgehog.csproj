@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="BetterUI">
+      <HintPath>..\libs\BetterUI.dll</HintPath>
+    </Reference>
     <Reference Include="CustomEmotesAPI">
       <HintPath>..\libs\CustomEmotesAPI.dll</HintPath>
     </Reference>

@@ -12,14 +12,12 @@ using UnityEngine.Networking;
 namespace SonicTheHedgehog.SkillStates
 {
     public class GrandSlamDash : BaseSkillState
-    {
-        // WHY ARE ALL THE GRAND SLAM SKILL STATES JUST NOT NETWORKED?!?!?!?!!? HUHH?!?!?!?!??!?!?!
-        
+    {  
         protected string hitboxName = "Ball";
 
         protected DamageType damageType = DamageType.Stun1s | DamageType.NonLethal;
-        protected float damageCoefficient = Modules.StaticValues.grandSlamDashDamageCoefficient;
-        protected float procCoefficient = 0.5f;
+        protected float damageCoefficient = Modules.StaticValues.grandSlamSpinDamageCoefficient;
+        protected float procCoefficient = StaticValues.grandSlamSpinProcCoefficient;
         protected float pushForce = 0f;
         protected Vector3 bonusForce = Vector3.zero;
         protected float baseAttackStartTime = 0.5f;
@@ -37,7 +35,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected string chargeSoundString = "Play_spindash_charge";
         protected string launchSoundString = "Play_spindash_release";
-        protected string hitSoundString = "";
+        protected string hitSoundString = "Play_homing_impact";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
@@ -84,6 +82,15 @@ namespace SonicTheHedgehog.SkillStates
             {
                 this.targetDirection = (this.target.transform.position - base.transform.position);
             }
+            if (dashSpeed > 0)
+            {
+                this.estimatedDashTime = (targetDirection.magnitude / dashSpeed) * dashOvershoot;
+            }
+            else
+            {
+                attackStartTime *= 2;
+                this.estimatedDashTime = 0;
+            }
             if (base.isAuthority)
             {
                 base.characterMotor.Motor.ForceUnground();
@@ -93,7 +100,6 @@ namespace SonicTheHedgehog.SkillStates
                 }
             }
             EndChrysalis();
-            this.estimatedDashTime = (targetDirection.magnitude / dashSpeed) * dashOvershoot;
             this.hitboxName = "Ball";
             base.PlayAnimation("FullBody, Override", "Ball");
 

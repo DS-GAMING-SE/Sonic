@@ -15,7 +15,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient = Modules.StaticValues.grandSlamFinalDamageCoefficient;
-        protected float procCoefficient = 1.5f;
+        protected float procCoefficient = StaticValues.grandSlamFinalProcCoefficient;
         protected float basePushForce = 3000f;
         protected float superPushForce = 11000f;
         protected Vector3 bonusForce = Vector3.down;

@@ -51,11 +51,11 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void ProcessJump()
         {
-            base.ProcessJump();
-            if (this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
+            if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
                 Util.PlaySound(jumpSoundString, base.gameObject);
-            }    
+            }
+            base.ProcessJump();
         }
 
         public override void OnExit()

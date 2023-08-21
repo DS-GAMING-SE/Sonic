@@ -16,8 +16,8 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitboxName = "Ball";
 
         protected DamageType damageType = DamageType.Stun1s | DamageType.NonLethal;
-        protected float damageCoefficient = Modules.StaticValues.grandSlamDashDamageCoefficient;
-        protected float procCoefficient = 0.5f;
+        protected float damageCoefficient = Modules.StaticValues.grandSlamSpinDamageCoefficient;
+        protected float procCoefficient = StaticValues.grandSlamSpinProcCoefficient;
         protected float pushForce = 0f;
         protected Vector3 bonusForce = Vector3.up*5;
         protected int baseAttackCount=4;
@@ -29,7 +29,7 @@ namespace SonicTheHedgehog.SkillStates
         public HurtBox target;
 
         protected string swingSoundString = "";
-        protected string hitSoundString = "";
+        protected string hitSoundString = "Play_melee_hit";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;

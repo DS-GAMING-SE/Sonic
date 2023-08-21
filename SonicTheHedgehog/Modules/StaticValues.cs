@@ -23,6 +23,10 @@ namespace SonicTheHedgehog.Modules
 
         internal const float ballArmor = 100f;
 
+        internal const float meleeProcCoefficient = 1f;
+
+        internal const float homingAttackProcCoefficient = 1f;
+
         // Sonic Boom
 
         internal const float sonicBoomCount = 2;
@@ -30,6 +34,8 @@ namespace SonicTheHedgehog.Modules
         internal const float sonicBoomFireTime = 0.19f;
         
         internal const float sonicBoomDamageCoefficient = 1.6f;
+
+        internal const float sonicBoomProcCoefficient = 0.5f;
 
         // Boost
 
@@ -41,9 +47,13 @@ namespace SonicTheHedgehog.Modules
         
         // Grand Slam
 
-        internal const float grandSlamDashDamageCoefficient = 1.4f;
+        internal const float grandSlamSpinDamageCoefficient = 1.4f;
 
         internal const float grandSlamFinalDamageCoefficient = 22f;
+
+        internal const float grandSlamSpinProcCoefficient = 0.5f;
+
+        internal const float grandSlamFinalProcCoefficient = 1.5f;
 
         // Super Sonic -----------------------------
 

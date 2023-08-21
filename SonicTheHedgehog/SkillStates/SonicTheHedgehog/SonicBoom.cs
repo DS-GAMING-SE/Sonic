@@ -55,8 +55,11 @@ namespace SonicTheHedgehog.SkillStates
                 StartAimMode();
                 this.firedCounter++;
                 base.characterBody.AddSpreadBloom(1.5f);
-                EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
-                //Util.PlaySound("HenryShootPistol", base.gameObject);
+                if (firedCounter==1 || this.fireTime>=0.06f)
+                {
+                    EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
+                    Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
+                }
 
                 projectilePrefab = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? Modules.Projectiles.superSonicBoomPrefab : Modules.Projectiles.sonicBoomPrefab;
                 Quaternion direction = Util.QuaternionSafeLookRotation(base.GetAimRay().direction);

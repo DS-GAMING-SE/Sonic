@@ -11,9 +11,6 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class BaseSonic : BaseState
     {
-        public override InterruptPriority GetMinimumInterruptPriority()
-        {
-            return InterruptPriority.Skill;
-        }
+
     }
 }
