@@ -114,7 +114,7 @@ namespace SonicTheHedgehog.Modules {
 
             bodyComponent.baseJumpCount = bodyInfo.jumpCount;
 
-            bodyComponent.sprintingSpeedMultiplier = 1.45f;
+            bodyComponent.sprintingSpeedMultiplier = 1.7f;
 
             bodyComponent.bodyFlags = CharacterBody.BodyFlags.ImmuneToExecutes | CharacterBody.BodyFlags.SprintAnyDirection;
             bodyComponent.rootMotionInMainState = false;

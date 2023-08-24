@@ -15,6 +15,10 @@ using SonicTheHedgehog.Components;
 
 using static BetterUI.ProcCoefficientCatalog;
 using static BetterUI.Buffs;
+using RiskOfOptions;
+
+using SonicTheHedgehog.SkillStates;
+using RiskOfOptions.Options;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -25,7 +29,7 @@ namespace SonicTheHedgehog
     [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.weliveinasociety.CustomEmotesAPI", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
-    //[BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
     [R2APISubmoduleDependency(new string[]
@@ -51,6 +55,7 @@ namespace SonicTheHedgehog
         public static SonicTheHedgehogPlugin instance;
         public static bool emoteAPILoaded = false;
         public static bool betterUILoaded = false;
+        public static bool riskOfOptionsLoaded = false;
 
         private void Awake()
         {
@@ -77,9 +82,17 @@ namespace SonicTheHedgehog
             betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
             Log.Message("Better UI exists? " + betterUILoaded);
 
+            riskOfOptionsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
+            Log.Message("Risk of Options exists? " + riskOfOptionsLoaded);
+
             if (betterUILoaded)
             {
                 BetterUISetup();
+            }
+
+            if (riskOfOptionsLoaded)
+            {
+                RiskOfOptionsSetup();
             }
 
             //On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; //Magic multiplayer line, COMMENT OUT BEFORE RELEASE
@@ -91,6 +104,9 @@ namespace SonicTheHedgehog
         {
             // run hooks here, disabling one is as simple as commenting out the line
             On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
+            On.RoR2.GenericSkill.CanApplyAmmoPack += CanApplyAmmoPackToBoost;
+            On.RoR2.GenericSkill.ApplyAmmoPack += ApplyAmmoPackToBoost;
+            On.RoR2.JitterBones.Start += IHateJitterBones;
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
             if (emoteAPILoaded)
             {
@@ -154,8 +170,18 @@ namespace SonicTheHedgehog
             });
 
             RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostSpeedCoefficient*100}% movement speed");
-            RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor}. Armor");
+            RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor} Armor.");
             RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Movement speed. Complete invincibility and flight.");
+        }
+
+        private static void RiskOfOptionsSetup()
+        {
+            Sprite icon = (Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicIcon"));
+            ModSettingsManager.SetModIcon(icon);
+            float minLocation = -500;
+            float maxLocation = 500;
+            ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationX(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
+            ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationY(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
@@ -221,6 +247,37 @@ namespace SonicTheHedgehog
             {
                 self.acceleration *= 6f;
             }
+        }
+
+        private bool CanApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_CanApplyAmmoPack orig, GenericSkill self)
+        {
+            if (self.activationState.stateType == typeof(Boost))
+            {
+                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+                return boost && boost.boostMeter < boost.maxBoostMeter; 
+            }
+            return orig(self);
+        }
+        private void ApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_ApplyAmmoPack orig, GenericSkill self)
+        {
+            orig(self);
+            if (self.activationState.stateType == typeof(Boost))
+            {
+                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+                if (boost)
+                {
+                    boost.AddBoost(BoostLogic.boostRegenPerBandolier);
+                }
+            }
+        }
+
+        private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
+        {
+            if (self.skinnedMeshRenderer && self.skinnedMeshRenderer.name == "SonicMesh")
+            {
+                Object.Destroy(self);
+            }
+            orig(self);
         }
     }
 }

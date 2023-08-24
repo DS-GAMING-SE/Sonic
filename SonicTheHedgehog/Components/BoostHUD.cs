@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.SkillStates;
 using R2API;
+using BepInEx.Configuration;
 
 namespace SonicTheHedgehog.Components
 {
@@ -49,6 +50,13 @@ namespace SonicTheHedgehog.Components
         private void Awake()
         {
             this.hud = base.GetComponent<HUD>();
+            if (SonicTheHedgehogPlugin.riskOfOptionsLoaded)
+            {
+                ConfigEntry<float> configX = Modules.Config.BoostMeterLocationX();
+                ConfigEntry<float> configY = Modules.Config.BoostMeterLocationY();
+                configX.SettingChanged += (orig, self) => { this.boostMeter.GetComponent<RectTransform>().anchoredPosition = new Vector2(configX.Value, configY.Value); };
+                configY.SettingChanged += (orig, self) => { this.boostMeter.GetComponent<RectTransform>().anchoredPosition = new Vector2(configX.Value, configY.Value); };
+            }
         }
         public void Update()
         {
@@ -180,6 +188,11 @@ namespace SonicTheHedgehog.Components
                 powerBoostParticle.Stop();
                 powerBoostParticlePlaying = false;
             }
+        }
+
+        private void Reposition()
+        {
+
         }
     }
 }

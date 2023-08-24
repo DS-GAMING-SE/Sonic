@@ -34,6 +34,7 @@ namespace SonicTheHedgehog.Components
         private const float baseMaxBoostMeter=100f;
         private const float boostMeterPerFlatReduction = 25f;
         private const float baseBoostRegen = 0.38f;
+        public const float boostRegenPerBandolier = 25f;
 
         private void Start()
         {

@@ -323,7 +323,9 @@ namespace SonicTheHedgehog.Modules.Survivors
             rectTransform.anchorMax = Vector2.one;
             rectTransform.localScale = new Vector3(1f, 1f, 1f);
             rectTransform.localPosition= Vector3.zero;
-            rectTransform.anchoredPosition = new Vector2(90f, -50f);
+
+            rectTransform.anchoredPosition = new Vector2(Modules.Config.BoostMeterLocationX().Value, Modules.Config.BoostMeterLocationY().Value);
+
             boostHud.boostMeter = boostUI;
             boostHud.meterBackground = boostUI.transform.Find("Background").gameObject.GetComponent<Image>();
             boostHud.meterFill = boostUI.transform.Find("Background/Fill").gameObject.GetComponent<Image>();

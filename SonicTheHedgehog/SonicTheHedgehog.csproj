@@ -46,6 +46,9 @@
     <Reference Include="MMHOOK_RoR2">
       <HintPath>..\libs\MMHOOK_RoR2.dll</HintPath>
     </Reference>
+    <Reference Include="RiskOfOptions">
+      <HintPath>..\libs\RiskOfOptions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
