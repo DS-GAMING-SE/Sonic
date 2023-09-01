@@ -50,6 +50,10 @@ namespace SonicTheHedgehog.SkillStates
 
         private void Fire()
         {
+            if (firedCounter == 1 || this.fireTime >= 0.06f)
+            {
+                Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
+            }
             if (base.isAuthority)
             {
                 StartAimMode();
@@ -58,7 +62,6 @@ namespace SonicTheHedgehog.SkillStates
                 if (firedCounter==1 || this.fireTime>=0.06f)
                 {
                     EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
-                    Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
                 }
 
                 projectilePrefab = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? Modules.Projectiles.superSonicBoomPrefab : Modules.Projectiles.sonicBoomPrefab;

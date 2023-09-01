@@ -87,7 +87,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Super Special
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", $"{superSonicColor}Super Grand Slam</color>");
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription + $"{superSonicColor} Create afterimages that rain down for {100f * (Modules.StaticValues.superGrandSlamDOTDamage*2)}% damage per second.</color>");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription + $"{superSonicColor} Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage*2)}% damage per second.</color>");
             #endregion
 
             #region Special #2

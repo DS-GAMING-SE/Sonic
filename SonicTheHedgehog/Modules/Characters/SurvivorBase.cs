@@ -45,6 +45,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         protected virtual void InitializeDisplayPrefab()
         {
             displayPrefab = Modules.Prefabs.CreateDisplayPrefab(prefabBodyName + "Display", bodyPrefab, bodyInfo);
+            displayPrefab.AddComponent<Components.MenuSound>();
         }
         public virtual void InitializeUnlockables()
         {

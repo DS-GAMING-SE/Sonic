@@ -56,7 +56,7 @@ namespace SonicTheHedgehog.SkillStates
                 this.swingEffectPrefab = Modules.Assets.swordSwingEffect;
                 this.hitEffectPrefab = Modules.Assets.swordHitImpactEffect;
 
-                this.impactSound = Modules.Assets.swordHitSoundEvent.index;
+                //this.impactSound = Modules.Assets.swordHitSoundEvent.index;
 
                 base.OnEnter();
             }

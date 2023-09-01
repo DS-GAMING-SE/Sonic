@@ -35,7 +35,7 @@ namespace SonicTheHedgehog.SkillStates
         protected string muzzleString = "SwingBottom";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound;
+        protected NetworkSoundEventIndex impactSound = Assets.grandSlamHitSoundEvent.index;
 
         private float earlyExitTime;
         public float duration;
@@ -100,7 +100,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (!effectFired)
             {
-                Util.PlaySound(this.hitSoundString, base.gameObject);
+                //Util.PlaySound(this.hitSoundString, base.gameObject);
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.grandSlamHitEffect, base.gameObject, this.muzzleString, true);
                 effectFired = true;
             }
@@ -229,7 +229,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.pushAwayForce = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superPushForce : basePushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
-            //this.attack.impactSound = this.impactSound;
+            this.attack.impactSound = this.impactSound;
         }
 
         private void EndChrysalis()

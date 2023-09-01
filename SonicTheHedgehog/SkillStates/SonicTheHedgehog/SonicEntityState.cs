@@ -39,6 +39,10 @@ namespace SonicTheHedgehog.SkillStates
                     base.PlayCrossfade("Body", "Idle", 0.3f);
                 }
             }
+            else if (base.modelAnimator.GetBool("isBall"))
+            {
+                base.PlayAnimation("Body", "Ball");
+            }
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = true;
@@ -47,28 +51,38 @@ namespace SonicTheHedgehog.SkillStates
             {
                 EmoteAPI(true);
             }
+            if (base.characterMotor)
+            {
+                base.characterMotor.onHitGroundAuthority += OnHitGround;
+            }
         }
 
-        public override void ProcessJump()
+        public override void ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
         {
             if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
                 Util.PlaySound(jumpSoundString, base.gameObject);
+                base.GetModelAnimator().SetBool("isBall", true);
             }
             base.ProcessJump();
         }
 
         public override void OnExit()
         {
-            base.OnExit();
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = false;
+                base.modelAnimator.SetBool("isBall", false);
             }
             if (SonicTheHedgehogPlugin.emoteAPILoaded)
             {
                 EmoteAPI(false);
             }
+            if (base.characterMotor)
+            {
+                base.characterMotor.onHitGroundAuthority -= OnHitGround;
+            }
+            base.OnExit();
         }
 
 
@@ -77,6 +91,14 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.FixedUpdate();
             IdleExtraAnimation();
+        }
+
+        private void OnHitGround(ref CharacterMotor.HitGroundInfo hitGroundInfo)
+        {
+            if (base.modelAnimator.GetBool("isBall"))
+            {
+                base.modelAnimator.SetBool("isBall", false);
+            }
         }
 
         private void IdleExtraAnimation()

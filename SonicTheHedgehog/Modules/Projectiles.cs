@@ -38,7 +38,7 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.destroyOnWorld = true;
             bombImpactExplosion.lifetime = 1;
             bombImpactExplosion.impactEffect = Modules.Assets.sonicBoomImpactEffect;
-            //bombImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("HenryBombExplosion");
+            //bombImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("Play_sonic_boom_hit");
             bombImpactExplosion.timerAfterImpact = false;
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
@@ -60,7 +60,7 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.destroyOnWorld = true;
             bombImpactExplosion.lifetime = 1.3f;
             bombImpactExplosion.impactEffect = Modules.Assets.sonicBoomImpactEffect;
-            //bombImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("HenryBombExplosion");
+            //bombImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("Play_sonic_boom_hit");
             bombImpactExplosion.timerAfterImpact = false;
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
@@ -88,6 +88,7 @@ namespace SonicTheHedgehog.Modules
             projectileImpactExplosion.lifetimeRandomOffset = 0f;
             projectileImpactExplosion.offsetForLifetimeExpiredSound = 0f;
             projectileImpactExplosion.timerAfterImpact = false;
+            //projectileImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("Play_sonic_boom_explode");
 
             projectileImpactExplosion.GetComponent<ProjectileDamage>().damageType = DamageType.Generic;
         }

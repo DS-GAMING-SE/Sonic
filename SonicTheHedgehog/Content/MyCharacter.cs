@@ -239,7 +239,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1
             });
 
-            Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
+            //Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
             #endregion
 
 

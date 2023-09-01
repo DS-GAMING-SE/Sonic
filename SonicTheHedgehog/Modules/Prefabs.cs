@@ -3,6 +3,7 @@ using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
 using SonicTheHedgehog.Modules.Characters;
+using SonicTheHedgehog.Components;
 
 namespace SonicTheHedgehog.Modules {
     // module for creating body prefabs and whatnot

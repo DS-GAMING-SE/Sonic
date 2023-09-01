@@ -1,6 +1,4 @@
 ﻿using EntityStates;
-using R2API.Networking.Interfaces;
-using Rewired;
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Modules;
@@ -39,7 +37,7 @@ namespace SonicTheHedgehog.SkillStates
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound;
+        protected NetworkSoundEventIndex impactSound = Assets.homingHitSoundEvent.index;
 
         private float earlyExitTime;
         public float duration;
@@ -94,10 +92,10 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority)
             {
                 base.characterMotor.Motor.ForceUnground();
-                if (this.attackStartTime>=0.2f)
-                {
-                    Util.PlayAttackSpeedSound(this.chargeSoundString, base.gameObject, base.attackSpeedStat);
-                }
+            }
+            if (this.attackStartTime >= 0.2f)
+            {
+                Util.PlayAttackSpeedSound(this.chargeSoundString, base.gameObject, base.attackSpeedStat);
             }
             EndChrysalis();
             this.hitboxName = "Ball";
@@ -127,7 +125,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void OnHitEnemyAuthority()
         {
-            Util.PlaySound(this.hitSoundString, base.gameObject);
+            //Util.PlaySound(this.hitSoundString, base.gameObject);
             if (!hasHit)
             {
                 hasHit= true;
@@ -168,34 +166,35 @@ namespace SonicTheHedgehog.SkillStates
 
             this.stopwatch += Time.fixedDeltaTime;
 
-            if (base.isAuthority)
+
+            if (fixedAge < this.attackStartTime)
             {
-                if (fixedAge < this.attackStartTime)
+                base.characterMotor.velocity = Vector3.Lerp(base.characterMotor.velocity, Vector3.zero, fixedAge / (this.attackStartTime * 0.6f));
+            }
+            else if (fixedAge < this.estimatedDashTime + this.attackStartTime && fixedAge > this.attackStartTime)
+            {
+                if (this.target != null)
                 {
-                    base.characterMotor.velocity = Vector3.Lerp(base.characterMotor.velocity, Vector3.zero, fixedAge/(this.attackStartTime * 0.6f));
+                    targetDirection = this.target.transform.position - base.transform.position;
                 }
-                else if (fixedAge < this.estimatedDashTime+this.attackStartTime && fixedAge > this.attackStartTime)
+                if (!hasFired)
                 {
-                    if (this.target != null)
+                    hasFired = true;
+                    Util.PlaySound(launchSoundString, base.gameObject);
+                    if (base.isAuthority)
                     {
-                        targetDirection = this.target.transform.position - base.transform.position;
-                    }
-                    if (!hasFired && base.isAuthority)
-                    {
-                        hasFired = true;
                         EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
-                        Util.PlaySound(launchSoundString, base.gameObject);
                     }
-                    base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
-                    base.characterDirection.forward = targetDirection.normalized;
-                    this.FireAttack();
                 }
-                if (fixedAge>this.estimatedDashTime+this.attackStartTime)
-                {
-                    base.characterMotor.velocity = Vector3.zero;
-                    this.outer.SetNextStateToMain();
-                    return;
-                }
+                base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
+                base.characterDirection.forward = targetDirection.normalized;
+                this.FireAttack();
+            }
+            if (fixedAge > this.estimatedDashTime + this.attackStartTime && base.isAuthority)
+            {
+                base.characterMotor.velocity = Vector3.zero;
+                this.outer.SetNextStateToMain();
+                return;
             }
         }
 
@@ -233,7 +232,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.pushAwayForce = this.pushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
-            //this.attack.impactSound = this.impactSound;
+            this.attack.impactSound = this.impactSound;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

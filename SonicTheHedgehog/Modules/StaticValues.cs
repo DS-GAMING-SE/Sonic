@@ -59,7 +59,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superSonicDuration = 50f;
         
-        internal const float superSonicMovementSpeed = 0.8f;
+        internal const float superSonicMovementSpeed = 1f;
 
         internal const float superSonicAttackSpeed = 0.3f;
 
@@ -77,7 +77,7 @@ namespace SonicTheHedgehog.Modules
 
         // Super Sonic Boost
 
-        internal const float superBoostSpeedCoefficient = 2f;
+        internal const float superBoostSpeedCoefficient = 1.5f;
 
         // Super Sonic Grand Slam
 

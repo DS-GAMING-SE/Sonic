@@ -7,6 +7,8 @@ using System.IO;
 using System.Collections.Generic;
 using RoR2.UI;
 using System;
+using SonicTheHedgehog.Components;
+using RoR2.Audio;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -32,7 +34,11 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject bombExplosionEffect;
 
         // networked hit sounds
-        internal static NetworkSoundEventDef swordHitSoundEvent;
+        internal static NetworkSoundEventDef meleeHitSoundEvent;
+        internal static NetworkSoundEventDef meleeFinalHitSoundEvent;
+        internal static NetworkSoundEventDef homingHitSoundEvent;
+        internal static NetworkSoundEventDef grandSlamHitSoundEvent;
+
         #endregion
 
         // the assetbundle to load assets from
@@ -100,22 +106,6 @@ namespace SonicTheHedgehog.Modules
 
             //bombExplosionEffect = LoadEffect("BombExplosionEffect", "HenryBombExplosion");
 
-            if (bombExplosionEffect)
-            {
-                ShakeEmitter shakeEmitter = bombExplosionEffect.AddComponent<ShakeEmitter>();
-                shakeEmitter.amplitudeTimeDecay = true;
-                shakeEmitter.duration = 0.5f;
-                shakeEmitter.radius = 200f;
-                shakeEmitter.scaleShakeRadiusWithLocalScale = false;
-
-                shakeEmitter.wave = new Wave
-                {
-                    amplitude = 1f,
-                    frequency = 40f,
-                    cycleOffset = 0f
-                };
-            }
-
             sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick");
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
             sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
@@ -128,6 +118,32 @@ namespace SonicTheHedgehog.Modules
             powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
+
+            meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit");
+            meleeFinalHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit_final");
+            homingHitSoundEvent = CreateNetworkSoundEventDef("Play_homing_attack_impact");
+            grandSlamHitSoundEvent = CreateNetworkSoundEventDef("Play_strong_impact");
+
+            if (sonicBoomImpactEffect)
+            {
+                sonicBoomImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonic_boom_explode";
+            }
+
+            if (superSonicTransformationEffect)
+            {
+                ShakeEmitter shakeEmitter = superSonicTransformationEffect.AddComponent<ShakeEmitter>();
+                shakeEmitter.amplitudeTimeDecay = true;
+                shakeEmitter.duration = 0.5f;
+                shakeEmitter.radius = 200f;
+                shakeEmitter.scaleShakeRadiusWithLocalScale = false;
+
+                shakeEmitter.wave = new Wave
+                {
+                    amplitude = 1f,
+                    frequency = 40f,
+                    cycleOffset = 0f
+                };
+            }
         }
 
         private static GameObject CreateTracer(string originalTracerName, string newTracerName)

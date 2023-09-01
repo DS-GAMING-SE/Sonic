@@ -50,7 +50,7 @@ namespace SonicTheHedgehog.SkillStates
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound;
+        protected NetworkSoundEventIndex impactSound = Assets.meleeHitSoundEvent.index;
 
         private float earlyExitTime;
         public float duration;
@@ -66,6 +66,7 @@ namespace SonicTheHedgehog.SkillStates
         private bool animationEnded=false;
         private ICharacterFlightParameterProvider flight;
         private bool effectPlayed = false;
+        private bool swingSoundPlayed = false;
 
         public override void OnEnter()
         {
@@ -126,14 +127,17 @@ namespace SonicTheHedgehog.SkillStates
                 this.estimatedHomingAttackTime = (targetDirection.magnitude / homingAttackSpeed) * homingAttackOvershoot;
                 this.homingAttackEndLag = (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superHomingAttackEndLag : baseHomingAttackEndLag) / this.attackSpeedStat;
                 this.hitboxName = "Ball";
-                this.hitSoundString = "Play_homing_impact";
+                //this.hitSoundString = "Play_homing_impact";
+                this.impactSound = Assets.homingHitSoundEvent.index;
                 base.PlayAnimation("FullBody, Override", "Ball");
                 base.characterMotor.disableAirControlUntilCollision = false;
             }
             else // Normal Melee
             {
 
-                this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
+                //this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
+                this.impactSound = swingIndex ==4 ? Assets.meleeFinalHitSoundEvent.index : Assets.meleeHitSoundEvent.index;
+                this.swingSoundString = swingIndex == 4 ? "Play_swing_low" : "Play_swing";
                 this.hitboxName = "Sword";
                 this.procCoefficient = StaticValues.meleeProcCoefficient;
                 this.damageCoefficient = swingIndex == 4 ? Modules.StaticValues.finalMeleeDamageCoefficient : Modules.StaticValues.meleeDamageCoefficient;
@@ -209,7 +213,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (!effectPlayed)
                 {
-                    Util.PlaySound(this.hitSoundString, base.gameObject);
+                    //Util.PlaySound(this.hitSoundString, base.gameObject);
                     PlayHomingAttackHitEffect();
                     effectPlayed = true;
                 }
@@ -240,7 +244,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (!effectPlayed)
                 {
-                    Util.PlaySound(this.hitSoundString, base.gameObject);
+                    //Util.PlaySound(this.hitSoundString, base.gameObject);
                     PlaySwingEffect();
                     effectPlayed = true;
                 }
@@ -326,8 +330,12 @@ namespace SonicTheHedgehog.SkillStates
             {
                 vector = base.characterDirection.forward;
             }
-            vector = vector * meleeDisplacement;
+            vector *= meleeDisplacement;
             vector *= swingIndex == 4 ? 0.6f : 1;
+            if (Flying())
+            {
+                vector *= 2;
+            }
             base.characterMotor.AddDisplacement(vector);
         }
 
@@ -400,6 +408,11 @@ namespace SonicTheHedgehog.SkillStates
                 if (this.stopwatch >= (this.duration * this.attackStartTime) && this.stopwatch <= (this.duration * this.attackEndTime))
                 {
                     this.FireAttack();
+                    if (!swingSoundPlayed)
+                    {
+                        Util.PlayAttackSpeedSound(swingSoundString, base.gameObject, base.attackSpeedStat);
+                        swingSoundPlayed = true;
+                    }
                 }
 
                 if (this.stopwatch >= (this.duration - this.earlyExitTime) && base.isAuthority)
@@ -468,7 +481,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.pushAwayForce = this.pushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
-            //this.attack.impactSound = this.impactSound;
+            this.attack.impactSound = this.impactSound;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

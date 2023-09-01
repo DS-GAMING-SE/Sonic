@@ -15,6 +15,7 @@ namespace SonicTheHedgehog.SkillStates
         protected float transformationDuration = Modules.StaticValues.superSonicDuration;
         protected bool effectFired = false;
         protected SuperSonicComponent superSonic;
+        protected string transformSoundString = "Play_super_transform";
 
         public float duration;
         protected Animator animator;
@@ -49,10 +50,14 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.FixedUpdate();
             base.characterMotor.velocity = Vector3.zero;
-            if (fixedAge >= this.duration/2 && base.isAuthority && !effectFired && this.superSonic)
+            if (fixedAge >= this.duration/2 && !effectFired && this.superSonic)
             {
-                this.superSonic.superSonicState.SetNextState(new SuperSonic());
                 effectFired = true;
+                Util.PlaySound(this.transformSoundString, base.gameObject);
+                if (base.isAuthority)
+                {
+                    this.superSonic.superSonicState.SetNextState(new SuperSonic());
+                }
             }
            
             

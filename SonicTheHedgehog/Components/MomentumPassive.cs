@@ -26,7 +26,7 @@ namespace SonicTheHedgehog.Components
         public float momentum=0; // from -1 to 1
 
         private float desiredMomentum=0;
-        private bool calced;
+        private bool calced = false;
         private Vector3 prevVelocity = Vector3.zero;
 
         private int frame= 0;
@@ -38,8 +38,6 @@ namespace SonicTheHedgehog.Components
         private static float groundDecay = 0.5f;
         private static float fastDecay = 0.8f;
         private static float slowDecay = 1.35f;
-
-        private static float flyingAccuracy = 0.9f;
 
         private void Start()
         {
@@ -64,6 +62,12 @@ namespace SonicTheHedgehog.Components
                     CalculateMomentum();
                 }
             }
+            else if (!calced)
+            {
+                calced = true;
+                momentum = 0;
+                body.MarkAllStatsDirty();
+            }
         }
 
         private void CalculateMomentum()
@@ -78,14 +82,20 @@ namespace SonicTheHedgehog.Components
                     Vector3 lastVelocity = prevVelocity;
                     if (body.characterMotor.isGrounded)
                     {
-                        velocity = VelocityOnGround(velocity);
-                        lastVelocity = VelocityOnGround(prevVelocity);
+                        velocity = VelocityOnGround(velocity).normalized;
+                        lastVelocity = VelocityOnGround(prevVelocity).normalized;
                     }
                     float dot = Vector3.Dot(velocity, lastVelocity);
-                    float accuracy = dot * Time.fixedDeltaTime * framesBetweenRecalc;
-                    if (dot > flyingAccuracy)
+                    if (body.inputBank.moveVector!=Vector3.zero)
                     {
-                        desiredMomentum = 1f;
+                        if (dot >= 1)
+                        {
+                            desiredMomentum = 1f;
+                        }
+                        else
+                        {
+                            desiredMomentum = 0.4f;
+                        }
                     }
                     else
                     {
@@ -100,7 +110,7 @@ namespace SonicTheHedgehog.Components
                         }
                         else
                         {
-                            momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * 1 * framesBetweenRecalc), desiredMomentum, 1f);
+                            momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * 0.7f * framesBetweenRecalc), desiredMomentum, 1f);
                         }
                         body.MarkAllStatsDirty();
                         prevVelocity = body.characterMotor.velocity;
@@ -131,6 +141,7 @@ namespace SonicTheHedgehog.Components
                 return;
             }
             */
+            
 
             // Not Flying
             if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost)))
@@ -203,6 +214,7 @@ namespace SonicTheHedgehog.Components
         private void MomentumEquipped()
         {
             this.momentumEquipped = this.passiveSkill.skillDef == Modules.Survivors.SonicTheHedgehogCharacter.momentumPassiveDef;
+            this.calced = false;
         }
 
         private Vector3 VelocityOnGround(Vector3 velocity)
