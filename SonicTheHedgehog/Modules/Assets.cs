@@ -121,7 +121,7 @@ namespace SonicTheHedgehog.Modules
 
             meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit");
             meleeFinalHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit_final");
-            homingHitSoundEvent = CreateNetworkSoundEventDef("Play_homing_attack_impact");
+            homingHitSoundEvent = CreateNetworkSoundEventDef("Play_homing_impact");
             grandSlamHitSoundEvent = CreateNetworkSoundEventDef("Play_strong_impact");
 
             if (sonicBoomImpactEffect)

@@ -38,7 +38,7 @@ namespace SonicTheHedgehog.SkillStates
             this.firedCounter = 0;
             this.duration = SonicBoom.baseDuration / this.attackSpeedStat;
             this.fireTime = baseFireTime / this.attackSpeedStat;
-            base.characterBody.SetAimTimer(2f);
+            base.characterBody.SetAimTimer(1.5f);
             base.PlayAnimation("FullBody, Override", "SonicBoom", "Slash.playbackRate", this.fireTime*Modules.StaticValues.sonicBoomCount);
         }
 
@@ -50,14 +50,11 @@ namespace SonicTheHedgehog.SkillStates
 
         private void Fire()
         {
-            if (firedCounter == 1 || this.fireTime >= 0.06f)
-            {
-                Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
-            }
+            this.firedCounter++;
+            Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
             if (base.isAuthority)
             {
                 StartAimMode();
-                this.firedCounter++;
                 base.characterBody.AddSpreadBloom(1.5f);
                 if (firedCounter==1 || this.fireTime>=0.06f)
                 {

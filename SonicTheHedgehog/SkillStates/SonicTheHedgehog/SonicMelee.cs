@@ -114,9 +114,9 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     this.targetDirection = (this.target.transform.position - base.transform.position);
                 }
+                Util.PlaySound(homingAttackSoundString, base.gameObject);
                 if (base.isAuthority)
                 {
-                    Util.PlaySound(homingAttackSoundString, base.gameObject);
                     base.characterMotor.Motor.ForceUnground();
                     if (targetDirection!=Vector3.zero)
                     {

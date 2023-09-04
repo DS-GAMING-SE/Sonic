@@ -35,6 +35,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
+                effectFired = true;
                 this.outer.SetNextStateToMain();
                 return;
             }

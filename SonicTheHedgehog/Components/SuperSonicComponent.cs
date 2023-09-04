@@ -22,6 +22,8 @@ namespace SonicTheHedgehog.Components
         public static SkillDef boost;
         public static SkillDef grandSlam;
 
+        public bool canTransform=false;
+
 
         private void Start()
         {
@@ -40,6 +42,14 @@ namespace SonicTheHedgehog.Components
         {
             Stage.onServerStageBegin -= ResetSuperSonic;
             Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
+        }
+
+        public void Transform(EntityStateMachine entityState)
+        {
+            if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
+            {
+                canTransform = false;
+            }
         }
         public void ResetSuperSonic(Stage stage)
         {

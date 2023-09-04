@@ -5,11 +5,15 @@ using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using EmotesAPI;
+using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules;
 
 namespace SonicTheHedgehog.SkillStates
 {
     public class SonicEntityState : GenericCharacterMain
     {
+        private SuperSonicComponent superSonicComponent;
+        
         private float idleExtraTimer;
         private int idleExtraCount;
 
@@ -22,6 +26,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
+            superSonicComponent = base.GetComponent<SuperSonicComponent>();
             idleExtraTimer = idleExtraDefault;
             idleExtraCount = 0;
             if (base.isGrounded && base.characterBody.isSprinting)
@@ -83,6 +88,19 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterMotor.onHitGroundAuthority -= OnHitGround;
             }
             base.OnExit();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform)
+            {
+                if (Input.GetKeyDown("v"))
+                {
+                    superSonicComponent.Transform(this.outer);
+                    return;
+                }
+            }
         }
 
 
