@@ -35,7 +35,6 @@ namespace SonicTheHedgehog.Components
         
         public void FixedUpdate()
         {
-            
         }
 
         private void OnDestroy()
