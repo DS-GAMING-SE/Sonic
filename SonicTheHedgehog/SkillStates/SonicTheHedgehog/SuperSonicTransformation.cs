@@ -23,7 +23,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.superSonic= base.GetComponent<SuperSonicComponent>();
+            this.superSonic = base.GetComponent<SuperSonicComponent>();
             if (!base.HasBuff(Modules.Buffs.superSonicBuff))
             {
                 this.duration = this.baseDuration;
@@ -31,7 +31,8 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
                 }
-                //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", baseDuration);
+
+                base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", baseDuration);
             }
             else
             {

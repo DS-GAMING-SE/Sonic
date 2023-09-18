@@ -48,8 +48,10 @@ namespace SonicTheHedgehog.SkillStates
                     base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
                     base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
                 }
+
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicTransformationEffect, base.gameObject, "MainHurtbox", true);
             }
+
             if (NetworkServer.active)
             {
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
@@ -57,6 +59,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterBody.AddTimedBuff(RoR2Content.Buffs.Immune, Modules.StaticValues.superSonicDuration+1, 1);
             }
 
+            superSonicComponent.UpdateModel();
         }
 
         public override void OnExit()
@@ -68,10 +71,10 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
-                Chat.AddMessage("why does aura despawn after 12 seconds that's so random");
+                //Chat.AddMessage("why does aura despawn after 12 seconds that's so random");
             }
 
-            //this.model.baseRendererInfos[0].defaultMaterial = this.model.gameObject.GetComponent<ModelSkinController>().skins[this.characterBody.skinIndex].rendererInfos[0].defaultMaterial;
+            superSonicComponent.ResetModel();
 
             if (base.isAuthority && base.skillLocator)
             {

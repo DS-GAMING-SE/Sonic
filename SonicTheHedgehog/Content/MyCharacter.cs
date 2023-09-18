@@ -220,7 +220,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBazookaOutIcon"),
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperSonicIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
@@ -239,7 +239,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1
             });
 
-            //Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
+            Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
             #endregion
 
 
@@ -308,6 +308,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             SuperSonicComponent.grandSlam = Modules.Skills.CreateSkillDef(grandSlam);
 
             superSonicComponent.superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+            superSonicComponent.defaultMaterial = Materials.CreateHopooMaterial("matSonic");
 
             NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
             Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
