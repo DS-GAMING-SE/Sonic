@@ -107,6 +107,7 @@ namespace SonicTheHedgehog
             On.RoR2.GenericSkill.CanApplyAmmoPack += CanApplyAmmoPackToBoost;
             On.RoR2.GenericSkill.ApplyAmmoPack += ApplyAmmoPackToBoost;
             On.RoR2.JitterBones.Start += IHateJitterBones;
+            On.RoR2.HealthComponent.TakeDamage += SuperSonicInvincibility;
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
             if (emoteAPILoaded)
             {
@@ -145,15 +146,31 @@ namespace SonicTheHedgehog
                 procCoefficient = StaticValues.homingAttackProcCoefficient
             };
             */
+            ProcCoefficientInfo superMeleeGhost = new ProcCoefficientInfo
+            {
+                name = "Spectral Attack",
+                procCoefficient = StaticValues.superMeleeExtraProcCoefficient
+            };
             AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME", melee); /*new List<ProcCoefficientInfo>
             {
                 melee//,homing
             });*/
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME", new List<ProcCoefficientInfo>
+            {
+                melee, superMeleeGhost
+            });
+
             AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME", new ProcCoefficientInfo
             {
                 name = "Sonic Boom",
                 procCoefficient = StaticValues.sonicBoomProcCoefficient
             });
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME", new ProcCoefficientInfo
+            {
+                name = "Sonic Boom",
+                procCoefficient = StaticValues.sonicBoomProcCoefficient
+            });
+
             ProcCoefficientInfo spin = new ProcCoefficientInfo
             {
                 name = "Repeated Attack",
@@ -164,9 +181,18 @@ namespace SonicTheHedgehog
                 name = "Final Attack",
                 procCoefficient = StaticValues.grandSlamFinalProcCoefficient
             };
+            ProcCoefficientInfo superGrandSlamAfterimage = new ProcCoefficientInfo
+            {
+                name = "Afterimages",
+                procCoefficient = StaticValues.superGrandSlamDOTProcCoefficient
+            };
             AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME", new List<ProcCoefficientInfo>
             {
                 spin,kick
+            });
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME", new List<ProcCoefficientInfo>
+            {
+                spin,kick,superGrandSlamAfterimage
             });
 
             RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostSpeedCoefficient*100}% movement speed");
@@ -278,6 +304,19 @@ namespace SonicTheHedgehog
                 Object.Destroy(self);
             }
             orig(self);
+        }
+
+        private void SuperSonicInvincibility(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
+        {
+            if (self.body.HasBuff(Buffs.superSonicBuff))
+            {
+                damage.rejected = true;
+                EffectManager.SpawnEffect(HealthComponent.AssetReferences.damageRejectedPrefab, new EffectData
+                {
+                    origin = damage.position
+                }, true);
+            }
+            orig(self, damage);
         }
     }
 }

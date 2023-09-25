@@ -52,6 +52,7 @@ namespace SonicTheHedgehog.SkillStates
         private float speedMultiplier;
         private bool animationEnded=false;
         private bool effectFired = false;
+        private Vector3 superProjectilePosition;
 
         public override void OnEnter()
         {
@@ -74,6 +75,7 @@ namespace SonicTheHedgehog.SkillStates
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
+            superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, -3, 0);
 
             PrepareOverlapAttack();
         }
@@ -167,6 +169,11 @@ namespace SonicTheHedgehog.SkillStates
                         if (!hasFired)
                         {
                             hasFired = true;
+                            if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+                            {
+                                GameObject prefab = Projectiles.superSonicAfterimageRainPrefab;
+                                RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 10, base.RollCrit());
+                            }
                             EndChrysalis();
                         }
                         if (this.target!=null)

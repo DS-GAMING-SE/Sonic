@@ -56,7 +56,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 StartAimMode();
                 base.characterBody.AddSpreadBloom(1.5f);
-                if (firedCounter==1 || this.fireTime>=0.06f)
+                if ((firedCounter==1 || this.fireTime>=0.06f) && !base.characterBody.HasBuff(Buffs.superSonicBuff))
                 {
                     EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
                 }

@@ -10,14 +10,17 @@ namespace SonicTheHedgehog.Modules
     {
         internal static GameObject sonicBoomPrefab;
         internal static GameObject superSonicBoomPrefab;
+        internal static GameObject superSonicAfterimageRainPrefab;
 
         internal static void RegisterProjectiles()
         {
             CreateSonicBoom();
             CreateSuperSonicBoom();
+            CreateSuperSonicAfterimageRain();
 
             AddProjectile(sonicBoomPrefab);
             AddProjectile(superSonicBoomPrefab);
+            AddProjectile(superSonicAfterimageRainPrefab);
         }
 
         internal static void AddProjectile(GameObject projectileToAdd)
@@ -65,8 +68,33 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
+            bombController.canImpactOnTrigger = false;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
+        }
+
+        private static void CreateSuperSonicAfterimageRain()
+        {
+            superSonicAfterimageRainPrefab = CloneProjectilePrefab("TreebotMortarRain", "SuperSonicAfterimageRainProjectile");
+            Vector3 scale = superSonicAfterimageRainPrefab.transform.localScale * 5;
+            scale.y *= 2;
+            superSonicAfterimageRainPrefab.transform.localScale = scale;
+
+            ProjectileDotZone dot = superSonicAfterimageRainPrefab.GetComponent<ProjectileDotZone>();
+            dot.overlapProcCoefficient = StaticValues.superGrandSlamDOTProcCoefficient;
+            dot.resetFrequency = 3;
+            dot.lifetime = StaticValues.superGrandSlamDOTLifetime;
+            dot.forceVector = Vector3.down;
+
+            ProjectileDamage damage = superSonicAfterimageRainPrefab.GetComponent<ProjectileDamage>();
+
+            damage.damage = StaticValues.superGrandSlamDOTDamage;
+            damage.force = 10;
+
+            ProjectileController rainController = superSonicAfterimageRainPrefab.GetComponent<ProjectileController>();
+            rainController.cannotBeDeleted = true;
+            //if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) rainController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
+            rainController.startSound = "";
         }
 
         private static void InitializeImpactExplosion(ProjectileImpactExplosion projectileImpactExplosion)

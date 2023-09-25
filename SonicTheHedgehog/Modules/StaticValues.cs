@@ -71,6 +71,8 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superMeleeExtraDamagePercent = 0.6f;
 
+        internal const float superMeleeExtraProcCoefficient = 0f;
+
         // Super Sonic Boom
 
         internal const float superSonicBoomDamageCoefficient = sonicBoomDamageCoefficient*2;
@@ -81,7 +83,11 @@ namespace SonicTheHedgehog.Modules
 
         // Super Sonic Grand Slam
 
-        internal const float superGrandSlamDOTDamage = 3f;
+        internal const float superGrandSlamDOTDamage = 6f;
+
+        internal const float superGrandSlamDOTProcCoefficient = 0.3f;
+
+        internal const float superGrandSlamDOTLifetime = 6f;
 
     }
 }

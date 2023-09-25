@@ -15,21 +15,19 @@ namespace SonicTheHedgehog.SkillStates
     public class SuperSonic : BaseState
     {
         SuperSonicComponent superSonicComponent;
-        Material prevMaterial;
         UnityEngine.Object superAura;
         bool superBuffApplied;
-        CharacterModel model;
+
         public override void OnEnter()
         {
             base.OnEnter();
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
-            //model = base.characterBody.modelLocator.GetComponent<CharacterModel>();
 
             Transform transform = base.gameObject.transform;
             this.superAura = UnityEngine.Object.Instantiate<UnityEngine.Object>(Modules.Assets.superSonicAura, base.FindModelChild("MainHurtbox"));
-            //this.superAura = PrefabAPI.InstantiateClone(Modules.Assets.superSonicAura, "SuperAura", true);
 
-            //this.model.baseRendererInfos[0].defaultMaterial = Assets.mainAssetBundle.LoadAsset<Material>("matSuperSonic");
+            superSonicComponent.SuperModel();
+
             UpdateFlight(true);
 
             if (base.isAuthority)
@@ -54,7 +52,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
                 base.characterBody.AddTimedBuff(Modules.Buffs.superSonicBuff, Modules.StaticValues.superSonicDuration+1, 1);
-                base.characterBody.AddTimedBuff(RoR2Content.Buffs.Immune, Modules.StaticValues.superSonicDuration+1, 1);
+                //base.characterBody.AddTimedBuff(RoR2Content.Buffs.Immune, Modules.StaticValues.superSonicDuration+1, 1);
             }
 
         }
@@ -62,6 +60,9 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             UpdateFlight(false);
+
+            superSonicComponent.ResetModel();
+
             if (this.superAura)
             {
                 Destroy(this.superAura);
@@ -70,8 +71,6 @@ namespace SonicTheHedgehog.SkillStates
             {
                 Chat.AddMessage("why does aura despawn after 12 seconds that's so random");
             }
-
-            //this.model.baseRendererInfos[0].defaultMaterial = this.model.gameObject.GetComponent<ModelSkinController>().skins[this.characterBody.skinIndex].rendererInfos[0].defaultMaterial;
 
             if (base.isAuthority && base.skillLocator)
             {

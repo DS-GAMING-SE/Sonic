@@ -15,19 +15,22 @@ namespace SonicTheHedgehog.Components
     {
         public EntityStateMachine superSonicState;
         public Material superSonicMaterial;
+        public Material defaultMaterial;
         private CharacterBody body;
+        private CharacterModel model;
 
         public static SkillDef melee;
         public static SkillDef sonicBoom;
         public static SkillDef boost;
         public static SkillDef grandSlam;
 
-        public bool canTransform=false;
+        public bool canTransform=true;
 
 
         private void Start()
         {
             body = GetComponent<CharacterBody>();
+            model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
             Stage.onServerStageBegin += ResetSuperSonic;
             Inventory.onInventoryChangedGlobal += OnInventoryChanged;
@@ -51,6 +54,19 @@ namespace SonicTheHedgehog.Components
                 canTransform = false;
             }
         }
+
+        // Thank you DxsSucuk
+        public void SuperModel()
+        {
+            defaultMaterial = model.baseRendererInfos[0].defaultMaterial;
+            model.baseRendererInfos[0].defaultMaterial = superSonicMaterial;
+        }
+
+        public void ResetModel()
+        {
+            model.baseRendererInfos[0].defaultMaterial = defaultMaterial;
+        }
+
         public void ResetSuperSonic(Stage stage)
         {
             

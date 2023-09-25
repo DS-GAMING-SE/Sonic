@@ -255,7 +255,8 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (boosting && boostEffectCooldown <= 0)
             {
-                if (powerBoosting)
+                bool super = base.characterBody.HasBuff(Buffs.superSonicBuff);
+                if (powerBoosting || super)
                 {
                     boostEffectCooldown = 0.6f;
 
@@ -263,7 +264,7 @@ namespace SonicTheHedgehog.SkillStates
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
-                        EffectManager.SimpleMuzzleFlash(Assets.powerBoostFlashEffect, base.gameObject, "BallHitbox", true);
+                        EffectManager.SimpleMuzzleFlash(super ? Assets.superBoostFlashEffect : Assets.powerBoostFlashEffect, base.gameObject, "BallHitbox", true);
                     }
 
                     if (temporaryOverlay)
@@ -278,7 +279,7 @@ namespace SonicTheHedgehog.SkillStates
                         temporaryOverlay.duration = 0.2f;
                         temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 3f, 0.25f);
                         temporaryOverlay.destroyComponentOnEnd = false;
-                        temporaryOverlay.originalMaterial = LegacyResourcesAPI.Load<Material>("Materials/matOnHelfire");
+                        temporaryOverlay.originalMaterial = super ? LegacyResourcesAPI.Load<Material>("Materials/matStrongerBurn") : LegacyResourcesAPI.Load<Material>("Materials/matOnHelfire");
                         temporaryOverlay.enabled = true;
                         temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());
                     }
