@@ -30,6 +30,7 @@ namespace SonicTheHedgehog.SkillStates
         private string muzzleString="SwingCenter";
         private float movementReduction;
         private Vector3 targetVelocity;
+        private bool exitAnimPlayed = false;
 
         public override void OnEnter()
         {
@@ -44,7 +45,6 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void OnExit()
         {
-            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             base.OnExit();
         }
 
@@ -91,11 +91,11 @@ namespace SonicTheHedgehog.SkillStates
             targetVelocity = (base.inputBank.moveVector.normalized*base.characterBody.moveSpeed)*movementReduction;
             targetVelocity.y = -0.5f;
             base.characterMotor.velocity = easedIn ? targetVelocity : Vector3.Lerp(base.characterMotor.velocity, targetVelocity, base.fixedAge/this.duration);
-            if (base.fixedAge >= this.fireTime*(firedCounter+0.5f) && firedCounter<Modules.StaticValues.sonicBoomCount)
+            if (base.fixedAge >= this.fireTime*(firedCounter+0.5f) && firedCounter < Modules.StaticValues.sonicBoomCount)
             {
                 this.Fire();
             }
-            if(base.fixedAge>=this.fireTime*Modules.StaticValues.sonicBoomCount && base.isAuthority&&base.skillLocator.secondary.stock>0&&base.inputBank.skill2.down)
+            if (base.fixedAge>=this.fireTime*Modules.StaticValues.sonicBoomCount && base.isAuthority&&base.skillLocator.secondary.stock>0&&base.inputBank.skill2.down)
             {
                 this.outer.SetNextState(new SonicBoom
                 {
@@ -108,6 +108,12 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.skillLocator.utility.OnExecute();
                 return;
+            }
+            if (base.fixedAge >= Modules.StaticValues.sonicBoomFireTime * (Modules.StaticValues.sonicBoomCount) && !exitAnimPlayed)
+            {
+                base.PlayAnimation("FullBody, Override", "BufferEmpty");
+                base.PlayAnimation("Body", "SonicBoomEnd", "Slash.playbackRate", this.fireTime * Modules.StaticValues.sonicBoomCount);
+                exitAnimPlayed = true;
             }
             if (base.fixedAge >= this.duration && base.isAuthority)
             {

@@ -12,7 +12,6 @@ namespace SonicTheHedgehog.Components
 {
     public class MomentumPassive : MonoBehaviour
     {
-        // Stupid passive skill def whatever
         // Needs interaction for landing on a slope
         // Needs special interaction with flying. Flying in a straight line builds speed?
 

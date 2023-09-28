@@ -20,9 +20,14 @@ namespace SonicTheHedgehog.Components
         private CharacterModel model;
 
         public static SkillDef melee;
+
         public static SkillDef sonicBoom;
+        public static SkillDef parry;
+
         public static SkillDef boost;
+
         public static SkillDef grandSlam;
+
 
         public bool canTransform=true;
 

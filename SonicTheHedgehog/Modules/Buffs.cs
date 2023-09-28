@@ -13,17 +13,17 @@ namespace SonicTheHedgehog.Modules
 
         internal static void RegisterBuffs()
         {
-            boostBuff = AddNewBuff("SonicBoostBuff",
+            boostBuff = AddNewBuff("bdSonicBoost",
                 LegacyResourcesAPI.Load<BuffDef>("BuffDefs/CloakSpeed").iconSprite, 
                 new Color(0, 0.7f, 1), 
                 false, 
                 false);
-            superSonicBuff = AddNewBuff("SuperSonic",
+            superSonicBuff = AddNewBuff("bdSuperSonic",
                 LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
                 Color.yellow,
                 false,
                 false);
-            ballBuff = AddNewBuff("SonicBallArmor",
+            ballBuff = AddNewBuff("bdSonicBallArmor",
                 LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
                 new Color(0, 0.35f, 1),
                 false,

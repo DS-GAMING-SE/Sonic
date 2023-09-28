@@ -31,22 +31,8 @@ namespace SonicTheHedgehog.SkillStates
         protected float meleeDisplacement = 0.3f;
         protected float displacementDIMultiplier = 1.5f;
 
-        protected float maxHomingAttackRange;
-        protected float homingAttackSpeed;
-        protected bool homingAttack;
-        protected float estimatedHomingAttackTime;
-        protected float homingAttackOvershoot;
-        protected float baseHomingAttackEndLag = 0.3f;
-        protected float superHomingAttackEndLag = 0.1f;
-        protected float homingAttackEndLag;
-        protected float homingAttackHitHopVelocity = 10;
-        private HurtBox target;
-        private Vector3 targetDirection;
-        protected bool homingAttackHit;
-
         protected string swingSoundString = "";
         protected string hitSoundString = "";
-        protected string homingAttackSoundString = "Play_homing_attack";
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
@@ -73,84 +59,22 @@ namespace SonicTheHedgehog.SkillStates
             base.OnEnter();
             flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             this.hasFired = false;
-            this.homingAttack = false;
-            this.maxHomingAttackRange = 15f+(base.characterBody.moveSpeed*base.characterBody.sprintingSpeedMultiplier)*2f;
-            this.homingAttackSpeed = (base.characterBody.moveSpeed*base.characterBody.sprintingSpeedMultiplier) * 5;
-            this.homingAttackOvershoot = 1.4f;
 
-            BullseyeSearch search = new BullseyeSearch();
-            search.searchOrigin = base.GetAimRay().origin;
-            search.searchDirection = base.GetAimRay().direction;
-            search.maxDistanceFilter = this.maxHomingAttackRange;
-            search.minDistanceFilter = 8;
-            search.maxAngleFilter = 10;
-            TeamMask mask = TeamMask.GetEnemyTeams(base.teamComponent.teamIndex);
-            search.teamMaskFilter = mask;
-            search.sortMode = BullseyeSearch.SortMode.Angle;
-            search.RefreshCandidates();
-
-            SphereSearch sphereSearch= new SphereSearch();
-            sphereSearch.origin = base.characterBody.transform.position+base.GetAimRay().direction;
-            sphereSearch.radius = 3;
-            sphereSearch.mask = LayerIndex.entityPrecise.mask;
-            sphereSearch.RefreshCandidates();
-            sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
-
-            if (search.GetResults().Any() && !sphereSearch.GetHurtBoxes().Any() && base.characterBody.moveSpeed>0.1) // Homing Attack
-            {
-                if (NetworkServer.active)
-                {
-                    base.characterBody.AddBuff(Modules.Buffs.ballBuff);
-                }
-                this.damageCoefficient = Modules.StaticValues.homingAttackDamageCoefficient;
-                this.procCoefficient = StaticValues.homingAttackProcCoefficient;
-                this.attackRecoil = 3;
-                this.hitStopDuration = 0.07f;
-                this.target = search.GetResults().First<HurtBox>();
-                this.homingAttack = true;
-                base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
-                this.targetDirection = Vector3.zero;
-                if (this.target!=null)
-                {
-                    this.targetDirection = (this.target.transform.position - base.transform.position);
-                }
-                Util.PlaySound(homingAttackSoundString, base.gameObject);
-                if (base.isAuthority)
-                {
-                    base.characterMotor.Motor.ForceUnground();
-                    if (targetDirection!=Vector3.zero)
-                    {
-                        EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
-                    }
-                }
-                EndChrysalis();
-                this.estimatedHomingAttackTime = (targetDirection.magnitude / homingAttackSpeed) * homingAttackOvershoot;
-                this.homingAttackEndLag = (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superHomingAttackEndLag : baseHomingAttackEndLag) / this.attackSpeedStat;
-                this.hitboxName = "Ball";
-                //this.hitSoundString = "Play_homing_impact";
-                this.impactSound = Assets.homingHitSoundEvent.index;
-                base.PlayAnimation("FullBody, Override", "Ball");
-                base.characterMotor.disableAirControlUntilCollision = false;
-            }
-            else // Normal Melee
-            {
-
-                //this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
-                this.impactSound = swingIndex ==4 ? Assets.meleeFinalHitSoundEvent.index : Assets.meleeHitSoundEvent.index;
-                this.swingSoundString = swingIndex == 4 ? "Play_swing_low" : "Play_swing";
-                this.hitboxName = "Sword";
-                this.procCoefficient = StaticValues.meleeProcCoefficient;
-                this.damageCoefficient = swingIndex == 4 ? Modules.StaticValues.finalMeleeDamageCoefficient : Modules.StaticValues.meleeDamageCoefficient;
-                this.attackRecoil = swingIndex == 4 ? 2.5f : 0.6f;
-                this.duration = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed / this.attackSpeedStat;
-                this.earlyExitTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.2f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed*0.1f / this.attackSpeedStat;
-                this.attackStartTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.6f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.45f / this.attackSpeedStat;
-                this.attackEndTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.8f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.7f / this.attackSpeedStat;
-                this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
-                this.hitHopVelocity= Flying() ? 0 : 3+(3/this.attackSpeedStat);
-                StartAimMode();
-                PlayAttackAnimation();
-            }
+            //this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
+            this.impactSound = swingIndex == 4 ? Assets.meleeFinalHitSoundEvent.index : Assets.meleeHitSoundEvent.index;
+            this.swingSoundString = swingIndex == 4 ? "Play_swing_low" : "Play_swing";
+            this.hitboxName = "Sword";
+            this.procCoefficient = StaticValues.meleeProcCoefficient;
+            this.damageCoefficient = swingIndex == 4 ? Modules.StaticValues.finalMeleeDamageCoefficient : Modules.StaticValues.meleeDamageCoefficient;
+            this.attackRecoil = swingIndex == 4 ? 2.5f : 0.6f;
+            this.duration = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed / this.attackSpeedStat;
+            this.earlyExitTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.2f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.1f / this.attackSpeedStat;
+            this.attackStartTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.6f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.45f / this.attackSpeedStat;
+            this.attackEndTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.8f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.7f / this.attackSpeedStat;
+            this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
+            this.hitHopVelocity = Flying() ? 0 : 3 + (3 / this.attackSpeedStat);
+            StartAimMode();
+            PlayAttackAnimation();
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
@@ -170,27 +94,12 @@ namespace SonicTheHedgehog.SkillStates
             {
                 anim = swingIndex % 2 == 0 ? "Punch" : "Kick";
             }
-            base.PlayAnimation("FullBody, Override", anim, "Slash.playbackRate", this.duration*0.65f);
+            base.PlayAnimation("FullBody, Override", anim, "Slash.playbackRate", this.duration*0.8f);
         }
 
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
-            if ((homingAttack && !animationEnded) || cancelled)
-            {
-                base.PlayAnimation("FullBody, Override", "BufferEmpty");
-            }
-            if (base.characterBody.HasBuff(Modules.Buffs.ballBuff))
-            {
-                if (NetworkServer.active)
-                {
-                    base.characterBody.RemoveBuff(Modules.Buffs.ballBuff);
-                }
-            }
-            if (base.characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreFallDamage))
-            {
-                base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
-            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -202,107 +111,53 @@ namespace SonicTheHedgehog.SkillStates
             EffectManager.SimpleMuzzleFlash(Modules.Assets.meleeHitEffect, base.gameObject, this.muzzleString, true);
         }
 
-        protected virtual void PlayHomingAttackHitEffect()
-        {
-            EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
-        }
-
         protected virtual void OnHitEnemyAuthority()
         {
-            if (homingAttack)
+            if (!effectPlayed)
             {
-                if (!effectPlayed)
+                //Util.PlaySound(this.hitSoundString, base.gameObject);
+                PlaySwingEffect();
+                effectPlayed = true;
+            }
+            if (!this.hasHopped && this.hitHopVelocity > 0f)
+            {
+                if (base.characterMotor && !base.characterMotor.isGrounded && this.hitHopVelocity > 0f)
                 {
-                    //Util.PlaySound(this.hitSoundString, base.gameObject);
-                    PlayHomingAttackHitEffect();
-                    effectPlayed = true;
+                    base.SmallHop(base.characterMotor, this.hitHopVelocity);
                 }
 
-                if (base.characterMotor)
-                {
-                    base.characterMotor.velocity = Vector3.zero;
-                    base.characterMotor.velocity.y = Flying() ? 0 : homingAttackHitHopVelocity;
-                }
-
-                if (NetworkServer.active)
-                {
-                    base.characterBody.RemoveBuff(Modules.Buffs.ballBuff);
-                }
-                this.stopwatch = 0f;
-                this.hasFired = true;
                 this.hasHopped = true;
-
-                if (!this.inHitPause && this.hitStopDuration > 0f)
-                {
-                    this.storedVelocity = base.characterMotor.velocity;
-                    this.hitStopCachedState = base.CreateHitStopCachedState(base.characterMotor, this.animator, "Slash.playbackRate");
-                    this.hitPauseTimer = this.hitStopDuration / this.attackSpeedStat;
-                    this.inHitPause = true;
-                }
             }
-            else
+
+            if (!this.inHitPause && this.hitStopDuration > 0f)
             {
-                if (!effectPlayed)
-                {
-                    //Util.PlaySound(this.hitSoundString, base.gameObject);
-                    PlaySwingEffect();
-                    effectPlayed = true;
-                }
-                if (!this.hasHopped && this.hitHopVelocity>0f)
-                {
-                    if (base.characterMotor && !base.characterMotor.isGrounded && this.hitHopVelocity > 0f)
-                    {
-                        base.SmallHop(base.characterMotor, this.hitHopVelocity);
-                    }
-
-                    this.hasHopped = true;
-                }
-
-                if (!this.inHitPause && this.hitStopDuration > 0f)
-                {
-                    this.storedVelocity = base.characterMotor.velocity;
-                    this.hitStopCachedState = base.CreateHitStopCachedState(base.characterMotor, this.animator, "Slash.playbackRate");
-                    this.hitPauseTimer = this.hitStopDuration / this.attackSpeedStat;
-                    this.inHitPause = true;
-                }
+                this.storedVelocity = base.characterMotor.velocity;
+                this.hitStopCachedState = base.CreateHitStopCachedState(base.characterMotor, this.animator, "Slash.playbackRate");
+                this.hitPauseTimer = this.hitStopDuration / this.attackSpeedStat;
+                this.inHitPause = true;
             }
-            
         }
 
         private void FireAttack()
         {
-            if (homingAttack)
+            if (!this.hasFired)
             {
+                this.hasFired = true;
+                Util.PlayAttackSpeedSound(this.swingSoundString, base.gameObject, this.attackSpeedStat);
+
                 if (base.isAuthority)
                 {
-                    if (this.attack.Fire())
-                    {
-                        base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
-                        this.OnHitEnemyAuthority();
-                    }
+                    base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
                 }
             }
-            else
+
+            if (base.isAuthority)
             {
-                if (!this.hasFired)
+                Displacement();
+                if (this.attack.Fire())
                 {
-                    this.hasFired = true;
-                    Util.PlayAttackSpeedSound(this.swingSoundString, base.gameObject, this.attackSpeedStat);
+                    this.OnHitEnemyAuthority();
 
-                    if (base.isAuthority)
-                    {
-                        base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
-                    }
-                }
-
-                if (base.isAuthority)
-                {
-                    Displacement();
-                    if (this.attack.Fire())
-                    {
-                        this.OnHitEnemyAuthority();
-
-                    }
                 }
             }
         }
@@ -350,12 +205,6 @@ namespace SonicTheHedgehog.SkillStates
                 base.ConsumeHitStopCachedState(this.hitStopCachedState, base.characterMotor, this.animator);
                 this.inHitPause = false;
                 base.characterMotor.velocity = this.storedVelocity;
-                if (homingAttack)
-                {
-                    animationEnded = true;
-                    base.PlayAnimation("FullBody, Override", "BufferEmpty");
-                    base.PlayAnimation("Body", "Backflip");
-                }
             }
 
             if (!this.inHitPause)
@@ -368,90 +217,40 @@ namespace SonicTheHedgehog.SkillStates
                 if (this.animator) this.animator.SetFloat("Swing.playbackRate", 0f);
             }
 
-            if (homingAttack&&base.isAuthority)
+            if (this.stopwatch >= (this.duration * this.attackStartTime) && this.stopwatch <= (this.duration * this.attackEndTime))
             {
-                if (this.hasFired)
+                this.FireAttack();
+                if (!swingSoundPlayed)
                 {
-                    if (this.stopwatch >= this.homingAttackEndLag)
-                    {
-                        this.outer.SetNextStateToMain();
-                        return;
-                    }
+                    Util.PlayAttackSpeedSound(swingSoundString, base.gameObject, base.attackSpeedStat);
+                    swingSoundPlayed = true;
                 }
-                else
-                {
-                    if (fixedAge < this.estimatedHomingAttackTime)
-                    {
-                        this.homingAttackSpeed = (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 5;
-                        if (this.target != null)
-                        {
-                            targetDirection = this.target.transform.position - base.transform.position;
-                        }
-                        base.characterMotor.velocity = targetDirection.normalized * this.homingAttackSpeed;
-                        base.characterDirection.forward = targetDirection.normalized;
-                        if (fixedAge>this.estimatedHomingAttackTime/2.5f)
-                        {
-                            this.FireAttack();
-                        }
-                    }
-                    else
-                    {
-                        base.characterMotor.velocity = Vector3.zero;
-                        this.outer.SetNextStateToMain();
-                        return;
-                    }
-                }
-                
             }
-            else
+
+            if (this.stopwatch >= (this.duration - this.earlyExitTime) && base.isAuthority)
             {
-                if (this.stopwatch >= (this.duration * this.attackStartTime) && this.stopwatch <= (this.duration * this.attackEndTime))
+                if (base.inputBank.skill1.down)
                 {
-                    this.FireAttack();
-                    if (!swingSoundPlayed)
+                    if (!this.hasFired)
                     {
-                        Util.PlayAttackSpeedSound(swingSoundString, base.gameObject, base.attackSpeedStat);
-                        swingSoundPlayed = true;
+                        this.FireAttack();
                     }
-                }
-
-                if (this.stopwatch >= (this.duration - this.earlyExitTime) && base.isAuthority)
-                {
-                    if (base.inputBank.skill1.down)
-                    {
-                        if (!this.hasFired)
-                        {
-                            this.FireAttack();
-                        }
-                        this.SetNextState();
-                        return;
-                    }
-                }
-
-
-                if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
-                {
-                    cancelled = true;
-                    base.skillLocator.utility.OnExecute();
-                    return;
-                }
-                if (this.stopwatch >= this.duration && base.isAuthority)
-                {
-                    this.outer.SetNextStateToMain();
+                    this.SetNextState();
                     return;
                 }
             }
-        }
 
-        private void EndChrysalis()
-        {
-            JetpackController chrysalis = JetpackController.FindJetpackController(base.gameObject);
-            if (chrysalis)
+
+            if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
             {
-                if (chrysalis.stopwatch >= chrysalis.duration && NetworkServer.active)
-                {
-                    UnityEngine.Object.Destroy(chrysalis.gameObject);
-                }
+                cancelled = true;
+                base.skillLocator.utility.OnExecute();
+                return;
+            }
+            if (this.stopwatch >= this.duration && base.isAuthority)
+            {
+                this.outer.SetNextStateToMain();
+                return;
             }
         }
 
@@ -486,7 +285,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
-            return homingAttack ? InterruptPriority.PrioritySkill : InterruptPriority.Skill;
+            return InterruptPriority.Skill;
         }
 
         public override void OnSerialize(NetworkWriter writer)

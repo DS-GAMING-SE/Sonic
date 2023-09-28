@@ -19,6 +19,7 @@ using RiskOfOptions;
 
 using SonicTheHedgehog.SkillStates;
 using RiskOfOptions.Options;
+using EntityStates;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -107,7 +108,8 @@ namespace SonicTheHedgehog
             On.RoR2.GenericSkill.CanApplyAmmoPack += CanApplyAmmoPackToBoost;
             On.RoR2.GenericSkill.ApplyAmmoPack += ApplyAmmoPackToBoost;
             On.RoR2.JitterBones.Start += IHateJitterBones;
-            On.RoR2.HealthComponent.TakeDamage += SuperSonicInvincibility;
+            On.RoR2.HealthComponent.TakeDamage += TakeDamage;
+            On.RoR2.GlobalEventManager.OnHitEnemy += ParryCheck;
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
             if (emoteAPILoaded)
             {
@@ -306,7 +308,7 @@ namespace SonicTheHedgehog
             orig(self);
         }
 
-        private void SuperSonicInvincibility(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
+        private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
         {
             if (self.body.HasBuff(Buffs.superSonicBuff))
             {
@@ -317,6 +319,19 @@ namespace SonicTheHedgehog
                 }, true);
             }
             orig(self, damage);
+        }
+        private void ParryCheck(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damage, GameObject victim)
+        {
+            EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(victim, "Body");
+            if (stateMachine)
+            {
+                EntityState state = stateMachine.state;
+                if (state.GetType() == typeof(Parry))
+                {
+                    ((Parry)state).OnTakeDamage(damage);
+                }
+            }
+            orig(self, damage, victim);
         }
     }
 }

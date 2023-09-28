@@ -100,7 +100,7 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 else
                 {
-                    base.PlayCrossfade("Body", "BoostIdle", 0.3f);
+                    base.PlayCrossfade("Body", "BoostIdleEnter", 0.3f);
                 }
             }
             

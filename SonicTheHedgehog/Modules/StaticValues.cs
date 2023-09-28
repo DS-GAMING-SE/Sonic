@@ -37,6 +37,24 @@ namespace SonicTheHedgehog.Modules
 
         internal const float sonicBoomProcCoefficient = 0.5f;
 
+        // Parry
+
+        internal const float parryMinimumDuration = 0.5f;
+
+        internal const float parryMaximumDuration = 1f;
+
+        internal const float parryEndLag = 0.55f;
+
+        internal const float parryFailEndLag = 0.7f;
+
+        internal const float parryCooldownReduction = 4f;
+
+        internal const float parryBoostRecharge = 20f;
+
+        internal const float parryLingeringInvincibilityDuration = 1.7f;
+
+        internal const float parryBuffDuration = 4f;
+
         // Boost
 
         internal const float boostSpeedCoefficient = 0.35f;
@@ -76,6 +94,10 @@ namespace SonicTheHedgehog.Modules
         // Super Sonic Boom
 
         internal const float superSonicBoomDamageCoefficient = sonicBoomDamageCoefficient*2;
+
+        // Super Parry
+
+        internal const float superParryMaxDuration = 10f;
 
         // Super Sonic Boost
 

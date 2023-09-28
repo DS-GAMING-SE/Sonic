@@ -59,14 +59,24 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION", meleeDescription+$" {superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
             #endregion
 
-            #region Secondary
+            #region Sonic Boom
             LanguageAPI.Add(prefix + "SECONDARY_SONIC_BOOM_NAME", "Sonic Boom");
             LanguageAPI.Add(prefix + "SECONDARY_SONIC_BOOM_DESCRIPTION", $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x{100f * StaticValues.sonicBoomDamageCoefficient}% damage</style>.");
             #endregion
 
-            #region Super Secondary
+            #region Super Sonic Boom
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_NAME", $"{superSonicColor}Cross Slash</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION", $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{superSonicColor}{100f * StaticValues.superSonicBoomDamageCoefficient}</color><style=cIsDamage>% damage</style>.");
+            #endregion
+
+            #region Parry
+            LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
+            LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION", $"Enter parry stance. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>stats</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
+            #endregion
+
+            #region Super Parry
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Super Parry");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter parry stance. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>stats</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
             #endregion
 
             #region Utility

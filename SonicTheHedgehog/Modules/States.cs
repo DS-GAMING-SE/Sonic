@@ -20,6 +20,8 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(SonicBoom));
 
+            Modules.Content.AddEntityState(typeof(Parry));
+
             Modules.Content.AddEntityState(typeof(Boost));
 
             Modules.Content.AddEntityState(typeof(GrandSlamDash));
