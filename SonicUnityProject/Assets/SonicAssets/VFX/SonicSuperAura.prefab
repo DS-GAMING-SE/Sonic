@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 828923438604607762}
   - component: {fileID: 5029162317109492141}
   - component: {fileID: 8840077673150787970}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: SonicSuperAura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4767,7 +4767,7 @@ GameObject:
   - component: {fileID: 3753324883544678176}
   - component: {fileID: 4148084750152379521}
   - component: {fileID: 3969116186394213944}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9519,7 +9519,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4896723283953300593}
   - component: {fileID: 6887155694308496217}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9612,7 +9612,7 @@ GameObject:
   - component: {fileID: 2242785572628907456}
   - component: {fileID: 3433706908968120229}
   - component: {fileID: 6248906306083413385}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Rainbow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

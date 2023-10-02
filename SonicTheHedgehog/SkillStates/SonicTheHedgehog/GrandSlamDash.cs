@@ -1,6 +1,8 @@
 ﻿using EntityStates;
+using Rewired;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
 using System;
 using System.Linq;
@@ -23,12 +25,13 @@ namespace SonicTheHedgehog.SkillStates
         protected float attackRecoil = 3f;
         protected float hitHopVelocity=6f;
         protected bool cancelled = false;
+        protected float noTargetDistancePercentage = 0.7f;
 
         protected float maxDashRange;
         protected float dashSpeed;
         protected float estimatedDashTime;
         protected float dashOvershoot;
-        protected HurtBox target;
+        protected HurtBox target = null;
         private Vector3 targetDirection;
 
         protected string chargeSoundString = "Play_spindash_charge";
@@ -51,31 +54,26 @@ namespace SonicTheHedgehog.SkillStates
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
         private bool hasHit=false;
+        private HomingTracker homingTracker;
 
         public override void OnEnter()
         {
             base.OnEnter();
+            this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             if (NetworkServer.active)
             {
                 base.characterBody.AddBuff(Modules.Buffs.ballBuff);
             }
-            this.dashSpeed = (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 5;
-            this.maxDashRange = 15f + (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 2f;
+            this.dashSpeed = homingTracker.Speed();
             this.hasFired = false;
             this.attackStartTime = baseAttackStartTime / base.characterBody.attackSpeed;
             this.dashOvershoot = 1.5f;
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
-            BullseyeSearch search = new BullseyeSearch();
-            search.searchOrigin = base.GetAimRay().origin;
-            search.searchDirection = base.GetAimRay().direction;
-            search.maxDistanceFilter = this.maxDashRange;
-            search.maxAngleFilter = 13;
-            TeamMask mask = TeamMask.GetEnemyTeams(base.teamComponent.teamIndex);
-            search.teamMaskFilter = mask;
-            search.sortMode = BullseyeSearch.SortMode.Angle;
-            search.RefreshCandidates();
-            this.target = search.GetResults().FirstOrDefault<HurtBox>();
-            this.targetDirection = (base.GetAimRay().direction.normalized*maxDashRange)/2.2f;
+            if (homingTracker)
+            {
+                this.target = homingTracker.GetTrackingTarget();
+            }
+            this.targetDirection = base.GetAimRay().direction.normalized * homingTracker.MaxRange() * this.noTargetDistancePercentage;
             if (this.target!=null)
             {
                 this.targetDirection = (this.target.transform.position - base.transform.position);
@@ -186,8 +184,12 @@ namespace SonicTheHedgehog.SkillStates
                         EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
                     }
                 }
-                base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
                 base.characterDirection.forward = targetDirection.normalized;
+                if (fixedAge >= this.attackStartTime + (this.estimatedDashTime * 0.75f))
+                {
+                    this.dashSpeed = Mathf.Lerp(homingTracker.Speed(), 0, (fixedAge - this.attackStartTime + (this.estimatedDashTime * 0.75f)) / (this.attackStartTime + this.estimatedDashTime));
+                }
+                base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
                 this.FireAttack();
             }
             if (fixedAge > this.estimatedDashTime + this.attackStartTime && base.isAuthority)

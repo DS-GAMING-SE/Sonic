@@ -71,12 +71,12 @@ namespace SonicTheHedgehog.Modules
 
             #region Parry
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
-            LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION", $"Enter parry stance. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>stats</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
+            LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a brief period of time. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff * 100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
             #endregion
 
             #region Super Parry
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Super Parry");
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter parry stance. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>stats</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Super Parry</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}long period of time</color>. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff*100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
             #endregion
 
             #region Utility

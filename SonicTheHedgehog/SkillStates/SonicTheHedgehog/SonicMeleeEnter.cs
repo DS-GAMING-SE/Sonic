@@ -12,22 +12,27 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SonicMeleeEnter : BaseState
     {
-        // Add persistent swing index, config option for key-press homing attack
         private HomingTracker homingTracker;
-        private int swingIndex;
+        public int swingIndex = 0;
         public override void OnEnter()
         {
             base.OnEnter();
             if (base.isAuthority)
             {
                 homingTracker = base.characterBody.GetComponent<HomingTracker>();
-                if (homingTracker && homingTracker.CanHomingAttack())
+                if (homingTracker && homingTracker.CanHomingAttack() && !homingTracker.EnemiesNearby())
                 {
-                    this.outer.SetNextState(new HomingAttack());
+                    this.outer.SetNextState(new HomingAttack
+                    {
+                        target = homingTracker.GetTrackingTarget()
+                    });
                 }
                 else
                 {
-                    this.outer.SetNextState(new SonicMelee());
+                    this.outer.SetNextState(new SonicMelee
+                    {
+                        swingIndex=this.swingIndex
+                    });
                 }
             }
         }

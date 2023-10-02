@@ -9,15 +9,13 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class Parry : BaseSkillState
     {
+        // Experiment with changing hitbox size
+        
         public static float minDuration = Modules.StaticValues.parryMinimumDuration;
         public static float baseMaxDuration = Modules.StaticValues.parryMaximumDuration;
         public static float baseSuperMaxDuration = StaticValues.superParryMaxDuration;
 
-        public static float baseEndLag = Modules.StaticValues.parryEndLag;
-        public static float baseEndLagFail = Modules.StaticValues.parryFailEndLag;
-
         public static float enterAnimationPercent = 0.4f;
-        public static float endAnimationPercent = 0.4f;
 
         private float maxDuration;
         
@@ -31,15 +29,22 @@ namespace SonicTheHedgehog.SkillStates
         private string muzzleString="SwingCenter";
         private Vector3 targetVelocity;
 
+        private CapsuleCollider collider;
+        private float originalHeight;
+        private float originalRadius;
+
         public override void OnEnter()
         {
             base.OnEnter();
             this.maxDuration = base.characterBody.HasBuff(Buffs.superSonicBuff) ? baseSuperMaxDuration : baseMaxDuration;
-            this.endLag = baseEndLag / base.characterBody.attackSpeed;
-            this.endLagFail = baseEndLagFail / base.characterBody.attackSpeed;
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
             base.PlayAnimation("FullBody, Override", "ParryEnter", "Slash.playbackRate", minDuration * enterAnimationPercent);
+            this.collider = (CapsuleCollider)base.characterBody.mainHurtBox.collider;
+            this.originalHeight = collider.height;
+            this.originalRadius = collider.radius;
+            this.collider.radius = this.originalRadius * 4f;
+            this.collider.height = this.originalHeight * 2.5f;
             if (NetworkServer.active)
             {
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
@@ -48,12 +53,14 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void OnExit()
         {
-            if (base.characterBody.HasBuff(RoR2Content.Buffs.HiddenInvincibility) && !parrySuccess && NetworkServer.active)
+            if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
             base.PlayAnimation("FullBody, Override", "BufferEmpty");
             base.modelLocator.normalizeToFloor = false;
+            this.collider.radius = this.originalRadius;
+            this.collider.height = this.originalHeight;
             base.OnExit();
         }
 
@@ -65,17 +72,11 @@ namespace SonicTheHedgehog.SkillStates
             {
                 parrySuccess = true;
                 canParry = false;
-                if (NetworkServer.active)
-                {
-                    base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
-                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, StaticValues.parryLingeringInvincibilityDuration, 1);
-                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.WarCryBuff, StaticValues.parryBuffDuration, 1);
-                }
-                Util.PlaySound("Play_parry", base.gameObject);
-                this.endLag = baseEndLag / base.characterBody.attackSpeed;
-                base.PlayAnimation("FullBody, Override", "ParryRelease", "Slash.playbackRate", endLag * endAnimationPercent);
-                RechargeCooldowns();
                 Debug.Log("Parry");
+                this.outer.SetNextState(new ParryExit
+                {
+                    parrySuccess = true
+                });
 
             }    
         }
@@ -89,12 +90,7 @@ namespace SonicTheHedgehog.SkillStates
             if (canParry && base.isAuthority && ((base.fixedAge >= minDuration && !base.inputBank.skill2.down) || (base.fixedAge >= maxDuration)))
             {
                 canParry = false;
-                if (NetworkServer.active)
-                {
-                    base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
-                }
-                this.endLagFail = baseEndLagFail / base.characterBody.attackSpeed;
-                base.PlayAnimation("FullBody, Override", "ParryRelease", "Slash.playbackRate", endLagFail*endAnimationPercent);
+                this.outer.SetNextState(new ParryExit());
             }
             /*if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady()) // Cancel into boost
             {
@@ -102,44 +98,6 @@ namespace SonicTheHedgehog.SkillStates
                 return;
             }
             */
-            if (!canParry)
-            {
-                endLagTimer += Time.fixedDeltaTime;
-                if (parrySuccess)
-                {
-                    if (endLagTimer >= endLag)
-                    {
-                        this.outer.SetNextStateToMain();
-                        return;
-                    }
-                }
-                else
-                {
-                    if (endLagTimer >= endLagFail)
-                    {
-                        this.outer.SetNextStateToMain();
-                        return;
-                    }
-                }
-            }
-        }
-
-        private void RechargeCooldowns()
-        {
-            base.skillLocator.primary.RunRecharge(StaticValues.parryCooldownReduction);
-            BoostLogic boostLogic = GetComponent<BoostLogic>();
-            if (base.skillLocator.utility.activationState.stateType == typeof(Boost) && boostLogic)
-            {
-                if (NetworkServer.active)
-                {
-                    boostLogic.AddBoost(StaticValues.parryBoostRecharge);
-                }
-            }
-            else
-            {
-                base.skillLocator.utility.RunRecharge(StaticValues.parryCooldownReduction);
-            }
-            base.skillLocator.special.RunRecharge(StaticValues.parryCooldownReduction);
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

@@ -16,11 +16,14 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperSonic));
             Modules.Content.AddEntityState(typeof(BaseSonic));
 
+            Modules.Content.AddEntityState(typeof(SonicMeleeEnter));
             Modules.Content.AddEntityState(typeof(SonicMelee));
+            Modules.Content.AddEntityState(typeof(HomingAttack));
 
             Modules.Content.AddEntityState(typeof(SonicBoom));
 
             Modules.Content.AddEntityState(typeof(Parry));
+            Modules.Content.AddEntityState(typeof(ParryExit));
 
             Modules.Content.AddEntityState(typeof(Boost));
 

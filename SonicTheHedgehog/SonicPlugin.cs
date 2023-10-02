@@ -20,6 +20,10 @@ using RiskOfOptions;
 using SonicTheHedgehog.SkillStates;
 using RiskOfOptions.Options;
 using EntityStates;
+using System.Security.Claims;
+using UnityEngine.Networking;
+using R2API.Networking.Interfaces;
+using R2API.Networking;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -48,7 +52,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "1.0.0";
+        public const string MODVERSION = "1.1.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -70,6 +74,8 @@ namespace SonicTheHedgehog
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
+
+            NetworkingAPI.RegisterMessageType<SonicParryHit>();
 
             // survivor initialization
             new SonicTheHedgehogCharacter().Initialize();
@@ -105,11 +111,15 @@ namespace SonicTheHedgehog
         {
             // run hooks here, disabling one is as simple as commenting out the line
             On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
+
             On.RoR2.GenericSkill.CanApplyAmmoPack += CanApplyAmmoPackToBoost;
             On.RoR2.GenericSkill.ApplyAmmoPack += ApplyAmmoPackToBoost;
+            //On.RoR2.GenericSkill.RunRecharge += RunRechargeBoost;
+
             On.RoR2.JitterBones.Start += IHateJitterBones;
+
             On.RoR2.HealthComponent.TakeDamage += TakeDamage;
-            On.RoR2.GlobalEventManager.OnHitEnemy += ParryCheck;
+
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
             if (emoteAPILoaded)
             {
@@ -200,6 +210,7 @@ namespace SonicTheHedgehog
             RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostSpeedCoefficient*100}% movement speed");
             RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor} Armor.");
             RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Movement speed. Complete invincibility and flight.");
+            RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff*100}% Attack speed. +{StaticValues.parryMovementSpeedBuff*100}% Movement speed.");
         }
 
         private static void RiskOfOptionsSetup()
@@ -210,15 +221,16 @@ namespace SonicTheHedgehog
             float maxLocation = 500;
             ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationX(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
             ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationY(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.KeyPressHomingAttack()));
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
         {
             if (self)
             {
-                if (self.HasBuff(Modules.Buffs.boostBuff))
+                if (self.HasBuff(Buffs.boostBuff))
                 {
-                    if (!self.HasBuff(Modules.Buffs.superSonicBuff))
+                    if (!self.HasBuff(Buffs.superSonicBuff))
                     {
                         stats.moveSpeedMultAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
                         stats.armorAdd += StaticValues.boostArmor;
@@ -229,7 +241,7 @@ namespace SonicTheHedgehog
                     }
                 }
 
-                if (self.HasBuff(Modules.Buffs.superSonicBuff))
+                if (self.HasBuff(Buffs.superSonicBuff))
                 {
                     stats.moveSpeedMultAdd += StaticValues.superSonicMovementSpeed;
                     stats.attackSpeedMultAdd += StaticValues.superSonicAttackSpeed;
@@ -237,12 +249,18 @@ namespace SonicTheHedgehog
                     stats.jumpPowerMultAdd += StaticValues.superSonicJumpHeight;
                 }
 
-                if (self.HasBuff(Modules.Buffs.ballBuff))
+                if (self.HasBuff(Buffs.ballBuff))
                 {
                     stats.armorAdd += StaticValues.ballArmor;
                 }
 
-                Components.BoostLogic boost = self.GetComponent<Components.BoostLogic>();
+                if (self.HasBuff(Buffs.parryBuff))
+                {
+                    stats.attackSpeedMultAdd += StaticValues.parryAttackSpeedBuff;
+                    stats.moveSpeedMultAdd += StaticValues.parryMovementSpeedBuff;
+                }
+
+                BoostLogic boost = self.GetComponent<Components.BoostLogic>();
                 if (boost)
                 {
                     boost.CalculateBoostVariables();
@@ -298,6 +316,19 @@ namespace SonicTheHedgehog
                 }
             }
         }
+        private void RunRechargeBoost(On.RoR2.GenericSkill.orig_RunRecharge orig, GenericSkill self, float amount)
+        {
+            orig(self, amount);
+            if (self.activationState.stateType == typeof(Boost))
+            {
+                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+                if (boost)
+                {
+                    float recharge = Mathf.Lerp(0, BoostLogic.boostRegenPerBandolier, amount / BoostLogic.boostRunRechargeCap);
+                    boost.AddBoost(recharge);
+                }
+            }
+        }
 
         private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
         {
@@ -310,6 +341,17 @@ namespace SonicTheHedgehog
 
         private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
         {
+            EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.gameObject, "Body");
+            if (stateMachine)
+            {
+                EntityState state = stateMachine.state;
+                NetworkIdentity network = self.gameObject.GetComponent<NetworkIdentity>();
+                if (state.GetType() == typeof(Parry) && network)
+                {
+                    ((Parry)state).OnTakeDamage(damage);
+                    new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
+                }
+            }
             if (self.body.HasBuff(Buffs.superSonicBuff))
             {
                 damage.rejected = true;
@@ -319,19 +361,6 @@ namespace SonicTheHedgehog
                 }, true);
             }
             orig(self, damage);
-        }
-        private void ParryCheck(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damage, GameObject victim)
-        {
-            EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(victim, "Body");
-            if (stateMachine)
-            {
-                EntityState state = stateMachine.state;
-                if (state.GetType() == typeof(Parry))
-                {
-                    ((Parry)state).OnTakeDamage(damage);
-                }
-            }
-            orig(self, damage, victim);
         }
     }
 }

@@ -29,5 +29,11 @@ namespace SonicTheHedgehog.Modules
 
             return SonicTheHedgehogPlugin.instance.Config.Bind<float>("Boost Meter", "Y Location", -50f, "Y Coordinate of the boost meter's location relative to the crosshair. Default is -50.");
         }
+
+        public static ConfigEntry<bool> KeyPressHomingAttack()
+        {
+
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Controls", "Key-press Homing Attack", false, "Determines whether you need to press the primary skill key to use the homing attack. If false, you will also be able to activate a homing attack by pressing or holding the primary skill key. Default is false.");
+        }
     }
 }

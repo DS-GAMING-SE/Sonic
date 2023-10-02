@@ -43,17 +43,21 @@ namespace SonicTheHedgehog.Modules
 
         internal const float parryMaximumDuration = 1f;
 
-        internal const float parryEndLag = 0.55f;
+        internal const float parryEndLag = 0.6f;
 
         internal const float parryFailEndLag = 0.7f;
 
-        internal const float parryCooldownReduction = 4f;
+        internal const float parryCooldownReduction = 3f;
 
-        internal const float parryBoostRecharge = 20f;
+        internal const float parryBoostRecharge = 15f;
 
         internal const float parryLingeringInvincibilityDuration = 1.7f;
 
-        internal const float parryBuffDuration = 4f;
+        internal const float parryBuffDuration = 3f;
+
+        internal const float parryAttackSpeedBuff = 0.4f;
+
+        internal const float parryMovementSpeedBuff = 0.3f;
 
         // Boost
 

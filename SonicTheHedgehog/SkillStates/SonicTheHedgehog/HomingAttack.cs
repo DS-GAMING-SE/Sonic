@@ -36,7 +36,7 @@ namespace SonicTheHedgehog.SkillStates
         protected float superHomingAttackEndLag = 0.1f;
         protected float homingAttackEndLag;
         protected float homingAttackHitHopVelocity = 10;
-        private HurtBox target;
+        public HurtBox target;
         private Vector3 targetDirection;
         protected bool homingAttackHit;
 
@@ -70,8 +70,8 @@ namespace SonicTheHedgehog.SkillStates
             this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
 
             this.hasFired = false;
-            this.maxHomingAttackRange = 15f+(base.characterBody.moveSpeed*base.characterBody.sprintingSpeedMultiplier)*2f;
-            this.homingAttackSpeed = (base.characterBody.moveSpeed*base.characterBody.sprintingSpeedMultiplier) * 5;
+            this.maxHomingAttackRange = homingTracker.MaxRange();
+            this.homingAttackSpeed = homingTracker.Speed();
             this.homingAttackOvershoot = 1.4f;
 
             if (NetworkServer.active)
@@ -82,7 +82,6 @@ namespace SonicTheHedgehog.SkillStates
             this.procCoefficient = StaticValues.homingAttackProcCoefficient;
             this.attackRecoil = 3;
             this.hitStopDuration = 0.07f;
-            this.target = homingTracker.GetTrackingTarget();
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             this.targetDirection = Vector3.zero;
             if (this.target != null)

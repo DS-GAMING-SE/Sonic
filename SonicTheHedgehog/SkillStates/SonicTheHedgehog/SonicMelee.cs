@@ -3,6 +3,7 @@ using R2API;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
 using System;
 using System.Linq;
@@ -28,7 +29,8 @@ namespace SonicTheHedgehog.SkillStates
         protected float attackRecoil;
         protected float hitHopVelocity;
         protected bool cancelled = false;
-        protected float meleeDisplacement = 0.3f;
+        protected float meleeFiringDisplacement = 0.3f;
+        protected float meleeDisplacement = 0.005f;
         protected float displacementDIMultiplier = 1.5f;
 
         protected string swingSoundString = "";
@@ -51,13 +53,16 @@ namespace SonicTheHedgehog.SkillStates
         private Vector3 storedVelocity;
         private bool animationEnded=false;
         private ICharacterFlightParameterProvider flight;
+        private HomingTracker homingTracker;
         private bool effectPlayed = false;
         private bool swingSoundPlayed = false;
+        private bool bufferedHomingAttack = false;
 
         public override void OnEnter()
         {
             base.OnEnter();
-            flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
+            this.flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
+            this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             this.hasFired = false;
 
             //this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
@@ -100,6 +105,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
+            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -138,6 +144,7 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+
         private void FireAttack()
         {
             if (!this.hasFired)
@@ -153,7 +160,8 @@ namespace SonicTheHedgehog.SkillStates
 
             if (base.isAuthority)
             {
-                Displacement();
+                FiringDisplacement();
+
                 if (this.attack.Fire())
                 {
                     this.OnHitEnemyAuthority();
@@ -162,19 +170,40 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+
         protected virtual void SetNextState()
         {
             int index = this.swingIndex;
             if (index < 4) index += 1;
             else index = 0;
 
-            this.outer.SetNextState(new SonicMelee
+            if (Config.KeyPressHomingAttack().Value)
             {
-                swingIndex = index
-            });
+                if (bufferedHomingAttack)
+                {
+                    this.outer.SetNextState(new SonicMeleeEnter
+                    {
+                        swingIndex = index
+                    });
+                }
+                else
+                {
+                    this.outer.SetNextState(new SonicMelee
+                    {
+                        swingIndex = index
+                    });
+                }
+            }
+            else
+            {
+                this.outer.SetNextState(new SonicMeleeEnter
+                {
+                    swingIndex = index
+                });
+            }
         }
 
-        private void Displacement()
+        private void FiringDisplacement()
         {
             Vector3 vector;
             if (base.characterBody.inputBank.moveVector != Vector3.zero)
@@ -185,13 +214,34 @@ namespace SonicTheHedgehog.SkillStates
             {
                 vector = base.characterDirection.forward;
             }
-            vector *= meleeDisplacement;
+            vector *= meleeFiringDisplacement;
             vector *= swingIndex == 4 ? 0.6f : 1;
             if (Flying())
             {
                 vector *= 2;
             }
+            if (this.inHitPause)
+            {
+                vector *= 0.3f;
+            }
             base.characterMotor.AddDisplacement(vector);
+        }
+
+        private void Displacement()
+        {
+            if (base.characterBody.inputBank.moveVector != Vector3.zero && !this.inHitPause)
+            {
+                Vector3 vector;
+                vector = base.characterBody.inputBank.moveVector * base.characterBody.moveSpeed;
+                vector *= meleeDisplacement;
+                vector *= swingIndex == 4 ? 0.6f : 1;
+                if (Flying())
+                {
+                    vector *= 1.5f;
+                }
+                vector *= Mathf.Lerp(1, 0.5f, Vector3.Dot(base.characterBody.inputBank.moveVector.normalized, base.characterDirection.forward) * -1);
+                base.characterMotor.AddDisplacement(vector);
+            }
         }
 
         public override void FixedUpdate()
@@ -206,6 +256,8 @@ namespace SonicTheHedgehog.SkillStates
                 this.inHitPause = false;
                 base.characterMotor.velocity = this.storedVelocity;
             }
+
+            Displacement();
 
             if (!this.inHitPause)
             {
@@ -240,6 +292,14 @@ namespace SonicTheHedgehog.SkillStates
                 }
             }
 
+            if (base.isAuthority && this.stopwatch >= (this.duration/2) && base.inputBank.skill1.justPressed)
+            {
+                if (homingTracker && homingTracker.CanHomingAttack() && !homingTracker.EnemiesNearby())
+                {
+                    bufferedHomingAttack = true;
+                }
+            }
+
 
             if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
             {
@@ -249,6 +309,14 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (this.stopwatch >= this.duration && base.isAuthority)
             {
+                if (bufferedHomingAttack && homingTracker.CanHomingAttack() && !homingTracker.EnemiesNearby())
+                {
+                    this.outer.SetNextState(new HomingAttack
+                    {
+                        target = homingTracker.GetTrackingTarget()
+                    });
+                    return;
+                }
                 this.outer.SetNextStateToMain();
                 return;
             }

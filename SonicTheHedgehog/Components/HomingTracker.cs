@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using EntityStates;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.SkillStates;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,13 +18,12 @@ namespace SonicTheHedgehog.Components
         private CharacterBody characterBody;
         private InputBankTest inputBank;
         private TeamComponent teamComponent;
+        private EntityStateMachine bodyState;
 
         private HurtBox trackingTarget;
 
         private float trackerUpdateStopwatch;
-        private float trackerUpdateFrequency = 6;
-
-        private float trackerMaxDistance;
+        private float trackerUpdateFrequency = 10f;
 
         private readonly BullseyeSearch search = new BullseyeSearch();
         private readonly SphereSearch sphereSearch = new SphereSearch();
@@ -36,6 +37,7 @@ namespace SonicTheHedgehog.Components
             this.characterBody = base.GetComponent<CharacterBody>();
             this.inputBank = base.GetComponent<InputBankTest>();
             this.teamComponent = base.GetComponent<TeamComponent>();
+            this.bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
         }
 
         public HurtBox GetTrackingTarget()
@@ -57,16 +59,37 @@ namespace SonicTheHedgehog.Components
             this.trackerUpdateStopwatch += Time.fixedDeltaTime;
             if (this.trackerUpdateStopwatch >= 1f / this.trackerUpdateFrequency)
             {
-                this.trackerUpdateStopwatch -= 1f / this.trackerUpdateFrequency;
-                HurtBox hurtBox = this.trackingTarget;
-                Ray aimRay;
-                aimRay = new Ray(this.inputBank.aimOrigin, this.inputBank.aimDirection);
-                this.SearchForTarget(aimRay);
-                this.indicator.targetTransform = (this.trackingTarget ? this.trackingTarget.transform : null);
+                this.trackerUpdateStopwatch = 0;
+                System.Type stateType = this.bodyState.state.GetType();
+                bool notTargetingState = stateType == typeof(Boost) || stateType == typeof(Death) || stateType == typeof(Parry) || stateType == typeof(GrandSlamSpin) || stateType == typeof(GrandSlamFinal) || stateType == typeof(SuperSonicTransformation);
+                if (notTargetingState)
+                {
+                    this.indicator.targetTransform = null;
+                }
+                else
+                {
+                    this.SearchForTarget(inputBank.GetAimRay());
+                    this.indicator.targetTransform = !(this.trackingTarget == null || EnemiesNearby()) ? this.trackingTarget.transform : null;
+                }
             }
         }
 
         private void SearchForTarget(Ray aimRay)
+        {
+            this.search.teamMaskFilter = TeamMask.GetUnprotectedTeams(this.teamComponent.teamIndex);
+            this.search.filterByLoS = true;
+            this.search.searchOrigin = aimRay.origin;
+            this.search.searchDirection = aimRay.direction;
+            this.search.sortMode = BullseyeSearch.SortMode.Angle;
+            this.search.maxDistanceFilter = MaxRange();
+            this.search.minDistanceFilter = 0;
+            this.search.maxAngleFilter = 12;
+            this.search.RefreshCandidates();
+            this.search.FilterOutGameObject(base.gameObject);
+            this.trackingTarget = this.search.GetResults().FirstOrDefault<HurtBox>();
+        }
+
+        public bool EnemiesNearby()
         {
             TeamMask mask = TeamMask.GetEnemyTeams(teamComponent.teamIndex);
             this.sphereSearch.origin = characterBody.transform.position + this.inputBank.aimDirection;
@@ -74,30 +97,22 @@ namespace SonicTheHedgehog.Components
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
-
-            if (sphereSearch.GetHurtBoxes().Any())
-            {
-                trackingTarget = null;
-                return;
-            }
-
-            this.trackerMaxDistance = 15f + (characterBody.moveSpeed * characterBody.sprintingSpeedMultiplier) * 2f;
-            this.search.teamMaskFilter = TeamMask.GetUnprotectedTeams(this.teamComponent.teamIndex);
-            this.search.filterByLoS = true;
-            this.search.searchOrigin = aimRay.origin;
-            this.search.searchDirection = aimRay.direction;
-            this.search.sortMode = BullseyeSearch.SortMode.Angle;
-            this.search.maxDistanceFilter = this.trackerMaxDistance;
-            this.search.minDistanceFilter = 8;
-            this.search.maxAngleFilter = 10;
-            this.search.RefreshCandidates();
-            this.search.FilterOutGameObject(base.gameObject);
-            this.trackingTarget = this.search.GetResults().FirstOrDefault<HurtBox>();
+            return sphereSearch.GetHurtBoxes().Any();
         }
 
         public bool CanHomingAttack()
         {
-            return characterBody.moveSpeed > 0 && characterBody.sprintingSpeedMultiplier > 0 && trackingTarget != null;
+            return characterBody.moveSpeed > 0 && trackingTarget != null;
+        }
+
+        public float MaxRange()
+        {
+            return 15f + characterBody.moveSpeed * 2f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
+        }
+
+        public float Speed()
+        {
+            return characterBody.moveSpeed * 4 * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
         }
     }
 }

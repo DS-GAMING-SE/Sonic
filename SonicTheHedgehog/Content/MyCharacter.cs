@@ -122,12 +122,29 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #region Primary
             //Creates a skilldef for a typical primary
-            SkillDefInfo primary = new SkillDefInfo(prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
-                                                                                      prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
-                                                                                      Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
-                                                                                      new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMeleeEnter)),
-                                                                                      "Body",
-                                                                                      false);
+            SkillDefInfo primary = new SkillDefInfo
+            {
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMeleeEnter)),
+                activationStateMachineName = "Body",
+                baseMaxStock = 1,
+                baseRechargeInterval = 0f,
+                beginSkillCooldownOnSkillEnd = false,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.Skill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = true,
+                mustKeyPress = false,
+                cancelSprintingOnActivation = true,
+                rechargeStock = 1,
+                requiredStock = 1,
+                stockToConsume = 1,
+            };
             primarySkillDef = Modules.Skills.CreateSkillDef(primary);
 
 
