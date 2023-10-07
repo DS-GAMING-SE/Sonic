@@ -111,7 +111,10 @@ namespace SonicTheHedgehog.Modules
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
             sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
+
             superSonicAura = Assets.LoadEffect("SonicSuperAura", true);
+            superSonicAura.GetComponent<DestroyOnTimer>().enabled = false;
+
             meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", true);
             meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
             homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");

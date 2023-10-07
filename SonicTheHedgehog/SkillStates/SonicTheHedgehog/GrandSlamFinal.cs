@@ -69,7 +69,7 @@ namespace SonicTheHedgehog.SkillStates
             base.PlayAnimation("FullBody, Override", "GrandSlam", "Roll.playbackRate", this.startUpTime*1.15f);
             if (base.isAuthority)
             {
-                Util.PlaySound("HenryRoll", base.gameObject);
+                Util.PlaySound("Play_swing_low", base.gameObject);
             }
 
             this.animator = base.GetModelAnimator();

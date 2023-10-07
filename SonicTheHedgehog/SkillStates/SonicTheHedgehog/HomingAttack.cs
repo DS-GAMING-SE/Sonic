@@ -47,6 +47,7 @@ namespace SonicTheHedgehog.SkillStates
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
         protected NetworkSoundEventIndex impactSound = Assets.meleeHitSoundEvent.index;
+        protected GameObject homingAttackEffect;
 
         public float duration;
         private bool hasFired;
@@ -68,7 +69,7 @@ namespace SonicTheHedgehog.SkillStates
             base.OnEnter();
             this.flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
-
+            //this.homingAttackEffect = UnityEngine.GameObject.Instantiate<GameObject>(Assets.homingAttackTrailEffect, base.FindModelChild("MainHurtbox"));
             this.hasFired = false;
             this.maxHomingAttackRange = homingTracker.MaxRange();
             this.homingAttackSpeed = homingTracker.Speed();
@@ -81,7 +82,7 @@ namespace SonicTheHedgehog.SkillStates
             this.damageCoefficient = Modules.StaticValues.homingAttackDamageCoefficient;
             this.procCoefficient = StaticValues.homingAttackProcCoefficient;
             this.attackRecoil = 3;
-            this.hitStopDuration = 0.07f;
+            this.hitStopDuration = 0.1f;
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             this.targetDirection = Vector3.zero;
             if (this.target != null)
@@ -131,6 +132,11 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
             }
+
+            if (this.homingAttackEffect)
+            {
+                Destroy(this.homingAttackEffect);
+            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -139,6 +145,10 @@ namespace SonicTheHedgehog.SkillStates
         protected virtual void PlayHomingAttackHitEffect()
         {
             EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+            if (this.homingAttackEffect)
+            {
+                this.homingAttackEffect.transform.parent = null;
+            }
         }
 
         protected virtual void OnHitEnemyAuthority()

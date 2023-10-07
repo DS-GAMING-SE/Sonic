@@ -294,7 +294,7 @@ namespace SonicTheHedgehog.SkillStates
 
             if (base.isAuthority && this.stopwatch >= (this.duration/2) && base.inputBank.skill1.justPressed)
             {
-                if (homingTracker && homingTracker.CanHomingAttack() && !homingTracker.EnemiesNearby())
+                if (homingTracker && homingTracker.CanHomingAttack())
                 {
                     bufferedHomingAttack = true;
                 }
@@ -309,7 +309,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (this.stopwatch >= this.duration && base.isAuthority)
             {
-                if (bufferedHomingAttack && homingTracker.CanHomingAttack() && !homingTracker.EnemiesNearby())
+                if (bufferedHomingAttack && homingTracker.CanHomingAttack())
                 {
                     this.outer.SetNextState(new HomingAttack
                     {

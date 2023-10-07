@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="AncientScepter">
+      <HintPath>..\libs\AncientScepter.dll</HintPath>
+    </Reference>
     <Reference Include="BetterUI">
       <HintPath>..\libs\BetterUI.dll</HintPath>
     </Reference>

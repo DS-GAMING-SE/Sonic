@@ -3,9 +3,11 @@ using R2API;
 using RoR2;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Characters;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Networking.Match;
 using UnityEngine.UIElements.Experimental;
 
 namespace SonicTheHedgehog.SkillStates
@@ -30,6 +32,17 @@ namespace SonicTheHedgehog.SkillStates
         private TemporaryOverlay temporaryOverlay;
         private float boostEffectCooldown;
         private ICharacterFlightParameterProvider flight;
+
+        private static float boostCameraDistance = -13;
+        private CharacterCameraParamsData boostingCameraParams = new CharacterCameraParamsData
+        {
+            maxPitch = 70f,
+            minPitch = -70f,
+            pivotVerticalOffset = 1.1f,
+            idealLocalCameraPos = new Vector3(0f, 0f, boostCameraDistance),
+            wallCushion = 0.1f
+        };
+        private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
 
         public bool powerBoosting = false;
 
@@ -255,6 +268,12 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (boosting && boostEffectCooldown <= 0)
             {
+                this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
+                {
+                    cameraParamsData = this.boostingCameraParams,
+                    priority = 0f
+                }, duration / 2f);
+
                 bool super = base.characterBody.HasBuff(Buffs.superSonicBuff);
                 if (powerBoosting || super)
                 {
@@ -302,6 +321,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
+                base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, duration*1.5f);
                 if (temporaryOverlay && !powerBoosting)
                 {
                     temporaryOverlay.RemoveFromCharacterModel();
@@ -342,7 +362,7 @@ namespace SonicTheHedgehog.SkillStates
             boostLogic.boostDraining = false;
             boostLogic.powerBoosting = false;
             boosting = false;
-            if (base.cameraTargetParams) base.cameraTargetParams.fovOverride = -1f;
+            base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, duration * 1.5f);
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = false;

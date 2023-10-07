@@ -193,7 +193,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
                 fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
                 resetCooldownTimerOnUse = false,
                 isCombatSkill = false,
                 mustKeyPress = true,
@@ -329,6 +329,11 @@ namespace SonicTheHedgehog.Modules.Survivors
             #endregion
 
             MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam);
+
+            if (SonicTheHedgehogPlugin.ancientScepterLoaded)
+            {
+                ScepterSkill(boost);
+            }
         }
 
         private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam)
@@ -368,6 +373,14 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
             Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private void ScepterSkill(SkillDefInfo boost)
+        {
+            boost.activationState = new EntityStates.SerializableEntityStateType(typeof(ScepterBoost));
+            Skills.CreateSkillDef(boost);
+            Content.AddEntityState(typeof(ScepterBoost));
         }
 
         internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)

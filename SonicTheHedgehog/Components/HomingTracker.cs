@@ -21,6 +21,8 @@ namespace SonicTheHedgehog.Components
         private EntityStateMachine bodyState;
 
         private HurtBox trackingTarget;
+        public bool isTrackingTargetClose;
+        public bool enemiesNearby;
 
         private float trackerUpdateStopwatch;
         private float trackerUpdateFrequency = 10f;
@@ -69,7 +71,8 @@ namespace SonicTheHedgehog.Components
                 else
                 {
                     this.SearchForTarget(inputBank.GetAimRay());
-                    this.indicator.targetTransform = !(this.trackingTarget == null || EnemiesNearby()) ? this.trackingTarget.transform : null;
+                    EnemiesNearby();
+                    this.indicator.targetTransform = CanHomingAttack() ? this.trackingTarget.transform : null;
                 }
             }
         }
@@ -86,23 +89,32 @@ namespace SonicTheHedgehog.Components
             this.search.maxAngleFilter = 12;
             this.search.RefreshCandidates();
             this.search.FilterOutGameObject(base.gameObject);
-            this.trackingTarget = this.search.GetResults().FirstOrDefault<HurtBox>();
+            HurtBox result = this.search.GetResults().FirstOrDefault<HurtBox>();
+            this.trackingTarget = result;
+            if (result != null)
+            {
+                this.isTrackingTargetClose = 8 >= Mathf.Abs(Vector3.Magnitude(characterBody.transform.position - result.transform.position));
+            }
         }
 
-        public bool EnemiesNearby()
+        public void EnemiesNearby()
         {
-            TeamMask mask = TeamMask.GetEnemyTeams(teamComponent.teamIndex);
             this.sphereSearch.origin = characterBody.transform.position + this.inputBank.aimDirection;
             this.sphereSearch.radius = 3;
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
-            this.sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
-            return sphereSearch.GetHurtBoxes().Any();
+            this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(teamComponent.teamIndex));
+            this.enemiesNearby = sphereSearch.GetHurtBoxes().Any();
+        }
+
+        public bool CanHoming()
+        {
+            return characterBody.moveSpeed > 0 && trackingTarget != null;
         }
 
         public bool CanHomingAttack()
         {
-            return characterBody.moveSpeed > 0 && trackingTarget != null;
+            return CanHoming() && !this.enemiesNearby && !this.isTrackingTargetClose;
         }
 
         public float MaxRange()

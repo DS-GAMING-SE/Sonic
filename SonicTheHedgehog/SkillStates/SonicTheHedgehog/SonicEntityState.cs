@@ -48,6 +48,10 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.PlayAnimation("Body", "Ball");
             }
+            else
+            {
+                base.PlayCrossfade("Body", "AscendDescend", 0.3f);
+            }
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = true;

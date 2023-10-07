@@ -66,6 +66,12 @@ namespace SonicTheHedgehog.Modules
         internal const float powerBoostSpeedCoefficient = 0.65f;
 
         internal const float boostArmor = 50f;
+
+        // Scepter Boost
+
+        internal const float scepterBoostDamageCoefficient = 10f;
+
+        internal const float defaultPowerBoostSpeed = 24f;
         
         // Grand Slam
 

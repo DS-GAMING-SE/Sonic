@@ -24,7 +24,6 @@ namespace SonicTheHedgehog.SkillStates
             base.OnEnter();
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
 
-            Transform transform = base.gameObject.transform;
             this.superAura = UnityEngine.Object.Instantiate<UnityEngine.Object>(Modules.Assets.superSonicAura, base.FindModelChild("MainHurtbox"));
 
             superSonicComponent.SuperModel();

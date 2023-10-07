@@ -49,4 +49,10 @@ namespace SonicTheHedgehog.Components
             damageInfo = reader.ReadDamageInfo();
         }
     }
+
+    /*public class ScepterBoostDamage : INetMessage
+    {
+
+    }
+    */
 }

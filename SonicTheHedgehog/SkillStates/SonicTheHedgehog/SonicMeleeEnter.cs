@@ -20,7 +20,7 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority)
             {
                 homingTracker = base.characterBody.GetComponent<HomingTracker>();
-                if (homingTracker && homingTracker.CanHomingAttack() && !homingTracker.EnemiesNearby())
+                if (homingTracker && homingTracker.CanHomingAttack())
                 {
                     this.outer.SetNextState(new HomingAttack
                     {

@@ -109,10 +109,10 @@ namespace SonicTheHedgehog.SkillStates
                 base.skillLocator.utility.OnExecute();
                 return;
             }
-            if (base.fixedAge >= Modules.StaticValues.sonicBoomFireTime * (Modules.StaticValues.sonicBoomCount) && !exitAnimPlayed)
+            if (base.fixedAge >= (Modules.StaticValues.sonicBoomFireTime * (Modules.StaticValues.sonicBoomCount)) && !exitAnimPlayed)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
-                base.PlayAnimation("Body", "SonicBoomEnd", "Slash.playbackRate", this.fireTime * Modules.StaticValues.sonicBoomCount);
+                base.PlayAnimation("Body", "SonicBoomEnd");
                 exitAnimPlayed = true;
             }
             if (base.fixedAge >= this.duration && base.isAuthority)

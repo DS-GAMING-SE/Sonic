@@ -35,6 +35,7 @@ namespace SonicTheHedgehog
     [BepInDependency("com.weliveinasociety.CustomEmotesAPI", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
     [R2APISubmoduleDependency(new string[]
@@ -61,6 +62,7 @@ namespace SonicTheHedgehog
         public static bool emoteAPILoaded = false;
         public static bool betterUILoaded = false;
         public static bool riskOfOptionsLoaded = false;
+        public static bool ancientScepterLoaded = false;
 
         private void Awake()
         {
@@ -91,6 +93,9 @@ namespace SonicTheHedgehog
 
             riskOfOptionsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
             Log.Message("Risk of Options exists? " + riskOfOptionsLoaded);
+
+            ancientScepterLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.DestroyedClone.AncientScepter");
+            Log.Message("Ancient Scepter exists? " + ancientScepterLoaded);
 
             if (betterUILoaded)
             {
@@ -313,19 +318,6 @@ namespace SonicTheHedgehog
                 if (boost)
                 {
                     boost.AddBoost(BoostLogic.boostRegenPerBandolier);
-                }
-            }
-        }
-        private void RunRechargeBoost(On.RoR2.GenericSkill.orig_RunRecharge orig, GenericSkill self, float amount)
-        {
-            orig(self, amount);
-            if (self.activationState.stateType == typeof(Boost))
-            {
-                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
-                if (boost)
-                {
-                    float recharge = Mathf.Lerp(0, BoostLogic.boostRegenPerBandolier, amount / BoostLogic.boostRunRechargeCap);
-                    boost.AddBoost(recharge);
                 }
             }
         }
