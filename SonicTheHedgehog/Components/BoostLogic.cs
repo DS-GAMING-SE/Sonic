@@ -2,6 +2,8 @@
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.SkillStates;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -30,12 +32,17 @@ namespace SonicTheHedgehog.Components
         public bool powerBoosting = false;
 
         public bool boostExists;
+        public bool scepterBoostExists;
 
         private const float baseMaxBoostMeter=100f;
         private const float boostMeterPerFlatReduction = 25f;
         private const float baseBoostRegen = 0.38f;
         public const float boostRegenPerBandolier = 25f;
         public const float boostRunRechargeCap = 5f;
+
+        public Queue<HealthComponent> recentlyHitHealthComponents = new Queue<HealthComponent>();
+        public Queue<float> recentlyHitTimes = new Queue<float>();
+        public float scepterTimer = 0;
 
         private void Start()
         {
@@ -64,6 +71,22 @@ namespace SonicTheHedgehog.Components
                         this.AddBoost(boostRegen);
                     }
                 }
+                if (this.scepterBoostExists)
+                {
+                    this.scepterTimer += Time.fixedDeltaTime;
+                    if (this.recentlyHitHealthComponents.Count() > 0)
+                    {
+                        for (int i = 0; i < this.recentlyHitHealthComponents.Count(); i++)
+                        {
+                            if (this.scepterTimer >= recentlyHitTimes.Peek())
+                            {
+                                recentlyHitHealthComponents.Dequeue();
+                                recentlyHitTimes.Dequeue();
+                            }
+                        }
+
+                    }
+                }
             }
         }
 
@@ -88,7 +111,8 @@ namespace SonicTheHedgehog.Components
 
         private void BoostExists()
         {
-            boostExists = body.skillLocator.utility.activationState.stateType == typeof(Boost);
+            boostExists = body.skillLocator.utility.activationState.stateType == typeof(Boost) || body.skillLocator.utility.activationState.stateType == typeof(ScepterBoost);
+            scepterBoostExists = body.skillLocator.utility.activationState.stateType == typeof(ScepterBoost);
         }
 
         private void OnDestroy()
@@ -171,6 +195,12 @@ namespace SonicTheHedgehog.Components
             {
                 predictedMeter = Mathf.Clamp(this.predictedMeter + (boostDraining ? boostRegen-Boost.boostMeterDrain : boostRegen), 0, this.maxBoostMeter);
             }
+        }
+
+        public void AddHealthComponent(HealthComponent healthComponent)
+        {
+            this.recentlyHitHealthComponents.Enqueue(healthComponent);
+            this.recentlyHitTimes.Enqueue(this.scepterTimer + StaticValues.scepterBoostICD);
         }
 
         // I have no clue how to network I am just copying viend and red mist

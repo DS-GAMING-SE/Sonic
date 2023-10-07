@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine.UI;
 
 using static BetterUI.ProcCoefficientCatalog;
+using AncientScepter;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
@@ -378,9 +379,41 @@ namespace SonicTheHedgehog.Modules.Survivors
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void ScepterSkill(SkillDefInfo boost)
         {
+            Debug.Log("Sonic Scepter skill started");
+            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
+            boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
+            boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_DESCRIPTION";
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(ScepterBoost));
-            Skills.CreateSkillDef(boost);
+            SkillDef skillDef = Skills.CreateSkillDef(boost);
             Content.AddEntityState(typeof(ScepterBoost));
+            Debug.Log("Sonic Scepter skill created? " + (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog", boostSkillDef)).ToString());
+
+            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
+            boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
+            boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION";
+            skillDef = Skills.CreateSkillDef(boost);
+            Debug.Log("Super Sonic Scepter skill created? " + (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog", SuperSonicComponent.boost)).ToString());
+
+            if (SonicTheHedgehogPlugin.betterUILoaded)
+            {
+                ScepterBetterUI();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private void ScepterBetterUI()
+        {
+            AddSkill(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME", new ProcCoefficientInfo
+            {
+                name = "Boost",
+                procCoefficient = StaticValues.scepterBoostProcCoefficient
+            });
+
+            AddSkill(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME", new ProcCoefficientInfo
+            {
+                name = "Boost",
+                procCoefficient = StaticValues.scepterBoostProcCoefficient
+            });
         }
 
         internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)

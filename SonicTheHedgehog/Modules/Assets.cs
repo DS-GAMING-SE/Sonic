@@ -27,9 +27,12 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject meleeImpactEffect;
         internal static GameObject homingAttackLaunchEffect;
         internal static GameObject homingAttackHitEffect;
+
         internal static GameObject powerBoostFlashEffect;
         internal static GameObject boostFlashEffect;
+        internal static GameObject scepterPowerBoostFlashEffect;
         internal static GameObject superBoostFlashEffect;
+
         internal static GameObject grandSlamHitEffect;
 
         internal static GameObject bombExplosionEffect;
@@ -120,6 +123,25 @@ namespace SonicTheHedgehog.Modules
             homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");
             homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", true);
             powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
+
+            /*scepterPowerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
+            if (scepterPowerBoostFlashEffect)
+            {
+                ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
+                shakeEmitter.amplitudeTimeDecay = true;
+                shakeEmitter.duration = 0.5f;
+                shakeEmitter.radius = 50f;
+                shakeEmitter.scaleShakeRadiusWithLocalScale = false;
+
+                shakeEmitter.wave = new Wave
+                {
+                    amplitude = 0.7f,
+                    frequency = 40f,
+                    cycleOffset = 0f
+                };
+            }
+            */
+
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
             superBoostFlashEffect = Assets.LoadEffect("SonicSuperBoostFlash", true);
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);

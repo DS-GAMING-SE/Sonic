@@ -66,7 +66,7 @@ namespace SonicTheHedgehog.SkillStates
         private void RechargeCooldowns()
         {
             base.skillLocator.primary.RunRecharge(StaticValues.parryCooldownReduction);
-            if (base.skillLocator.utility.activationState.stateType == typeof(Boost) && NetworkServer.active)
+            if ((base.skillLocator.utility.activationState.stateType == typeof(Boost) || base.skillLocator.utility.activationState.stateType == typeof(ScepterBoost)) && NetworkServer.active)
             {
                 BoostLogic boost = base.characterBody.GetComponent<BoostLogic>();
                 if (boost)

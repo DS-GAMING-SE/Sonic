@@ -69,6 +69,19 @@ namespace SonicTheHedgehog
             instance = this;
 
             Log.Init(Logger);
+
+            emoteAPILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.weliveinasociety.CustomEmotesAPI");
+            Log.Message("Emote API exists? " + emoteAPILoaded);
+
+            betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
+            Log.Message("Better UI exists? " + betterUILoaded);
+
+            riskOfOptionsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
+            Log.Message("Risk of Options exists? " + riskOfOptionsLoaded);
+
+            ancientScepterLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.DestroyedClone.AncientScepter");
+            Log.Message("Ancient Scepter exists? " + ancientScepterLoaded);
+
             Modules.Assets.Initialize(); // load assets and read config
             Modules.Config.ReadConfig();
             Modules.States.RegisterStates(); // register states for networking
@@ -84,18 +97,6 @@ namespace SonicTheHedgehog
 
             // now make a content pack and add it- this part will change with the next update
             new Modules.ContentPacks().Initialize();
-
-            emoteAPILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.weliveinasociety.CustomEmotesAPI");
-            Log.Message("Emote API exists? "+emoteAPILoaded);
-
-            betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
-            Log.Message("Better UI exists? " + betterUILoaded);
-
-            riskOfOptionsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
-            Log.Message("Risk of Options exists? " + riskOfOptionsLoaded);
-
-            ancientScepterLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.DestroyedClone.AncientScepter");
-            Log.Message("Ancient Scepter exists? " + ancientScepterLoaded);
 
             if (betterUILoaded)
             {
@@ -302,23 +303,20 @@ namespace SonicTheHedgehog
 
         private bool CanApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_CanApplyAmmoPack orig, GenericSkill self)
         {
-            if (self.activationState.stateType == typeof(Boost))
+            BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+            if (boost && boost.boostExists)
             {
-                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
-                return boost && boost.boostMeter < boost.maxBoostMeter; 
+                return boost.boostMeter < boost.maxBoostMeter; 
             }
             return orig(self);
         }
         private void ApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_ApplyAmmoPack orig, GenericSkill self)
         {
             orig(self);
-            if (self.activationState.stateType == typeof(Boost))
+            BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+            if (boost && boost.boostExists)
             {
-                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
-                if (boost)
-                {
-                    boost.AddBoost(BoostLogic.boostRegenPerBandolier);
-                }
+                boost.AddBoost(BoostLogic.boostRegenPerBandolier);
             }
         }
 

@@ -74,7 +74,7 @@ namespace SonicTheHedgehog.Components
             // Flying
             /*if (flight!=null && flight.isFlying)
             {
-                if (body.characterMotor.velocity != Vector3.zero && (bodyStateMachine.state.GetType() == typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost)))
+                if (body.characterMotor.velocity != Vector3.zero && (bodyStateMachine.state.GetType() == typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost) || bodyStateMachine.state.GetType() == typeof(ScepterBoost)))
                 {
                     calced = false;
                     Vector3 velocity = body.characterMotor.velocity;
@@ -140,10 +140,10 @@ namespace SonicTheHedgehog.Components
                 return;
             }
             */
-            
+
 
             // Not Flying
-            if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost)))
+            if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost) || bodyStateMachine.state.GetType() == typeof(ScepterBoost)))
             {
                 calced = false;
                 Vector3 forward = VelocityOnGround(body.characterMotor.velocity); //body.characterMotor.moveDirection.normalized;

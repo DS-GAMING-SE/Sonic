@@ -28,7 +28,7 @@ namespace SonicTheHedgehog.SkillStates
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
 
         private Vector3 forwardDirection;
-        private BoostLogic boostLogic;
+        public BoostLogic boostLogic;
         private TemporaryOverlay temporaryOverlay;
         private float boostEffectCooldown;
         private ICharacterFlightParameterProvider flight;
@@ -46,7 +46,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public bool powerBoosting = false;
 
-        private bool boosting = false;
+        public bool boosting = false;
 
         private bool checkBoostEffects = false;
         private bool boostChangedEffect = false;
@@ -268,17 +268,21 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (boosting && boostEffectCooldown <= 0)
             {
-                this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
+                if (boostChangedEffect)
                 {
-                    cameraParamsData = this.boostingCameraParams,
-                    priority = 0f
-                }, duration / 2f);
+                    this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
+                    {
+                        cameraParamsData = this.boostingCameraParams,
+                        priority = 0f
+                    }, duration / 2f);
+                    ScepterReset();
+                }
+
+                boostEffectCooldown = 0.6f;
 
                 bool super = base.characterBody.HasBuff(Buffs.superSonicBuff);
                 if (powerBoosting || super)
                 {
-                    boostEffectCooldown = 0.6f;
-
                     Util.PlaySound(boostChangedEffect ? Boost.boostSoundString : Boost.boostChangeSoundString, base.gameObject);
                     if (base.isAuthority)
                     {
@@ -305,8 +309,6 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 else
                 {
-                    boostEffectCooldown = 0.6f;
-  
                     Util.PlaySound(boostChangedEffect ? Boost.boostSoundString : Boost.boostChangeSoundString, base.gameObject);
                     if (base.isAuthority)
                     {
@@ -386,6 +388,16 @@ namespace SonicTheHedgehog.SkillStates
         private bool Moving()
         {
             return base.characterBody.inputBank.moveVector != Vector3.zero || (!base.isGrounded && (!Flying() || base.fixedAge < extendedDuration));
+        }
+
+        public virtual void ScepterDamage()
+        {
+
+        }
+
+        public virtual void ScepterReset()
+        {
+
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

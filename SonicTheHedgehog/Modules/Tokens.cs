@@ -79,14 +79,27 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}long period of time</color>. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff*100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
             #endregion
 
-            #region Utility
+            #region Boost
             LanguageAPI.Add(prefix + "UTILITY_BOOST_NAME", "Boost");
-            LanguageAPI.Add(prefix + "UTILITY_BOOST_DESCRIPTION", $"Spend boost meter to <style=cIsUtility>move {100f * StaticValues.boostSpeedCoefficient}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {100f * StaticValues.powerBoostSpeedCoefficient}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.");
+            string boostDescription = $"Spend boost meter to <style=cIsUtility>move {100f * StaticValues.boostSpeedCoefficient}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {100f * StaticValues.powerBoostSpeedCoefficient}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.";
+            LanguageAPI.Add(prefix + "UTILITY_BOOST_DESCRIPTION", boostDescription);
             #endregion
 
-            #region Super Utility
+            #region Scepter Boost
+            LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_NAME", $"Thundering Boost");
+            string scepterBoostDescription = Helpers.ScepterDescription($"Run into enemies to deal {StaticValues.scepterBoostDamageCoefficient * 100f}% damage. The skill deals more damage the faster you are moving.");
+            LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_DESCRIPTION", boostDescription + scepterBoostDescription);
+            #endregion
+
+            #region Super Boost
             LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_NAME", $"{superSonicColor}Super Boost</color>");
-            LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_DESCRIPTION", $"<style=cIsUtility>Move {superSonicColor}{100f * StaticValues.superBoostSpeedCoefficient}%</color> faster</style> than normal.");
+            string superBoostDescription = $"<style=cIsUtility>Move {superSonicColor}{100f * StaticValues.superBoostSpeedCoefficient}%</color> faster</style> than normal.";
+            LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_DESCRIPTION", superBoostDescription);
+            #endregion
+
+            #region Super Scepter Boost
+            LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_NAME", $"{superSonicColor}Super Thundering Boost</color>");
+            LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION", superBoostDescription + scepterBoostDescription);
             #endregion
 
             #region Special
