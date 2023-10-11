@@ -6,6 +6,7 @@ using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -189,12 +190,14 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (base.isAuthority)
             {
-                if (this.attack.Fire())
+                List<HurtBox> hitResults = new List<HurtBox>();
+                if (this.attack.Fire(hitResults))
                 {
                     base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
-                    foreach (OverlapAttack.OverlapInfo overlap in this.attack.overlapList)
+                    Chat.AddMessage(hitResults.Count().ToString());
+                    foreach (HurtBox hurtBox in hitResults)
                     {
-                        if (onAuthorityHitEnemy != null) onAuthorityHitEnemy.Invoke(this, overlap.hurtBox);
+                        if (onAuthorityHitEnemy != null) onAuthorityHitEnemy.Invoke(this, hurtBox);
                     }
                     this.OnHitEnemyAuthority();
                 }

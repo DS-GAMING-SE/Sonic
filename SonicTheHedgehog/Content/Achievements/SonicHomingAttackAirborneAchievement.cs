@@ -15,6 +15,18 @@ namespace SonicTheHedgehog.Modules.Achievements
             return BodyCatalog.FindBodyIndex("SonicTheHedgehog");
         }
 
+        public override void OnBodyRequirementMet()
+        {
+            base.OnBodyRequirementMet();
+            base.localUser.cachedBody.characterMotor.onHitGroundAuthority += OnHitGround;
+        }
+
+        public override void OnBodyRequirementBroken()
+        {
+            base.localUser.cachedBody.characterMotor.onHitGroundAuthority -= OnHitGround;
+            base.OnBodyRequirementBroken();
+        }
+
         // Hit countRequired different enemies with a homing attack without touching the ground (Unlocks Parry)
         private int count;
         private readonly List<HealthComponent> hitEnemies = new List<HealthComponent>();
@@ -23,13 +35,11 @@ namespace SonicTheHedgehog.Modules.Achievements
         public override void OnInstall()
         {
             base.OnInstall();
-            base.localUser.cachedBody.characterMotor.onHitGroundAuthority += OnHitGround;
             HomingAttack.onAuthorityHitEnemy += OnHitEnemy;
         }
 
         public override void OnUninstall()
         {
-            base.localUser.cachedBody.characterMotor.onHitGroundAuthority -= OnHitGround;
             HomingAttack.onAuthorityHitEnemy -= OnHitEnemy;
             base.OnUninstall();
         }
@@ -45,6 +55,7 @@ namespace SonicTheHedgehog.Modules.Achievements
             if (!this.hitEnemies.Contains(hurtBox.healthComponent))
             {
                 this.count += 1;
+                this.hitEnemies.Add(hurtBox.healthComponent);
                 if (this.count >= countRequired)
                 {
                     base.Grant();
