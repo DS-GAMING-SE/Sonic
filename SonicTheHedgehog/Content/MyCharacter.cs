@@ -14,6 +14,7 @@ using UnityEngine.UI;
 
 using static BetterUI.ProcCoefficientCatalog;
 using AncientScepter;
+using SonicTheHedgehog.Modules.Achievements;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
@@ -66,16 +67,26 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         private static UnlockableDef masterySkinUnlockableDef;
 
+        private static UnlockableDef parryUnlockableDef;
+
+        private static AchievementDef homingAttackAchievementDef;
+
         public override void InitializeCharacter()
         {
             base.InitializeCharacter();
-            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Death));
+            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(Death));
         }
 
         public override void InitializeUnlockables()
         {
             //uncomment this when you have a mastery skin. when you do, make sure you have an icon too
             //masterySkinUnlockableDef = Modules.Unlockables.AddUnlockable<Modules.Achievements.MasteryAchievement>();
+            // I hate achievements almost as much as I hate networking
+            parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");
+            parryUnlockableDef.cachedName = "SonicSkills.Parry";
+            parryUnlockableDef.nameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE";
+            Content.AddUnlockableDef(parryUnlockableDef);
         }
 
         public override void InitializeHitboxes()
@@ -384,6 +395,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_DESCRIPTION";
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(ScepterBoost));
+            boost.skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texScepterBoostIcon");
             SkillDef skillDef = Skills.CreateSkillDef(boost);
             Content.AddEntityState(typeof(ScepterBoost));
             Debug.Log("Sonic Scepter skill created? " + (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog", boostSkillDef)).ToString());

@@ -20,6 +20,17 @@ namespace SonicTheHedgehog.SkillStates
         public float duration;
         protected Animator animator;
 
+        private static float cameraDistance = -7;
+        private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
+        {
+            maxPitch = 70f,
+            minPitch = -70f,
+            pivotVerticalOffset = 0.5f,
+            idealLocalCameraPos = new Vector3(0f, 0f, cameraDistance),
+            wallCushion = 0.1f
+        };
+        private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -31,6 +42,12 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
                 }
+
+                this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
+                {
+                    cameraParamsData = this.cameraParams,
+                    priority = 1f
+                }, duration / 2f);
                 //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", baseDuration);
             }
             else
@@ -51,13 +68,14 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.FixedUpdate();
             base.characterMotor.velocity = Vector3.zero;
-            if (fixedAge >= this.duration/2 && !effectFired && this.superSonic)
+            if (fixedAge >= this.duration / 2 && !effectFired && this.superSonic)
             {
                 effectFired = true;
                 Util.PlaySound(this.transformSoundString, base.gameObject);
                 if (base.isAuthority)
                 {
                     this.superSonic.superSonicState.SetNextState(new SuperSonic());
+                    base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.2f);
                 }
             }
            

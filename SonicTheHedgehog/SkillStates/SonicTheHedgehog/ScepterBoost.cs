@@ -1,25 +1,23 @@
-﻿using EntityStates;
-using R2API;
+﻿using R2API.Networking.Interfaces;
+using R2API.Networking;
 using RoR2;
-using RoR2.Networking;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UIElements.Experimental;
-using static RoR2.OverlapAttack;
 
 namespace SonicTheHedgehog.SkillStates
 {
     public class ScepterBoost : Boost
     {
-        // Move healthComponent tracking to boostLogic so ICD can be longer
-        
-        private static float checksPerSecond = 5;
+        private static float checksPerSecond = 8;
+
+        private static readonly float damageRadius = 4f;
+        private static readonly float superDamageRadius = 6;
+
+        private static readonly float pushOutForceMagnitude = 100;
+        private static readonly float pushUpForceMagnitude = 10;
 
         private float damageTimer = 0f;
         
@@ -55,7 +53,7 @@ namespace SonicTheHedgehog.SkillStates
             this.damageTimer = 0f;
 
             this.sphereSearch.origin = characterBody.transform.position;
-            this.sphereSearch.radius = 3;
+            this.sphereSearch.radius = base.characterBody.HasBuff(Buffs.superSonicBuff) ? superDamageRadius : damageRadius;
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));
@@ -66,44 +64,50 @@ namespace SonicTheHedgehog.SkillStates
                 return;
             }
 
-            CalculateDamage();
-
             for (int i = 0; i < hitList.Count(); i++)
             {
-                Debug.Log("Scepter Boost hurtbox check");
+                //Debug.Log("Scepter Boost hurtbox check");
                 HealthComponent healthComponent = hitList[i].healthComponent;
                 if (healthComponent && !boostLogic.recentlyHitHealthComponents.Contains(healthComponent))
                 {
+                    CalculateDamage(hitList[i]);
                     if (NetworkServer.active)
                     {
-                        DealDamage(hitList[i]);
+                        DealDamage(hitList[i], this.damageInfo);
                     }
-                    boostLogic.AddHealthComponent(healthComponent);
+                    else
+                    {
+                        new ScepterBoostDamage(hitList[i], this.damageInfo).Send(NetworkDestination.Server);
+                    }
+                    boostLogic.AddTracker(healthComponent);
                 }
             }
         }
         
-        private void CalculateDamage()
+        private void CalculateDamage(HurtBox hurtBox)
         {
             this.damage = ((StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed) * base.characterBody.damage;
+            Vector3 pushOutForce = Vector3.Normalize(hurtBox.transform.position - base.characterBody.transform.position) * pushOutForceMagnitude;
+            Vector3 pushUpForce = Vector3.up * pushUpForceMagnitude;
             this.damageInfo = new DamageInfo
             {
                 attacker = base.characterBody.gameObject,
                 inflictor = base.characterBody.gameObject,
                 crit = base.RollCrit(),
                 damage = this.damage,
-                position = base.characterBody.transform.position,
-                force = Vector3.zero,
+                position = hurtBox.transform.position,
+                force = pushOutForce + pushUpForce,
                 damageType = DamageType.Generic,
                 damageColorIndex = DamageColorIndex.Default,
                 procCoefficient = StaticValues.scepterBoostProcCoefficient
             };
         }
 
-        private void DealDamage(HurtBox hurtBox)
+        public static void DealDamage(HurtBox hurtBox, DamageInfo damageInfo)
         {
-            hurtBox.healthComponent.TakeDamage(this.damageInfo);
-            GlobalEventManager.instance.OnHitEnemy(this.damageInfo, hurtBox.healthComponent.gameObject);
+            hurtBox.healthComponent.TakeDamage(damageInfo);
+            GlobalEventManager.instance.OnHitEnemy(damageInfo, hurtBox.healthComponent.gameObject);
+            GlobalEventManager.instance.OnHitAll(damageInfo, hurtBox.healthComponent.gameObject);
         }
     }
 }

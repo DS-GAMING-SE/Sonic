@@ -51,7 +51,6 @@ namespace SonicTheHedgehog.Components
             body.skillLocator.utility.onSkillChanged += OnSkillChanged;
             BoostExists();
             CalculateBoostVariables();
-            this.NetworkboostAvailable = true;
             this.NetworkboostMeter = maxBoostMeter;
         }
         
@@ -71,6 +70,7 @@ namespace SonicTheHedgehog.Components
                         this.AddBoost(boostRegen);
                     }
                 }
+
                 if (this.scepterBoostExists)
                 {
                     this.scepterTimer += Time.fixedDeltaTime;
@@ -111,8 +111,13 @@ namespace SonicTheHedgehog.Components
 
         private void BoostExists()
         {
+            bool prevBoostExists = boostExists;
             boostExists = body.skillLocator.utility.activationState.stateType == typeof(Boost) || body.skillLocator.utility.activationState.stateType == typeof(ScepterBoost);
             scepterBoostExists = body.skillLocator.utility.activationState.stateType == typeof(ScepterBoost);
+            if (!prevBoostExists)
+            {
+                this.NetworkboostAvailable = true;
+            }
         }
 
         private void OnDestroy()
@@ -197,7 +202,7 @@ namespace SonicTheHedgehog.Components
             }
         }
 
-        public void AddHealthComponent(HealthComponent healthComponent)
+        public void AddTracker(HealthComponent healthComponent)
         {
             this.recentlyHitHealthComponents.Enqueue(healthComponent);
             this.recentlyHitTimes.Enqueue(this.scepterTimer + StaticValues.scepterBoostICD);

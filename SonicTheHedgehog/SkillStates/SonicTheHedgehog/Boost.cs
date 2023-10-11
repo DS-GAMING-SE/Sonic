@@ -274,7 +274,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         cameraParamsData = this.boostingCameraParams,
                         priority = 0f
-                    }, duration / 2f);
+                    }, 0.1f);
                     ScepterReset();
                 }
 
@@ -323,7 +323,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
-                base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, duration*1.5f);
+                base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, duration * 2f);
                 if (temporaryOverlay && !powerBoosting)
                 {
                     temporaryOverlay.RemoveFromCharacterModel();

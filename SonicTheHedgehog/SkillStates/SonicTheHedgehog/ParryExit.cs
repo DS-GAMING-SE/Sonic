@@ -9,8 +9,6 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class ParryExit : BaseSkillState
     {
-        // Experiment with changing hitbox size
-
         public static float baseEndLag = Modules.StaticValues.parryEndLag;
         public static float baseEndLagFail = Modules.StaticValues.parryFailEndLag;
 
@@ -30,6 +28,7 @@ namespace SonicTheHedgehog.SkillStates
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
             base.PlayAnimation("FullBody, Override", "ParryRelease", "Slash.playbackRate", endLag * endAnimationPercent);
+            EffectManager.SimpleMuzzleFlash(Modules.Assets.parryEffect, base.gameObject, this.muzzleString, true);
             if (parrySuccess)
             {
                 if (NetworkServer.active)

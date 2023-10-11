@@ -91,6 +91,7 @@ namespace SonicTheHedgehog
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();
+            NetworkingAPI.RegisterMessageType<ScepterBoostDamage>();
 
             // survivor initialization
             new SonicTheHedgehogCharacter().Initialize();
@@ -215,7 +216,7 @@ namespace SonicTheHedgehog
 
             RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostSpeedCoefficient*100}% movement speed");
             RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor} Armor.");
-            RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Movement speed. Complete invincibility and flight.");
+            RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Base movement speed. Complete invincibility and flight.");
             RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff*100}% Attack speed. +{StaticValues.parryMovementSpeedBuff*100}% Movement speed.");
         }
 
@@ -238,18 +239,20 @@ namespace SonicTheHedgehog
                 {
                     if (!self.HasBuff(Buffs.superSonicBuff))
                     {
+                        stats.baseMoveSpeedAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedFlatCoefficient : StaticValues.boostSpeedFlatCoefficient;
                         stats.moveSpeedMultAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
                         stats.armorAdd += StaticValues.boostArmor;
                     }
                     else
                     {
+                        stats.baseMoveSpeedAdd += StaticValues.superBoostSpeedFlatCoefficient;
                         stats.moveSpeedMultAdd += StaticValues.superBoostSpeedCoefficient;
                     }
                 }
 
                 if (self.HasBuff(Buffs.superSonicBuff))
                 {
-                    stats.moveSpeedMultAdd += StaticValues.superSonicMovementSpeed;
+                    stats.baseMoveSpeedAdd += StaticValues.superSonicMovementSpeed;
                     stats.attackSpeedMultAdd += StaticValues.superSonicAttackSpeed;
                     stats.damageMultAdd += StaticValues.superSonicBaseDamage;
                     stats.jumpPowerMultAdd += StaticValues.superSonicJumpHeight;
@@ -303,20 +306,26 @@ namespace SonicTheHedgehog
 
         private bool CanApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_CanApplyAmmoPack orig, GenericSkill self)
         {
-            BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
-            if (boost && boost.boostExists)
+            if (self.activationState.stateType == typeof(Boost) || self.activationState.stateType == typeof(ScepterBoost))
             {
-                return boost.boostMeter < boost.maxBoostMeter; 
+                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+                if (boost)
+                {
+                    return boost.boostMeter < boost.maxBoostMeter;
+                } 
             }
             return orig(self);
         }
         private void ApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_ApplyAmmoPack orig, GenericSkill self)
         {
             orig(self);
-            BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
-            if (boost && boost.boostExists)
+            if (self.activationState.stateType == typeof(Boost) || self.activationState.stateType == typeof(ScepterBoost))
             {
-                boost.AddBoost(BoostLogic.boostRegenPerBandolier);
+                BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
+                if (boost)
+                {
+                    boost.AddBoost(BoostLogic.boostRegenPerBandolier);
+                }
             }
         }
 

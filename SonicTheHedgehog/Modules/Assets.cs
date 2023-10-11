@@ -28,6 +28,8 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject homingAttackLaunchEffect;
         internal static GameObject homingAttackHitEffect;
 
+        internal static GameObject parryEffect;
+
         internal static GameObject powerBoostFlashEffect;
         internal static GameObject boostFlashEffect;
         internal static GameObject scepterPowerBoostFlashEffect;
@@ -122,6 +124,9 @@ namespace SonicTheHedgehog.Modules
             meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
             homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");
             homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", true);
+
+            parryEffect = Assets.LoadEffect("SonicParry");
+
             powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
 
             /*scepterPowerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);

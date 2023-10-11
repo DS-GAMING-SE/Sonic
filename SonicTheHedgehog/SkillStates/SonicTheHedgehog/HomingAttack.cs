@@ -64,6 +64,8 @@ namespace SonicTheHedgehog.SkillStates
         private HomingTracker homingTracker;
         private bool effectPlayed = false;
 
+        public static event Action<HomingAttack, HurtBox> onAuthorityHitEnemy;
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -190,6 +192,10 @@ namespace SonicTheHedgehog.SkillStates
                 if (this.attack.Fire())
                 {
                     base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
+                    foreach (OverlapAttack.OverlapInfo overlap in this.attack.overlapList)
+                    {
+                        if (onAuthorityHitEnemy != null) onAuthorityHitEnemy.Invoke(this, overlap.hurtBox);
+                    }
                     this.OnHitEnemyAuthority();
                 }
             }

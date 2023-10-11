@@ -50,9 +50,40 @@ namespace SonicTheHedgehog.Components
         }
     }
 
-    /*public class ScepterBoostDamage : INetMessage
+    public class ScepterBoostDamage : INetMessage
     {
+        HurtBox hurtbox;
+        DamageInfo damageInfo;
 
+        public ScepterBoostDamage()
+        {
+
+        }
+
+        public ScepterBoostDamage(HurtBox hurtbox, DamageInfo damageInfo)
+        {
+            this.hurtbox = hurtbox;
+            this.damageInfo = damageInfo;
+        }
+
+        public void OnReceived()
+        {
+            if (!NetworkServer.active) return;
+            Debug.Log("Scepter Boost Damage Received Server");
+            ScepterBoost.DealDamage(this.hurtbox, this.damageInfo);
+        }
+
+        public void Serialize(NetworkWriter writer)
+        {
+            writer.Write(hurtbox);
+            writer.Write(damageInfo);
+        }
+
+        public void Deserialize(NetworkReader reader)
+        {
+            hurtbox = reader.ReadHurtBoxReference().ResolveHurtBox();
+            damageInfo = reader.ReadDamageInfo();
+        }
     }
-    */
+    
 }

@@ -2,6 +2,7 @@
 using SonicTheHedgehog.Components;
 using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -45,7 +46,7 @@ namespace SonicTheHedgehog.Modules
             string superSonicColor = "<color=#ffee00>";
             #region Passives
             LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_NAME", "Momentum");
-            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION", $"<style=cIsUtility>Build up speed</style> by running down hill to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier*100}% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100)/3)}% slower.</style>");
+            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION", $"<style=cIsUtility>Build up speed</style> by <style=cIsUtility>running down hill</style> to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier*100}% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100)/3)}% slower.</style>\nIf <style=cIsUtility>flying</style>, <style=cIsUtility>build up speed</style> by <style=cIsUtility>moving in a straight line.</style>");
             #endregion
 
             #region Primary
@@ -81,7 +82,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Boost
             LanguageAPI.Add(prefix + "UTILITY_BOOST_NAME", "Boost");
-            string boostDescription = $"Spend boost meter to <style=cIsUtility>move {100f * StaticValues.boostSpeedCoefficient}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {100f * StaticValues.powerBoostSpeedCoefficient}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.";
+            string boostDescription = $"Spend boost meter to <style=cIsUtility>move {100f * StaticValues.boostListedSpeedCoefficient}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {100f * StaticValues.powerBoostListedSpeedCoefficient}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.";
             LanguageAPI.Add(prefix + "UTILITY_BOOST_DESCRIPTION", boostDescription);
             #endregion
 
@@ -93,7 +94,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Super Boost
             LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_NAME", $"{superSonicColor}Super Boost</color>");
-            string superBoostDescription = $"<style=cIsUtility>Move {superSonicColor}{100f * StaticValues.superBoostSpeedCoefficient}%</color> faster</style> than normal.";
+            string superBoostDescription = $"<style=cIsUtility>Move {superSonicColor}{100f * StaticValues.superBoostListedSpeedCoefficient}%</color> faster</style> than normal.";
             LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_DESCRIPTION", superBoostDescription);
             #endregion
 
@@ -122,6 +123,10 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "MASTERYUNLOCKABLE_ACHIEVEMENT_NAME", "Sonic: Mastery");
             LanguageAPI.Add(prefix + "MASTERYUNLOCKABLE_ACHIEVEMENT_DESC", "As Sonic, beat the game or obliterate on Monsoon.");
             LanguageAPI.Add(prefix + "MASTERYUNLOCKABLE_UNLOCKABLE_NAME", "Sonic: Mastery");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME", "Sonic: Yet My Feet Don't Touch the Ground");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION", "Hit x different enemies with the homing attack without touching the ground.");
+            LanguageAPI.Add(prefix + "PARRY_UNLOCKABLE_NAME", "Parry");
             #endregion
             #endregion
         }

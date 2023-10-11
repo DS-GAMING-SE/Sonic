@@ -19,6 +19,17 @@ namespace SonicTheHedgehog.SkillStates
         UnityEngine.Object superAura;
         bool superBuffApplied;
 
+        private static float cameraDistance = -15;
+        private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
+        {
+            maxPitch = 70f,
+            minPitch = -70f,
+            pivotVerticalOffset = 1.3f,
+            idealLocalCameraPos = new Vector3(0f, 0f, cameraDistance),
+            wallCushion = 0.1f
+        };
+        private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -29,6 +40,12 @@ namespace SonicTheHedgehog.SkillStates
             superSonicComponent.SuperModel();
 
             UpdateFlight(true);
+
+            this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
+            {
+                cameraParamsData = this.cameraParams,
+                priority = 0f
+            }, 0f);
 
             if (base.isAuthority)
             {
@@ -93,6 +110,9 @@ namespace SonicTheHedgehog.SkillStates
                 base.skillLocator.utility.UnsetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
                 base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
             }
+
+            base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.5f);
+
             base.OnExit();
         }
 

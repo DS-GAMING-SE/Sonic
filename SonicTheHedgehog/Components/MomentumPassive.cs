@@ -13,7 +13,6 @@ namespace SonicTheHedgehog.Components
     public class MomentumPassive : MonoBehaviour
     {
         // Needs interaction for landing on a slope
-        // Needs special interaction with flying. Flying in a straight line builds speed?
 
         private CharacterBody body;
         private EntityStateMachine bodyStateMachine;
@@ -26,7 +25,9 @@ namespace SonicTheHedgehog.Components
 
         private float desiredMomentum=0;
         private bool calced = false;
+
         private Vector3 prevVelocity = Vector3.zero;
+        private static float cutoffAngle = 30f;
 
         private int frame= 0;
         private static int framesBetweenRecalc = 20;
@@ -71,60 +72,31 @@ namespace SonicTheHedgehog.Components
 
         private void CalculateMomentum()
         {
-            // Flying
-            /*if (flight!=null && flight.isFlying)
+            // Flying (Thank you Starstorm 2 Back Thrusters for inspiration)
+            if (flight!=null && flight.isFlying)
             {
                 if (body.characterMotor.velocity != Vector3.zero && (bodyStateMachine.state.GetType() == typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost) || bodyStateMachine.state.GetType() == typeof(ScepterBoost)))
                 {
-                    calced = false;
-                    Vector3 velocity = body.characterMotor.velocity;
-                    Vector3 lastVelocity = prevVelocity;
+                    this.calced = false;
+                    Vector3 velocity = Vector3.Normalize(body.characterMotor.velocity);
+                    Vector3 prevVelocity = Vector3.Normalize(this.prevVelocity);
                     if (body.characterMotor.isGrounded)
                     {
-                        velocity = VelocityOnGround(velocity).normalized;
-                        lastVelocity = VelocityOnGround(prevVelocity).normalized;
+                        velocity.y = 0;
+                        prevVelocity.y = 0;
+                        Vector3.Normalize(velocity);
+                        Vector3.Normalize(prevVelocity);
                     }
-                    float dot = Vector3.Dot(velocity, lastVelocity);
                     if (body.inputBank.moveVector!=Vector3.zero)
                     {
-                        if (dot >= 1)
-                        {
-                            desiredMomentum = 1f;
-                        }
-                        else
-                        {
-                            desiredMomentum = 0.4f;
-                        }
+                        desiredMomentum = Mathf.Lerp(1, -0.8f, Vector3.Angle(velocity, prevVelocity)/cutoffAngle);
                     }
                     else
                     {
                         desiredMomentum = 0f;
                     }
-
-                    if (Mathf.Abs(desiredMomentum - momentum) > 0.1f)
-                    {
-                        if (desiredMomentum > momentum)
-                        {
-                            momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * 1 * framesBetweenRecalc), -0.5f, desiredMomentum);
-                        }
-                        else
-                        {
-                            momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * 0.7f * framesBetweenRecalc), desiredMomentum, 1f);
-                        }
-                        body.MarkAllStatsDirty();
-                        prevVelocity = body.characterMotor.velocity;
-                        Chat.AddMessage("mom " + momentum.ToString() + " des " + desiredMomentum.ToString() + " dot " + dot.ToString());
-                    }
-                    else
-                    {
-                        momentum = desiredMomentum;
-                        if (!calced)
-                        {
-                            calced = true;
-                            body.MarkAllStatsDirty();
-                            prevVelocity = body.characterMotor.velocity;
-                        }
-                    }
+                    //Chat.AddMessage((Vector3.Angle(velocity, prevVelocity) / cutoffAngle).ToString());
+                    MomentumCalculation(1.2f, 0.4f);
                 }
                 else
                 {
@@ -133,13 +105,13 @@ namespace SonicTheHedgehog.Components
                     {
                         calced = true;
                         body.MarkAllStatsDirty();
-                        prevVelocity = body.characterMotor.velocity;
                         //body.RecalculateStats();
                     }
                 }
+                this.prevVelocity = body.characterMotor.velocity;
                 return;
             }
-            */
+            
 
 
             // Not Flying
@@ -149,59 +121,13 @@ namespace SonicTheHedgehog.Components
                 Vector3 forward = VelocityOnGround(body.characterMotor.velocity); //body.characterMotor.moveDirection.normalized;
                 float dot = Vector3.Dot(forward, Vector3.down);
                 desiredMomentum = Mathf.Clamp(dot * 2f, -1f, 1f);
-                if (Mathf.Abs(desiredMomentum - momentum) > 0.1f)
-                {
-                    if (desiredMomentum > momentum)
-                    {
-                        momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * slowDecay * framesBetweenRecalc), -1f, desiredMomentum);
-                    }
-                    else
-                    {
-                        momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * fastDecay * framesBetweenRecalc), desiredMomentum, 1f);
-                    }
-                    body.MarkAllStatsDirty();
-                    //body.RecalculateStats();
-                    //Chat.AddMessage("mom " + momentum.ToString() + " des " + desiredMomentum.ToString());
-                }
-                else
-                {
-                    momentum = desiredMomentum;
-                    if (!calced)
-                    {
-                        calced = true;
-                        body.MarkAllStatsDirty();
-                        //body.RecalculateStats();
-                    }
-                }
+                MomentumCalculation(slowDecay, fastDecay);
             }
             else
             {
-                if (Mathf.Abs(momentum) > 0.1f)
-                {
-                    float momentumDecay = body.characterMotor.isGrounded ? groundDecay : aerialDecay;
-                    calced = false;
-                    if (momentum > 0)
-                    {
-                        momentum = Mathf.Clamp(momentum - (momentumDecay * Time.fixedDeltaTime * framesBetweenRecalc), 0, 1);
-                    }
-                    else
-                    {
-                        momentum = Mathf.Clamp(momentum + (momentumDecay * Time.fixedDeltaTime * framesBetweenRecalc), -1, 0);
-                    }
-                    body.MarkAllStatsDirty();
-                    //body.RecalculateStats();
-                    //Chat.AddMessage("mom " + momentum.ToString());
-                }
-                else
-                {
-                    momentum = 0;
-                    if (!calced)
-                    {
-                        calced = true;
-                        body.MarkAllStatsDirty();
-                        //body.RecalculateStats();
-                    }
-                }
+                desiredMomentum = 0;
+                float momentumDecay = body.characterMotor.isGrounded ? groundDecay : aerialDecay;
+                MomentumCalculation(momentumDecay, momentumDecay);
             }
         }
 
@@ -220,6 +146,32 @@ namespace SonicTheHedgehog.Components
         {
             velocity.y = 0;
             return Vector3.ProjectOnPlane(velocity, body.characterMotor.estimatedGroundNormal).normalized;
+        }
+
+        private void MomentumCalculation(float slowDecay, float fastDecay)
+        {
+            if (Mathf.Abs(desiredMomentum - momentum) > 0.1f)
+            {
+                if (desiredMomentum > momentum)
+                {
+                    momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * slowDecay * framesBetweenRecalc), -1f, desiredMomentum);
+                }
+                else
+                {
+                    momentum = Mathf.Clamp(momentum + ((desiredMomentum - momentum) * Time.fixedDeltaTime * fastDecay * framesBetweenRecalc), desiredMomentum, 1f);
+                }
+                body.MarkAllStatsDirty();
+                //Chat.AddMessage("mom " + momentum.ToString() + " des " + desiredMomentum.ToString() + " dot " + dot.ToString());
+            }
+            else
+            {
+                momentum = desiredMomentum;
+                if (!calced)
+                {
+                    calced = true;
+                    body.MarkAllStatsDirty();
+                }
+            }
         }
     }
 }
