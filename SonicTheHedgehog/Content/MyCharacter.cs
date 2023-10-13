@@ -69,8 +69,6 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         private static UnlockableDef parryUnlockableDef;
 
-        private static AchievementDef homingAttackAchievementDef;
-
         public override void InitializeCharacter()
         {
             base.InitializeCharacter();
@@ -85,7 +83,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");
             parryUnlockableDef.cachedName = "SonicSkills.Parry";
-            parryUnlockableDef.nameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE";
+            parryUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(parryUnlockableDef);
         }
 
@@ -217,7 +215,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             #region Secondary
             parrySkillDef = Modules.Skills.CreateSkillDef(parry);
 
-            Modules.Skills.AddSecondarySkills(bodyPrefab, parrySkillDef);
+            Skills.AddSkillToFamily(bodyPrefab.GetComponent<SkillLocator>().secondary.skillFamily, parrySkillDef, parryUnlockableDef);
             #endregion
 
             #region Utility

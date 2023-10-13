@@ -13,6 +13,8 @@ namespace SonicTheHedgehog.Components
 {
     public class SuperSonicComponent : NetworkBehaviour
     {
+        // Make super parry something that can only activate once but be CRAZY powerful
+        
         public EntityStateMachine superSonicState;
         public Material superSonicMaterial;
         public Material defaultMaterial;

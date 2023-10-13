@@ -16,8 +16,8 @@ namespace SonicTheHedgehog.SkillStates
         private static readonly float damageRadius = 4f;
         private static readonly float superDamageRadius = 6;
 
-        private static readonly float pushOutForceMagnitude = 100;
-        private static readonly float pushUpForceMagnitude = 10;
+        private static readonly float pushOutForceMagnitude = 500;
+        private static readonly float pushUpForceMagnitude = 100;
 
         private float damageTimer = 0f;
         
@@ -59,7 +59,7 @@ namespace SonicTheHedgehog.SkillStates
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));
             HurtBox[] hitList = this.sphereSearch.GetHurtBoxes();
 
-            if (hitList.Count()==0)
+            if (hitList.Count() == 0)
             {
                 return;
             }
@@ -86,15 +86,16 @@ namespace SonicTheHedgehog.SkillStates
         
         private void CalculateDamage(HurtBox hurtBox)
         {
-            this.damage = ((StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed) * base.characterBody.damage;
-            Vector3 pushOutForce = Vector3.Normalize(hurtBox.transform.position - base.characterBody.transform.position) * pushOutForceMagnitude;
-            Vector3 pushUpForce = Vector3.up * pushUpForceMagnitude;
+            this.damage = (StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed;
+            Vector3 pushOutForce = Vector3.Normalize(base.characterMotor.velocity) * pushOutForceMagnitude * (this.damage/2f);
+            Vector3 pushUpForce = Vector3.up * pushUpForceMagnitude * (this.damage / 2f);
+            //Chat.AddMessage(pushOutForce + " " + pushUpForce);
             this.damageInfo = new DamageInfo
             {
                 attacker = base.characterBody.gameObject,
                 inflictor = base.characterBody.gameObject,
                 crit = base.RollCrit(),
-                damage = this.damage,
+                damage = this.damage * base.characterBody.damage,
                 position = hurtBox.transform.position,
                 force = pushOutForce + pushUpForce,
                 damageType = DamageType.Generic,
@@ -108,6 +109,11 @@ namespace SonicTheHedgehog.SkillStates
             hurtBox.healthComponent.TakeDamage(damageInfo);
             GlobalEventManager.instance.OnHitEnemy(damageInfo, hurtBox.healthComponent.gameObject);
             GlobalEventManager.instance.OnHitAll(damageInfo, hurtBox.healthComponent.gameObject);
+        }
+
+        public override string GetSoundString()
+        {
+            return "Play_scepter_boost";
         }
     }
 }

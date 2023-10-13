@@ -76,7 +76,6 @@ namespace SonicTheHedgehog.SkillStates
             {
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
                 base.characterBody.AddTimedBuff(Modules.Buffs.superSonicBuff, Modules.StaticValues.superSonicDuration+1, 1);
-                //base.characterBody.AddTimedBuff(RoR2Content.Buffs.Immune, Modules.StaticValues.superSonicDuration+1, 1);
             }
 
         }
@@ -91,10 +90,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 Destroy(this.superAura);
             }
-            else
-            {
-                Chat.AddMessage("why does aura despawn after 12 seconds that's so random");
-            }
+            // Aura despawned because all assets loaded are automatically given a component that makes them go away after 12 seconds. Why no one tells me this
 
             if (base.isAuthority && base.skillLocator)
             {

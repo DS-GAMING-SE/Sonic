@@ -88,7 +88,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Scepter Boost
             LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_NAME", $"Thundering Boost");
-            string scepterBoostDescription = Helpers.ScepterDescription($"Run into enemies to deal {StaticValues.scepterBoostDamageCoefficient * 100f}% damage. The skill deals more damage the faster you are moving.");
+            string scepterBoostDescription = Helpers.ScepterDescription($"Run into enemies to deal {StaticValues.scepterBoostDamageCoefficient * 100f}% damage. Damage increases based on your movement speed.");
             LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_DESCRIPTION", boostDescription + scepterBoostDescription);
             #endregion
 
@@ -124,9 +124,8 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "MASTERYUNLOCKABLE_ACHIEVEMENT_DESC", "As Sonic, beat the game or obliterate on Monsoon.");
             LanguageAPI.Add(prefix + "MASTERYUNLOCKABLE_UNLOCKABLE_NAME", "Sonic: Mastery");
 
-            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME", "Sonic: Yet My Feet Don't Touch the Ground");
-            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION", "Hit x different enemies with the homing attack without touching the ground.");
-            LanguageAPI.Add(prefix + "PARRY_UNLOCKABLE_NAME", "Parry");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME", "Sonic: Spinning Upside Down");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION", $"Hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
             #endregion
             #endregion
         }

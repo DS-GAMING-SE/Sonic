@@ -283,7 +283,7 @@ namespace SonicTheHedgehog.SkillStates
                 bool super = base.characterBody.HasBuff(Buffs.superSonicBuff);
                 if (powerBoosting || super)
                 {
-                    Util.PlaySound(boostChangedEffect ? Boost.boostSoundString : Boost.boostChangeSoundString, base.gameObject);
+                    Util.PlaySound(boostChangedEffect ? GetSoundString() : Boost.boostChangeSoundString, base.gameObject);
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
@@ -309,7 +309,7 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 else
                 {
-                    Util.PlaySound(boostChangedEffect ? Boost.boostSoundString : Boost.boostChangeSoundString, base.gameObject);
+                    Util.PlaySound(boostChangedEffect ? GetSoundString() : Boost.boostChangeSoundString, base.gameObject);
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
@@ -398,6 +398,11 @@ namespace SonicTheHedgehog.SkillStates
         public virtual void ScepterReset()
         {
 
+        }
+
+        public virtual string GetSoundString()
+        {
+            return "Play_boost";
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

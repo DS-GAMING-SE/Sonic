@@ -7,9 +7,21 @@ using UnityEngine;
 
 namespace SonicTheHedgehog.Modules.Achievements
 {
-    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCK", "SonicSkills.Parry", null, null)]
+    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", "SonicSkills.Parry", null, null)]
     public class SonicHomingAttackAirborneAchievement : RoR2.Achievements.BaseAchievement
     {
+        // Hit countRequired different enemies with a homing attack without touching the ground (Unlocks Parry)
+        private int count;
+        private readonly List<HealthComponent> hitEnemies = new List<HealthComponent>();
+        public static int countRequired = 8;
+
+        private static float pityTime = 0.2f;
+
+        private float pityTimer;
+
+        private EntityStateMachine bodyStateMachine;
+
+
         public override BodyIndex LookUpRequiredBodyIndex()
         {
             return BodyCatalog.FindBodyIndex("SonicTheHedgehog");
@@ -18,36 +30,39 @@ namespace SonicTheHedgehog.Modules.Achievements
         public override void OnBodyRequirementMet()
         {
             base.OnBodyRequirementMet();
-            base.localUser.cachedBody.characterMotor.onHitGroundAuthority += OnHitGround;
+            this.bodyStateMachine = EntityStateMachine.FindByCustomName(base.localUser.cachedBody.gameObject, "Body");
         }
 
         public override void OnBodyRequirementBroken()
         {
-            base.localUser.cachedBody.characterMotor.onHitGroundAuthority -= OnHitGround;
             base.OnBodyRequirementBroken();
         }
-
-        // Hit countRequired different enemies with a homing attack without touching the ground (Unlocks Parry)
-        private int count;
-        private readonly List<HealthComponent> hitEnemies = new List<HealthComponent>();
-        private static int countRequired = 10;
 
         public override void OnInstall()
         {
             base.OnInstall();
+            RoR2Application.onFixedUpdate += OnFixedUpdate;
             HomingAttack.onAuthorityHitEnemy += OnHitEnemy;
         }
 
         public override void OnUninstall()
         {
             HomingAttack.onAuthorityHitEnemy -= OnHitEnemy;
+            RoR2Application.onFixedUpdate -= OnFixedUpdate;
             base.OnUninstall();
         }
 
-        private void OnHitGround(ref CharacterMotor.HitGroundInfo hitGroundInfo)
+        private void OnFixedUpdate()
         {
-            this.count = 0;
-            this.hitEnemies.Clear();
+            if (base.localUser.cachedBody && base.localUser.cachedBody.characterMotor.isGrounded && this.bodyStateMachine.state.GetType() != typeof(HomingAttack))
+            {
+                this.pityTimer += Time.fixedDeltaTime;
+                if (this.pityTimer >= pityTime)
+                {
+                    this.count = 0;
+                    this.hitEnemies.Clear();
+                }
+            }
         }
 
         private void OnHitEnemy(HomingAttack state, HurtBox hurtBox)
@@ -56,6 +71,7 @@ namespace SonicTheHedgehog.Modules.Achievements
             {
                 this.count += 1;
                 this.hitEnemies.Add(hurtBox.healthComponent);
+                this.pityTimer = 0;
                 if (this.count >= countRequired)
                 {
                     base.Grant();

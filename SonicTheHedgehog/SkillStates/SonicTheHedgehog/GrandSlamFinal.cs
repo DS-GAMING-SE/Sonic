@@ -67,10 +67,7 @@ namespace SonicTheHedgehog.SkillStates
             this.hasHit = false;
             this.hitboxName = "Stomp";
             base.PlayAnimation("FullBody, Override", "GrandSlam", "Roll.playbackRate", this.startUpTime*1.15f);
-            if (base.isAuthority)
-            {
-                Util.PlaySound("Play_swing_low", base.gameObject);
-            }
+            Util.PlaySound("Play_swing_low", base.gameObject);
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
@@ -105,6 +102,10 @@ namespace SonicTheHedgehog.SkillStates
                 //Util.PlaySound(this.hitSoundString, base.gameObject);
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.grandSlamHitEffect, base.gameObject, this.muzzleString, true);
                 effectFired = true;
+            }
+            if (base.isAuthority)
+            {
+                base.characterMotor.Motor.ForceUnground();
             }
             base.characterMotor.velocity = Vector3.up * 9f;
             this.hasHit = true;

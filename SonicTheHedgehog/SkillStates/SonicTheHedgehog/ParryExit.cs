@@ -18,7 +18,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public bool parrySuccess = false;
 
-        private string muzzleString="SwingCenter";
+        private string muzzleString= "BallHitbox";
         private Vector3 targetVelocity;
 
         public override void OnEnter()
@@ -28,7 +28,11 @@ namespace SonicTheHedgehog.SkillStates
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
             base.PlayAnimation("FullBody, Override", "ParryRelease", "Slash.playbackRate", endLag * endAnimationPercent);
-            EffectManager.SimpleMuzzleFlash(Modules.Assets.parryEffect, base.gameObject, this.muzzleString, true);
+            if (base.isAuthority)
+            {
+                EffectManager.SimpleMuzzleFlash(Modules.Assets.parryEffect, base.gameObject, this.muzzleString, true);
+            }
+            Util.PlaySound("Play_swing_low", base.gameObject);
             if (parrySuccess)
             {
                 if (NetworkServer.active)

@@ -36,7 +36,7 @@ namespace SonicTheHedgehog.SkillStates
         protected float baseHomingAttackEndLag = 0.3f;
         protected float superHomingAttackEndLag = 0.1f;
         protected float homingAttackEndLag;
-        protected float homingAttackHitHopVelocity = 10;
+        protected float homingAttackHitHopVelocity = 12;
         public HurtBox target;
         private Vector3 targetDirection;
         protected bool homingAttackHit;
@@ -166,7 +166,10 @@ namespace SonicTheHedgehog.SkillStates
             if (base.characterMotor)
             {
                 base.characterMotor.velocity = Vector3.zero;
-                base.characterMotor.velocity.y = Flying() ? 0 : homingAttackHitHopVelocity;
+                if (!Flying())
+                {
+                    base.SmallHop(base.characterMotor, homingAttackHitHopVelocity);
+                }
             }
 
             if (NetworkServer.active)
@@ -194,7 +197,6 @@ namespace SonicTheHedgehog.SkillStates
                 if (this.attack.Fire(hitResults))
                 {
                     base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
-                    Chat.AddMessage(hitResults.Count().ToString());
                     foreach (HurtBox hurtBox in hitResults)
                     {
                         if (onAuthorityHitEnemy != null) onAuthorityHitEnemy.Invoke(this, hurtBox);
@@ -252,6 +254,10 @@ namespace SonicTheHedgehog.SkillStates
                         }
                         base.characterMotor.velocity = targetDirection.normalized * this.homingAttackSpeed;
                         base.characterDirection.forward = targetDirection.normalized;
+                        if (base.isAuthority && base.isGrounded)
+                        {
+                            base.characterMotor.Motor.ForceUnground();
+                        }
                         if (fixedAge>this.estimatedHomingAttackTime/2.5f)
                         {
                             this.FireAttack();

@@ -40,6 +40,7 @@ namespace SonicTheHedgehog.SkillStates
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
             base.PlayAnimation("FullBody, Override", "ParryEnter", "Slash.playbackRate", minDuration * enterAnimationPercent);
+            Util.PlaySound("Play_swing", base.gameObject);
             this.collider = (CapsuleCollider)base.characterBody.mainHurtBox.collider;
             this.originalHeight = collider.height;
             this.originalRadius = collider.radius;
