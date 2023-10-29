@@ -32,7 +32,7 @@ namespace SonicTheHedgehog.SkillStates
             if (this.boosting)
             {
                 this.damageTimer += Time.fixedDeltaTime;
-                if (this.damageTimer > 1f / checksPerSecond)
+                if (this.damageTimer > 1f / checksPerSecond && base.isAuthority)
                 {
                     ScepterDamage();
                 }
@@ -45,7 +45,10 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void ScepterReset()
         {
-            ScepterDamage();
+            if (base.isAuthority)
+            {
+                ScepterDamage();
+            }
         }
         
         public override void ScepterDamage()
@@ -114,6 +117,18 @@ namespace SonicTheHedgehog.SkillStates
         public override string GetSoundString()
         {
             return "Play_scepter_boost";
+        }
+
+        public override GameObject GetEffectPrefab(bool power)
+        {
+            if (power)
+            {
+                return base.characterBody.HasBuff(Buffs.superSonicBuff) ? Assets.scepterSuperBoostFlashEffect : Assets.scepterPowerBoostFlashEffect;
+            }
+            else
+            {
+                return Assets.scepterBoostFlashEffect;
+            }
         }
     }
 }

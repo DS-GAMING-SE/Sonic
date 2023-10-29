@@ -72,12 +72,13 @@ namespace SonicTheHedgehog.Modules
 
             #region Parry
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
-            LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a brief period of time. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff * 100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
+            string parryOnHitDescription = $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff * 100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>";
+            LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription}");
             #endregion
 
             #region Super Parry
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Super Parry</color>");
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}long period of time</color>. Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff*100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Perfect Parry</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}Reduce all nearby enemies attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. Replace this skill with \"The funny IDW attack, name pending\". \n\nThis can only be triggered once.</color>");
             #endregion
 
             #region Boost

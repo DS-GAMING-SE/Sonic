@@ -53,7 +53,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "1.1.0";
+        public const string MODVERSION = "1.2.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -286,6 +286,13 @@ namespace SonicTheHedgehog
                     {
                         stats.moveSpeedReductionMultAdd += Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier/3);
                     }
+                }
+
+                if (self.HasBuff(Buffs.superParryDebuff))
+                {
+                    stats.baseMoveSpeedAdd -= self.baseMoveSpeed / StaticValues.superParryMovementSpeedDebuff;
+                    stats.armorAdd -= StaticValues.superParryArmorDebuff;
+                    stats.baseAttackSpeedAdd -= self.baseAttackSpeed / StaticValues.superParryAttackSpeedDebuff;
                 }
             }
         }

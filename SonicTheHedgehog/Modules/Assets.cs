@@ -31,9 +31,11 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject parryEffect;
 
         internal static GameObject powerBoostFlashEffect;
-        internal static GameObject boostFlashEffect;
         internal static GameObject scepterPowerBoostFlashEffect;
+        internal static GameObject boostFlashEffect;
+        internal static GameObject scepterBoostFlashEffect;
         internal static GameObject superBoostFlashEffect;
+        internal static GameObject scepterSuperBoostFlashEffect;
 
         internal static GameObject grandSlamHitEffect;
 
@@ -112,7 +114,7 @@ namespace SonicTheHedgehog.Modules
 
             //bombExplosionEffect = LoadEffect("BombExplosionEffect", "HenryBombExplosion");
 
-            sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick");
+            sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick", true);
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
             sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
@@ -125,27 +127,59 @@ namespace SonicTheHedgehog.Modules
             homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");
             homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", true);
 
-            parryEffect = Assets.LoadEffect("SonicParry");
+            parryEffect = Assets.LoadEffect("SonicParry", true);
 
             powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
 
-            /*scepterPowerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
+            scepterPowerBoostFlashEffect = Assets.LoadEffect("SonicScepterPowerBoostFlash", true);
             if (scepterPowerBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
                 shakeEmitter.amplitudeTimeDecay = true;
-                shakeEmitter.duration = 0.5f;
+                shakeEmitter.duration = 0.3f;
                 shakeEmitter.radius = 50f;
                 shakeEmitter.scaleShakeRadiusWithLocalScale = false;
 
                 shakeEmitter.wave = new Wave
                 {
-                    amplitude = 0.7f,
+                    amplitude = 0.3f,
                     frequency = 40f,
                     cycleOffset = 0f
                 };
             }
-            */
+            scepterBoostFlashEffect = Assets.LoadEffect("SonicScepterBoostFlash", true);
+            if (scepterBoostFlashEffect)
+            {
+                ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
+                shakeEmitter.amplitudeTimeDecay = true;
+                shakeEmitter.duration = 0.2f;
+                shakeEmitter.radius = 35f;
+                shakeEmitter.scaleShakeRadiusWithLocalScale = false;
+
+                shakeEmitter.wave = new Wave
+                {
+                    amplitude = 0.14f,
+                    frequency = 40f,
+                    cycleOffset = 0f
+                };
+            }
+            scepterSuperBoostFlashEffect = Assets.LoadEffect("SonicScepterSuperBoostFlash", true);
+            if (scepterSuperBoostFlashEffect)
+            {
+                ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
+                shakeEmitter.amplitudeTimeDecay = true;
+                shakeEmitter.duration = 0.2f;
+                shakeEmitter.radius = 60f;
+                shakeEmitter.scaleShakeRadiusWithLocalScale = false;
+
+                shakeEmitter.wave = new Wave
+                {
+                    amplitude = 0.4f,
+                    frequency = 25f,
+                    cycleOffset = 0f
+                };
+            }
+
 
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
             superBoostFlashEffect = Assets.LoadEffect("SonicSuperBoostFlash", true);
@@ -165,13 +199,13 @@ namespace SonicTheHedgehog.Modules
             {
                 ShakeEmitter shakeEmitter = superSonicTransformationEffect.AddComponent<ShakeEmitter>();
                 shakeEmitter.amplitudeTimeDecay = true;
-                shakeEmitter.duration = 0.5f;
+                shakeEmitter.duration = 0.7f;
                 shakeEmitter.radius = 200f;
                 shakeEmitter.scaleShakeRadiusWithLocalScale = false;
 
                 shakeEmitter.wave = new Wave
                 {
-                    amplitude = 1f,
+                    amplitude = 0.7f,
                     frequency = 40f,
                     cycleOffset = 0f
                 };

@@ -11,6 +11,7 @@ namespace SonicTheHedgehog.SkillStates
     {
         public static float baseEndLag = Modules.StaticValues.parryEndLag;
         public static float baseEndLagFail = Modules.StaticValues.parryFailEndLag;
+        public static float superParryRange = 50;
 
         public static float endAnimationPercent = 0.5f;
 
@@ -39,6 +40,15 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, StaticValues.parryLingeringInvincibilityDuration, 1);
                     base.characterBody.AddTimedBuff(Buffs.parryBuff, StaticValues.parryBuffDuration, 1);
+                    if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+                    {
+                        SuperParryBlast();
+                        SuperSonicComponent superSonicComponent = base.characterBody.GetComponent<SuperSonicComponent>();
+                        if (superSonicComponent)
+                        {
+                            superSonicComponent.ParryActivated();
+                        }
+                    }
                 }
                 Util.PlaySound("Play_parry", base.gameObject);
                 RechargeCooldowns();
@@ -87,6 +97,26 @@ namespace SonicTheHedgehog.SkillStates
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.PrioritySkill;
+        }
+
+        private void SuperParryBlast()
+        {
+            SphereSearch sphereSearch = new SphereSearch();
+            sphereSearch.origin = base.characterBody.transform.position;
+            sphereSearch.radius = superParryRange;
+            sphereSearch.mask = LayerIndex.entityPrecise.mask;
+            sphereSearch.RefreshCandidates();
+            sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(base.teamComponent.teamIndex));
+            sphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
+            HurtBox[] hurtBoxes = sphereSearch.GetHurtBoxes();
+            foreach (HurtBox hurtBox in hurtBoxes)
+            {
+                CharacterBody characterBody = hurtBox.healthComponent.body;
+                if (characterBody)
+                {
+                    characterBody.AddTimedBuff(Buffs.superParryDebuff, StaticValues.superParryDebuffDuration);
+                }
+            }
         }
     }
 }

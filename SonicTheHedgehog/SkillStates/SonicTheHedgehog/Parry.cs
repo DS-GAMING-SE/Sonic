@@ -15,13 +15,11 @@ namespace SonicTheHedgehog.SkillStates
         public static float baseMaxDuration = Modules.StaticValues.parryMaximumDuration;
         public static float baseSuperMaxDuration = StaticValues.superParryMaxDuration;
 
-        public static float enterAnimationPercent = 0.4f;
+        public static float baseEnterAnimationPercent = 0.4f;
+        public static float superEnterAnimationPercent = 0.15f;
+        private float enterAnimationPercent;
 
         private float maxDuration;
-        
-        private float endLagTimer = 0;
-        private float endLag;
-        private float endLagFail;
 
         private bool canParry = true;
         private bool parrySuccess;
@@ -39,6 +37,7 @@ namespace SonicTheHedgehog.SkillStates
             this.maxDuration = base.characterBody.HasBuff(Buffs.superSonicBuff) ? baseSuperMaxDuration : baseMaxDuration;
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
+            this.enterAnimationPercent = base.characterBody.HasBuff(Buffs.superSonicBuff) ? superEnterAnimationPercent : baseEnterAnimationPercent;
             base.PlayAnimation("FullBody, Override", "ParryEnter", "Slash.playbackRate", minDuration * enterAnimationPercent);
             Util.PlaySound("Play_swing", base.gameObject);
             this.collider = (CapsuleCollider)base.characterBody.mainHurtBox.collider;

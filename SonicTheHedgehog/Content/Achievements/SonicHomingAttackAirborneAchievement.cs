@@ -57,7 +57,7 @@ namespace SonicTheHedgehog.Modules.Achievements
             if (base.localUser.cachedBody && base.localUser.cachedBody.characterMotor.isGrounded && this.bodyStateMachine.state.GetType() != typeof(HomingAttack))
             {
                 this.pityTimer += Time.fixedDeltaTime;
-                if (this.pityTimer >= pityTime)
+                if (this.pityTimer >= pityTime && count > 0)
                 {
                     this.count = 0;
                     this.hitEnemies.Clear();

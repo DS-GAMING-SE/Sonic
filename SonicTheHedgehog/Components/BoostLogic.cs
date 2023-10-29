@@ -106,6 +106,7 @@ namespace SonicTheHedgehog.Components
 
         public void OnSkillChanged(GenericSkill skill)
         {
+            Debug.Log("Change");
             BoostExists();
         }
 
@@ -136,7 +137,7 @@ namespace SonicTheHedgehog.Components
             }
             this.NetworkboostMeter = Mathf.Clamp(this.boostMeter + amount, 0, this.maxBoostMeter);
 
-            if (!boostAvailable&&boostMeter>=Math.Min(baseMaxBoostMeter,this.maxBoostMeter))
+            if (!boostAvailable && boostMeter>=Math.Min(baseMaxBoostMeter,this.maxBoostMeter))
             {
                 this.NetworkboostAvailable = true;
                 //body.skillLocator.utility.stock = body.skillLocator.utility.maxStock;

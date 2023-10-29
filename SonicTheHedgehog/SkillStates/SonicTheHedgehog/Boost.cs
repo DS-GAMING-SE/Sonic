@@ -29,7 +29,10 @@ namespace SonicTheHedgehog.SkillStates
 
         private Vector3 forwardDirection;
         public BoostLogic boostLogic;
+
         private TemporaryOverlay temporaryOverlay;
+        private GameObject trailObject;
+
         private float boostEffectCooldown;
         private ICharacterFlightParameterProvider flight;
 
@@ -287,7 +290,7 @@ namespace SonicTheHedgehog.SkillStates
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
-                        EffectManager.SimpleMuzzleFlash(super ? Assets.superBoostFlashEffect : Assets.powerBoostFlashEffect, base.gameObject, "BallHitbox", true);
+                        EffectManager.SimpleMuzzleFlash(GetEffectPrefab(true), base.gameObject, "BallHitbox", true);
                     }
 
                     if (temporaryOverlay)
@@ -313,7 +316,7 @@ namespace SonicTheHedgehog.SkillStates
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
-                        EffectManager.SimpleMuzzleFlash(Assets.boostFlashEffect, base.gameObject, "BallHitbox", true);
+                        EffectManager.SimpleMuzzleFlash(GetEffectPrefab(false), base.gameObject, "BallHitbox", true);
                     }
                     if (temporaryOverlay)
                     {
@@ -403,6 +406,18 @@ namespace SonicTheHedgehog.SkillStates
         public virtual string GetSoundString()
         {
             return "Play_boost";
+        }
+
+        public virtual GameObject GetEffectPrefab(bool power)
+        {
+            if (power)
+            {
+                return base.characterBody.HasBuff(Buffs.superSonicBuff) ? Assets.superBoostFlashEffect : Assets.powerBoostFlashEffect;
+            }
+            else
+            {
+                return Assets.boostFlashEffect;
+            }
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

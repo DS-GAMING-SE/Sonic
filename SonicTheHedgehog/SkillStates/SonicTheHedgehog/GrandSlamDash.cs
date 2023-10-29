@@ -5,6 +5,7 @@ using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -137,12 +138,13 @@ namespace SonicTheHedgehog.SkillStates
 
                 if (base.isAuthority)
                 {
-                    if (this.attack.Fire())
+                    List<HurtBox> hitList = new List<HurtBox>();
+                    if (this.attack.Fire(hitList))
                     {
                         base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
                         if (this.target==null)
                         {
-                            this.target = this.attack.overlapList.FirstOrDefault().hurtBox;
+                            this.target = hitList.FirstOrDefault();
                         }
                         base.characterMotor.velocity=Vector3.zero;
                         this.OnHitEnemyAuthority();

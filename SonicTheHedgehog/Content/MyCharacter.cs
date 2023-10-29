@@ -369,6 +369,11 @@ namespace SonicTheHedgehog.Modules.Survivors
             parry.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_DESCRIPTION";
             SuperSonicComponent.parry = Modules.Skills.CreateSkillDef(parry);
 
+            parry.requiredStock = 9999999;
+            parry.rechargeStock = 0;
+            parry.fullRestockOnAssign = false;
+            SuperSonicComponent.emptyParry = Modules.Skills.CreateSkillDef(parry);
+
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
             boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION";

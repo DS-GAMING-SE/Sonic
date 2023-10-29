@@ -11,6 +11,7 @@ namespace SonicTheHedgehog.Modules
         internal static BuffDef superSonicBuff;
         internal static BuffDef ballBuff;
         internal static BuffDef parryBuff;
+        internal static BuffDef superParryDebuff;
 
         internal static void RegisterBuffs()
         {
@@ -34,6 +35,11 @@ namespace SonicTheHedgehog.Modules
                 new Color(0, 0.7f, 1),
                 false,
                 false);
+            superParryDebuff = AddNewBuff("bdSonicSuperParryDebuff",
+                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/Weak").iconSprite,
+                new Color(0, 0.2f, 0.6f),
+                false,
+                true);
         }
 
         // simple helper method

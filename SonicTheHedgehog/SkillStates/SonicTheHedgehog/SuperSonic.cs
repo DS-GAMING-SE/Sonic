@@ -84,7 +84,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             UpdateFlight(false);
 
-            superSonicComponent.ResetModel();
+            superSonicComponent.TransformEnd();
 
             if (this.superAura)
             {

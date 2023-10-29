@@ -119,7 +119,15 @@ namespace SonicTheHedgehog.Modules
 
         // Super Parry
 
-        internal const float superParryMaxDuration = 10f;
+        internal const float superParryMaxDuration = 0.4f;
+
+        internal const float superParryMovementSpeedDebuff = 2f; //half
+
+        internal const float superParryArmorDebuff = 100f;
+
+        internal const float superParryAttackSpeedDebuff = 2f; //half
+
+        internal const float superParryDebuffDuration = 10;
 
         // Super Sonic Boost
 

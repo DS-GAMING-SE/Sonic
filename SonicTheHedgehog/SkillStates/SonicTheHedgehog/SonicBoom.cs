@@ -16,6 +16,8 @@ namespace SonicTheHedgehog.SkillStates
         public static float procCoefficient = 0.75f;
         public static float baseDuration = Modules.StaticValues.sonicBoomFireTime* (Modules.StaticValues.sonicBoomCount*1.23f);
         public static float baseFireTime = Modules.StaticValues.sonicBoomFireTime;
+        public static float baseProjectileSpeed = 90f;
+        public static float baseSuperProjectileSpeed = 135f;
         public static float force = 80f;
         public static float recoil = 0f;
         public static float range = 100f;
@@ -80,7 +82,7 @@ namespace SonicTheHedgehog.SkillStates
                 direction= Util.QuaternionSafeLookRotation(base.GetAimRay().direction,up);
 
 
-                RoR2.Projectile.ProjectileManager.instance.FireProjectile(projectilePrefab, base.GetAimRay().origin, direction, base.gameObject, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superDamageCoefficient : damageCoefficient) * this.damageStat, force, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, 90f);
+                RoR2.Projectile.ProjectileManager.instance.FireProjectile(projectilePrefab, base.GetAimRay().origin, direction, base.gameObject, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superDamageCoefficient : damageCoefficient) * this.damageStat, force, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? baseSuperProjectileSpeed : baseProjectileSpeed));
             }
         }
 

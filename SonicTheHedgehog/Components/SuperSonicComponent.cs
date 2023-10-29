@@ -25,6 +25,7 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef sonicBoom;
         public static SkillDef parry;
+        public static SkillDef emptyParry;
 
         public static SkillDef boost;
 
@@ -62,6 +63,12 @@ namespace SonicTheHedgehog.Components
             }
         }
 
+        public void TransformEnd()
+        {
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+            ResetModel();
+        }
+
         // Thank you DxsSucuk
         public void SuperModel()
         {
@@ -72,6 +79,11 @@ namespace SonicTheHedgehog.Components
         public void ResetModel()
         {
             model.baseRendererInfos[0].defaultMaterial = defaultMaterial;
+        }
+
+        public void ParryActivated()
+        {
+            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
         }
 
         public void ResetSuperSonic(Stage stage)
