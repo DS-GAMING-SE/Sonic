@@ -31,7 +31,7 @@ namespace SonicTheHedgehog.SkillStates
             base.PlayAnimation("FullBody, Override", "ParryRelease", "Slash.playbackRate", endLag * endAnimationPercent);
             if (base.isAuthority)
             {
-                EffectManager.SimpleMuzzleFlash(Modules.Assets.parryEffect, base.gameObject, this.muzzleString, true);
+                EffectManager.SimpleMuzzleFlash(Assets.parryEffect, base.gameObject, this.muzzleString, true);
             }
             Util.PlaySound("Play_swing_low", base.gameObject);
             if (parrySuccess)
@@ -48,6 +48,10 @@ namespace SonicTheHedgehog.SkillStates
                         {
                             superSonicComponent.ParryActivated();
                         }
+                    }
+                    if (base.isAuthority)
+                    {
+                        EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
                     }
                 }
                 Util.PlaySound("Play_parry", base.gameObject);

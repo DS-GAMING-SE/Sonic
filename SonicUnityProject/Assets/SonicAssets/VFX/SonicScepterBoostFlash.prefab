@@ -1373,8 +1373,8 @@ ParticleSystem:
         key0: {r: 1, g: 1, b: 1, a: 0}
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0.052198302, g: 0.0638296, b: 0.4811321, a: 0.654902}
-        key3: {r: 0, g: 0, b: 0, a: 0.1882353}
-        key4: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0.21479383}
+        key4: {r: 0, g: 0, b: 0, a: 0.1882353}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
@@ -1390,7 +1390,7 @@ ParticleSystem:
         atime1: 5590
         atime2: 41827
         atime3: 65535
-        atime4: 0
+        atime4: 65535
         atime5: 0
         atime6: 0
         atime7: 0

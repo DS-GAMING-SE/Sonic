@@ -97,12 +97,12 @@ namespace SonicTheHedgehog.SkillStates
         public override void Update()
         {
             base.Update();
-            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform)
+            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform) // Doing this transforms ALL Sonics, including Goobo Sonics, into super??
             {
                 if (Input.GetKeyDown("v"))
                 {
+                    Debug.Log("Attempt Super Transform");
                     superSonicComponent.Transform(this.outer);
-                    return;
                 }
             }
         }

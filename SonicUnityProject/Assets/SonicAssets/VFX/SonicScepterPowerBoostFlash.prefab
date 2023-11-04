@@ -4976,7 +4976,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.25
+      scalar: 0.3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -8684,7 +8684,7 @@ ParticleSystem:
     enabled: 1
     ratio: 1
     light: {fileID: 6315412040183108683}
-    randomDistribution: 1
+    randomDistribution: 0
     color: 1
     range: 0
     intensity: 1

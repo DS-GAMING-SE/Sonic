@@ -185,13 +185,15 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         swingIndex = index
                     });
+                    base.characterBody.OnSkillActivated(skillLocator.primary);
                 }
                 else
                 {
                     this.outer.SetNextState(new SonicMelee
                     {
-                        swingIndex = index
+                        swingIndex = index,
                     });
+                    base.characterBody.OnSkillActivated(skillLocator.primary);
                 }
             }
             else
@@ -200,6 +202,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     swingIndex = index
                 });
+                base.characterBody.OnSkillActivated(skillLocator.primary);
             }
         }
 
@@ -315,6 +318,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         target = homingTracker.GetTrackingTarget()
                     });
+                    base.characterBody.OnSkillActivated(skillLocator.primary);
                     return;
                 }
                 this.outer.SetNextStateToMain();

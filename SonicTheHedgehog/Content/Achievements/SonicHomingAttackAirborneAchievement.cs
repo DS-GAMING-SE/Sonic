@@ -15,7 +15,7 @@ namespace SonicTheHedgehog.Modules.Achievements
         private readonly List<HealthComponent> hitEnemies = new List<HealthComponent>();
         public static int countRequired = 8;
 
-        private static float pityTime = 0.2f;
+        private static float pityTime = 0.3f;
 
         private float pityTimer;
 
@@ -72,6 +72,7 @@ namespace SonicTheHedgehog.Modules.Achievements
                 this.count += 1;
                 this.hitEnemies.Add(hurtBox.healthComponent);
                 this.pityTimer = 0;
+                Debug.Log(this.count.ToString());
                 if (this.count >= countRequired)
                 {
                     base.Grant();

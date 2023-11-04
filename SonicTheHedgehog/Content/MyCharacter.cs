@@ -15,6 +15,7 @@ using UnityEngine.UI;
 using static BetterUI.ProcCoefficientCatalog;
 using AncientScepter;
 using SonicTheHedgehog.Modules.Achievements;
+using System.Linq;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
@@ -85,6 +86,13 @@ namespace SonicTheHedgehog.Modules.Survivors
             parryUnlockableDef.cachedName = "SonicSkills.Parry";
             parryUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(parryUnlockableDef);
+
+            /*UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+            if (!user.HasUnlockable(parryUnlockableDef) && Config.ForceUnlockParry().Value)
+            {
+                user.GrantUnlockable(parryUnlockableDef);
+            }
+            */
         }
 
         public override void InitializeHitboxes()
@@ -103,6 +111,40 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             hitboxTransform = childLocator.FindChild("StompHitbox");
             Modules.Prefabs.SetupHitbox(prefabCharacterModel.gameObject, hitboxTransform, "Stomp");
+        }
+
+        public static void UnlockParryConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Debug.Log("Unlock Parry Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+            string achievement = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE";
+
+            if (Config.ForceUnlockParry().Value)
+            {
+                if (!user.HasAchievement(achievement))
+                {
+                    user.AddAchievement(achievement, true);
+                }
+                if (!user.HasUnlockable(parryUnlockableDef))
+                {
+                    user.GrantUnlockable(parryUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(achievement))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList) UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(achievement);
+                }
+                if (user.HasUnlockable(parryUnlockableDef))
+                {
+                    user.RevokeUnlockable(parryUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
         }
 
         public static SkillDef primarySkillDef;
@@ -137,6 +179,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
+                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMeleeEnter)),
                 activationStateMachineName = "Body",
@@ -253,6 +296,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_DESCRIPTION",
+                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGrandSlamIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.GrandSlamDash)),
                 activationStateMachineName = "Body",
@@ -373,6 +417,33 @@ namespace SonicTheHedgehog.Modules.Survivors
             parry.rechargeStock = 0;
             parry.fullRestockOnAssign = false;
             SuperSonicComponent.emptyParry = Modules.Skills.CreateSkillDef(parry);
+
+            SkillDefInfo idwAttack = new SkillDefInfo
+            {
+                skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_IDW_ATTACK_NAME",
+                skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_IDW_ATTACK_NAME",
+                skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION",
+                keywordTokens = new string[] { SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texIDWAttackIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicEntityState)),
+                activationStateMachineName = "Body",
+                baseMaxStock = 1,
+                baseRechargeInterval = 5f,
+                beginSkillCooldownOnSkillEnd = false,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = true,
+                mustKeyPress = true,
+                cancelSprintingOnActivation = true,
+                rechargeStock = 1,
+                requiredStock = 1,
+                stockToConsume = 1,
+            };
+
+            SuperSonicComponent.idwAttack = Skills.CreateSkillDef(idwAttack);
 
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
             boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";

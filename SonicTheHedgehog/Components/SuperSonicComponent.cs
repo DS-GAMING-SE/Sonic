@@ -25,6 +25,7 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef sonicBoom;
         public static SkillDef parry;
+        public static SkillDef idwAttack;
         public static SkillDef emptyParry;
 
         public static SkillDef boost;
@@ -65,6 +66,7 @@ namespace SonicTheHedgehog.Components
 
         public void TransformEnd()
         {
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
             body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
             ResetModel();
         }
@@ -83,7 +85,13 @@ namespace SonicTheHedgehog.Components
 
         public void ParryActivated()
         {
-            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+        }
+
+        public void IDWAttackActivated()
+        {
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
         }
 
         public void ResetSuperSonic(Stage stage)

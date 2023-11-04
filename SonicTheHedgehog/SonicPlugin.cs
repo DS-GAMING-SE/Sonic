@@ -127,7 +127,11 @@ namespace SonicTheHedgehog
 
             On.RoR2.HealthComponent.TakeDamage += TakeDamage;
 
+            On.RoR2.Util.GetBestBodyName += SuperNamePrefix;
+
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
+
+            On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
             if (emoteAPILoaded)
             {
                 EmoteSkeleton();
@@ -228,7 +232,12 @@ namespace SonicTheHedgehog
             float maxLocation = 500;
             ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationX(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
             ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationY(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
+            
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.KeyPressHomingAttack()));
+            
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockParry()));
+
+            Modules.Config.ForceUnlockParry().SettingChanged += SonicTheHedgehogCharacter.UnlockParryConfig;
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
@@ -367,6 +376,36 @@ namespace SonicTheHedgehog
                 }, true);
             }
             orig(self, damage);
+        }
+
+        private static string SuperNamePrefix(On.RoR2.Util.orig_GetBestBodyName orig, GameObject bodyObject)
+        {
+            if (bodyObject)
+            {
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                if (body)
+                {
+                    if (body.HasBuff(Buffs.superSonicBuff))
+                    {
+                        string text = orig(bodyObject);
+                        text = Language.GetStringFormatted(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX", new object[]
+                        {
+                            text
+                        });
+                        return text;
+                    }
+                }
+            }
+            return orig(bodyObject);
+        }
+
+        private void ConfigUnlocks(On.RoR2.UserProfile.orig_OnLogin orig, UserProfile self)
+        {
+            orig(self);
+            if (!self.HasAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE") && Modules.Config.ForceUnlockParry().Value)
+            {
+                self.AddAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", true);
+            }
         }
     }
 }

@@ -43,15 +43,23 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "MASTERY_SKIN_NAME", "Alternate");
             #endregion
 
+
+            LanguageAPI.Add(prefix + "HOMING_KEYWORD", "<style=CKeywordName>Homing</style><style=cSub>Targets the enemy closest to the crosshair, indicated by the blue reticle.");
+
+
             string superSonicColor = "<color=#ffee00>";
             #region Passives
             LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_NAME", "Momentum");
             LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION", $"<style=cIsUtility>Build up speed</style> by <style=cIsUtility>running down hill</style> to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier*100}% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100)/3)}% slower.</style>\nIf <style=cIsUtility>flying</style>, <style=cIsUtility>build up speed</style> by <style=cIsUtility>moving in a straight line.</style>");
             #endregion
 
+            #region Super Prefix
+            LanguageAPI.Add(prefix + "SUPER_PREFIX", "Super {0}");
+            #endregion
+
             #region Primary
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
-            string meleeDescription = $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>homing attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
+            string meleeDescription = $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription);
             #endregion
 
@@ -81,6 +89,11 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}Reduce all nearby enemies attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. Replace this skill with \"The funny IDW attack, name pending\". \n\nThis can only be triggered once.</color>");
             #endregion
 
+            #region IDW Attack
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_NAME", $"{superSonicColor}IDW Attack (name pending)</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION", $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{"big numbers"}% damage</style> in a large area. \n\n{superSonicColor}This can only be triggered once.</color>");
+            #endregion
+
             #region Boost
             LanguageAPI.Add(prefix + "UTILITY_BOOST_NAME", "Boost");
             string boostDescription = $"Spend boost meter to <style=cIsUtility>move {100f * StaticValues.boostListedSpeedCoefficient}% faster</style> than normal. If <style=cIsDamage>health</style> is <style=cIsDamage>near full</style>, <style=cIsUtility>move {100f * StaticValues.powerBoostListedSpeedCoefficient}% faster</style> instead. If airborne, do a short <style=cIsUtility>mid-air dash</style>.";
@@ -106,7 +119,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Special
             LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_NAME", "Grand Slam");
-            string grandSlamDescription = $"<style=cIsUtility>Dash forward</style> into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style>.";
+            string grandSlamDescription = $"<style=cIsUtility>Homing</style>. Dash forward into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style>.";
             LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription);
             #endregion
 
@@ -126,7 +139,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "MASTERYUNLOCKABLE_UNLOCKABLE_NAME", "Sonic: Mastery");
 
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME", "Sonic: Spinning Upside Down");
-            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION", $"Hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION", $"As Sonic, hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
             #endregion
             #endregion
         }
