@@ -38,4 +38,3 @@ jobs:
         name: DLLs
         path: .\SonicTheHedgehog\bin\Debug\netstandard2.0\
         if-no-files-found: error
-        retention-days: 1
