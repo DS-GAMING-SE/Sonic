@@ -54,7 +54,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if "$(Username)" == "dylan" copy &quot;D:\Sonic ROR2 Mod\Sonic-master\SonicTheHedgehog\bin\Debug\netstandard2.0\SonicTheHedgehog.dll&quot; &quot;C:\Users\dylan\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Sonic\BepInEx\plugins\SonicTheHedgehog&quot;" />
+    <Exec Command="if &quot;$(Username)&quot; == &quot;dylan&quot; copy &quot;D:\Sonic ROR2 Mod\Sonic-master\SonicTheHedgehog\bin\Debug\netstandard2.0\SonicTheHedgehog.dll&quot; &quot;C:\Users\dylan\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Sonic\BepInEx\plugins\SonicTheHedgehog&quot;" />
   </Target>
 
 </Project>
