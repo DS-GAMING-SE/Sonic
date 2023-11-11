@@ -33,7 +33,7 @@ namespace SonicTheHedgehog.Components
         public static SkillDef grandSlam;
 
 
-        public bool canTransform=true;
+        public bool canTransform=false;
 
 
         private void Start()
@@ -90,8 +90,8 @@ namespace SonicTheHedgehog.Components
 
         public void IDWAttackActivated()
         {
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
-            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
         }
 
         public void ResetSuperSonic(Stage stage)

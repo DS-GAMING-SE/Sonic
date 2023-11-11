@@ -160,7 +160,7 @@ namespace SonicTheHedgehog.Modules
 
                 shakeEmitter.wave = new Wave
                 {
-                    amplitude = 0.14f,
+                    amplitude = 0.08f,
                     frequency = 40f,
                     cycleOffset = 0f
                 };
@@ -176,7 +176,7 @@ namespace SonicTheHedgehog.Modules
 
                 shakeEmitter.wave = new Wave
                 {
-                    amplitude = 0.4f,
+                    amplitude = 0.25f,
                     frequency = 25f,
                     cycleOffset = 0f
                 };

@@ -109,6 +109,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public static void DealDamage(HurtBox hurtBox, DamageInfo damageInfo)
         {
+            if (!hurtBox) return;
             hurtBox.healthComponent.TakeDamage(damageInfo);
             GlobalEventManager.instance.OnHitEnemy(damageInfo, hurtBox.healthComponent.gameObject);
             GlobalEventManager.instance.OnHitAll(damageInfo, hurtBox.healthComponent.gameObject);

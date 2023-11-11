@@ -105,7 +105,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -221,8 +221,8 @@ ParticleSystem:
     startColor:
       serializedVersion: 2
       minMaxState: 2
-      minColor: {r: 0.4764151, g: 0.8899003, b: 1, a: 1}
-      maxColor: {r: 0.9321613, g: 0.4669811, b: 1, a: 1}
+      minColor: {r: 0, g: 0.6530205, b: 0.9528302, a: 1}
+      maxColor: {r: 0.8247708, g: 0.12646852, b: 0.9245283, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4901,7 +4901,7 @@ PrefabInstance:
     - target: {fileID: 7625519594383242508, guid: 3534552e7829f9842ba3156065afc540,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.33
+      value: -0.271
       objectReference: {fileID: 0}
     - target: {fileID: 7625519594383242508, guid: 3534552e7829f9842ba3156065afc540,
         type: 3}

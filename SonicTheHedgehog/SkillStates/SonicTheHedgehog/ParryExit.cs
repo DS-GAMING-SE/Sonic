@@ -49,10 +49,10 @@ namespace SonicTheHedgehog.SkillStates
                             superSonicComponent.ParryActivated();
                         }
                     }
-                    if (base.isAuthority)
-                    {
-                        EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
-                    }
+                }
+                if (base.isAuthority)
+                {
+                    EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
                 }
                 Util.PlaySound("Play_parry", base.gameObject);
                 RechargeCooldowns();

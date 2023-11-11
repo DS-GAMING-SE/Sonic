@@ -75,7 +75,7 @@ namespace SonicTheHedgehog.Components
 
         public void Serialize(NetworkWriter writer)
         {
-            writer.Write(hurtbox);
+            writer.Write(HurtBoxReference.FromHurtBox(hurtbox));
             writer.Write(damageInfo);
         }
 

@@ -4832,6 +4832,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: SonicScepterSuperBoostFlash
       objectReference: {fileID: 0}
+    - target: {fileID: 3311723680813640401, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3311723680813640401, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: NaN
+      objectReference: {fileID: 0}
+    - target: {fileID: 3311723680813640401, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 3e-45
+      objectReference: {fileID: 0}
     - target: {fileID: 3818654925065567245, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
         type: 3}
       propertyPath: m_RootOrder
@@ -4885,6 +4900,16 @@ PrefabInstance:
     - target: {fileID: 3818654925065567245, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4495214564860466996, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: LightsModule.randomDistribution
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7483484561677714551, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

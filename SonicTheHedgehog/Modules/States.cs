@@ -24,6 +24,7 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(Parry));
             Modules.Content.AddEntityState(typeof(ParryExit));
+            Modules.Content.AddEntityState(typeof(IDWAttack));
 
             Modules.Content.AddEntityState(typeof(Boost));
             Modules.Content.AddEntityState(typeof(ScepterBoost));

@@ -80,7 +80,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Parry
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
-            string parryOnHitDescription = $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, increase <style=cIsDamage>attack speed</style> by <style=cIsDamage>{StaticValues.parryAttackSpeedBuff * 100}%</style>, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{StaticValues.parryMovementSpeedBuff * 100}%</style>, and <style=cIsUtility>reduce all other skill cooldowns by {StaticValues.parryCooldownReduction}s.</style>";
+            string parryOnHitDescription = $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give <style=cIsDamage>+{StaticValues.parryAttackSpeedBuff * 100}% attack speed</style>, give <style=cIsUtility>+{StaticValues.parryMovementSpeedBuff * 100}% movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION", $"Enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription}");
             #endregion
 

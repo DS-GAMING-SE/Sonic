@@ -129,6 +129,14 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superParryDebuffDuration = 10;
 
+        // IDW Attack
+
+        internal const float idwAttackattackDuration = 2f;
+
+        internal const float idwAttackDamageCoefficient = 700f;
+
+        internal const float idwAttackProcCoefficient = 0.7f;
+
         // Super Sonic Boost
 
         internal const float superBoostListedSpeedCoefficient = 1f;
