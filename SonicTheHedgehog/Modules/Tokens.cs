@@ -91,7 +91,7 @@ namespace SonicTheHedgehog.Modules
 
             #region IDW Attack
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_NAME", $"{superSonicColor}IDW Attack (name pending)</color>");
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION", $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{"big numbers"}% damage</style> in a large area. \n\n{superSonicColor}This can only be triggered once.</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION", $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{StaticValues.idwAttackDamageCoefficient * 100f}% damage</style> in a large area. \n\n{superSonicColor}This can only be triggered once.</color>");
             #endregion
 
             #region Boost

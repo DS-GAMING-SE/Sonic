@@ -267,7 +267,7 @@ namespace SonicTheHedgehog
 
                 if (self.HasBuff(Buffs.superSonicBuff))
                 {
-                    stats.baseMoveSpeedAdd += StaticValues.superSonicMovementSpeed;
+                    stats.baseMoveSpeedAdd += StaticValues.superSonicMovementSpeed * self.baseMoveSpeed;
                     stats.attackSpeedMultAdd += StaticValues.superSonicAttackSpeed;
                     stats.damageMultAdd += StaticValues.superSonicBaseDamage;
                     stats.jumpPowerMultAdd += StaticValues.superSonicJumpHeight;

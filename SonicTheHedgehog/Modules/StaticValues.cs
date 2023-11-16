@@ -99,7 +99,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superSonicDuration = 50f;
         
-        internal const float superSonicMovementSpeed = 8.5f * 1f;
+        internal const float superSonicMovementSpeed = 1f; // value multiplied by base move speed stat
 
         internal const float superSonicAttackSpeed = 0.3f;
 
@@ -133,7 +133,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float idwAttackattackDuration = 2f;
 
-        internal const float idwAttackDamageCoefficient = 700f;
+        internal const float idwAttackDamageCoefficient = 6f;
 
         internal const float idwAttackProcCoefficient = 0.7f;
 

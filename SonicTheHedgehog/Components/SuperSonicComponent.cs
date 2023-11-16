@@ -20,6 +20,7 @@ namespace SonicTheHedgehog.Components
         public Material defaultMaterial;
         private CharacterBody body;
         private CharacterModel model;
+        private TemporaryOverlay temporaryOverlay;
 
         public static SkillDef melee;
 
@@ -33,7 +34,7 @@ namespace SonicTheHedgehog.Components
         public static SkillDef grandSlam;
 
 
-        public bool canTransform=false;
+        public bool canTransform=true;
 
 
         private void Start()
@@ -76,11 +77,24 @@ namespace SonicTheHedgehog.Components
         {
             defaultMaterial = model.baseRendererInfos[0].defaultMaterial;
             model.baseRendererInfos[0].defaultMaterial = superSonicMaterial;
+
+            if (model)
+            {
+                temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>();
+                temporaryOverlay.originalMaterial = Assets.superSonicOverlay;
+                temporaryOverlay.enabled = true;
+                temporaryOverlay.AddToCharacerModel(model);
+            }
         }
 
         public void ResetModel()
         {
             model.baseRendererInfos[0].defaultMaterial = defaultMaterial;
+
+            if (temporaryOverlay)
+            {
+                temporaryOverlay.RemoveFromCharacterModel();
+            }
         }
 
         public void ParryActivated()

@@ -42,6 +42,10 @@ namespace SonicTheHedgehog.Modules
 
         internal static GameObject bombExplosionEffect;
 
+        // materials
+
+        internal static Material superSonicOverlay;
+
         // networked hit sounds
         internal static NetworkSoundEventDef meleeHitSoundEvent;
         internal static NetworkSoundEventDef meleeFinalHitSoundEvent;
@@ -212,6 +216,11 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
+
+            superSonicOverlay = LegacyResourcesAPI.Load<Material>("Materials/matLunarGolemShield");
+            superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));
+            superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
+            superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);
         }
 
         private static GameObject CreateTracer(string originalTracerName, string newTracerName)

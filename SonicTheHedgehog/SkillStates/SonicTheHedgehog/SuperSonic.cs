@@ -49,6 +49,8 @@ namespace SonicTheHedgehog.SkillStates
 
             if (base.isAuthority)
             {
+                FireBlastAttack();
+
                 if (base.characterBody.healthComponent)
                 {
                     ProcChainMask proc = default(ProcChainMask);
@@ -145,6 +147,26 @@ namespace SonicTheHedgehog.SkillStates
                 CharacterGravityParameters gravityParameters = base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters;
                 gravityParameters.channeledAntiGravityGranterCount += flying ? 1 : -1;
                 base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters = gravityParameters;
+            }
+        }
+
+        private void FireBlastAttack()
+        {
+            if (base.isAuthority)
+            {
+                BlastAttack blastAttack = new BlastAttack();
+                blastAttack.radius = 20;
+                blastAttack.procCoefficient = 0;
+                blastAttack.position = base.transform.position;
+                blastAttack.attacker = base.gameObject;
+                blastAttack.crit = false;
+                blastAttack.baseDamage = 0;
+                blastAttack.falloffModel = BlastAttack.FalloffModel.Linear;
+                blastAttack.damageType = DamageType.Generic;
+                blastAttack.baseForce = 7000;
+                blastAttack.teamIndex = base.teamComponent.teamIndex;
+                blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
+                blastAttack.Fire();
             }
         }
     }

@@ -14,44 +14,35 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class IDWAttack : BaseSkillState
     {  
-        protected static DamageType damageType = DamageType.Stun1s;
+        protected static DamageType damageType = DamageType.Stun1s | DamageType.AOE;
         protected static float damageCoefficient = Modules.StaticValues.idwAttackDamageCoefficient;
         protected static float procCoefficient = StaticValues.idwAttackProcCoefficient;
         protected static float attackDuration = 2f;
+        protected static float range = 20;
         protected static int baseAttackCount = 10;
-        protected float pushForce = 0f;
-        protected Vector3 bonusForce = Vector3.zero;
-        protected float baseSearchTime = 0.65f;
+        protected float pushForce = 400f;
+        protected static float baseSearchTime = 1f;
+        protected static float baseEndLag = 1.2f;
+        protected float endLag;
         protected float searchTime;
-        protected float attackRecoil = 3f;
-        protected float hitHopVelocity=6f;
-        protected bool cancelled = false;
 
         protected HurtBox target = null;
         protected bool targetLocked = false;
+        protected Vector3 targetPosition = Vector3.zero;
 
         protected string chargeSoundString = "Play_spindash_charge";
         protected string launchSoundString = "Play_spindash_release";
         protected string hitSoundString = "Play_homing_impact";
         protected string muzzleString = "SwingCenter";
-        protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound = Assets.homingHitSoundEvent.index;
 
-        private float earlyExitTime;
         public float duration;
         private bool hasFired;
-        private float hitPauseTimer;
-        private OverlapAttack attack;
         protected bool inHitPause;
-        private bool hasHopped;
         protected float stopwatch;
         protected Animator animator;
-        private BaseState.HitStopCachedState hitStopCachedState;
-        private Vector3 storedVelocity;
-        private bool hasHit=false;
         private int maxAttackCount;
         private int attackCount;
+        private bool invisible;
 
         private HomingTracker homingTracker;
         private SuperSonicComponent superSonicComponent;
@@ -69,77 +60,41 @@ namespace SonicTheHedgehog.SkillStates
             {
                 this.characterModel = this.modelTransform.GetComponent<CharacterModel>();
             }
-            if (NetworkServer.active)
-            {
-                base.characterBody.AddBuff(RoR2Content.Buffs.Intangible);
-            }
             this.hasFired = false;
             this.searchTime = baseSearchTime / base.characterBody.attackSpeed;
-            if (homingTracker)
-            {
-                this.target = homingTracker.GetTrackingTarget();
-                if (target!=null)
-                {
-                    TargetLocked();
-                }
-            }
+            this.endLag = baseEndLag;
+            SearchForTarget();
             if (base.isAuthority)
             {
                 base.characterMotor.Motor.ForceUnground();
             }
-            base.PlayAnimation("FullBody, Override", "Ball");
+            base.PlayAnimation("FullBody, Override", "ParryEnter");
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
             base.characterMotor.disableAirControlUntilCollision = false;
-            base.characterBody.SetAimTimer(this.searchTime * 2);
 
-            PrepareOverlapAttack();
+            base.StartAimMode(this.searchTime, false);
         }
 
         public override void OnExit()
         {
             base.PlayAnimation("FullBody, Override", "BufferEmpty");
-            if (NetworkServer.active)
-            {
-                base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
-            }
-            if (this.hasFired)
+            if (invisible)
             {
                 if (this.characterModel)
                 {
                     this.characterModel.invisibilityCount--;
                 }
+                if (NetworkServer.active)
+                {
+                    base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
+                }
             }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
-        }
-
-
-        protected virtual void OnHitEnemyAuthority()
-        {
-
-        }
-
-        private void FireAttack()
-        {
-
-                if (base.isAuthority)
-                {
-                    List<HurtBox> hitList = new List<HurtBox>();
-                    if (this.attack.Fire(hitList))
-                    {
-                        base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
-                        if (this.target==null)
-                        {
-                            this.target = hitList.FirstOrDefault();
-                        }
-                        base.characterMotor.velocity=Vector3.zero;
-                        this.OnHitEnemyAuthority();
-                    }
-                }
         }
 
         public override void FixedUpdate()
@@ -148,36 +103,101 @@ namespace SonicTheHedgehog.SkillStates
 
             this.stopwatch += Time.fixedDeltaTime;
 
-            if (this.fixedAge <= this.searchTime)
+            if (this.fixedAge <= this.searchTime) //search
             {
                 base.characterMotor.velocity = Vector3.Lerp(base.characterMotor.velocity, Vector3.zero, fixedAge / (this.searchTime * 0.8f));
-                if (this.target != null && !this.targetLocked)
+                if (this.target == null && !this.targetLocked)
                 {
-                    TargetLocked();
+                    SearchForTarget();
                 }
             }
-            if (this.fixedAge > this.searchTime && this.fixedAge <= attackDuration + this.searchTime && base.isAuthority && this.targetLocked)
+            else
             {
-                if (!this.hasFired)
+                if (this.targetLocked)
                 {
-                    hasFired = true;
-                    if (this.characterModel)
+                    if (this.fixedAge <= attackDuration + this.searchTime) // attack
                     {
-                        this.characterModel.invisibilityCount++;
+                        if (!this.hasFired)
+                        {
+                            hasFired = true;
+                            if (this.characterModel)
+                            {
+                                this.characterModel.invisibilityCount++;
+                                invisible = true;
+                            }
+                            this.maxAttackCount = (int)Math.Ceiling(base.characterBody.attackSpeed * baseAttackCount);
+                            if (NetworkServer.active)
+                            {
+                                base.characterBody.AddBuff(RoR2Content.Buffs.Intangible);
+                            }
+                        }
+                        if (base.isAuthority && this.fixedAge > (attackDuration / this.maxAttackCount * (this.attackCount + 1)) + this.searchTime)
+                        {
+                            if (target)
+                            {
+                                targetPosition = target.transform.position;
+                            }
+                            FireBlastAttack();
+                            this.attackCount++;
+                        }
                     }
-                    this.maxAttackCount = (int)Math.Ceiling(base.characterBody.attackSpeed * baseAttackCount);
-                    base.characterBody.SetAimTimer(attackDuration * 1.5f);
+
+                    if (this.fixedAge > attackDuration + this.searchTime) //end lag start
+                    {
+                        if (invisible)
+                        {
+                            if (this.characterModel)
+                            {
+                                this.characterModel.invisibilityCount--;
+                            }
+                            invisible = false;
+                            if (NetworkServer.active)
+                            {
+                                base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
+                            }
+                            this.endLag = baseEndLag / base.characterBody.attackSpeed;
+                            base.PlayAnimation("FullBody, Override", "ParryRelease");
+                            base.characterDirection.forward = base.characterDirection.forward * -1;
+                            base.characterDirection.moveVector = base.characterDirection.moveVector * -1;
+                        }
+                    }
+
+                    if (base.isAuthority && (this.fixedAge > attackDuration + this.searchTime + this.endLag)) //end
+                    {
+                        base.characterMotor.velocity = Vector3.zero;
+                        this.outer.SetNextStateToMain();
+                        return;
+                    }
                 }
-                if (this.fixedAge > (attackDuration / this.maxAttackCount * (this.attackCount + 1)) + this.searchTime)
+                else
                 {
-                    this.attackCount++;
+                    if (base.isAuthority && (this.fixedAge > this.searchTime))
+                    {
+                        base.characterMotor.velocity = Vector3.zero;
+                        this.outer.SetNextStateToMain();
+                        return;
+                    }
                 }
             }
-            if (base.isAuthority && (this.fixedAge > this.searchTime && !targetLocked) || (this.fixedAge > attackDuration + this.searchTime))
+        }
+
+        private void FireBlastAttack()
+        {
+            if (base.isAuthority)
             {
-                base.characterMotor.velocity = Vector3.zero;
-                this.outer.SetNextStateToMain();
-                return;
+                BlastAttack blastAttack = new BlastAttack();
+                blastAttack.radius = range;
+                blastAttack.procCoefficient = procCoefficient;
+                blastAttack.position = targetPosition;
+                blastAttack.attacker = base.gameObject;
+                blastAttack.crit = Util.CheckRoll(base.characterBody.crit, base.characterBody.master);
+                blastAttack.baseDamage = base.characterBody.damage * damageCoefficient;
+                blastAttack.falloffModel = BlastAttack.FalloffModel.None;
+                blastAttack.damageType = damageType;
+                blastAttack.baseForce = -pushForce;
+                blastAttack.teamIndex = base.teamComponent.teamIndex;
+                blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
+                blastAttack.Fire();
             }
         }
 
@@ -190,29 +210,16 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        public void PrepareOverlapAttack()
+        private void SearchForTarget()
         {
-            HitBoxGroup hitBoxGroup = null;
-            Transform modelTransform = base.GetModelTransform();
-
-            if (modelTransform)
+            if (homingTracker)
             {
-                //hitBoxGroup = Array.Find<HitBoxGroup>(modelTransform.GetComponents<HitBoxGroup>(), (HitBoxGroup element) => element.groupName == this.hitboxName);
+                this.target = homingTracker.GetTrackingTarget();
+                if (this.target != null)
+                {
+                    TargetLocked();
+                }
             }
-
-            this.attack = new OverlapAttack();
-            this.attack.damageType = damageType;
-            this.attack.attacker = base.gameObject;
-            this.attack.inflictor = base.gameObject;
-            this.attack.teamIndex = base.GetTeam();
-            this.attack.damage = damageCoefficient * this.damageStat;
-            this.attack.procCoefficient = procCoefficient;
-            this.attack.hitEffectPrefab = this.hitEffectPrefab;
-            this.attack.forceVector = this.bonusForce;
-            this.attack.pushAwayForce = this.pushForce;
-            this.attack.hitBoxGroup = hitBoxGroup;
-            this.attack.isCrit = base.RollCrit();
-            this.attack.impactSound = this.impactSound;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
