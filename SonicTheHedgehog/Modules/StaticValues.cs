@@ -67,11 +67,11 @@ namespace SonicTheHedgehog.Modules
 
         internal const float boostSpeedFlatCoefficient = 8.5f * 0.175f;
         
-        internal const float boostSpeedCoefficient = 0.15f; //0.35f;
+        internal const float boostSpeedCoefficient = 0.15f;
 
         internal const float powerBoostSpeedFlatCoefficient = 8.5f * 0.35f;
 
-        internal const float powerBoostSpeedCoefficient = 0.2305f; //0.65f;
+        internal const float powerBoostSpeedCoefficient = 0.2305f;
 
         internal const float boostArmor = 50f;
 
@@ -143,7 +143,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superBoostSpeedFlatCoefficient = 8.5f * 0.5f;
 
-        internal const float superBoostSpeedCoefficient = 0.33f;//1f;
+        internal const float superBoostSpeedCoefficient = 0.33f;
 
         // Super Sonic Grand Slam
 

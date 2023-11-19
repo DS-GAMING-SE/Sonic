@@ -17,10 +17,10 @@ namespace SonicTheHedgehog.SkillStates
         protected static DamageType damageType = DamageType.Stun1s | DamageType.AOE;
         protected static float damageCoefficient = Modules.StaticValues.idwAttackDamageCoefficient;
         protected static float procCoefficient = StaticValues.idwAttackProcCoefficient;
-        protected static float attackDuration = 2f;
+        protected static float attackDuration = 1.6f;
         protected static float range = 20;
-        protected static int baseAttackCount = 10;
-        protected float pushForce = 400f;
+        protected static int baseAttackCount = 8;
+        protected static float pushForce = 400f;
         protected static float baseSearchTime = 1f;
         protected static float baseEndLag = 1.2f;
         protected float endLag;
@@ -49,6 +49,8 @@ namespace SonicTheHedgehog.SkillStates
 
         private Transform modelTransform;
         private CharacterModel characterModel;
+
+        private BlastAttack.HitPoint[] hit;
 
         public override void OnEnter()
         {
@@ -103,6 +105,12 @@ namespace SonicTheHedgehog.SkillStates
 
             this.stopwatch += Time.fixedDeltaTime;
 
+            if (!base.characterBody.HasBuff(Buffs.superSonicBuff))
+            {
+                this.outer.SetNextStateToMain();
+                return;
+            }
+
             if (this.fixedAge <= this.searchTime) //search
             {
                 base.characterMotor.velocity = Vector3.Lerp(base.characterMotor.velocity, Vector3.zero, fixedAge / (this.searchTime * 0.8f));
@@ -123,8 +131,8 @@ namespace SonicTheHedgehog.SkillStates
                             if (this.characterModel)
                             {
                                 this.characterModel.invisibilityCount++;
-                                invisible = true;
                             }
+                            invisible = true;
                             this.maxAttackCount = (int)Math.Ceiling(base.characterBody.attackSpeed * baseAttackCount);
                             if (NetworkServer.active)
                             {
@@ -133,12 +141,30 @@ namespace SonicTheHedgehog.SkillStates
                         }
                         if (base.isAuthority && this.fixedAge > (attackDuration / this.maxAttackCount * (this.attackCount + 1)) + this.searchTime)
                         {
-                            if (target)
+                            if (this.target != null)
                             {
-                                targetPosition = target.transform.position;
+                                this.targetPosition = this.target.transform.position;
                             }
+                            /*else if (this.hit.Length > 0) Why does this not workkkkkkk aauhjahujfdhdjuhg
+                            {
+                                Debug.Log("IDW Searching for target");
+                                this.target = this.hit[0].hurtBox;
+                                float distance = Vector3.Distance(this.hit[0].hurtBox.transform.position, this.targetPosition);
+                                Debug.Log("Almost foreach");
+                                foreach (BlastAttack.HitPoint hitPoint in this.hit)
+                                {
+                                    Debug.Log("foreach");
+                                    if (Vector3.Distance(hitPoint.hurtBox.transform.position, this.targetPosition) <= distance)
+                                    {
+                                        target = hitPoint.hurtBox;
+                                        distance = Vector3.Distance(hitPoint.hurtBox.transform.position, this.targetPosition);
+                                    }
+                                }
+                                this.targetPosition = this.target.transform.position;
+                            }
+                            */
                             FireBlastAttack();
-                            this.attackCount++;
+                            return;
                         }
                     }
 
@@ -159,6 +185,7 @@ namespace SonicTheHedgehog.SkillStates
                             base.PlayAnimation("FullBody, Override", "ParryRelease");
                             base.characterDirection.forward = base.characterDirection.forward * -1;
                             base.characterDirection.moveVector = base.characterDirection.moveVector * -1;
+                            return;
                         }
                     }
 
@@ -183,6 +210,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private void FireBlastAttack()
         {
+            this.attackCount++;
             if (base.isAuthority)
             {
                 BlastAttack blastAttack = new BlastAttack();
@@ -197,7 +225,7 @@ namespace SonicTheHedgehog.SkillStates
                 blastAttack.baseForce = -pushForce;
                 blastAttack.teamIndex = base.teamComponent.teamIndex;
                 blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
-                blastAttack.Fire();
+                this.hit = blastAttack.Fire().hitPoints;
             }
         }
 

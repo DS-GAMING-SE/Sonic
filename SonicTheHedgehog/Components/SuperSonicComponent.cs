@@ -12,9 +12,7 @@ using UnityEngine.Networking;
 namespace SonicTheHedgehog.Components
 {
     public class SuperSonicComponent : NetworkBehaviour
-    {
-        // Make super parry something that can only activate once but be CRAZY powerful
-        
+    {   
         public EntityStateMachine superSonicState;
         public Material superSonicMaterial;
         public Material defaultMaterial;
@@ -34,7 +32,7 @@ namespace SonicTheHedgehog.Components
         public static SkillDef grandSlam;
 
 
-        public bool canTransform=true;
+        public bool canTransform=false;
 
 
         private void Start()

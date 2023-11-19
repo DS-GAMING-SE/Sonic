@@ -9,14 +9,12 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class Parry : BaseSkillState
     {
-        // Experiment with changing hitbox size
-        
         public static float minDuration = Modules.StaticValues.parryMinimumDuration;
         public static float baseMaxDuration = Modules.StaticValues.parryMaximumDuration;
         public static float baseSuperMaxDuration = StaticValues.superParryMaxDuration;
 
         public static float baseEnterAnimationPercent = 0.4f;
-        public static float superEnterAnimationPercent = 0.15f;
+        public static float superEnterAnimationPercent = 0.08f;
         private float enterAnimationPercent;
 
         private float maxDuration;

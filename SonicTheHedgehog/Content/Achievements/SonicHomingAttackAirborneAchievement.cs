@@ -31,24 +31,24 @@ namespace SonicTheHedgehog.Modules.Achievements
         {
             base.OnBodyRequirementMet();
             this.bodyStateMachine = EntityStateMachine.FindByCustomName(base.localUser.cachedBody.gameObject, "Body");
+            RoR2Application.onFixedUpdate += OnFixedUpdate;
         }
 
         public override void OnBodyRequirementBroken()
         {
             base.OnBodyRequirementBroken();
+            RoR2Application.onFixedUpdate -= OnFixedUpdate;
         }
 
         public override void OnInstall()
         {
             base.OnInstall();
-            RoR2Application.onFixedUpdate += OnFixedUpdate;
             HomingAttack.onAuthorityHitEnemy += OnHitEnemy;
         }
 
         public override void OnUninstall()
         {
             HomingAttack.onAuthorityHitEnemy -= OnHitEnemy;
-            RoR2Application.onFixedUpdate -= OnFixedUpdate;
             base.OnUninstall();
         }
 
