@@ -21,12 +21,14 @@ namespace SonicTheHedgehog.Modules
                 false, 
                 false);
             superSonicBuff = AddNewBuff("bdSuperSonic",
-                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
-                Color.yellow,
+                //LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperBuffIcon"),
+                Color.white,
                 false,
                 false);
             ballBuff = AddNewBuff("bdSonicBallArmor",
-                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
+                //LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texBallBuffIcon"),
                 new Color(0, 0.35f, 1),
                 false,
                 false);

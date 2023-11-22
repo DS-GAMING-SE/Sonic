@@ -401,6 +401,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             primary.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME";
             primary.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME";
             primary.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_DESCRIPTION";
+            primary.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperMeleeIcon");
             SuperSonicComponent.melee = Modules.Skills.CreateSkillDef(primary);
 
             sonicBoom.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME";
@@ -456,6 +457,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             SuperSonicComponent.grandSlam = Modules.Skills.CreateSkillDef(grandSlam);
 
             superSonicComponent.superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+            superSonicComponent.superSonicModel = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
             NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
             Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });

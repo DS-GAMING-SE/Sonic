@@ -14,8 +14,13 @@ namespace SonicTheHedgehog.Components
     public class SuperSonicComponent : NetworkBehaviour
     {   
         public EntityStateMachine superSonicState;
+
         public Material superSonicMaterial;
         public Material defaultMaterial;
+
+        public Mesh superSonicModel;
+        public Mesh defaultModel;
+
         private CharacterBody body;
         private CharacterModel model;
         private TemporaryOverlay temporaryOverlay;
@@ -32,7 +37,7 @@ namespace SonicTheHedgehog.Components
         public static SkillDef grandSlam;
 
 
-        public bool canTransform=false;
+        public bool canTransform=true;
 
 
         private void Start()
@@ -75,6 +80,11 @@ namespace SonicTheHedgehog.Components
         {
             defaultMaterial = model.baseRendererInfos[0].defaultMaterial;
             model.baseRendererInfos[0].defaultMaterial = superSonicMaterial;
+            if (superSonicModel)
+            {
+                defaultModel = model.mainSkinnedMeshRenderer.sharedMesh;
+                model.mainSkinnedMeshRenderer.sharedMesh = superSonicModel;
+            }
 
             if (model)
             {
@@ -88,6 +98,10 @@ namespace SonicTheHedgehog.Components
         public void ResetModel()
         {
             model.baseRendererInfos[0].defaultMaterial = defaultMaterial;
+            if (superSonicModel)
+            {
+                model.mainSkinnedMeshRenderer.sharedMesh = defaultModel;
+            }
 
             if (temporaryOverlay)
             {
