@@ -110,7 +110,7 @@ namespace SonicTheHedgehog.SkillStates
             sphereSearch.radius = superParryRange;
             sphereSearch.mask = LayerIndex.entityPrecise.mask;
             sphereSearch.RefreshCandidates();
-            sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(base.teamComponent.teamIndex));
+            sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(base.teamComponent.teamIndex));
             sphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
             HurtBox[] hurtBoxes = sphereSearch.GetHurtBoxes();
             foreach (HurtBox hurtBox in hurtBoxes)

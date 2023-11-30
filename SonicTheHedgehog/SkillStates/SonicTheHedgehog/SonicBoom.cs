@@ -42,7 +42,14 @@ namespace SonicTheHedgehog.SkillStates
             this.duration = SonicBoom.baseDuration / this.attackSpeedStat;
             this.fireTime = baseFireTime / this.attackSpeedStat;
             base.characterBody.SetAimTimer(1.5f);
-            base.PlayAnimation("FullBody, Override", "SonicBoom", "Slash.playbackRate", this.fireTime*Modules.StaticValues.sonicBoomCount);
+            if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+            {
+                base.PlayAnimation("FullBody, Override", "CrossSlash");
+            }
+            else
+            {
+                base.PlayAnimation("FullBody, Override", "SonicBoom", "Slash.playbackRate", this.fireTime * Modules.StaticValues.sonicBoomCount);
+            }
         }
 
         public override void OnExit()
@@ -114,7 +121,10 @@ namespace SonicTheHedgehog.SkillStates
             if (base.fixedAge >= (Modules.StaticValues.sonicBoomFireTime * (Modules.StaticValues.sonicBoomCount)) && !exitAnimPlayed)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
-                base.PlayAnimation("Body", "SonicBoomEnd");
+                if (!base.characterBody.HasBuff(Buffs.superSonicBuff))
+                {
+                    base.PlayAnimation("Body", "SonicBoomEnd");
+                }
                 exitAnimPlayed = true;
             }
             if (base.fixedAge >= this.duration && base.isAuthority)

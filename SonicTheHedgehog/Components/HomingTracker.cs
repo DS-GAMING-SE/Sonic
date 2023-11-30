@@ -103,7 +103,7 @@ namespace SonicTheHedgehog.Components
             this.sphereSearch.radius = 3;
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
-            this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(teamComponent.teamIndex));
+            this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));
             this.enemiesNearby = sphereSearch.GetHurtBoxes().Any();
         }
 

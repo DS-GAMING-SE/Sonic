@@ -69,7 +69,7 @@ namespace SonicTheHedgehog.Modules
 
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
             bombController.canImpactOnTrigger = false;
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("CrossSlashGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("CrossSlashGhost");
             bombController.startSound = "";
         }
 

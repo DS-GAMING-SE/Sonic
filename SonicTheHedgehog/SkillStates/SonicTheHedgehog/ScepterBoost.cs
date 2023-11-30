@@ -59,7 +59,7 @@ namespace SonicTheHedgehog.SkillStates
             this.sphereSearch.radius = base.characterBody.HasBuff(Buffs.superSonicBuff) ? superDamageRadius : damageRadius;
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
-            this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));
+            this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(teamComponent.teamIndex));
             HurtBox[] hitList = this.sphereSearch.GetHurtBoxes();
 
             if (hitList.Count() == 0)
@@ -71,7 +71,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 //Debug.Log("Scepter Boost hurtbox check");
                 HealthComponent healthComponent = hitList[i].healthComponent;
-                if (healthComponent && !boostLogic.recentlyHitHealthComponents.Contains(healthComponent))
+                if (healthComponent && healthComponent!=base.characterBody.healthComponent && !boostLogic.recentlyHitHealthComponents.Contains(healthComponent))
                 {
                     CalculateDamage(hitList[i]);
                     if (NetworkServer.active)

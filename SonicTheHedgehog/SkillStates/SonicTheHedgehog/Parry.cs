@@ -13,8 +13,8 @@ namespace SonicTheHedgehog.SkillStates
         public static float baseMaxDuration = Modules.StaticValues.parryMaximumDuration;
         public static float baseSuperMaxDuration = StaticValues.superParryMaxDuration;
 
-        public static float baseEnterAnimationPercent = 0.4f;
-        public static float superEnterAnimationPercent = 0.08f;
+        public static float baseEnterAnimationPercent = 1f;
+        public static float superEnterAnimationPercent = 0.8f;
         private float enterAnimationPercent;
 
         private float maxDuration;

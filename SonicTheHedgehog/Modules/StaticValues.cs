@@ -133,7 +133,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float idwAttackattackDuration = 2f;
 
-        internal const float idwAttackDamageCoefficient = 6f;
+        internal const float idwAttackDamageCoefficient = 7.5f;
 
         internal const float idwAttackProcCoefficient = 0.7f;
 

@@ -97,7 +97,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void Update()
         {
             base.Update();
-            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform) // Doing this transforms ALL Sonics, including Goobo Sonics, into super??
+            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform && base.characterBody.isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
                 if (Input.GetKeyDown("v"))
                 {

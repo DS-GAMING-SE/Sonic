@@ -16,8 +16,10 @@ namespace SonicTheHedgehog.SkillStates
     public class SuperSonic : BaseState
     {
         SuperSonicComponent superSonicComponent;
-        UnityEngine.Object superAura;
+        GameObject superAura;
         bool superBuffApplied;
+
+        CharacterModel characterModel;
 
         private static float cameraDistance = -15;
         private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
@@ -33,9 +35,15 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
+            Transform modelTransform = base.GetModelTransform();
+            if (modelTransform)
+            {
+                this.characterModel = modelTransform.GetComponent<CharacterModel>();
+            }
+
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
 
-            this.superAura = UnityEngine.Object.Instantiate<UnityEngine.Object>(Modules.Assets.superSonicAura, base.FindModelChild("MainHurtbox"));
+            this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
 
             superSonicComponent.SuperModel();
 
@@ -72,7 +80,7 @@ namespace SonicTheHedgehog.SkillStates
                     base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
                     base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
                 }
-                EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicTransformationEffect, base.gameObject, "MainHurtbox", true);
+                EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicTransformationEffect, base.gameObject, "Chest", true);
             }
             if (NetworkServer.active)
             {
@@ -117,6 +125,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+            this.superAura.SetActive(this.characterModel.invisibilityCount <= 0);
             if (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff))
             {
                 if (!superBuffApplied)

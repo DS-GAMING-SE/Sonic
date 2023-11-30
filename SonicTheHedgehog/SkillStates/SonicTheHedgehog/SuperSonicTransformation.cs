@@ -11,7 +11,7 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SuperSonicTransformation : BaseSkillState
     {
-        protected float baseDuration = 2f;
+        protected float baseDuration = 2.4f;
         protected float transformationDuration = Modules.StaticValues.superSonicDuration;
         protected bool effectFired = false;
         protected SuperSonicComponent superSonic;
@@ -38,6 +38,7 @@ namespace SonicTheHedgehog.SkillStates
             if (!base.HasBuff(Modules.Buffs.superSonicBuff))
             {
                 this.duration = this.baseDuration;
+                base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
                 if (NetworkServer.active)
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);

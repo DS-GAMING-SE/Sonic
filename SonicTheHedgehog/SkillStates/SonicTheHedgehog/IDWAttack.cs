@@ -22,7 +22,7 @@ namespace SonicTheHedgehog.SkillStates
         protected static int baseAttackCount = 8;
         protected static float pushForce = 400f;
         protected static float baseSearchTime = 1f;
-        protected static float baseEndLag = 1.2f;
+        protected static float baseEndLag = 1.6f;
         protected float endLag;
         protected float searchTime;
 
@@ -70,7 +70,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterMotor.Motor.ForceUnground();
             }
-            base.PlayAnimation("FullBody, Override", "ParryEnter");
+            base.PlayAnimation("FullBody, Override", "IDWStart", "Slash.playbackRate", searchTime);
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
@@ -182,7 +182,7 @@ namespace SonicTheHedgehog.SkillStates
                                 base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
                             }
                             this.endLag = baseEndLag / base.characterBody.attackSpeed;
-                            base.PlayAnimation("FullBody, Override", "ParryRelease");
+                            base.PlayAnimation("FullBody, Override", "IDWEnd", "Slash.playbackRate", this.endLag);
                             base.characterDirection.forward = base.characterDirection.forward * -1;
                             base.characterDirection.moveVector = base.characterDirection.moveVector * -1;
                             return;
