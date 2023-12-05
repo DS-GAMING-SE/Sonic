@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace SonicTheHedgehog.Components
 {
     public class SuperSonicComponent : NetworkBehaviour
-    {   
+    {
         public EntityStateMachine superSonicState;
 
         public Material superSonicMaterial;
@@ -36,8 +36,8 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef grandSlam;
 
-
-        public bool canTransform=true;
+        public bool awaitStageReset = false;
+        public bool canTransform = true;
 
 
         private void Start()
@@ -48,10 +48,9 @@ namespace SonicTheHedgehog.Components
             Stage.onServerStageBegin += ResetSuperSonic;
             Inventory.onInventoryChangedGlobal += OnInventoryChanged;
         }
-        
+
         public void FixedUpdate()
         {
-
         }
 
         private void OnDestroy()
@@ -64,14 +63,17 @@ namespace SonicTheHedgehog.Components
         {
             if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
             {
+                awaitStageReset = true;
                 canTransform = false;
             }
         }
 
         public void TransformEnd()
         {
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack,
+                GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry,
+                GenericSkill.SkillOverridePriority.Contextual);
             ResetModel();
         }
 
@@ -111,22 +113,36 @@ namespace SonicTheHedgehog.Components
 
         public void ParryActivated()
         {
-            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.idwAttack,
+                GenericSkill.SkillOverridePriority.Contextual);
         }
 
         public void IDWAttackActivated()
         {
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack, GenericSkill.SkillOverridePriority.Contextual);
-            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack,
+                GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.emptyParry,
+                GenericSkill.SkillOverridePriority.Contextual);
         }
 
         public void ResetSuperSonic(Stage stage)
         {
-            
+            awaitStageReset = false;
         }
+
         public void OnInventoryChanged(Inventory inventory)
         {
+            if (awaitStageReset) return;
+            
+            bool hasYellow = inventory.GetItemCount(Items.yellowEmerald) > 0;
+            bool hasRed = inventory.GetItemCount(Items.redEmerald) > 0;
+            bool hasBlue = inventory.GetItemCount(Items.blueEmerald) > 0;
+            bool hasCyan = inventory.GetItemCount(Items.cyanEmerald) > 0;
+            bool hasGreen = inventory.GetItemCount(Items.greenEmerald) > 0;
+            bool hasGray = inventory.GetItemCount(Items.grayEmerald) > 0;
+            bool hasPurple = inventory.GetItemCount(Items.purpleEmerald) > 0;
 
+            canTransform = hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple;
         }
     }
 }
