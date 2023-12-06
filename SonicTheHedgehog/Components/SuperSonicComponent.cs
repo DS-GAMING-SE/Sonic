@@ -1,11 +1,8 @@
 ﻿using EntityStates;
 using RoR2;
-using RoR2.Audio;
 using RoR2.Skills;
 using SonicTheHedgehog.Modules;
-using SonicTheHedgehog.Modules.Survivors;
 using SonicTheHedgehog.SkillStates;
-using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -36,8 +33,8 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef grandSlam;
 
-        public bool awaitStageReset = false;
-        public bool canTransform = true;
+        public bool awaitStageReset;
+        public bool canTransform;
 
 
         private void Start()
@@ -63,7 +60,7 @@ namespace SonicTheHedgehog.Components
         {
             if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
             {
-                awaitStageReset = true;
+                //awaitStageReset = true;
                 canTransform = false;
             }
         }
@@ -132,8 +129,11 @@ namespace SonicTheHedgehog.Components
 
         public void OnInventoryChanged(Inventory inventory)
         {
-            if (awaitStageReset) return;
+            //if (awaitStageReset || canTransform) return;
             
+            if (canTransform) return;
+            
+            // Leaving this the way it is for future use maybe? And better readability rather than having a one liner.
             bool hasYellow = inventory.GetItemCount(Items.yellowEmerald) > 0;
             bool hasRed = inventory.GetItemCount(Items.redEmerald) > 0;
             bool hasBlue = inventory.GetItemCount(Items.blueEmerald) > 0;
@@ -143,6 +143,18 @@ namespace SonicTheHedgehog.Components
             bool hasPurple = inventory.GetItemCount(Items.purpleEmerald) > 0;
 
             canTransform = hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple;
+            
+            if (canTransform)
+            {
+                Log.Info("Removed all Emeralds because of transform.");
+                inventory.RemoveItem(Items.yellowEmerald);
+                inventory.RemoveItem(Items.redEmerald);
+                inventory.RemoveItem(Items.blueEmerald);
+                inventory.RemoveItem(Items.cyanEmerald);
+                inventory.RemoveItem(Items.greenEmerald);
+                inventory.RemoveItem(Items.grayEmerald);
+                inventory.RemoveItem(Items.purpleEmerald);
+            }
         }
     }
 }
