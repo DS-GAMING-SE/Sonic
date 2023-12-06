@@ -17,31 +17,31 @@ namespace SonicTheHedgehog.Modules
 
         internal static void RegisterItems()
         {
-            yellowEmerald = AddNewItem("Yellow Emerald", "YELLOW_EMERALD", true, ItemTier.Tier2,
+            yellowEmerald = AddNewItem("Chaos Emerald Yellow", "YELLOW_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texYellowEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("YellowEmerald.prefab"));
             
-            redEmerald = AddNewItem("Red Emerald", "RED_EMERALD", true, ItemTier.Tier2,
+            redEmerald = AddNewItem("Chaos Emerald Red", "RED_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texRedEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("RedEmerald.prefab"));
             
-            grayEmerald = AddNewItem("Gray Emerald", "GRAY_EMERALD", true, ItemTier.Tier2,
+            grayEmerald = AddNewItem("Chaos Emerald Gray", "GRAY_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texGrayEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("GrayEmerald.prefab"));
             
-            blueEmerald = AddNewItem("Blue Emerald", "BLUE_EMERALD", true, ItemTier.Tier2,
+            blueEmerald = AddNewItem("Chaos Emerald Blue", "BLUE_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texBlueEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("BlueEmerald.prefab"));
             
-            cyanEmerald = AddNewItem("Cyan Emerald", "CYAN_EMERALD", true, ItemTier.Tier2,
+            cyanEmerald = AddNewItem("Chaos Emerald Cyan", "CYAN_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texCyanEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("CyanEmerald.prefab"));
             
-            greenEmerald = AddNewItem("Green Emerald", "GREEN_EMERALD", true, ItemTier.Tier2,
+            greenEmerald = AddNewItem("Chaos Emerald Green", "GREEN_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texGreenEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("GreenEmerald.prefab"));
             
-            purpleEmerald = AddNewItem("Purple Emerald", "PURPLE_EMERALD", true, ItemTier.Tier2,
+            purpleEmerald = AddNewItem("Chaos Emerald Purple", "PURPLE_EMERALD", true, ItemTier.Tier2,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texPurpleEmeraldIcon"),
                 Assets.mainAssetBundle.LoadAsset<GameObject>("PurpleEmerald.prefab"));
         }

@@ -4,6 +4,8 @@ using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using SceneDirector = On.RoR2.SceneDirector;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -62,8 +64,28 @@ namespace SonicTheHedgehog.Modules
 
             contentPack.networkSoundEventDefs.Add(networkSoundEventDefs.ToArray());
 
+            On.RoR2.SceneDirector.Start += SceneDirectorOnStart;
             args.ReportProgress(1f);
             yield break;
+        }
+
+        private void SceneDirectorOnStart(SceneDirector.orig_Start orig, RoR2.SceneDirector self)
+        {
+            string sceneName = SceneManager.GetActiveScene().name;
+            if (sceneName == "intro") return;
+
+            if (sceneName == "title")
+            {
+                // TODO:: create prefab of super sonic floating in the air silly style.
+            }
+            else
+            {
+                DirectorPlacementRule placementRule = new DirectorPlacementRule();
+                placementRule.placementMode = DirectorPlacementRule.PlacementMode.Random;
+                // TODO:: create something to spawn.
+                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(null, placementRule,
+                    Run.instance.stageRng));
+            }
         }
 
         public System.Collections.IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)
