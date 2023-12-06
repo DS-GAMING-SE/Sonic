@@ -3,6 +3,7 @@ using RoR2.ContentManagement;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
+using RoR2.Navigation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SceneDirector = On.RoR2.SceneDirector;
@@ -77,13 +78,39 @@ namespace SonicTheHedgehog.Modules
             if (sceneName == "title")
             {
                 // TODO:: create prefab of super sonic floating in the air silly style.
+                Vector3 vector = new Vector3(38, 23, 36);
             }
             else
             {
-                DirectorPlacementRule placementRule = new DirectorPlacementRule();
-                placementRule.placementMode = DirectorPlacementRule.PlacementMode.Random;
-                // TODO:: create something to spawn.
-                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(null, placementRule,
+                DirectorPlacementRule placementRule = new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.Random
+                };
+                
+                SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
+
+                GameObject test = Assets.mainAssetBundle.LoadAsset<GameObject>("BuyThingy");
+                
+                PurchaseInteraction purchaseInteraction = test.AddComponent<PurchaseInteraction>();
+                test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(1).GetComponent<MeshRenderer>();
+
+                purchaseInteraction.available = true;
+                purchaseInteraction.cost = 50;
+                purchaseInteraction.costType = CostTypeIndex.Money;
+                PurchaseEvent purchaseEvent = new PurchaseEvent();
+                
+                purchaseEvent.AddListener(x =>
+                {
+                    Debug.Log("Bought this shit dunno.");
+                });
+                
+                purchaseInteraction.onPurchase = purchaseEvent;
+                
+                spawnCard.prefab = test;
+                spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
+                spawnCard.sendOverNetwork = true;
+                
+                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
                     Run.instance.stageRng));
             }
         }
