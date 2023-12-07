@@ -2852,7 +2852,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.1, y: 0.2, z: 0.1}
+  m_Size: {x: 0.1, y: 0.175, z: 0.1}
   m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!1 &7696789514664252584
 GameObject:
@@ -3019,7 +3019,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6962044930516131247}
   m_Layer: 0
-  m_Name: SonicAtlas
+  m_Name: SonicAtlasInteractable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -160,6 +160,35 @@ namespace SonicTheHedgehog.Modules
                 {
                     purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                            "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_" + i;
+
+                    Material material;
+                    switch (i)
+                    {
+                        default:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matYellow");
+                            break;
+                        case 1:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matBlue");
+                            break;
+                        case 2:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matRed");
+                            break;
+                        case 3:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matGray");
+                            break;
+                        case 4:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matGreen");
+                            break;
+                        case 5:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matCyan");
+                            break;
+                        case 6:
+                            material = Assets.mainAssetBundle.LoadAsset<Material>("matPurple");
+                            break;
+                    }
+
+                    test.transform.GetChild(2).GetComponent<MeshRenderer>().material = material;
+
                     DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
                         Run.instance.stageRng));
                 }
