@@ -215,6 +215,8 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #region Emeralds
+            
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE", "Chaos Temple thingy");
 
             LanguageAPI.Add(prefix + "YELLOW_EMERALD", "Chaos Emerald Yellow");
             LanguageAPI.Add(prefix + "YELLOW_EMERALD_PICKUP", "One out of 7, silly Yellow!");

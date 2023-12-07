@@ -92,26 +92,41 @@ namespace SonicTheHedgehog.Modules
                 GameObject test = Assets.mainAssetBundle.LoadAsset<GameObject>("BuyThingy");
                 
                 PurchaseInteraction purchaseInteraction = test.AddComponent<PurchaseInteraction>();
-                test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(1).GetComponent<MeshRenderer>();
+                test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(2).GetComponent<MeshRenderer>();
+                test.transform.GetChild(test.transform.childCount - 1).gameObject.AddComponent<EntityLocator>().entity = test;
 
+                purchaseInteraction.name = "Silly man";
+                purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE";
                 purchaseInteraction.available = true;
-                purchaseInteraction.cost = 50;
+                purchaseInteraction.cost = 5050;
                 purchaseInteraction.costType = CostTypeIndex.Money;
                 PurchaseEvent purchaseEvent = new PurchaseEvent();
                 
-                purchaseEvent.AddListener(x =>
+                // Neither of these seem to work. Gotta find a solution.
+                /*purchaseEvent.AddListener(x =>
                 {
                     Debug.Log("Bought this shit dunno.");
+                    
                 });
+
+                PurchaseInteraction.onItemSpentOnPurchase += (e, x) =>
+                {
+                    Debug.Log("test");
+                };*/
+                
+                // possible code to add a emerald -> Run.instance.GetUserMaster(x).inventory.GiveItem(Items.cyanEmerald);
                 
                 purchaseInteraction.onPurchase = purchaseEvent;
                 
                 spawnCard.prefab = test;
                 spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
                 spawnCard.sendOverNetwork = true;
-                
-                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
-                    Run.instance.stageRng));
+
+                for (int i = 0; i < 7; i++)
+                {
+                    DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
+                        Run.instance.stageRng));
+                }
             }
         }
 
