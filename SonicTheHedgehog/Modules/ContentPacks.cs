@@ -75,6 +75,7 @@ namespace SonicTheHedgehog.Modules
         private void PurchaseInteractionOnOnInteractionBegin(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig,
             PurchaseInteraction self, Interactor activator)
         {
+            orig(self, activator);
             string prefix = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_";
             if (self.displayNameToken.StartsWith(prefix))
             {
@@ -110,13 +111,12 @@ namespace SonicTheHedgehog.Modules
                 Debug.Log("Bought this shit dunno, " + id);
                 self.available = false;
             }
-
-            orig(self, activator);
         }
 
         // Thanks to Nuxlar for helping and given a lot of advice!
         private void SceneDirectorOnStart(SceneDirector.orig_Start orig, RoR2.SceneDirector self)
         {
+            orig(self);
             string sceneName = SceneManager.GetActiveScene().name;
             if (sceneName == "intro")
             {
@@ -138,12 +138,26 @@ namespace SonicTheHedgehog.Modules
 
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
-                GameObject test = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
+                GameObject prefab = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
+                
 
-                PurchaseInteraction purchaseInteraction = test.AddComponent<PurchaseInteraction>();
-                test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(1).GetComponent<MeshRenderer>();
-                test.transform.GetChild(test.transform.childCount - 1).gameObject.AddComponent<EntityLocator>().entity =
-                    test;
+                if (!prefab.TryGetComponent<RoR2.PurchaseInteraction>(out RoR2.PurchaseInteraction purchaseInteraction))
+                {
+                    purchaseInteraction = prefab.AddComponent<RoR2.PurchaseInteraction>();
+                }
+                
+                prefab.GetComponent<Highlight>().targetRenderer = prefab.transform.GetChild(1).GetComponent<MeshRenderer>();
+
+                GameObject trigger = prefab.transform.GetChild(prefab.transform.childCount - 1).gameObject;
+
+                if (trigger.TryGetComponent<RoR2.EntityLocator>(out RoR2.EntityLocator locator))
+                {
+                    locator.entity = prefab;
+                }
+                else
+                {
+                    trigger.AddComponent<RoR2.EntityLocator>().entity = prefab;
+                }
 
                 purchaseInteraction.name = "Silly man";
                 purchaseInteraction.available = true;
@@ -152,7 +166,7 @@ namespace SonicTheHedgehog.Modules
                 purchaseInteraction.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                    "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
 
-                spawnCard.prefab = test;
+                spawnCard.prefab = prefab;
                 spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
                 spawnCard.sendOverNetwork = true;
 
@@ -187,14 +201,12 @@ namespace SonicTheHedgehog.Modules
                             break;
                     }
 
-                    test.transform.GetChild(2).GetComponent<MeshRenderer>().material = material;
+                    prefab.transform.GetChild(2).GetComponent<MeshRenderer>().material = material;
 
                     DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
                         Run.instance.stageRng));
                 }
             }
-
-            orig(self);
         }
 
         public System.Collections.IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)
