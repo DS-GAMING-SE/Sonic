@@ -110,7 +110,7 @@ namespace SonicTheHedgehog.Modules
                 Debug.Log("Bought this shit dunno, " + id);
                 self.available = false;
             }
-            
+
             orig(self, activator);
         }
 
@@ -138,16 +138,16 @@ namespace SonicTheHedgehog.Modules
 
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
-                GameObject test = Assets.mainAssetBundle.LoadAsset<GameObject>("BuyThingy");
+                GameObject test = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
 
                 PurchaseInteraction purchaseInteraction = test.AddComponent<PurchaseInteraction>();
-                test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(2).GetComponent<MeshRenderer>();
+                test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(1).GetComponent<MeshRenderer>();
                 test.transform.GetChild(test.transform.childCount - 1).gameObject.AddComponent<EntityLocator>().entity =
                     test;
 
                 purchaseInteraction.name = "Silly man";
                 purchaseInteraction.available = true;
-                purchaseInteraction.cost = 1;
+                purchaseInteraction.cost = 350;
                 purchaseInteraction.costType = CostTypeIndex.Money;
                 purchaseInteraction.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                    "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
@@ -164,7 +164,7 @@ namespace SonicTheHedgehog.Modules
                         Run.instance.stageRng));
                 }
             }
-            
+
             orig(self);
         }
 
