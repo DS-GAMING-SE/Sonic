@@ -60,20 +60,69 @@ namespace SonicTheHedgehog.Modules
 
             contentPack.buffDefs.Add(buffDefs.ToArray());
             contentPack.effectDefs.Add(effectDefs.ToArray());
-            
+
             contentPack.itemDefs.Add(itemDefs.ToArray());
 
             contentPack.networkSoundEventDefs.Add(networkSoundEventDefs.ToArray());
 
             On.RoR2.SceneDirector.Start += SceneDirectorOnStart;
+            On.RoR2.PurchaseInteraction.OnInteractionBegin += PurchaseInteractionOnOnInteractionBegin;
             args.ReportProgress(1f);
             yield break;
         }
 
+        // Thanks to Nuxlar for helping and given a lot of advice!
+        private void PurchaseInteractionOnOnInteractionBegin(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig,
+            PurchaseInteraction self, Interactor activator)
+        {
+            string prefix = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_";
+            if (self.displayNameToken.StartsWith(prefix))
+            {
+                int id = int.Parse(self.displayNameToken.Substring(prefix.Length));
+
+                Inventory inventory = activator.GetComponent<CharacterBody>().inventory;
+
+                switch (id)
+                {
+                    case 1:
+                        inventory.GiveItem(Items.blueEmerald);
+                        break;
+                    case 2:
+                        inventory.GiveItem(Items.redEmerald);
+                        break;
+                    case 3:
+                        inventory.GiveItem(Items.grayEmerald);
+                        break;
+                    case 4:
+                        inventory.GiveItem(Items.greenEmerald);
+                        break;
+                    case 5:
+                        inventory.GiveItem(Items.cyanEmerald);
+                        break;
+                    case 6:
+                        inventory.GiveItem(Items.purpleEmerald);
+                        break;
+                    default:
+                        inventory.GiveItem(Items.yellowEmerald);
+                        break;
+                }
+
+                Debug.Log("Bought this shit dunno, " + id);
+                self.available = false;
+            }
+            
+            orig(self, activator);
+        }
+
+        // Thanks to Nuxlar for helping and given a lot of advice!
         private void SceneDirectorOnStart(SceneDirector.orig_Start orig, RoR2.SceneDirector self)
         {
             string sceneName = SceneManager.GetActiveScene().name;
-            if (sceneName == "intro") return;
+            if (sceneName == "intro")
+            {
+                orig(self);
+                return;
+            }
 
             if (sceneName == "title")
             {
@@ -86,48 +135,37 @@ namespace SonicTheHedgehog.Modules
                 {
                     placementMode = DirectorPlacementRule.PlacementMode.Random
                 };
-                
+
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
                 GameObject test = Assets.mainAssetBundle.LoadAsset<GameObject>("BuyThingy");
-                
+
                 PurchaseInteraction purchaseInteraction = test.AddComponent<PurchaseInteraction>();
                 test.GetComponent<Highlight>().targetRenderer = test.transform.GetChild(2).GetComponent<MeshRenderer>();
-                test.transform.GetChild(test.transform.childCount - 1).gameObject.AddComponent<EntityLocator>().entity = test;
+                test.transform.GetChild(test.transform.childCount - 1).gameObject.AddComponent<EntityLocator>().entity =
+                    test;
 
                 purchaseInteraction.name = "Silly man";
-                purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE";
                 purchaseInteraction.available = true;
-                purchaseInteraction.cost = 5050;
+                purchaseInteraction.cost = 1;
                 purchaseInteraction.costType = CostTypeIndex.Money;
-                PurchaseEvent purchaseEvent = new PurchaseEvent();
-                
-                // Neither of these seem to work. Gotta find a solution.
-                /*purchaseEvent.AddListener(x =>
-                {
-                    Debug.Log("Bought this shit dunno.");
-                    
-                });
+                purchaseInteraction.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
+                                                   "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
 
-                PurchaseInteraction.onItemSpentOnPurchase += (e, x) =>
-                {
-                    Debug.Log("test");
-                };*/
-                
-                // possible code to add a emerald -> Run.instance.GetUserMaster(x).inventory.GiveItem(Items.cyanEmerald);
-                
-                purchaseInteraction.onPurchase = purchaseEvent;
-                
                 spawnCard.prefab = test;
                 spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
                 spawnCard.sendOverNetwork = true;
 
                 for (int i = 0; i < 7; i++)
                 {
+                    purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
+                                                           "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_" + i;
                     DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
                         Run.instance.stageRng));
                 }
             }
+            
+            orig(self);
         }
 
         public System.Collections.IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)

@@ -107,14 +107,18 @@ namespace SonicTheHedgehog.SkillStates
         public override void Update()
         {
             base.Update();
-            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform &&
+            if (base.isAuthority && superSonicComponent &&
                 base.characterBody
                     .isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
                 if (Input.GetKeyDown("v"))
                 {
-                    Debug.Log("Attempt Super Transform");
-                    superSonicComponent.Transform(this.outer);
+                    Inventory inventory = base.characterBody.inventory;
+                    if (superSonicComponent.CanTransform(inventory))
+                    {
+                        Debug.Log("Attempt Super Transform");
+                        superSonicComponent.Transform(this.outer, inventory);
+                    }
                 }
             }
         }

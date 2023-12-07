@@ -216,33 +216,40 @@ namespace SonicTheHedgehog.Modules
 
             #region Emeralds
             
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE", "Chaos Temple thingy");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_CONTEXT", "Receive Emerald");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_0", "Chaos Temple: Yellow");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_1", "Chaos Temple: Blue");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_2", "Chaos Temple: Red");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_3", "Chaos Temple: Gray");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_4", "Chaos Temple: Green");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_5", "Chaos Temple: Cyan");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_6", "Chaos Temple: Purple");
 
-            LanguageAPI.Add(prefix + "YELLOW_EMERALD", "Chaos Emerald Yellow");
+            LanguageAPI.Add(prefix + "YELLOW_EMERALD", "Chaos Emerald: Yellow");
             LanguageAPI.Add(prefix + "YELLOW_EMERALD_PICKUP", "One out of 7, silly Yellow!");
             LanguageAPI.Add(prefix + "YELLOW_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
             
-            LanguageAPI.Add(prefix + "BLUE_EMERALD", "Chaos Emerald Blue");
+            LanguageAPI.Add(prefix + "BLUE_EMERALD", "Chaos Emerald: Blue");
             LanguageAPI.Add(prefix + "BLUE_EMERALD_PICKUP", "One out of 7, relaxing Blue!");
             LanguageAPI.Add(prefix + "BLUE_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
             
-            LanguageAPI.Add(prefix + "RED_EMERALD", "Chaos Emerald Red");
+            LanguageAPI.Add(prefix + "RED_EMERALD", "Chaos Emerald: Red");
             LanguageAPI.Add(prefix + "RED_EMERALD_PICKUP", "One out of 7, anger Red!");
             LanguageAPI.Add(prefix + "RED_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
             
-            LanguageAPI.Add(prefix + "GRAY_EMERALD", "Chaos Emerald Gray");
+            LanguageAPI.Add(prefix + "GRAY_EMERALD", "Chaos Emerald: Gray");
             LanguageAPI.Add(prefix + "GRAY_EMERALD_PICKUP", "One out of 7, depressing Gray!");
             LanguageAPI.Add(prefix + "GRAY_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
             
-            LanguageAPI.Add(prefix + "GREEN_EMERALD", "Chaos Emerald Green");
+            LanguageAPI.Add(prefix + "GREEN_EMERALD", "Chaos Emerald: Green");
             LanguageAPI.Add(prefix + "GREEN_EMERALD_PICKUP", "One out of 7, peaceful Green!");
             LanguageAPI.Add(prefix + "GREEN_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
             
-            LanguageAPI.Add(prefix + "CYAN_EMERALD", "Chaos Emerald Cyan");
+            LanguageAPI.Add(prefix + "CYAN_EMERALD", "Chaos Emerald: Cyan");
             LanguageAPI.Add(prefix + "CYAN_EMERALD_PICKUP", "One out of 7, mind numbing Cyan!");
             LanguageAPI.Add(prefix + "CYAN_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
-            
-            LanguageAPI.Add(prefix + "PURPLE_EMERALD", "Chaos Emerald Purple");
+             
+            LanguageAPI.Add(prefix + "PURPLE_EMERALD", "Chaos Emerald: Purple");
             LanguageAPI.Add(prefix + "PURPLE_EMERALD_PICKUP", "One out of 7, even more silly Purple!");
             LanguageAPI.Add(prefix + "PURPLE_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
 

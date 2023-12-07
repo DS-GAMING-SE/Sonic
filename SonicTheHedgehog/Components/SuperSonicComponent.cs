@@ -33,9 +33,6 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef grandSlam;
 
-        public bool awaitStageReset;
-        public bool canTransform;
-
 
         private void Start()
         {
@@ -56,13 +53,36 @@ namespace SonicTheHedgehog.Components
             Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
         }
 
-        public void Transform(EntityStateMachine entityState)
+        public void Transform(EntityStateMachine entityState, Inventory inventory)
         {
             if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
             {
-                //awaitStageReset = true;
-                canTransform = false;
+                RemoveEmeralds(inventory);
             }
+        }
+
+        public bool CanTransform(Inventory inventory)
+        {
+            bool hasYellow = inventory.GetItemCount(Items.yellowEmerald) > 0;
+            bool hasRed = inventory.GetItemCount(Items.redEmerald) > 0;
+            bool hasBlue = inventory.GetItemCount(Items.blueEmerald) > 0;
+            bool hasCyan = inventory.GetItemCount(Items.cyanEmerald) > 0;
+            bool hasGreen = inventory.GetItemCount(Items.greenEmerald) > 0;
+            bool hasGray = inventory.GetItemCount(Items.grayEmerald) > 0;
+            bool hasPurple = inventory.GetItemCount(Items.purpleEmerald) > 0;
+
+            return hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple;
+        }
+
+        public void RemoveEmeralds(Inventory inventory)
+        {
+            inventory.RemoveItem(Items.yellowEmerald);
+            inventory.RemoveItem(Items.redEmerald);
+            inventory.RemoveItem(Items.blueEmerald);
+            inventory.RemoveItem(Items.cyanEmerald);
+            inventory.RemoveItem(Items.greenEmerald);
+            inventory.RemoveItem(Items.grayEmerald);
+            inventory.RemoveItem(Items.purpleEmerald);
         }
 
         public void TransformEnd()
@@ -124,37 +144,12 @@ namespace SonicTheHedgehog.Components
 
         public void ResetSuperSonic(Stage stage)
         {
-            awaitStageReset = false;
+            // awaitStageReset = false;
         }
 
         public void OnInventoryChanged(Inventory inventory)
         {
-            //if (awaitStageReset || canTransform) return;
-            
-            if (canTransform) return;
-            
-            // Leaving this the way it is for future use maybe? And better readability rather than having a one liner.
-            bool hasYellow = inventory.GetItemCount(Items.yellowEmerald) > 0;
-            bool hasRed = inventory.GetItemCount(Items.redEmerald) > 0;
-            bool hasBlue = inventory.GetItemCount(Items.blueEmerald) > 0;
-            bool hasCyan = inventory.GetItemCount(Items.cyanEmerald) > 0;
-            bool hasGreen = inventory.GetItemCount(Items.greenEmerald) > 0;
-            bool hasGray = inventory.GetItemCount(Items.grayEmerald) > 0;
-            bool hasPurple = inventory.GetItemCount(Items.purpleEmerald) > 0;
-
-            canTransform = hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple;
-            
-            if (canTransform)
-            {
-                Log.Info("Removed all Emeralds because of transform.");
-                inventory.RemoveItem(Items.yellowEmerald);
-                inventory.RemoveItem(Items.redEmerald);
-                inventory.RemoveItem(Items.blueEmerald);
-                inventory.RemoveItem(Items.cyanEmerald);
-                inventory.RemoveItem(Items.greenEmerald);
-                inventory.RemoveItem(Items.grayEmerald);
-                inventory.RemoveItem(Items.purpleEmerald);
-            }
+            // No longer needed?
         }
     }
 }
