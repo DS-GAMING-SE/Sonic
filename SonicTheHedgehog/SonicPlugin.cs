@@ -423,8 +423,8 @@ namespace SonicTheHedgehog
         private void SceneDirectorOnStart(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
         {
             orig(self);
-            string sceneName = SceneManager.GetActiveScene().name;
-            if (sceneName == "intro")
+            SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
+            /*if (sceneName == "intro")
             {
                 return;
             }
@@ -433,8 +433,9 @@ namespace SonicTheHedgehog
             {
                 // TODO:: create prefab of super sonic floating in the air silly style.
                 Vector3 vector = new Vector3(38, 23, 36);
-            }
-            else
+            }*/
+            
+            if (scene && scene.sceneType == SceneType.Stage)
             {
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
