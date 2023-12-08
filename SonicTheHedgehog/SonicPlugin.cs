@@ -88,6 +88,7 @@ namespace SonicTheHedgehog
             Modules.Buffs.RegisterBuffs(); // add and register custom buffs/debuffs
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
+            Modules.Items.RegisterItems(); // silly Items thingy.
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();

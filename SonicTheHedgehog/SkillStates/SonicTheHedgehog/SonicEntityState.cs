@@ -13,15 +13,16 @@ namespace SonicTheHedgehog.SkillStates
     public class SonicEntityState : GenericCharacterMain
     {
         private SuperSonicComponent superSonicComponent;
-        
+
         private float idleExtraTimer;
         private int idleExtraCount;
 
         private bool emoting = false;
 
-        private const float idleExtraDefault=8;
+        private const float idleExtraDefault = 8;
 
         private string jumpSoundString = "Play_jump";
+
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
         {
@@ -52,27 +53,33 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.PlayCrossfade("Body", "AscendDescend", 0.3f);
             }
+
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = true;
             }
+
             if (SonicTheHedgehogPlugin.emoteAPILoaded)
             {
                 EmoteAPI(true);
             }
+
             if (base.characterMotor)
             {
                 base.characterMotor.onHitGroundAuthority += OnHitGround;
             }
         }
 
-        public override void ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
+        public override void
+            ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
         {
-            if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
+            if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody &&
+                base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
                 Util.PlaySound(jumpSoundString, base.gameObject);
                 base.GetModelAnimator().SetBool("isBall", true);
             }
+
             base.ProcessJump();
         }
 
@@ -83,31 +90,38 @@ namespace SonicTheHedgehog.SkillStates
                 base.modelLocator.normalizeToFloor = false;
                 base.modelAnimator.SetBool("isBall", false);
             }
+
             if (SonicTheHedgehogPlugin.emoteAPILoaded)
             {
                 EmoteAPI(false);
             }
+
             if (base.characterMotor)
             {
                 base.characterMotor.onHitGroundAuthority -= OnHitGround;
             }
+
             base.OnExit();
         }
 
         public override void Update()
         {
             base.Update();
-            if (base.isAuthority && superSonicComponent && superSonicComponent.canTransform && base.characterBody.isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
+            if (base.isAuthority && superSonicComponent &&
+                base.characterBody
+                    .isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
                 if (Input.GetKeyDown("v"))
                 {
-                    Debug.Log("Attempt Super Transform");
-                    superSonicComponent.Transform(this.outer);
+                    Inventory inventory = base.characterBody.inventory;
+                    if (superSonicComponent.CanTransform(inventory))
+                    {
+                        Debug.Log("Attempt Super Transform");
+                        superSonicComponent.Transform(this.outer, inventory);
+                    }
                 }
             }
         }
-
-
 
         public override void FixedUpdate()
         {
@@ -125,7 +139,8 @@ namespace SonicTheHedgehog.SkillStates
 
         private void IdleExtraAnimation()
         {
-            if (base.characterBody.inputBank.moveVector!=Vector3.zero || !base.characterMotor.isGrounded || base.characterBody.inputBank.jump.down || emoting)
+            if (base.characterBody.inputBank.moveVector != Vector3.zero || !base.characterMotor.isGrounded ||
+                base.characterBody.inputBank.jump.down || emoting)
             {
                 idleExtraTimer = idleExtraDefault;
                 idleExtraCount = 0;
@@ -133,11 +148,11 @@ namespace SonicTheHedgehog.SkillStates
             else
             {
                 idleExtraTimer -= Time.fixedDeltaTime;
-                if (idleExtraTimer<=0)
+                if (idleExtraTimer <= 0)
                 {
                     base.PlayAnimation("Body", "IdleExtra");
                     idleExtraCount += 1;
-                    idleExtraTimer = idleExtraDefault*(idleExtraCount*1.5f);
+                    idleExtraTimer = idleExtraDefault * (idleExtraCount * 1.5f);
                 }
             }
         }
