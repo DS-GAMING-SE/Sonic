@@ -217,13 +217,13 @@ namespace SonicTheHedgehog.Modules
             #region Emeralds
             
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_CONTEXT", "Receive Emerald");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_0", "Chaos Temple: Yellow");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_1", "Chaos Temple: Blue");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_2", "Chaos Temple: Red");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_3", "Chaos Temple: Gray");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_4", "Chaos Temple: Green");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_5", "Chaos Temple: Cyan");
-            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_6", "Chaos Temple: Purple");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_YELLOW", "Chaos Temple: Yellow");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_BLUE", "Chaos Temple: Blue");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_RED", "Chaos Temple: Red");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_GRAY", "Chaos Temple: Gray");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_GREEN", "Chaos Temple: Green");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_CYAN", "Chaos Temple: Cyan");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_PURPLE", "Chaos Temple: Purple");
 
             LanguageAPI.Add(prefix + "YELLOW_EMERALD", "Chaos Emerald: Yellow");
             LanguageAPI.Add(prefix + "YELLOW_EMERALD_PICKUP", "One out of 7, silly Yellow!");

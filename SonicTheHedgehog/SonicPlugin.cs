@@ -24,6 +24,7 @@ using System.Security.Claims;
 using UnityEngine.Networking;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
+using UnityEngine.SceneManagement;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -89,6 +90,7 @@ namespace SonicTheHedgehog
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.Items.RegisterItems(); // silly Items thingy.
+            ChaosEmeraldInteractable.Initialize();
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();
@@ -137,6 +139,8 @@ namespace SonicTheHedgehog
             {
                 EmoteSkeleton();
             }
+
+            On.RoR2.SceneDirector.Start += SceneDirectorOnStart;
         }
 
         private void EmoteSkeleton()
@@ -412,6 +416,45 @@ namespace SonicTheHedgehog
             if (!self.HasAchievement(DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE") && Modules.Config.ForceUnlockParry().Value)
             {
                 self.AddAchievement(DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", true);
+            }
+        }
+
+
+        private void SceneDirectorOnStart(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
+        {
+            orig(self);
+            string sceneName = SceneManager.GetActiveScene().name;
+            if (sceneName == "intro")
+            {
+                return;
+            }
+
+            if (sceneName == "title")
+            {
+                // TODO:: create prefab of super sonic floating in the air silly style.
+                Vector3 vector = new Vector3(38, 23, 36);
+            }
+            else
+            {
+                SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
+
+                spawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
+                spawnCard.sendOverNetwork = true;
+
+                GameObject prefab = ChaosEmeraldInteractable.prefabBase;
+
+                for (int i = 0; i < 7; i++)
+                {
+                    ChaosEmeraldInteractable chaosEmerald = prefab.GetComponent<ChaosEmeraldInteractable>();
+                    if (chaosEmerald)
+                    {
+                        chaosEmerald.color = (ChaosEmeraldInteractable.EmeraldColor)i;
+                    }
+
+                    spawnCard.prefab = prefab;
+
+                    DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, ChaosEmeraldInteractable.placementRule, Run.instance.stageRng));
+                }
             }
         }
     }

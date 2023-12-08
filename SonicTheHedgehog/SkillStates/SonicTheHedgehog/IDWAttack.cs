@@ -19,7 +19,7 @@ namespace SonicTheHedgehog.SkillStates
         protected static float procCoefficient = StaticValues.idwAttackProcCoefficient;
         protected static float attackDuration = 1.6f;
         protected static float range = 20;
-        protected static int baseAttackCount = 8;
+        protected static int baseAttackCount = 9;
         protected static float pushForce = 400f;
         protected static float baseSearchTime = 1f;
         protected static float baseEndLag = 1.6f;

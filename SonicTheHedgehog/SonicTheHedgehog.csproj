@@ -22,7 +22,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="BepInEx.Core" Version="5.4.19" />
+		<PackageReference Include="BepInEx.Core" Version="5.4.21" />
 		<PackageReference Include="RiskOfRain2.GameLibs" Version="1.2.4-r.0" />
 		<PackageReference Include="UnityEngine.Modules" Version="2019.4.26" />
 	</ItemGroup>

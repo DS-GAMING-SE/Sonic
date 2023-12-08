@@ -95,6 +95,10 @@ namespace SonicTheHedgehog.Modules
 
         internal const float grandSlamFinalProcCoefficient = 1.5f;
 
+        // Chaos Emeralds --------------------------
+
+        internal const int chaosEmeraldCost = 50;
+
         // Super Sonic -----------------------------
 
         internal const float superSonicDuration = 50f;
@@ -133,7 +137,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float idwAttackattackDuration = 2f;
 
-        internal const float idwAttackDamageCoefficient = 7.5f;
+        internal const float idwAttackDamageCoefficient = 8f;
 
         internal const float idwAttackProcCoefficient = 0.7f;
 

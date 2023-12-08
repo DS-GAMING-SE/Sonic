@@ -57,6 +57,7 @@ namespace SonicTheHedgehog.Modules
             itemDef.pickupIconSprite = icon;
             itemDef.canRemove = canRemove;
             itemDef.deprecatedTier = itemTier;
+            itemDef._itemTierDef = new ItemTierDef { tier = itemTier };
             
             itemDef.nameToken = prefix + token; // stylised name
             itemDef.pickupToken = prefix + token + "_PICKUP";
@@ -66,6 +67,8 @@ namespace SonicTheHedgehog.Modules
             {
                 ItemTag.InteractableRelated,
                 ItemTag.CannotCopy,
+                ItemTag.BrotherBlacklist,
+                ItemTag.CannotSteal
             };
 
             Modules.Content.AddItemDef(itemDef);
