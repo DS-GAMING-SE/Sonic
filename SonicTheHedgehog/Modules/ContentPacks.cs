@@ -110,6 +110,7 @@ namespace SonicTheHedgehog.Modules
 
                 Debug.Log("Bought this shit dunno, " + id);
                 self.available = false;
+                self.gameObject.transform.GetChild(2).gameObject.SetActive(false);
             }
         }
 
@@ -201,7 +202,10 @@ namespace SonicTheHedgehog.Modules
                             break;
                     }
 
-                    prefab.transform.GetChild(2).GetComponent<MeshRenderer>().material = material;
+                    GameObject emerald = prefab.transform.GetChild(2).gameObject;
+                    
+                    emerald.SetActive(true);
+                    emerald.GetComponent<MeshRenderer>().material = material;
 
                     DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, placementRule,
                         Run.instance.stageRng));

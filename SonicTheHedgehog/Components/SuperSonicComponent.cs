@@ -33,6 +33,7 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef grandSlam;
 
+        private bool canTransform = true;
 
         private void Start()
         {
@@ -57,6 +58,7 @@ namespace SonicTheHedgehog.Components
         {
             if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
             {
+                canTransform = false;
                 RemoveEmeralds(inventory);
             }
         }
@@ -71,7 +73,7 @@ namespace SonicTheHedgehog.Components
             bool hasGray = inventory.GetItemCount(Items.grayEmerald) > 0;
             bool hasPurple = inventory.GetItemCount(Items.purpleEmerald) > 0;
 
-            return hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple;
+            return hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple && canTransform;
         }
 
         public void RemoveEmeralds(Inventory inventory)
@@ -91,6 +93,7 @@ namespace SonicTheHedgehog.Components
                 GenericSkill.SkillOverridePriority.Contextual);
             body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry,
                 GenericSkill.SkillOverridePriority.Contextual);
+            canTransform = true;
             ResetModel();
         }
 
