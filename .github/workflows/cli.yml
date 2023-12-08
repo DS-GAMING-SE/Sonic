@@ -31,10 +31,12 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
     - name: Build
       run: msbuild Sonic.sln /t:SonicTheHedgehog /p:Configuration=Debug
+    - name: Copy Artifacts
+      run: mkdir staging && cp .\SonicTheHedgehog\bin\Debug\netstandard2.0\Sonic*.dll staging
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.3
       with:
         # Artifact name
-        name: DLLs
-        path: .\SonicTheHedgehog\bin\Debug\netstandard2.0\
+        name: DLL
+        path: .\staging\
         if-no-files-found: error
