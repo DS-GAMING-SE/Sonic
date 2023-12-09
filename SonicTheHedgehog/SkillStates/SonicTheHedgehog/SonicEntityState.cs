@@ -107,9 +107,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void Update()
         {
             base.Update();
-            if (base.isAuthority && superSonicComponent &&
-                base.characterBody
-                    .isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
+            if (base.isAuthority && superSonicComponent && base.characterBody.isPlayerControlled && !base.characterBody.HasBuff(Buffs.superSonicBuff)) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
                 if (Input.GetKeyDown("v"))
                 {

@@ -423,6 +423,8 @@ namespace SonicTheHedgehog
         private void SceneDirectorOnStart(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
         {
             orig(self);
+            if (!NetworkServer.active) return;
+
             SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
             /*if (sceneName == "intro")
             {
@@ -434,8 +436,22 @@ namespace SonicTheHedgehog
                 // TODO:: create prefab of super sonic floating in the air silly style.
                 Vector3 vector = new Vector3(38, 23, 36);
             }*/
-            
-            if (scene && scene.sceneType == SceneType.Stage)
+            bool someoneIsSonic = false;
+            foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
+            {
+                if (BodyCatalog.FindBodyIndex(player.master.bodyPrefab) == BodyCatalog.FindBodyIndex("SonicTheHedgehog"))
+                {
+                    someoneIsSonic = true;
+                }
+            }
+            Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
+
+            // Metamorphosis causes issues with emeralds spawning because character rerolls happen after emeralds spawn. Emeralds would only spawn the stage after you were Sonic
+            bool metamorphosis = RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef);
+
+            Debug.Log("Metamorphosis? " + metamorphosis);
+
+            if (someoneIsSonic && !metamorphosis && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
             {
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
@@ -444,7 +460,7 @@ namespace SonicTheHedgehog
 
                 GameObject prefab = ChaosEmeraldInteractable.prefabBase;
 
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < StaticValues.chaosEmeraldsMaxPerStage; i++)
                 {
                     ChaosEmeraldInteractable chaosEmerald = prefab.GetComponent<ChaosEmeraldInteractable>();
                     if (chaosEmerald)

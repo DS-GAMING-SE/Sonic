@@ -99,6 +99,8 @@ namespace SonicTheHedgehog.Modules
 
         internal const int chaosEmeraldCost = 50;
 
+        internal const int chaosEmeraldsMaxPerStage = 3;
+
         // Super Sonic -----------------------------
 
         internal const float superSonicDuration = 50f;

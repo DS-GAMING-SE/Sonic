@@ -20,6 +20,14 @@ namespace SonicTheHedgehog.Modules
 
         public EmeraldColor color;
 
+        private static Material yellowEmerald;
+        private static Material blueEmerald;
+        private static Material redEmerald;
+        private static Material grayEmerald;
+        private static Material greenEmerald;
+        private static Material cyanEmerald;
+        private static Material purpleEmerald;
+
 
         public static void Initialize()
         {
@@ -50,7 +58,18 @@ namespace SonicTheHedgehog.Modules
             purchaseInteractionBase.costType = CostTypeIndex.Money;
             purchaseInteractionBase.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
+
+            prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
+
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
+
+            yellowEmerald = Materials.CreateHopooMaterial("matYellow");
+            blueEmerald = Materials.CreateHopooMaterial("matBlue");
+            redEmerald = Materials.CreateHopooMaterial("matRed");
+            grayEmerald = Materials.CreateHopooMaterial("matGray");
+            greenEmerald = Materials.CreateHopooMaterial("matGreen");
+            cyanEmerald = Materials.CreateHopooMaterial("matCyan");
+            purpleEmerald = Materials.CreateHopooMaterial("matPurple");
         }
 
         private void Start()
@@ -72,25 +91,25 @@ namespace SonicTheHedgehog.Modules
             switch (color)
             {
                 default:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matYellow");
+                    material = yellowEmerald;
                     break;
                 case EmeraldColor.Blue:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matBlue");
+                    material = blueEmerald;
                     break;
                 case EmeraldColor.Red:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matRed");
+                    material = redEmerald;
                     break;
                 case EmeraldColor.Gray:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matGray");
+                    material = grayEmerald;
                     break;
                 case EmeraldColor.Green:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matGreen");
+                    material = greenEmerald;
                     break;
                 case EmeraldColor.Cyan:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matCyan");
+                    material = cyanEmerald;
                     break;
                 case EmeraldColor.Purple:
-                    material = Modules.Assets.mainAssetBundle.LoadAsset<Material>("matPurple");
+                    material = purpleEmerald;
                     break;
             }
             GameObject emerald = gameObject.transform.GetChild(2).gameObject;
@@ -133,7 +152,7 @@ namespace SonicTheHedgehog.Modules
                     break;
             }
 
-            Debug.Log("Bought this shit dunno, " + color);
+            Debug.Log("Bought " + color + " Chaos Emerald.");
             purchaseInteraction.available = false;
             gameObject.transform.GetChild(2).gameObject.SetActive(false);
         }
