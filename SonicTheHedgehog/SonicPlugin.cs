@@ -437,12 +437,26 @@ namespace SonicTheHedgehog
                 Vector3 vector = new Vector3(38, 23, 36);
             }*/
             bool someoneIsSonic = false;
+
+            // Make list of all emeralds and remove from list any emerald that has already been collected
+            List<ChaosEmeraldInteractable.EmeraldColor> available = new List<ChaosEmeraldInteractable.EmeraldColor>(new ChaosEmeraldInteractable.EmeraldColor[] 
+            {ChaosEmeraldInteractable.EmeraldColor.Yellow, ChaosEmeraldInteractable.EmeraldColor.Blue, ChaosEmeraldInteractable.EmeraldColor.Red, 
+                ChaosEmeraldInteractable.EmeraldColor.Gray, ChaosEmeraldInteractable.EmeraldColor.Green, ChaosEmeraldInteractable.EmeraldColor.Cyan, ChaosEmeraldInteractable.EmeraldColor.Purple });
+
             foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
             {
                 if (BodyCatalog.FindBodyIndex(player.master.bodyPrefab) == BodyCatalog.FindBodyIndex("SonicTheHedgehog"))
                 {
                     someoneIsSonic = true;
                 }
+
+                if (player.master.inventory.GetItemCount(Items.yellowEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Yellow); }
+                if (player.master.inventory.GetItemCount(Items.blueEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Blue); }
+                if (player.master.inventory.GetItemCount(Items.redEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Red); }
+                if (player.master.inventory.GetItemCount(Items.grayEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Gray); }
+                if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
+                if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
+                if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
             }
             Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
 
@@ -451,7 +465,7 @@ namespace SonicTheHedgehog
 
             Debug.Log("Metamorphosis? " + metamorphosis);
 
-            if (someoneIsSonic && !metamorphosis && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
+            if (someoneIsSonic && !metamorphosis && available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
             {
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
@@ -460,12 +474,12 @@ namespace SonicTheHedgehog
 
                 GameObject prefab = ChaosEmeraldInteractable.prefabBase;
 
-                for (int i = 0; i < StaticValues.chaosEmeraldsMaxPerStage; i++)
+                for (int i = 0; i < StaticValues.chaosEmeraldsMaxPerStage && i < available.Count; i++)
                 {
                     ChaosEmeraldInteractable chaosEmerald = prefab.GetComponent<ChaosEmeraldInteractable>();
                     if (chaosEmerald)
                     {
-                        chaosEmerald.color = (ChaosEmeraldInteractable.EmeraldColor)i;
+                        chaosEmerald.color = available[i];
                     }
 
                     spawnCard.prefab = prefab;
