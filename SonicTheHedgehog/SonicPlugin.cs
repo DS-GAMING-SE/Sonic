@@ -467,6 +467,8 @@ namespace SonicTheHedgehog
 
             if (someoneIsSonic && !metamorphosis && available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
             {
+                int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
+                
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
                 spawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
@@ -474,7 +476,7 @@ namespace SonicTheHedgehog
 
                 GameObject prefab = ChaosEmeraldInteractable.prefabBase;
 
-                for (int i = 0; i < StaticValues.chaosEmeraldsMaxPerStage && i < available.Count; i++)
+                for (int i = 0; i < maxEmeralds && i < available.Count; i++)
                 {
                     ChaosEmeraldInteractable chaosEmerald = prefab.GetComponent<ChaosEmeraldInteractable>();
                     if (chaosEmerald)

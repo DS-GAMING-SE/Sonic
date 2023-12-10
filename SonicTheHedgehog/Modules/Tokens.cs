@@ -225,33 +225,36 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_CYAN", "Chaos Temple: Cyan");
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_PURPLE", "Chaos Temple: Purple");
 
+            string chaosEmeraldDesc = $"One of the <style=cIsUtility>seven</style> Chaos Emeralds." + Environment.NewLine + $"When all <style=cIsUtility>seven</style> are brought together, press {superSonicColor}V</color> to transform from <style=cIsUtility>Sonic</style> into {superSonicColor}Super Sonic</color> for {Modules.StaticValues.superSonicDuration} seconds. Transforming {superSonicColor}upgrades all of your skills</color>. Increases <style=cIsDamage>damage</style> by <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}%</style>. Increases <style=cIsDamage>attack speed</style> by <style=cIsDamage>+{100f * StaticValues.superSonicAttackSpeed}%</style>. Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}%</style>. Grants <style=cIsHealing>complete invincibility</style> and <style=cIsUtility>flight</style>." + Environment.NewLine + Environment.NewLine + "This will <style=cIsHealth>consume</style> all seven Chaos Emeralds.";
+            string chaosEmeraldPickup = $" out of <style=cIsUtility>seven</style>. When all are brought together, <style=cIsUtility>Sonic</style> can transform into {superSonicColor}Super Sonic</color> by pressing {superSonicColor}V</color>, granting {superSonicColor}upgraded skills, invincibility, flight, and incredible power</color> for {Modules.StaticValues.superSonicDuration} seconds. This will <style=cIsHealth>consume</style> all the Chaos Emeralds.";
+
             LanguageAPI.Add(prefix + "YELLOW_EMERALD", "Chaos Emerald: Yellow");
-            LanguageAPI.Add(prefix + "YELLOW_EMERALD_PICKUP", "One out of 7, silly Yellow!");
-            LanguageAPI.Add(prefix + "YELLOW_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
+            LanguageAPI.Add(prefix + "YELLOW_EMERALD_PICKUP", $"<style=cIsDamage>One</style>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "YELLOW_EMERALD_DESC", chaosEmeraldDesc);
             
             LanguageAPI.Add(prefix + "BLUE_EMERALD", "Chaos Emerald: Blue");
-            LanguageAPI.Add(prefix + "BLUE_EMERALD_PICKUP", "One out of 7, relaxing Blue!");
-            LanguageAPI.Add(prefix + "BLUE_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
+            LanguageAPI.Add(prefix + "BLUE_EMERALD_PICKUP", $"<color=#2138bf>One</color>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "BLUE_EMERALD_DESC", chaosEmeraldDesc);
             
             LanguageAPI.Add(prefix + "RED_EMERALD", "Chaos Emerald: Red");
-            LanguageAPI.Add(prefix + "RED_EMERALD_PICKUP", "One out of 7, anger Red!");
-            LanguageAPI.Add(prefix + "RED_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
+            LanguageAPI.Add(prefix + "RED_EMERALD_PICKUP", $"<style=cDeath>One</style>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "RED_EMERALD_DESC", chaosEmeraldDesc);
             
             LanguageAPI.Add(prefix + "GRAY_EMERALD", "Chaos Emerald: Gray");
-            LanguageAPI.Add(prefix + "GRAY_EMERALD_PICKUP", "One out of 7, depressing Gray!");
-            LanguageAPI.Add(prefix + "GRAY_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
+            LanguageAPI.Add(prefix + "GRAY_EMERALD_PICKUP", "<color=#b8c5d6>One</color>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "GRAY_EMERALD_DESC", chaosEmeraldDesc);
             
             LanguageAPI.Add(prefix + "GREEN_EMERALD", "Chaos Emerald: Green");
-            LanguageAPI.Add(prefix + "GREEN_EMERALD_PICKUP", "One out of 7, peaceful Green!");
-            LanguageAPI.Add(prefix + "GREEN_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
-            
+            LanguageAPI.Add(prefix + "GREEN_EMERALD_PICKUP", $"<style=cIsHealing>One</style>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "GREEN_EMERALD_DESC", chaosEmeraldDesc);
+
             LanguageAPI.Add(prefix + "CYAN_EMERALD", "Chaos Emerald: Cyan");
-            LanguageAPI.Add(prefix + "CYAN_EMERALD_PICKUP", "One out of 7, mind numbing Cyan!");
-            LanguageAPI.Add(prefix + "CYAN_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
+            LanguageAPI.Add(prefix + "CYAN_EMERALD_PICKUP", $"<style=cIsUtility>One</style>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "CYAN_EMERALD_DESC", chaosEmeraldDesc);
              
             LanguageAPI.Add(prefix + "PURPLE_EMERALD", "Chaos Emerald: Purple");
-            LanguageAPI.Add(prefix + "PURPLE_EMERALD_PICKUP", "One out of 7, even more silly Purple!");
-            LanguageAPI.Add(prefix + "PURPLE_EMERALD_DESC", "One of the seven chaos emeralds which allow Sonic to become Super Sonic!");
+            LanguageAPI.Add(prefix + "PURPLE_EMERALD_PICKUP", "<color=#c437c0>One</color>" + chaosEmeraldPickup);
+            LanguageAPI.Add(prefix + "PURPLE_EMERALD_DESC", chaosEmeraldDesc);
 
             #endregion
 

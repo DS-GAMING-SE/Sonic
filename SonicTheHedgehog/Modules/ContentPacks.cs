@@ -28,6 +28,8 @@ namespace SonicTheHedgehog.Modules
 
         public static List<BuffDef> buffDefs = new List<BuffDef>();
         public static List<EffectDef> effectDefs = new List<EffectDef>();
+
+        public static List<ItemTierDef> itemTierDefs = new List<ItemTierDef>();
         public static List<ItemDef> itemDefs = new List<ItemDef>();
 
         public static List<NetworkSoundEventDef> networkSoundEventDefs = new List<NetworkSoundEventDef>();
@@ -61,6 +63,7 @@ namespace SonicTheHedgehog.Modules
             contentPack.buffDefs.Add(buffDefs.ToArray());
             contentPack.effectDefs.Add(effectDefs.ToArray());
 
+            contentPack.itemTierDefs.Add(itemTierDefs.ToArray());
             contentPack.itemDefs.Add(itemDefs.ToArray());
 
             contentPack.networkSoundEventDefs.Add(networkSoundEventDefs.ToArray());
@@ -138,6 +141,11 @@ namespace SonicTheHedgehog.Modules
         public static void AddItemDef(ItemDef itemDef)
         {
             ContentPacks.itemDefs.Add(itemDef);
+        }
+
+        public static void AddItemTierDef(ItemTierDef itemDef)
+        {
+            ContentPacks.itemTierDefs.Add(itemDef);
         }
 
         public static void AddNetworkSoundEventDef(NetworkSoundEventDef networkSoundEventDef)
