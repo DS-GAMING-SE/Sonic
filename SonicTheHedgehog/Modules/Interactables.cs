@@ -1,7 +1,7 @@
 ﻿using RoR2;
 using UnityEngine;
 using R2API;
-
+using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -31,6 +31,9 @@ namespace SonicTheHedgehog.Modules
 
         public static void Initialize()
         {
+            // Would probably be better to start with chest prefab or something and change its components to make it into the emerald interactable
+            // Figure out how stuff like multishops and printers handle putting the item in the display, use that to better sync what emerald is in the interactable instead of the weird enum voodoo magic I made
+            
             prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
 
             if (!prefabBase.TryGetComponent<RoR2.PurchaseInteraction>(out purchaseInteractionBase))
@@ -63,6 +66,8 @@ namespace SonicTheHedgehog.Modules
 
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
 
+            prefabBase.AddComponent<NetworkIdentity>();
+
             yellowEmerald = Materials.CreateHopooMaterial("matYellow");
             blueEmerald = Materials.CreateHopooMaterial("matBlue");
             redEmerald = Materials.CreateHopooMaterial("matRed");
@@ -70,6 +75,8 @@ namespace SonicTheHedgehog.Modules
             greenEmerald = Materials.CreateHopooMaterial("matGreen");
             cyanEmerald = Materials.CreateHopooMaterial("matCyan");
             purpleEmerald = Materials.CreateHopooMaterial("matPurple");
+
+            Content.AddNetworkedObjectPrefab(prefabBase);
         }
 
         private void Start()
