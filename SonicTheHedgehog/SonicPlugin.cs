@@ -228,24 +228,30 @@ namespace SonicTheHedgehog
                 spin,kick,superGrandSlamAfterimage
             });
 
-            RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostListedSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostListedSpeedCoefficient*100}% movement speed");
+            RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostListedSpeedCoefficient * 100}% movement speed. Otherwise, +{StaticValues.boostListedSpeedCoefficient * 100}% movement speed");
             RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor} Armor.");
             RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Base movement speed. Complete invincibility and flight.");
-            RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff*100}% Attack speed. +{StaticValues.parryMovementSpeedBuff*100}% Movement speed.");
-            RegisterBuffInfo(Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"-{StaticValues.superParryArmorDebuff * 100} Armor. -{(1/StaticValues.superParryAttackSpeedDebuff) * 100}% Attack speed. -{(1 / StaticValues.superParryMovementSpeedDebuff) * 100}% Movement speed.");
+            RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff * 100}% Attack speed. +{StaticValues.parryMovementSpeedBuff * 100}% Movement speed.");
+            RegisterBuffInfo(Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"-{StaticValues.superParryArmorDebuff * 100} Armor. -{(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% Attack speed. -{(1 / StaticValues.superParryMovementSpeedDebuff) * 100}% Movement speed.");
         }
 
         private static void RiskOfOptionsSetup()
         {
             Sprite icon = (Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicIcon"));
             ModSettingsManager.SetModIcon(icon);
+
             float minLocation = -500;
             float maxLocation = 500;
+
             ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationX(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
             ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationY(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
-            
+
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldsPerStage(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 0, max = 7, formatString = "{0}" }));
+
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.KeyPressHomingAttack()));
-            
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.OnlyAvailableEmeralds()));
+
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockParry()));
 
             Modules.Config.ForceUnlockParry().SettingChanged += SonicTheHedgehogCharacter.UnlockParryConfig;
@@ -304,7 +310,7 @@ namespace SonicTheHedgehog
                     }
                     else
                     {
-                        stats.moveSpeedReductionMultAdd += Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier/3);
+                        stats.moveSpeedReductionMultAdd += Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier / 3);
                     }
                 }
 
@@ -339,7 +345,7 @@ namespace SonicTheHedgehog
                 if (boost)
                 {
                     return boost.boostMeter < boost.maxBoostMeter;
-                } 
+                }
             }
             return orig(self);
         }
@@ -439,15 +445,21 @@ namespace SonicTheHedgehog
             bool someoneIsSonic = false;
 
             // Make list of all emeralds and remove from list any emerald that has already been collected
-            List<ChaosEmeraldInteractable.EmeraldColor> available = new List<ChaosEmeraldInteractable.EmeraldColor>(new ChaosEmeraldInteractable.EmeraldColor[] 
-            {ChaosEmeraldInteractable.EmeraldColor.Yellow, ChaosEmeraldInteractable.EmeraldColor.Blue, ChaosEmeraldInteractable.EmeraldColor.Red, 
+            List<ChaosEmeraldInteractable.EmeraldColor> available = new List<ChaosEmeraldInteractable.EmeraldColor>(new ChaosEmeraldInteractable.EmeraldColor[]
+            {ChaosEmeraldInteractable.EmeraldColor.Yellow, ChaosEmeraldInteractable.EmeraldColor.Blue, ChaosEmeraldInteractable.EmeraldColor.Red,
                 ChaosEmeraldInteractable.EmeraldColor.Gray, ChaosEmeraldInteractable.EmeraldColor.Green, ChaosEmeraldInteractable.EmeraldColor.Cyan, ChaosEmeraldInteractable.EmeraldColor.Purple });
+
 
             foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
             {
                 if (BodyCatalog.FindBodyIndex(player.master.bodyPrefab) == BodyCatalog.FindBodyIndex("SonicTheHedgehog"))
                 {
                     someoneIsSonic = true;
+                }
+
+                if (!Modules.Config.OnlyAvailableEmeralds().Value)
+                {
+                    continue;
                 }
 
                 if (player.master.inventory.GetItemCount(Items.yellowEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Yellow); }
@@ -458,6 +470,7 @@ namespace SonicTheHedgehog
                 if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
                 if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
             }
+
             Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
 
             // Metamorphosis causes issues with emeralds spawning because character rerolls happen after emeralds spawn. Emeralds would only spawn the stage after you were Sonic
@@ -465,10 +478,10 @@ namespace SonicTheHedgehog
 
             Debug.Log("Metamorphosis? " + metamorphosis);
 
-            if (someoneIsSonic && !metamorphosis && available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
+            if (someoneIsSonic && !metamorphosis && available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid"))
             {
-                int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
-                
+                int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : Modules.Config.EmeraldsPerStage().Value;
+
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 
                 spawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
