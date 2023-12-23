@@ -436,36 +436,34 @@ namespace SonicTheHedgehog
                 // TODO:: create prefab of super sonic floating in the air silly style.
                 Vector3 vector = new Vector3(38, 23, 36);
             }*/
+
+            if (!ChaosEmeraldSpawnHandler.instance)
+            {
+                GameObject spawn = new GameObject();
+                spawn.AddComponent<ChaosEmeraldSpawnHandler>();
+            }
+
+            ChaosEmeraldSpawnHandler.instance.ResetAvailable();
+
             bool someoneIsSonic = false;
-
-            // Make list of all emeralds and remove from list any emerald that has already been collected
-            List<ChaosEmeraldInteractable.EmeraldColor> available = new List<ChaosEmeraldInteractable.EmeraldColor>(new ChaosEmeraldInteractable.EmeraldColor[] 
-            {ChaosEmeraldInteractable.EmeraldColor.Yellow, ChaosEmeraldInteractable.EmeraldColor.Blue, ChaosEmeraldInteractable.EmeraldColor.Red, 
-                ChaosEmeraldInteractable.EmeraldColor.Gray, ChaosEmeraldInteractable.EmeraldColor.Green, ChaosEmeraldInteractable.EmeraldColor.Cyan, ChaosEmeraldInteractable.EmeraldColor.Purple });
-
             foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
             {
                 if (BodyCatalog.FindBodyIndex(player.master.bodyPrefab) == BodyCatalog.FindBodyIndex("SonicTheHedgehog"))
                 {
                     someoneIsSonic = true;
                 }
-
-                if (player.master.inventory.GetItemCount(Items.yellowEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Yellow); }
-                if (player.master.inventory.GetItemCount(Items.blueEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Blue); }
-                if (player.master.inventory.GetItemCount(Items.redEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Red); }
-                if (player.master.inventory.GetItemCount(Items.grayEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Gray); }
-                if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
-                if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
-                if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
             }
             Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
+            if (!someoneIsSonic) return;
 
             // Metamorphosis causes issues with emeralds spawning because character rerolls happen after emeralds spawn. Emeralds would only spawn the stage after you were Sonic
             bool metamorphosis = RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef);
-
             Debug.Log("Metamorphosis? " + metamorphosis);
+            if (metamorphosis) return;
 
-            if (someoneIsSonic && !metamorphosis && available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
+            ChaosEmeraldSpawnHandler.instance.FilterOwnedEmeralds();
+
+            if (ChaosEmeraldSpawnHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
             {
                 int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
                 
@@ -474,18 +472,10 @@ namespace SonicTheHedgehog
                 spawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
                 spawnCard.sendOverNetwork = true;
 
-                GameObject prefab = ChaosEmeraldInteractable.prefabBase;
+                spawnCard.prefab = ChaosEmeraldInteractable.prefabBase;
 
-                for (int i = 0; i < maxEmeralds && i < available.Count; i++)
+                for (int i = 0; i < maxEmeralds && i < ChaosEmeraldSpawnHandler.available.Count; i++)
                 {
-                    ChaosEmeraldInteractable chaosEmerald = prefab.GetComponent<ChaosEmeraldInteractable>();
-                    if (chaosEmerald)
-                    {
-                        chaosEmerald.color = available[i];
-                    }
-
-                    spawnCard.prefab = prefab;
-
                     DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, ChaosEmeraldInteractable.placementRule, Run.instance.stageRng));
                 }
             }

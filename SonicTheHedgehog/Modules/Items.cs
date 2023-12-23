@@ -21,7 +21,7 @@ namespace SonicTheHedgehog.Modules
             ItemTierDef emeraldTier = new ItemTierDef
             {
                 _tier = ItemTier.AssignedAtRuntime,
-                isDroppable = false,
+                isDroppable = true,
                 canRestack = false,
                 pickupRules = ItemTierDef.PickupRules.Default,
                 name = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_CHAOS_EMERALD",

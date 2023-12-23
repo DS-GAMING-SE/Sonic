@@ -2,9 +2,59 @@
 using UnityEngine;
 using R2API;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
 namespace SonicTheHedgehog.Modules
 {
+    public class ChaosEmeraldSpawnHandler : MonoBehaviour
+    {
+        public static ChaosEmeraldSpawnHandler instance { get; private set; }
+
+        public static List<ChaosEmeraldInteractable.EmeraldColor> available;
+
+        private void OnEnable()
+        {
+            if (!ChaosEmeraldSpawnHandler.instance)
+            {
+                ChaosEmeraldSpawnHandler.instance = this;
+                return;
+            }
+            Debug.LogErrorFormat(this, "Duplicate instance of singleton class {0}. Only one should exist at a time.", new object[]
+            {
+                base.GetType().Name
+            });
+        }
+
+        private void OnDisable()
+        {
+            if (ChaosEmeraldSpawnHandler.instance == this)
+            {
+                ChaosEmeraldSpawnHandler.instance = null;
+            }
+        }
+
+        public void ResetAvailable()
+        {
+            available = new List<ChaosEmeraldInteractable.EmeraldColor>(new ChaosEmeraldInteractable.EmeraldColor[]
+            {ChaosEmeraldInteractable.EmeraldColor.Yellow, ChaosEmeraldInteractable.EmeraldColor.Blue, ChaosEmeraldInteractable.EmeraldColor.Red,
+                ChaosEmeraldInteractable.EmeraldColor.Gray, ChaosEmeraldInteractable.EmeraldColor.Green, ChaosEmeraldInteractable.EmeraldColor.Cyan, ChaosEmeraldInteractable.EmeraldColor.Purple });
+        }
+
+        public void FilterOwnedEmeralds()
+        {
+            foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
+            {
+                if (player.master.inventory.GetItemCount(Items.yellowEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Yellow); }
+                if (player.master.inventory.GetItemCount(Items.blueEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Blue); }
+                if (player.master.inventory.GetItemCount(Items.redEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Red); }
+                if (player.master.inventory.GetItemCount(Items.grayEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Gray); }
+                if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
+                if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
+                if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
+            }
+        }
+    }
+    
     public sealed class ChaosEmeraldInteractable : MonoBehaviour
     {
         public static DirectorPlacementRule placementRule = new DirectorPlacementRule
@@ -16,24 +66,20 @@ namespace SonicTheHedgehog.Modules
 
         public static PurchaseInteraction purchaseInteractionBase;
 
+        private static Vector3 dropVelocity = Vector3.up * 15;
+
         public PurchaseInteraction purchaseInteraction;
 
-        public EmeraldColor color;
+        public PickupDisplay pickupDisplay;
 
-        private static Material yellowEmerald;
-        private static Material blueEmerald;
-        private static Material redEmerald;
-        private static Material grayEmerald;
-        private static Material greenEmerald;
-        private static Material cyanEmerald;
-        private static Material purpleEmerald;
+        public PickupIndex pickupIndex;
+
+        [SyncVar]
+        public EmeraldColor color;
 
 
         public static void Initialize()
-        {
-            // Would probably be better to start with chest prefab or something and change its components to make it into the emerald interactable
-            // Figure out how stuff like multishops and printers handle putting the item in the display, use that to better sync what emerald is in the interactable instead of the weird enum voodoo magic I made
-            
+        {           
             prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
 
             if (!prefabBase.TryGetComponent<RoR2.PurchaseInteraction>(out purchaseInteractionBase))
@@ -54,7 +100,6 @@ namespace SonicTheHedgehog.Modules
                 trigger.AddComponent<RoR2.EntityLocator>().entity = prefabBase;
             }
 
-            purchaseInteractionBase.name = "Silly man";
             purchaseInteractionBase.available = true;
             purchaseInteractionBase.cost = StaticValues.chaosEmeraldCost;
             purchaseInteractionBase.automaticallyScaleCostWithDifficulty = true;
@@ -64,17 +109,9 @@ namespace SonicTheHedgehog.Modules
 
             prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
 
+            prefabBase.transform.GetChild(2).gameObject.AddComponent<PickupDisplay>();
+
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
-
-            prefabBase.AddComponent<NetworkIdentity>();
-
-            yellowEmerald = Materials.CreateHopooMaterial("matYellow");
-            blueEmerald = Materials.CreateHopooMaterial("matBlue");
-            redEmerald = Materials.CreateHopooMaterial("matRed");
-            grayEmerald = Materials.CreateHopooMaterial("matGray");
-            greenEmerald = Materials.CreateHopooMaterial("matGreen");
-            cyanEmerald = Materials.CreateHopooMaterial("matCyan");
-            purpleEmerald = Materials.CreateHopooMaterial("matPurple");
 
             Content.AddNetworkedObjectPrefab(prefabBase);
         }
@@ -82,86 +119,70 @@ namespace SonicTheHedgehog.Modules
         private void Start()
         {
             Debug.Log("Emerald Start");
-            purchaseInteraction = GetComponent<PurchaseInteraction>();
+
+            if (NetworkServer.active)
+            {
+                this.color = ChaosEmeraldSpawnHandler.available[0];
+                ChaosEmeraldSpawnHandler.available.Remove(this.color);
+            }
+            pickupDisplay = base.GetComponentInChildren<PickupDisplay>();
+            purchaseInteraction = base.GetComponent<PurchaseInteraction>();
+            pickupIndex = GetPickupIndex();
+
             UpdateColor();
+
             purchaseInteraction.onPurchase.AddListener(OnPurchase);
         }
 
-        public void UpdateColor()
+        public PickupIndex GetPickupIndex()
         {
+            switch (color)
+            {
+                default:
+                    return PickupCatalog.FindPickupIndex(Items.yellowEmerald.itemIndex);
+                case EmeraldColor.Blue:
+                    return PickupCatalog.FindPickupIndex(Items.blueEmerald.itemIndex);
+                case EmeraldColor.Red:
+                    return PickupCatalog.FindPickupIndex(Items.redEmerald.itemIndex);
+                case EmeraldColor.Gray:
+                    return PickupCatalog.FindPickupIndex(Items.grayEmerald.itemIndex);
+                case EmeraldColor.Green:
+                    return PickupCatalog.FindPickupIndex(Items.greenEmerald.itemIndex);
+                case EmeraldColor.Cyan:
+                    return PickupCatalog.FindPickupIndex(Items.cyanEmerald.itemIndex);
+                case EmeraldColor.Purple:
+                    return PickupCatalog.FindPickupIndex(Items.purpleEmerald.itemIndex);
+            }
+        }
+
+        public void UpdateColor()
+        {  
             if (purchaseInteraction)
             {
                 purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                    "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_" + color.ToString().ToUpper();
             }
-            Material material;
-            switch (color)
-            {
-                default:
-                    material = yellowEmerald;
-                    break;
-                case EmeraldColor.Blue:
-                    material = blueEmerald;
-                    break;
-                case EmeraldColor.Red:
-                    material = redEmerald;
-                    break;
-                case EmeraldColor.Gray:
-                    material = grayEmerald;
-                    break;
-                case EmeraldColor.Green:
-                    material = greenEmerald;
-                    break;
-                case EmeraldColor.Cyan:
-                    material = cyanEmerald;
-                    break;
-                case EmeraldColor.Purple:
-                    material = purpleEmerald;
-                    break;
-            }
-            GameObject emerald = gameObject.transform.GetChild(2).gameObject;
-            if (emerald)
-            {
-                emerald.SetActive(true);
-                emerald.GetComponent<MeshRenderer>().material = material;
-            }
+
+            pickupDisplay.SetPickupIndex(pickupIndex);
         }
 
         public void OnPurchase(Interactor interactor)
         {
-            Inventory inventory = interactor.GetComponent<CharacterBody>().inventory;
-            if (!inventory)
-            {
-                return;
-            }
-            switch (color)
-            {
-                case EmeraldColor.Blue:
-                    inventory.GiveItem(Items.blueEmerald);
-                    break;
-                case EmeraldColor.Red:
-                    inventory.GiveItem(Items.redEmerald);
-                    break;
-                case EmeraldColor.Gray:
-                    inventory.GiveItem(Items.grayEmerald);
-                    break;
-                case EmeraldColor.Green:
-                    inventory.GiveItem(Items.greenEmerald);
-                    break;
-                case EmeraldColor.Cyan:
-                    inventory.GiveItem(Items.cyanEmerald);
-                    break;
-                case EmeraldColor.Purple:
-                    inventory.GiveItem(Items.purpleEmerald);
-                    break;
-                default:
-                    inventory.GiveItem(Items.yellowEmerald);
-                    break;
-            }
-
+            pickupDisplay.SetPickupIndex(PickupIndex.none);
             Debug.Log("Bought " + color + " Chaos Emerald.");
             purchaseInteraction.available = false;
-            gameObject.transform.GetChild(2).gameObject.SetActive(false);
+            DropPickup();
+        }
+
+        [Server]
+        public void DropPickup()
+        {
+            if (!NetworkServer.active)
+            {
+                Debug.LogWarning("[Server] function 'System.Void RoR2.ShopTerminalBehavior::DropPickup()' called on client");
+                return;
+            }
+            PickupDropletController.CreatePickupDroplet(this.pickupIndex, (pickupDisplay.transform).position, base.transform.TransformVector(dropVelocity));
         }
 
         public enum EmeraldColor
