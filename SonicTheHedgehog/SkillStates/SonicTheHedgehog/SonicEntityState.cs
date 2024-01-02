@@ -70,8 +70,7 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        public override void
-            ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
+        public override void ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
         {
             if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody &&
                 base.characterMotor.jumpCount < base.characterBody.maxJumpCount)

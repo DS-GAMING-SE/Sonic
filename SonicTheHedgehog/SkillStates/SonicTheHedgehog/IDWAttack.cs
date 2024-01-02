@@ -18,7 +18,7 @@ namespace SonicTheHedgehog.SkillStates
         protected static float damageCoefficient = Modules.StaticValues.idwAttackDamageCoefficient;
         protected static float procCoefficient = StaticValues.idwAttackProcCoefficient;
         protected static float attackDuration = 1.6f;
-        protected static float range = 20;
+        protected static float range = 25;
         protected static int baseAttackCount = 9;
         protected static float pushForce = 400f;
         protected static float baseSearchTime = 1f;
@@ -127,6 +127,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         if (!this.hasFired)
                         {
+                            EffectManager.SimpleMuzzleFlash(Assets.superSonicBlurEffect, base.gameObject, "BlurForward", true);
                             hasFired = true;
                             if (this.characterModel)
                             {
@@ -172,6 +173,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         if (invisible)
                         {
+                            EffectManager.SimpleMuzzleFlash(Assets.superSonicBlurEffect, base.gameObject, "BlurSide", true);
                             if (this.characterModel)
                             {
                                 this.characterModel.invisibilityCount--;

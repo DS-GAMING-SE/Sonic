@@ -55,7 +55,7 @@ namespace SonicTheHedgehog.Modules
             tempMat.SetColor("_Color", tempMat.GetColor("_Color"));
             tempMat.SetTexture("_MainTex", tempMat.GetTexture("_MainTex"));
 
-            tempMat.SetTexture("_BumpMap", tempMat.GetTexture("_NormalTex"));
+            tempMat.SetTexture("_NormalTex", tempMat.GetTexture("_BumpMap"));
             //tempMat.SetFloat("_NormalStrength", 1);
 
             tempMat.SetTexture("_EmTex", tempMat.GetTexture("_EmissionMap"));

@@ -3,6 +3,7 @@ using UnityEngine;
 using R2API;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -74,7 +75,7 @@ namespace SonicTheHedgehog.Modules
 
         public PickupIndex pickupIndex;
 
-        [SyncVar]
+        [SyncVar(hook = nameof(UpdateColor))]
         public EmeraldColor color;
 
 
@@ -87,9 +88,9 @@ namespace SonicTheHedgehog.Modules
                 purchaseInteractionBase = prefabBase.AddComponent<RoR2.PurchaseInteraction>();
             }
 
-            prefabBase.GetComponent<Highlight>().targetRenderer = prefabBase.transform.GetChild(1).GetComponent<MeshRenderer>();
+            prefabBase.GetComponent<Highlight>().targetRenderer = prefabBase.transform.Find("SuperSonicMesh").GetComponent<MeshRenderer>();
 
-            GameObject trigger = prefabBase.transform.GetChild(prefabBase.transform.childCount - 1).gameObject;
+            GameObject trigger = prefabBase.transform.Find("Trigger").gameObject;
 
             if (trigger.TryGetComponent<RoR2.EntityLocator>(out RoR2.EntityLocator locator))
             {
@@ -109,7 +110,7 @@ namespace SonicTheHedgehog.Modules
 
             prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
 
-            prefabBase.transform.GetChild(2).gameObject.AddComponent<PickupDisplay>();
+            prefabBase.transform.Find("PickupDisplay").gameObject.AddComponent<PickupDisplay>();
 
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
 
@@ -120,18 +121,16 @@ namespace SonicTheHedgehog.Modules
         {
             Debug.Log("Emerald Start");
 
-            if (NetworkServer.active)
-            {
-                this.color = ChaosEmeraldSpawnHandler.available[0];
-                ChaosEmeraldSpawnHandler.available.Remove(this.color);
-            }
             pickupDisplay = base.GetComponentInChildren<PickupDisplay>();
             purchaseInteraction = base.GetComponent<PurchaseInteraction>();
-            pickupIndex = GetPickupIndex();
-
-            UpdateColor();
-
             purchaseInteraction.onPurchase.AddListener(OnPurchase);
+
+            if (NetworkServer.active)
+            {
+                UpdateColor(ChaosEmeraldSpawnHandler.available[0]);
+                ChaosEmeraldSpawnHandler.available.Remove(this.color);
+            }
+            
         }
 
         public PickupIndex GetPickupIndex()
@@ -155,13 +154,16 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public void UpdateColor()
-        {  
+        public void UpdateColor(EmeraldColor color)
+        {
+            this.color = color;
             if (purchaseInteraction)
             {
                 purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
-                                                   "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_" + color.ToString().ToUpper();
+                                                   "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_" + this.color.ToString().ToUpper();
             }
+
+            pickupIndex = GetPickupIndex();
 
             pickupDisplay.SetPickupIndex(pickupIndex);
         }
@@ -170,7 +172,7 @@ namespace SonicTheHedgehog.Modules
         {
             pickupDisplay.SetPickupIndex(PickupIndex.none);
             Debug.Log("Bought " + color + " Chaos Emerald.");
-            purchaseInteraction.available = false;
+            purchaseInteraction.SetAvailable(false);
             DropPickup();
         }
 
@@ -179,13 +181,13 @@ namespace SonicTheHedgehog.Modules
         {
             if (!NetworkServer.active)
             {
-                Debug.LogWarning("[Server] function 'System.Void RoR2.ShopTerminalBehavior::DropPickup()' called on client");
+                Debug.LogWarning("[Server] function 'ChaosEmeraldInteractable::DropPickup()' called on client");
                 return;
             }
             PickupDropletController.CreatePickupDroplet(this.pickupIndex, (pickupDisplay.transform).position, base.transform.TransformVector(dropVelocity));
         }
 
-        public enum EmeraldColor
+        public enum EmeraldColor : uint
         {
             Yellow = 0,
             Blue = 1,

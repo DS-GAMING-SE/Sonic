@@ -31,6 +31,8 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject parryEffect;
         internal static GameObject parryActivateEffect;
 
+        internal static GameObject superSonicBlurEffect;
+
         internal static GameObject powerBoostFlashEffect;
         internal static GameObject scepterPowerBoostFlashEffect;
         internal static GameObject boostFlashEffect;
@@ -134,6 +136,8 @@ namespace SonicTheHedgehog.Modules
 
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
+
+            superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
             powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
 

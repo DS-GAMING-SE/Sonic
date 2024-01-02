@@ -4,12 +4,15 @@ using RoR2.Skills;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.SkillStates;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.Components
 {
     public class SuperSonicComponent : NetworkBehaviour
     {
+        // At some point, make it so you can transform into Super Sonic if the entire team collectively has all 7 emeralds
+        // After one person transforms, emeralds should be taken away from all Sonics and all Sonics can transform for a short time. Allows having multiple Super Sonics at once in multiplayer, so you can have epic moments like Adventure 2 or 06
         public EntityStateMachine superSonicState;
 
         public Material superSonicMaterial;
@@ -21,7 +24,10 @@ namespace SonicTheHedgehog.Components
         private CharacterBody body;
         private CharacterModel model;
         private Animator modelAnimator;
+
         private TemporaryOverlay temporaryOverlay;
+        private TemporaryOverlay flashOverlay;
+        private static Material flashMaterial;
 
         public static SkillDef melee;
 
@@ -42,8 +48,8 @@ namespace SonicTheHedgehog.Components
             model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-            Stage.onServerStageBegin += ResetSuperSonic;
-            Inventory.onInventoryChangedGlobal += OnInventoryChanged;
+            //Inventory.onInventoryChangedGlobal += OnInventoryChanged;
+            flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
         }
 
         public void FixedUpdate()
@@ -52,8 +58,7 @@ namespace SonicTheHedgehog.Components
 
         private void OnDestroy()
         {
-            Stage.onServerStageBegin -= ResetSuperSonic;
-            Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
+            //Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
         }
 
         public void Transform(EntityStateMachine entityState, Inventory inventory)
@@ -116,12 +121,22 @@ namespace SonicTheHedgehog.Components
                 model.mainSkinnedMeshRenderer.sharedMesh = superSonicModel;
             }
 
-            if (model) // Outline
+            if (model)
             {
-                temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>();
+                temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Outline
                 temporaryOverlay.originalMaterial = Assets.superSonicOverlay;
+                temporaryOverlay.destroyComponentOnEnd = true;
                 temporaryOverlay.enabled = true;
                 temporaryOverlay.AddToCharacerModel(model);
+
+
+                flashOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Flash
+                flashOverlay.duration = 1;
+                flashOverlay.animateShaderAlpha = true;
+                flashOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0f);
+                flashOverlay.originalMaterial = flashMaterial;
+                flashOverlay.destroyComponentOnEnd = true;
+                flashOverlay.AddToCharacerModel(model);
             }
         }
 
@@ -143,6 +158,17 @@ namespace SonicTheHedgehog.Components
             {
                 temporaryOverlay.RemoveFromCharacterModel();
             }
+
+            if (model) // Flash
+            {
+                flashOverlay = model.gameObject.AddComponent<TemporaryOverlay>();
+                flashOverlay.duration = 0.35f;
+                flashOverlay.animateShaderAlpha = true;
+                flashOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
+                flashOverlay.originalMaterial = flashMaterial;
+                flashOverlay.destroyComponentOnEnd = true;
+                flashOverlay.AddToCharacerModel(model);
+            }
         }
 
         public void ParryActivated()
@@ -159,14 +185,9 @@ namespace SonicTheHedgehog.Components
                 GenericSkill.SkillOverridePriority.Contextual);
         }
 
-        public void ResetSuperSonic(Stage stage)
-        {
-            // awaitStageReset = false;
-        }
-
         public void OnInventoryChanged(Inventory inventory)
         {
-            // No longer needed?
+            // Might use this so i'm keeping it here but it never runs
         }
     }
 }
