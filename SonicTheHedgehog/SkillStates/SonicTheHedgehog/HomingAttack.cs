@@ -250,7 +250,11 @@ namespace SonicTheHedgehog.SkillStates
                         this.homingAttackSpeed = (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 5;
                         if (this.target != null)
                         {
-                            targetDirection = this.target.transform.position - base.transform.position;
+                            targetDirection = this.target.transform.position - base.characterMotor.transform.position;
+                        } // This sucks, remember to fix it
+                        if (this.homingAttackSpeed * Time.fixedDeltaTime > targetDirection.magnitude * 3) // Slow when approaching enemy at high speeds
+                        {
+                            this.homingAttackSpeed = Mathf.Max(targetDirection.magnitude * 3, 15);
                         }
                         base.characterMotor.velocity = targetDirection.normalized * this.homingAttackSpeed;
                         base.characterDirection.forward = targetDirection.normalized;

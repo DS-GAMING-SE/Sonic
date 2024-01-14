@@ -234,7 +234,7 @@ namespace SonicTheHedgehog.SkillStates
         private void TargetLocked()
         {
             this.targetLocked = true;
-            if (superSonicComponent)
+            if (superSonicComponent && base.isAuthority)
             {
                 superSonicComponent.IDWAttackActivated();
             }

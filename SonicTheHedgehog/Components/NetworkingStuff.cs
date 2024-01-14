@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine;
 using SonicTheHedgehog.SkillStates;
 using EntityStates;
+using SonicTheHedgehog.Modules;
 
 namespace SonicTheHedgehog.Components
 {
@@ -85,5 +86,39 @@ namespace SonicTheHedgehog.Components
             damageInfo = reader.ReadDamageInfo();
         }
     }
-    
+
+    public class SuperSonicTransform : INetMessage
+    {
+        NetworkInstanceId netId;
+
+        public SuperSonicTransform()
+        {
+
+        }
+
+        public SuperSonicTransform(NetworkInstanceId netId)
+        {
+            this.netId = netId;
+        }
+
+        public void OnReceived()
+        {
+            if (SuperSonicHandler.instance)
+            {
+                SuperSonicHandler.instance.OnTransform();
+            }
+
+        }
+
+        public void Serialize(NetworkWriter writer)
+        {
+            writer.Write(netId);
+        }
+
+        public void Deserialize(NetworkReader reader)
+        {
+            netId = reader.ReadNetworkId();
+        }
+    }
+
 }

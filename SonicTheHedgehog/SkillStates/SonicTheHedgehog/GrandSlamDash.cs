@@ -187,10 +187,15 @@ namespace SonicTheHedgehog.SkillStates
                     }
                 }
                 base.characterDirection.forward = targetDirection.normalized;
-                if (fixedAge >= this.attackStartTime + (this.estimatedDashTime * 0.75f))
+                if (fixedAge >= this.attackStartTime + (this.estimatedDashTime * 0.75f)) // Slow to stop at end
                 {
                     this.dashSpeed = Mathf.Lerp(homingTracker.Speed(), 0, (fixedAge - this.attackStartTime + (this.estimatedDashTime * 0.75f)) / (this.attackStartTime + this.estimatedDashTime));
                 }
+                if (this.dashSpeed * Time.fixedDeltaTime > targetDirection.magnitude * 3) // Slow when approaching enemy at high speed
+                {
+                    this.dashSpeed = Mathf.Max(targetDirection.magnitude * 3, 15);
+                }
+                base.characterDirection.forward = targetDirection.normalized;
                 base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
                 this.FireAttack();
             }

@@ -4,20 +4,41 @@ using R2API;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using UnityEngine.Networking.NetworkSystem;
 
 namespace SonicTheHedgehog.Modules
 {
-    public class ChaosEmeraldSpawnHandler : MonoBehaviour
+    public class SuperSonicHandler : NetworkBehaviour
     {
-        public static ChaosEmeraldSpawnHandler instance { get; private set; }
+        public static SuperSonicHandler instance { get; private set; }
+        public static GameObject handlerPrefab;
 
         public static List<ChaosEmeraldInteractable.EmeraldColor> available;
 
+        public static bool allEmeralds;
+
+        [SyncVar]
+        public static bool teamSuper;
+
+        public const float teamSuperTimerDuration = 10f;
+        public static float teamSuperTimer;
+
+        public static void Initialize()
+        {
+            handlerPrefab = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicHandler");
+            handlerPrefab.AddComponent<SuperSonicHandler>();
+            handlerPrefab.AddComponent<NetworkIdentity>();
+            //handlerPrefab = new GameObject("SuperSonicHandler", typeof(SuperSonicHandler));
+            PrefabAPI.RegisterNetworkPrefab(handlerPrefab);
+            Content.AddNetworkedObjectPrefab(handlerPrefab);
+        }
+        
         private void OnEnable()
         {
-            if (!ChaosEmeraldSpawnHandler.instance)
+            if (!instance)
             {
-                ChaosEmeraldSpawnHandler.instance = this;
+                instance = this;
+                Inventory.onInventoryChangedGlobal += OnInventoryChanged;
                 return;
             }
             Debug.LogErrorFormat(this, "Duplicate instance of singleton class {0}. Only one should exist at a time.", new object[]
@@ -28,9 +49,10 @@ namespace SonicTheHedgehog.Modules
 
         private void OnDisable()
         {
-            if (ChaosEmeraldSpawnHandler.instance == this)
+            if (instance == this)
             {
-                ChaosEmeraldSpawnHandler.instance = null;
+                instance = null;
+                Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
             }
         }
 
@@ -52,6 +74,126 @@ namespace SonicTheHedgehog.Modules
                 if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
                 if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
                 if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
+            }
+        }
+
+        public void OnInventoryChanged(Inventory inventory)
+        {
+            bool yellow = false;
+            bool blue = false;
+            bool red = false;
+            bool gray = false;
+            bool green = false;
+            bool cyan = false;
+            bool purple = false;
+            foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
+            {
+                if (player.master.inventory.GetItemCount(Items.yellowEmerald) > 0) { yellow = true; }
+                if (player.master.inventory.GetItemCount(Items.blueEmerald) > 0) { blue = true; }
+                if (player.master.inventory.GetItemCount(Items.redEmerald) > 0) { red = true; }
+                if (player.master.inventory.GetItemCount(Items.grayEmerald) > 0) { gray = true; }
+                if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0) { green = true; }
+                if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { cyan = true; }
+                if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { purple = true; }
+            }
+
+            allEmeralds = yellow && blue && red && gray && green && cyan && purple;
+        }
+
+        public void RemoveEmeralds()
+        {
+            bool yellow = false;
+            bool blue = false;
+            bool red = false;
+            bool gray = false;
+            bool green = false;
+            bool cyan = false;
+            bool purple = false;
+            foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
+            {
+                if (player.master.inventory.GetItemCount(Items.yellowEmerald) > 0 && yellow == false) { player.master.inventory.RemoveItem(Items.yellowEmerald); yellow = true; }
+                if (player.master.inventory.GetItemCount(Items.blueEmerald) > 0 && blue == false) { player.master.inventory.RemoveItem(Items.blueEmerald); blue = true; }
+                if (player.master.inventory.GetItemCount(Items.redEmerald) > 0 && red == false) { player.master.inventory.RemoveItem(Items.redEmerald); red = true; }
+                if (player.master.inventory.GetItemCount(Items.grayEmerald) > 0 && gray == false) { player.master.inventory.RemoveItem(Items.grayEmerald); gray = true; }
+                if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0 && green == false) { player.master.inventory.RemoveItem(Items.greenEmerald); green = true; }
+                if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0 && cyan == false) { player.master.inventory.RemoveItem(Items.cyanEmerald); cyan = true; }
+                if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0 && purple == false) { player.master.inventory.RemoveItem(Items.purpleEmerald); purple = true; }
+            }
+        }
+
+        public bool CanTransform()
+        {
+            Debug.Log("All Emeralds? " + allEmeralds + ". Team Super? " + teamSuper);
+            return allEmeralds || teamSuper;
+        }
+
+        public void OnTransform()
+        {
+            if (!teamSuper)
+            {
+                NetworkteamSuper = true;
+                teamSuperTimer = teamSuperTimerDuration;
+                RemoveEmeralds();
+            }
+        }
+
+        public void FixedUpdate()
+        {
+            if (teamSuperTimer > 0)
+            {
+                teamSuperTimer -= Time.deltaTime;
+                if (teamSuperTimer <= 0)
+                {
+                    NetworkteamSuper = false;
+                    Debug.Log("Team Super window ended");
+                }
+            }
+        }
+
+        public bool NetworkteamSuper
+        {
+            get
+            {
+                return teamSuper;
+            }
+            [param: In]
+            set
+            {
+                base.SetSyncVar<bool>(value, ref teamSuper, 1U);
+            }
+        }
+
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            if (initialState)
+            {
+                writer.Write(teamSuper);
+                return true;
+            }
+            bool flag = false;
+            if ((base.syncVarDirtyBits & 1U) != 0U)
+            {
+                if (!flag)
+                {
+                    writer.WritePackedUInt32(base.syncVarDirtyBits);
+                    flag = true;
+                }
+                writer.Write(teamSuper);
+            }
+            return flag;
+        }
+
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            if (initialState)
+            {
+                teamSuper = reader.ReadBoolean();
+                return;
+            }
+            int num = (int)reader.ReadPackedUInt32();
+            if ((num & 1U) != 0U)
+            {
+                teamSuper = reader.ReadBoolean();
             }
         }
     }
@@ -82,6 +224,8 @@ namespace SonicTheHedgehog.Modules
         public static void Initialize()
         {           
             prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
+
+            prefabBase.AddComponent<NetworkIdentity>();
 
             if (!prefabBase.TryGetComponent<RoR2.PurchaseInteraction>(out purchaseInteractionBase))
             {
@@ -114,6 +258,8 @@ namespace SonicTheHedgehog.Modules
 
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
 
+            PrefabAPI.RegisterNetworkPrefab(prefabBase);
+
             Content.AddNetworkedObjectPrefab(prefabBase);
         }
 
@@ -127,8 +273,8 @@ namespace SonicTheHedgehog.Modules
 
             if (NetworkServer.active)
             {
-                UpdateColor(ChaosEmeraldSpawnHandler.available[0]);
-                ChaosEmeraldSpawnHandler.available.Remove(this.color);
+                UpdateColor(SuperSonicHandler.available[0]);
+                SuperSonicHandler.available.Remove(this.color);
             }
             
         }

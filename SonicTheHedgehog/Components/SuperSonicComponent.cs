@@ -1,7 +1,10 @@
 ﻿using EntityStates;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
 using RoR2;
 using RoR2.Skills;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Survivors;
 using SonicTheHedgehog.SkillStates;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -11,8 +14,6 @@ namespace SonicTheHedgehog.Components
 {
     public class SuperSonicComponent : NetworkBehaviour
     {
-        // At some point, make it so you can transform into Super Sonic if the entire team collectively has all 7 emeralds
-        // After one person transforms, emeralds should be taken away from all Sonics and all Sonics can transform for a short time. Allows having multiple Super Sonics at once in multiplayer, so you can have epic moments like Adventure 2 or 06
         public EntityStateMachine superSonicState;
 
         public Material superSonicMaterial;
@@ -40,58 +41,29 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef grandSlam;
 
-        private bool canTransform = true;
-
         private void Start()
         {
             body = GetComponent<CharacterBody>();
             model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-            //Inventory.onInventoryChangedGlobal += OnInventoryChanged;
+            GetSuperModel();
             flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
-        }
-
-        public void FixedUpdate()
-        {
-        }
-
-        private void OnDestroy()
-        {
-            //Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
         }
 
         public void Transform(EntityStateMachine entityState, Inventory inventory)
         {
             if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
             {
-                canTransform = false;
-                RemoveEmeralds(inventory);
+                if (NetworkServer.active)
+                {
+                    SuperSonicHandler.instance.OnTransform();
+                }
+                else
+                {
+                    new SuperSonicTransform(GetComponent<NetworkIdentity>().netId).Send(NetworkDestination.Server);
+                }
             }
-        }
-
-        public bool CanTransform(Inventory inventory)
-        {
-            bool hasYellow = inventory.GetItemCount(Items.yellowEmerald) > 0;
-            bool hasRed = inventory.GetItemCount(Items.redEmerald) > 0;
-            bool hasBlue = inventory.GetItemCount(Items.blueEmerald) > 0;
-            bool hasCyan = inventory.GetItemCount(Items.cyanEmerald) > 0;
-            bool hasGreen = inventory.GetItemCount(Items.greenEmerald) > 0;
-            bool hasGray = inventory.GetItemCount(Items.grayEmerald) > 0;
-            bool hasPurple = inventory.GetItemCount(Items.purpleEmerald) > 0;
-
-            return hasYellow && hasRed && hasBlue && hasCyan && hasGreen && hasGray && hasPurple && canTransform;
-        }
-
-        public void RemoveEmeralds(Inventory inventory)
-        {
-            inventory.RemoveItem(Items.yellowEmerald);
-            inventory.RemoveItem(Items.redEmerald);
-            inventory.RemoveItem(Items.blueEmerald);
-            inventory.RemoveItem(Items.cyanEmerald);
-            inventory.RemoveItem(Items.greenEmerald);
-            inventory.RemoveItem(Items.grayEmerald);
-            inventory.RemoveItem(Items.purpleEmerald);
         }
 
         public void TransformEnd()
@@ -100,7 +72,6 @@ namespace SonicTheHedgehog.Components
                 GenericSkill.SkillOverridePriority.Contextual);
             body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry,
                 GenericSkill.SkillOverridePriority.Contextual);
-            canTransform = true;
             ResetModel();
         }
 
@@ -108,7 +79,10 @@ namespace SonicTheHedgehog.Components
         public void SuperModel()
         {
             defaultMaterial = model.baseRendererInfos[0].defaultMaterial; // Textures
-            model.baseRendererInfos[0].defaultMaterial = superSonicMaterial;
+            if (superSonicMaterial)
+            {
+                model.baseRendererInfos[0].defaultMaterial = superSonicMaterial;
+            }
             
             if (modelAnimator) // Animations
             {
@@ -185,9 +159,21 @@ namespace SonicTheHedgehog.Components
                 GenericSkill.SkillOverridePriority.Contextual);
         }
 
-        public void OnInventoryChanged(Inventory inventory)
+        public virtual void GetSuperModel()
         {
-            // Might use this so i'm keeping it here but it never runs
+            string skinName = model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken;
+            switch (skinName)
+            {
+                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
+                    superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+                    superSonicModel = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh")
+                        .GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    break;
+                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
+                    superSonicMaterial = null;
+                    superSonicModel = null;
+                    break;
+            }
         }
     }
 }

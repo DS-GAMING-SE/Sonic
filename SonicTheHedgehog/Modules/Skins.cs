@@ -116,5 +116,27 @@ namespace SonicTheHedgehog.Modules
 
             return meshReplacements.ToArray();
         }
+
+        // I don't know how to import JUST meshes I keep importing fbx and don't know how to separate the mesh
+        internal static SkinDef.MeshReplacement[] GetMeshReplacementsFromObject(CharacterModel.RendererInfo[] defaultRendererInfos, params string[] meshes)
+        {
+
+            List<SkinDef.MeshReplacement> meshReplacements = new List<SkinDef.MeshReplacement>();
+
+            for (int i = 0; i < defaultRendererInfos.Length; i++)
+            {
+                if (string.IsNullOrEmpty(meshes[i]))
+                    continue;
+
+                meshReplacements.Add(
+                new SkinDef.MeshReplacement
+                {
+                    renderer = defaultRendererInfos[i].renderer,
+                    mesh = Assets.mainAssetBundle.LoadAsset<GameObject>(meshes[i]).GetComponent<SkinnedMeshRenderer>().sharedMesh
+            });
+            }
+
+            return meshReplacements.ToArray();
+        }
     }
 }

@@ -422,6 +422,8 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             SuperSonicComponent superSonicComponent = bodyPrefab.AddComponent<Components.SuperSonicComponent>();
 
+            Debug.Log("Making Super Sonic: Starting Stuff");
+
             primary.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                 "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME";
             primary.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
@@ -489,6 +491,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                                    "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                           "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION";
+            boost.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperBoostIcon");
             SuperSonicComponent.boost = Modules.Skills.CreateSkillDef(boost);
 
             grandSlam.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
@@ -500,9 +503,9 @@ namespace SonicTheHedgehog.Modules.Survivors
             grandSlam.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperGrandSlamIcon");
             SuperSonicComponent.grandSlam = Modules.Skills.CreateSkillDef(grandSlam);
 
-            superSonicComponent.superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
-            superSonicComponent.superSonicModel = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh")
-                .GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            // Super Sonic mesh and material were originally decided here. Now they're decided in SuperSonicComponent based on current skin
+
+            Debug.Log("Making Super Sonic: All Skills");
 
             NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
             Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
@@ -532,6 +535,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                                    "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                           "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION";
+            boost.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperScepterBoostIcon");
             skillDef = Skills.CreateSkillDef(boost);
             Debug.Log("Super Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
@@ -614,8 +618,8 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //these are your Mesh Replacements. The order here is based on your CustomRendererInfos from earlier
             //pass in meshes as they are named in your assetbundle
-            //defaultSkin.meshReplacements = Modules.Skins.getMeshReplacements(defaultRendererinfos,
-            //    "meshHenrySword",
+            defaultSkin.meshReplacements = Modules.Skins.GetMeshReplacementsFromObject(defaultRendererinfos,
+                "SonicMesh");
             //    "meshHenryGun",
             //    "meshHenry");
 
@@ -628,29 +632,25 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #region MasterySkin
 
-            /*
-            //creating a new skindef as we did before
-            SkinDef masterySkin = Modules.Skins.CreateSkinDef(HenryPlugin.DEVELOPER_PREFIX + "_HENRY_BODY_MASTERY_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texMasteryAchievement"),
-                defaultRendererinfos,
-                prefabCharacterModel.gameObject,
-                masterySkinUnlockableDef);
 
+            //creating a new skindef as we did before
+            SkinDef masterySkin = Modules.Skins.CreateSkinDef(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin"),
+                defaultRendererinfos,
+                prefabCharacterModel.gameObject
+                //,masterySkinUnlockableDef);
+                );
             //adding the mesh replacements as above.
             //if you don't want to replace the mesh (for example, you only want to replace the material), pass in null so the order is preserved
-            masterySkin.meshReplacements = Modules.Skins.getMeshReplacements(defaultRendererinfos,
-                "meshHenrySwordAlt",
-                null,//no gun mesh replacement. use same gun mesh
-                "meshHenryAlt");
+            masterySkin.meshReplacements = Modules.Skins.GetMeshReplacementsFromObject(defaultRendererinfos,
+                "MetalSonicMesh");
 
             //masterySkin has a new set of RendererInfos (based on default rendererinfos)
             //you can simply access the RendererInfos defaultMaterials and set them to the new materials for your skin.
-            masterySkin.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matHenryAlt");
-            masterySkin.rendererInfos[1].defaultMaterial = Modules.Materials.CreateHopooMaterial("matHenryAlt");
-            masterySkin.rendererInfos[2].defaultMaterial = Modules.Materials.CreateHopooMaterial("matHenryAlt");
+            masterySkin.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic");
 
             //here's a barebones example of using gameobjectactivations that could probably be streamlined or rewritten entirely, truthfully, but it works
-            masterySkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
+            /*masterySkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
             {
                 new SkinDef.GameObjectActivation
                 {
@@ -658,10 +658,11 @@ namespace SonicTheHedgehog.Modules.Survivors
                     shouldActivate = false,
                 }
             };
+            */
             //simply find an object on your child locator you want to activate/deactivate and set if you want to activate/deacitvate it with this skin
 
             skins.Add(masterySkin);
-            */
+            
 
             #endregion
 

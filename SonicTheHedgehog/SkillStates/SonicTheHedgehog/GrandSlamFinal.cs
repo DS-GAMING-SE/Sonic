@@ -21,11 +21,11 @@ namespace SonicTheHedgehog.SkillStates
         protected Vector3 bonusForce = Vector3.down;
         protected float attackRecoil = 11f;
         protected float startUpTime = 0.5f;
-        private float baseMaxAttackTime = 0.75f;
+        private float baseMaxAttackTime = 1f;
         protected float maxAttackTime = 0.75f;
         protected float hitStopDuration=0.2f;
         protected float endTime=0.5f;
-        protected float baseSpeedMultiplier = 4.5f;
+        protected float baseSpeedMultiplier = 200f;
 
         public HurtBox target;
         protected Vector3 targetDirection;
@@ -62,7 +62,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
-            this.maxAttackTime = this.baseMaxAttackTime / ((base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier)/12);
+            this.maxAttackTime = this.baseMaxAttackTime;
             this.hasFired = false;
             this.hasHit = false;
             this.hitboxName = "Stomp";
@@ -180,7 +180,7 @@ namespace SonicTheHedgehog.SkillStates
                         if (this.target!=null)
                         {
                             targetDirection = (this.target.transform.position - base.characterMotor.transform.position).normalized;
-                            speedMultiplier = Mathf.Clamp((this.target.transform.position - base.characterMotor.transform.position).magnitude, 1, baseSpeedMultiplier);
+                            speedMultiplier = Mathf.Clamp((this.target.transform.position - base.characterMotor.transform.position).magnitude * 10, 15, baseSpeedMultiplier);
                         }
                         else
                         {
@@ -191,7 +191,7 @@ namespace SonicTheHedgehog.SkillStates
                         {
                             targetDirection = Vector3.down;
                         }
-                        base.characterMotor.velocity = targetDirection * base.characterBody.moveSpeed * speedMultiplier * base.characterBody.sprintingSpeedMultiplier;
+                        base.characterMotor.velocity = targetDirection * speedMultiplier;
                         FireAttack();
                     }
                     else

@@ -25,6 +25,7 @@ using UnityEngine.Networking;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
 using UnityEngine.SceneManagement;
+using System;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -90,11 +91,13 @@ namespace SonicTheHedgehog
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.Items.RegisterItems(); // silly Items thingy.
+            SuperSonicHandler.Initialize();
             ChaosEmeraldInteractable.Initialize();
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();
             NetworkingAPI.RegisterMessageType<ScepterBoostDamage>();
+            NetworkingAPI.RegisterMessageType<SuperSonicTransform>();
 
             // survivor initialization
             new SonicTheHedgehogCharacter().Initialize();
@@ -360,7 +363,7 @@ namespace SonicTheHedgehog
         {
             if (self.skinnedMeshRenderer && self.skinnedMeshRenderer.name == "SonicMesh")
             {
-                Object.Destroy(self);
+                UnityEngine.Object.Destroy(self);
             }
             orig(self);
         }
@@ -437,13 +440,12 @@ namespace SonicTheHedgehog
                 Vector3 vector = new Vector3(38, 23, 36);
             }*/
 
-            if (!ChaosEmeraldSpawnHandler.instance)
+            if (!SuperSonicHandler.instance)
             {
-                GameObject spawn = new GameObject();
-                spawn.AddComponent<ChaosEmeraldSpawnHandler>();
+                NetworkServer.Spawn(GameObject.Instantiate<GameObject>(SuperSonicHandler.handlerPrefab));
             }
 
-            ChaosEmeraldSpawnHandler.instance.ResetAvailable();
+            SuperSonicHandler.instance.ResetAvailable();
 
             bool someoneIsSonic = false;
             foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
@@ -461,9 +463,9 @@ namespace SonicTheHedgehog
             Debug.Log("Metamorphosis? " + metamorphosis);
             if (metamorphosis) return;
 
-            ChaosEmeraldSpawnHandler.instance.FilterOwnedEmeralds();
+            SuperSonicHandler.instance.FilterOwnedEmeralds();
 
-            if (ChaosEmeraldSpawnHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
+            if (SuperSonicHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
             {
                 int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
                 
@@ -474,7 +476,7 @@ namespace SonicTheHedgehog
 
                 spawnCard.prefab = ChaosEmeraldInteractable.prefabBase;
 
-                for (int i = 0; i < maxEmeralds && i < ChaosEmeraldSpawnHandler.available.Count; i++)
+                for (int i = 0; i < maxEmeralds && i < SuperSonicHandler.available.Count; i++)
                 {
                     DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, ChaosEmeraldInteractable.placementRule, Run.instance.stageRng));
                 }

@@ -43,16 +43,19 @@ namespace SonicTheHedgehog.SkillStates
                     if (base.characterBody.HasBuff(Buffs.superSonicBuff))
                     {
                         SuperParryBlast();
+                    }
+                }
+                if (base.isAuthority)
+                {
+                    EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
+                    if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+                    {
                         SuperSonicComponent superSonicComponent = base.characterBody.GetComponent<SuperSonicComponent>();
                         if (superSonicComponent)
                         {
                             superSonicComponent.ParryActivated();
                         }
                     }
-                }
-                if (base.isAuthority)
-                {
-                    EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
                 }
                 Util.PlaySound("Play_parry", base.gameObject);
                 RechargeCooldowns();

@@ -111,7 +111,7 @@ namespace SonicTheHedgehog.SkillStates
                 if (Input.GetKeyDown("v"))
                 {
                     Inventory inventory = base.characterBody.inventory;
-                    if (superSonicComponent.CanTransform(inventory))
+                    if (SuperSonicHandler.instance.CanTransform())
                     {
                         Debug.Log("Attempt Super Transform");
                         superSonicComponent.Transform(this.outer, inventory);
