@@ -81,8 +81,15 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         public override void InitializeUnlockables()
         {
-            //uncomment this when you have a mastery skin. when you do, make sure you have an icon too
+            //Henry tutorial tells me to just uncomment something to get the mastery achievement but the uncommented stuff doesn't even compile
             //masterySkinUnlockableDef = Modules.Unlockables.AddUnlockable<Modules.Achievements.MasteryAchievement>();
+            masterySkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            masterySkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin");
+            masterySkinUnlockableDef.cachedName = "SonicSkins.Mastery";
+            masterySkinUnlockableDef.nameToken =
+                "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME";
+            Content.AddUnlockableDef(masterySkinUnlockableDef);
+
             // I hate achievements almost as much as I hate networking
             parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");
@@ -638,8 +645,8 @@ namespace SonicTheHedgehog.Modules.Survivors
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin"),
                 defaultRendererinfos,
                 prefabCharacterModel.gameObject
-                //,masterySkinUnlockableDef);
-                );
+                ,masterySkinUnlockableDef);
+                //);
             //adding the mesh replacements as above.
             //if you don't want to replace the mesh (for example, you only want to replace the material), pass in null so the order is preserved
             masterySkin.meshReplacements = Modules.Skins.GetMeshReplacementsFromObject(defaultRendererinfos,

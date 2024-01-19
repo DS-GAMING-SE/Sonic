@@ -2,7 +2,7 @@
 
 namespace SonicTheHedgehog.Modules
 {
-    public abstract class BaseMasteryUnlockable : GenericModdedUnlockable
+    public abstract class BaseMasteryUnlockable : RoR2.Achievements.BaseAchievement
     {
         public abstract string RequiredCharacterBody { get; }
         public abstract float RequiredDifficultyCoefficient { get; }

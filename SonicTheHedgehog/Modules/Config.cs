@@ -37,5 +37,10 @@ namespace SonicTheHedgehog.Modules
         {
             return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Spinning Upside Down", false, "Automatically unlock the achievement \"Sonic: Spinning Upside Down\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
         }
+
+        public static ConfigEntry<bool> ForceUnlockMastery()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Mastery", false, "Automatically unlock the achievement \"Sonic: Mastery\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
     }
 }

@@ -420,6 +420,10 @@ namespace SonicTheHedgehog
             {
                 self.AddAchievement(DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", true);
             }
+            if (!self.HasAchievement(DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE") && Modules.Config.ForceUnlockMastery().Value)
+            {
+                self.AddAchievement(DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", true);
+            }
         }
 
 
