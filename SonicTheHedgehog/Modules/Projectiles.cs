@@ -10,16 +10,19 @@ namespace SonicTheHedgehog.Modules
     {
         internal static GameObject sonicBoomPrefab;
         internal static GameObject superSonicBoomPrefab;
+        internal static GameObject superMeleeProjectilePrefab;
         internal static GameObject superSonicAfterimageRainPrefab;
 
         internal static void RegisterProjectiles()
         {
             CreateSonicBoom();
             CreateSuperSonicBoom();
+            CreateSuperMeleeProjectile();
             CreateSuperSonicAfterimageRain();
 
             AddProjectile(sonicBoomPrefab);
             AddProjectile(superSonicBoomPrefab);
+            AddProjectile(superMeleeProjectilePrefab);
             AddProjectile(superSonicAfterimageRainPrefab);
         }
 
@@ -70,6 +73,35 @@ namespace SonicTheHedgehog.Modules
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
             bombController.canImpactOnTrigger = false;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("CrossSlashGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("CrossSlashGhost");
+            bombController.startSound = "";
+        }
+
+        private static void CreateSuperMeleeProjectile()
+        {
+            superMeleeProjectilePrefab = CloneProjectilePrefab("FMJ", "SuperSonicMeleeProjectile");
+
+            ProjectileDamage damage = superMeleeProjectilePrefab.GetComponent<ProjectileDamage>();
+            ProjectileSimple simple = superMeleeProjectilePrefab.GetComponent<ProjectileSimple>();
+
+            damage.damage = 1;
+
+            simple.lifetime = 0.5f;
+            simple.enableVelocityOverLifetime = true;
+            simple.velocityOverLifetime = AnimationCurve.EaseInOut(0, 1, 0.75f, 0.2f);
+
+            /*impactExplosion.blastProcCoefficient = StaticValues.superMeleeExtraProcCoefficient;
+            impactExplosion.destroyOnEnemy = false;
+            impactExplosion.destroyOnWorld = false;
+            impactExplosion.lifetime = 0.7f;
+            impactExplosion.impactOnWorld = false;
+            impactExplosion.impactEffect = Modules.Assets.sonicBoomImpactEffect;
+            //bombImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("Play_sonic_boom_hit");
+            impactExplosion.timerAfterImpact = false;
+            impactExplosion.lifetimeAfterImpact = 0f;
+            */
+
+            ProjectileController bombController = superMeleeProjectilePrefab.GetComponent<ProjectileController>();
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
         }
 

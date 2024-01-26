@@ -1,6 +1,7 @@
 ﻿using EntityStates;
 using R2API;
 using Rewired;
+using RiskOfOptions.Components.AssetResolution.Data;
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
@@ -155,6 +156,11 @@ namespace SonicTheHedgehog.SkillStates
                 if (base.isAuthority)
                 {
                     base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
+
+                    if (base.HasBuff(Buffs.superSonicBuff))
+                    {
+                        FireSuperProjectile();
+                    }
                 }
             }
 
@@ -329,6 +335,26 @@ namespace SonicTheHedgehog.SkillStates
         private bool Flying()
         {
             return flight != null && flight.isFlying;
+        }
+
+        private void FireSuperProjectile()
+        {
+            Vector3 origin = base.GetAimRay().origin;
+            origin -= base.GetAimRay().direction * 8;
+            Vector3 forward = base.characterDirection.forward;
+            if (swingIndex % 2 == 0)
+            {
+                origin += Vector3.Cross(forward, Vector3.up) * 3;
+
+            }
+            else
+            {
+                origin -= Vector3.Cross(forward, Vector3.up) * 3;
+            }
+            
+            RoR2.Projectile.ProjectileManager.instance.FireProjectile(Projectiles.superMeleeProjectilePrefab, origin, Util.QuaternionSafeLookRotation(base.GetAimRay().direction), 
+                base.gameObject, this.damageCoefficient * StaticValues.superMeleeExtraDamagePercent * this.damageStat, 0, 
+                Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, 120);
         }
         public void PrepareOverlapAttack()
         {

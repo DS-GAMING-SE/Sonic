@@ -1,6 +1,8 @@
 ﻿using R2API;
 using SonicTheHedgehog.Components;
 using System;
+using System.Drawing;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -115,22 +117,21 @@ namespace SonicTheHedgehog.Modules
             string parryOnHitDescription =
                 $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give <style=cIsDamage>+{StaticValues.parryAttackSpeedBuff * 100}% attack speed</style>, give <style=cIsUtility>+{StaticValues.parryMovementSpeedBuff * 100}% movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription}");
+                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription}");
 
             #endregion
 
             #region Super Parry
-
+            string idwAttackName = $"IDW Attack(NAME PENDING)";
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Perfect Parry</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}Reduce all nearby enemies attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. Replace this skill with \"The funny IDW attack, name pending\". \n\nThis can only be triggered once.</color>");
+                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}Reduce all nearby enemies attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. \nAfter a successful parry, replace this skill with \"{idwAttackName}\". \n\nThis can only be triggered once.</color>");
 
             #endregion
 
             #region IDW Attack
-
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_NAME",
-                $"{superSonicColor}IDW Attack (name pending)</color>");
+                $"{superSonicColor}{idwAttackName}</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION",
                 $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{StaticValues.idwAttackDamageCoefficient * 100f}% damage</style> in a large area. \n\n{superSonicColor}This can only be triggered once.</color>");
 
@@ -224,8 +225,8 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_CYAN", "Chaos Temple: Cyan");
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_PURPLE", "Chaos Temple: Purple");
 
-            string chaosEmeraldDesc = $"One of the <style=cIsUtility>seven</style> Chaos Emeralds." + Environment.NewLine + $"When all <style=cIsUtility>seven</style> are brought together, press {superSonicColor}V</color> to transform from <style=cIsUtility>Sonic</style> into {superSonicColor}Super Sonic</color> for {superSonicColor}{Modules.StaticValues.superSonicDuration}</color> seconds. Transforming {superSonicColor}upgrades all of your skills</color>. Increases <style=cIsDamage>damage</style> by <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}%</style>. Increases <style=cIsDamage>attack speed</style> by <style=cIsDamage>+{100f * StaticValues.superSonicAttackSpeed}%</style>. Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}%</style>. Grants <style=cIsHealing>complete invincibility</style> and <style=cIsUtility>flight</style>." + Environment.NewLine + Environment.NewLine + "This will <style=cIsHealth>consume</style> all seven Chaos Emeralds.";
-            string chaosEmeraldPickup = $" out of <style=cIsUtility>seven</style>. When all are brought together, <style=cIsUtility>Sonic</style> can transform into {superSonicColor}Super Sonic</color> by pressing {superSonicColor}V</color>, granting {superSonicColor}upgraded skills</color>, <style=cIsHealing>invincibility</style>, <style=cIsUtility>flight</style>, and <style=cIsDamage>incredible power</style> for {superSonicColor}{Modules.StaticValues.superSonicDuration}</color> seconds. This will <style=cIsHealth>consume</style> all the Chaos Emeralds.";
+            string chaosEmeraldDesc = $"One of the <style=cIsUtility>seven</style> Chaos Emeralds." + Environment.NewLine + $"When all <style=cIsUtility>seven</style> are brought together by you and/or other players, press {superSonicColor}V</color> to transform from <style=cIsUtility>Sonic</style> into {superSonicColor}Super Sonic</color> for {superSonicColor}{Modules.StaticValues.superSonicDuration}</color> seconds. Transforming {superSonicColor}upgrades all of your skills</color>. Increases <style=cIsDamage>damage</style> by <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}%</style>. Increases <style=cIsDamage>attack speed</style> by <style=cIsDamage>+{100f * StaticValues.superSonicAttackSpeed}%</style>. Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}%</style>. Grants <style=cIsHealing>complete invincibility</style> and <style=cIsUtility>flight</style>." + Environment.NewLine + Environment.NewLine + "This will <style=cIsHealth>consume</style> all seven Chaos Emeralds.";
+            string chaosEmeraldPickup = $" out of <style=cIsUtility>seven</style>. When all are brought together by you and/or other players, <style=cIsUtility>Sonic</style> can transform into {superSonicColor}Super Sonic</color> by pressing {superSonicColor}V</color>, granting {superSonicColor}upgraded skills</color>, <style=cIsHealing>invincibility</style>, <style=cIsUtility>flight</style>, and <style=cIsDamage>incredible power</style> for {superSonicColor}{Modules.StaticValues.superSonicDuration}</color> seconds. This will <style=cIsHealth>consume</style> all the Chaos Emeralds.";
 
             LanguageAPI.Add(prefix + "YELLOW_EMERALD", "Chaos Emerald: Yellow");
             LanguageAPI.Add(prefix + "YELLOW_EMERALD_PICKUP", $"<style=cIsDamage>One</style>" + chaosEmeraldPickup);

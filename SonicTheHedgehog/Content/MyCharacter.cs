@@ -454,6 +454,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                                    "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_NAME";
             parry.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                           "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_DESCRIPTION";
+            parry.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperParryIcon");
             SuperSonicComponent.parry = Modules.Skills.CreateSkillDef(parry);
 
             parry.requiredStock = 9999999;

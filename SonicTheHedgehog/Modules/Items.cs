@@ -30,6 +30,7 @@ namespace SonicTheHedgehog.Modules
                 canScrap = false,
                 colorIndex = ColorCatalog.ColorIndex.Tier1Item,
                 darkColorIndex = ColorCatalog.ColorIndex.Tier1ItemDark,
+                bgIconTexture = Assets.mainAssetBundle.LoadAsset<Texture>("texBGEmerald")
             };
 
             Content.AddItemTierDef(emeraldTier);

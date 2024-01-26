@@ -179,7 +179,7 @@ namespace SonicTheHedgehog
             */
             ProcCoefficientInfo superMeleeGhost = new ProcCoefficientInfo
             {
-                name = "Spectral Attack",
+                name = "Projectile",
                 procCoefficient = StaticValues.superMeleeExtraProcCoefficient
             };
             AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME", melee); /*new List<ProcCoefficientInfo>

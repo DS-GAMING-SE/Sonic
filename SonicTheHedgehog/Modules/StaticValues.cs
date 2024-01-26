@@ -117,7 +117,7 @@ namespace SonicTheHedgehog.Modules
 
         // Super Melee
 
-        internal const float superMeleeExtraDamagePercent = 0.6f;
+        internal const float superMeleeExtraDamagePercent = 0.4f;
 
         internal const float superMeleeExtraProcCoefficient = 0f;
 
