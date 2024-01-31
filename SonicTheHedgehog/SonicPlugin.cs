@@ -449,8 +449,6 @@ namespace SonicTheHedgehog
                 NetworkServer.Spawn(GameObject.Instantiate<GameObject>(SuperSonicHandler.handlerPrefab));
             }
 
-            SuperSonicHandler.instance.ResetAvailable();
-
             bool someoneIsSonic = false;
             foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
             {
@@ -460,16 +458,28 @@ namespace SonicTheHedgehog
                 }
             }
             Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
-            if (!someoneIsSonic) return;
+            if (!someoneIsSonic)
+            {
+                SuperSonicHandler.instance.SetEvents(false);
+                return;
+            }
 
             // Metamorphosis causes issues with emeralds spawning because character rerolls happen after emeralds spawn. Emeralds would only spawn the stage after you were Sonic
             bool metamorphosis = RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef);
             Debug.Log("Metamorphosis? " + metamorphosis);
-            if (metamorphosis) return;
+            if (metamorphosis)
+            {
+                SuperSonicHandler.instance.SetEvents(false);
+                return;
+            }
+
+            SuperSonicHandler.instance.SetEvents(true);
+
+            SuperSonicHandler.instance.ResetAvailable();
 
             SuperSonicHandler.instance.FilterOwnedEmeralds();
 
-            if (SuperSonicHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid")) 
+            if (SuperSonicHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid") && !scene.cachedName.Contains("voidstage")) 
             {
                 int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
                 

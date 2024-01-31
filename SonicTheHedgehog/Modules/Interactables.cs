@@ -10,12 +10,15 @@ namespace SonicTheHedgehog.Modules
 {
     public class SuperSonicHandler : NetworkBehaviour
     {
+        // Basically everything except the teamSuper var is only handled by server and won't be accurate for clients
         public static SuperSonicHandler instance { get; private set; }
         public static GameObject handlerPrefab;
 
         public static List<ChaosEmeraldInteractable.EmeraldColor> available;
 
         public static bool allEmeralds;
+        
+        public bool eventsSubscribed = false;
 
         [SyncVar]
         public static bool teamSuper;
@@ -38,7 +41,6 @@ namespace SonicTheHedgehog.Modules
             if (!instance)
             {
                 instance = this;
-                Inventory.onInventoryChangedGlobal += OnInventoryChanged;
                 return;
             }
             Debug.LogErrorFormat(this, "Duplicate instance of singleton class {0}. Only one should exist at a time.", new object[]
@@ -52,7 +54,7 @@ namespace SonicTheHedgehog.Modules
             if (instance == this)
             {
                 instance = null;
-                Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
+                SetEvents(false);
             }
         }
 
@@ -74,6 +76,22 @@ namespace SonicTheHedgehog.Modules
                 if (player.master.inventory.GetItemCount(Items.greenEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
                 if (player.master.inventory.GetItemCount(Items.cyanEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
                 if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
+            }
+        }
+
+        public void SetEvents(bool active)
+        {
+            if (active && !eventsSubscribed)
+            {
+                Inventory.onInventoryChangedGlobal += OnInventoryChanged;
+                RoR2Application.onFixedUpdate += OnFixedUpdate;
+                eventsSubscribed = true;
+            }
+            if (!active && eventsSubscribed)
+            {
+                RoR2Application.onFixedUpdate -= OnFixedUpdate;
+                Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
+                eventsSubscribed = false;
             }
         }
 
@@ -137,7 +155,7 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public void FixedUpdate()
+        public void OnFixedUpdate()
         {
             if (teamSuperTimer > 0)
             {
@@ -198,7 +216,7 @@ namespace SonicTheHedgehog.Modules
         }
     }
     
-    public sealed class ChaosEmeraldInteractable : MonoBehaviour
+    public sealed class ChaosEmeraldInteractable : NetworkBehaviour
     {
         public static DirectorPlacementRule placementRule = new DirectorPlacementRule
         {
@@ -342,6 +360,40 @@ namespace SonicTheHedgehog.Modules
             Green = 4,
             Cyan = 5,
             Purple = 6
+        }
+
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            if (initialState)
+            {
+                writer.Write((uint)color);
+                return true;
+            }
+            bool flag = false;
+            if ((base.syncVarDirtyBits & 1U) != 0U)
+            {
+                if (!flag)
+                {
+                    writer.WritePackedUInt32(base.syncVarDirtyBits);
+                    flag = true;
+                }
+                writer.Write((uint)color);
+            }
+            return flag;
+        }
+
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            if (initialState)
+            {
+                color = (EmeraldColor)reader.ReadUInt32();
+                return;
+            }
+            int num = (int)reader.ReadPackedUInt32();
+            if ((num & 1U) != 0U)
+            {
+                color = (EmeraldColor)reader.ReadUInt32();
+            }
         }
 
     }

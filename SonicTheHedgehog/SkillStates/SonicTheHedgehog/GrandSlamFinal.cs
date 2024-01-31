@@ -180,7 +180,7 @@ namespace SonicTheHedgehog.SkillStates
                         if (this.target!=null)
                         {
                             targetDirection = (this.target.transform.position - base.characterMotor.transform.position).normalized;
-                            speedMultiplier = Mathf.Clamp((this.target.transform.position - base.characterMotor.transform.position).magnitude * 10, 15, baseSpeedMultiplier);
+                            speedMultiplier = Mathf.Clamp((this.target.transform.position - base.characterMotor.transform.position).magnitude * 10, 25, baseSpeedMultiplier);
                         }
                         else
                         {

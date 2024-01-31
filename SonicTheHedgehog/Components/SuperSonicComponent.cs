@@ -170,7 +170,7 @@ namespace SonicTheHedgehog.Components
                         .GetComponent<SkinnedMeshRenderer>().sharedMesh;
                     break;
                 case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                    superSonicMaterial = null;
+                    superSonicMaterial = Materials.CreateHopooMaterial("matSuperMetalSonic");
                     superSonicModel = null;
                     break;
             }
