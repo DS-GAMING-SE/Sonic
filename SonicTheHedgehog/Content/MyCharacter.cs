@@ -161,6 +161,43 @@ namespace SonicTheHedgehog.Modules.Survivors
             }
         }
 
+        public static void UnlockMasteryConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Debug.Log("Unlock Mastery Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+            string achievement = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE";
+
+            if (Config.ForceUnlockParry().Value)
+            {
+                if (!user.HasAchievement(achievement))
+                {
+                    user.AddAchievement(achievement, true);
+                }
+
+                if (!user.HasUnlockable(masterySkinUnlockableDef))
+                {
+                    user.GrantUnlockable(masterySkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(achievement))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(achievement);
+                }
+
+                if (user.HasUnlockable(masterySkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(masterySkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+
         public static SkillDef primarySkillDef;
 
         public static SkillDef sonicBoomSkillDef;
@@ -427,7 +464,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             superSonicState.customName = "SonicForms";
             superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
 
-            SuperSonicComponent superSonicComponent = bodyPrefab.AddComponent<Components.SuperSonicComponent>();
+            bodyPrefab.AddComponent<Components.SuperSonicComponent>();
 
             Debug.Log("Making Super Sonic: Starting Stuff");
 

@@ -55,7 +55,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "1.2.1";
+        public const string MODVERSION = "2.0.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -252,6 +252,12 @@ namespace SonicTheHedgehog
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockParry()));
 
             Modules.Config.ForceUnlockParry().SettingChanged += SonicTheHedgehogCharacter.UnlockParryConfig;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockMastery()));
+
+            Modules.Config.ForceUnlockMastery().SettingChanged += SonicTheHedgehogCharacter.UnlockMasteryConfig;
+
+            ModSettingsManager.AddOption(new KeyBindOption(Modules.Config.SuperTransformKey()));
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)

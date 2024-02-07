@@ -1,4 +1,6 @@
 ﻿using BepInEx.Configuration;
+using RiskOfOptions.Options;
+using RiskOfOptions.Utils;
 using UnityEngine;
 
 namespace SonicTheHedgehog.Modules
@@ -41,6 +43,11 @@ namespace SonicTheHedgehog.Modules
         public static ConfigEntry<bool> ForceUnlockMastery()
         {
             return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Mastery", false, "Automatically unlock the achievement \"Sonic: Mastery\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
+
+        public static ConfigEntry<KeyboardShortcut> SuperTransformKey()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<KeyboardShortcut>("Controls", "Super Transform Key", new KeyboardShortcut(KeyCode.V), "The key you press to transform into Super Sonic. Default is V.");
         }
     }
 }

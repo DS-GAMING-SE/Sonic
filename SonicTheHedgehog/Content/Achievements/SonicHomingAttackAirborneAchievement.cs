@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace SonicTheHedgehog.Modules.Achievements
 {
+    // I have no god damn clue what SonicSkills.Parry is or what a reward identifier is I just ignore it and hope it works
     [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", "SonicSkills.Parry", null, null)]
     public class SonicHomingAttackAirborneAchievement : RoR2.Achievements.BaseAchievement
     {

@@ -14,6 +14,7 @@ namespace SonicTheHedgehog.Modules.Achievements
             return BodyCatalog.FindBodyIndex("SonicTheHedgehog");
         }
     }*/
+    // I have no god damn clue what SonicSkins.Mastery is or what a reward identifier is I just ignore it and hope it works
     [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", "SonicSkins.Mastery", null, null)]
     public class SonicMasteryAchievement : BaseMasteryUnlockable
     {

@@ -35,7 +35,7 @@ namespace SonicTheHedgehog.Components
         public bool scepterBoostExists;
 
         private const float baseMaxBoostMeter=100f;
-        private const float boostMeterPerFlatReduction = 25f;
+        private const float boostMeterPerFlatReduction = 100/3f;
         private const float baseBoostRegen = 0.38f;
         public const float boostRegenPerBandolier = 25f;
         public const float boostRunRechargeCap = 5f;
@@ -95,7 +95,7 @@ namespace SonicTheHedgehog.Components
             if (body && boostExists)
             {
                 this.boostRegen = baseBoostRegen / body.skillLocator.utility.cooldownScale;
-                this.maxBoostMeter = baseMaxBoostMeter + (boostMeterPerFlatReduction * body.skillLocator.utility.flatCooldownReduction);
+                this.maxBoostMeter = Mathf.Round((baseMaxBoostMeter + (boostMeterPerFlatReduction * Mathf.Max(body.skillLocator.utility.flatCooldownReduction, -2))) / 10) * 10;
                 this.NetworkmaxBoostMeter = maxBoostMeter;
                 if ((body.characterMotor.isGrounded || (body.GetComponent<ICharacterFlightParameterProvider>().isFlying)) && body.skillLocator.utility.stock != body.skillLocator.utility.maxStock && boostAvailable)
                 {

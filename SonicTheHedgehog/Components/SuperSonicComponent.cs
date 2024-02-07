@@ -51,7 +51,7 @@ namespace SonicTheHedgehog.Components
             flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
         }
 
-        public void Transform(EntityStateMachine entityState, Inventory inventory)
+        public void Transform(EntityStateMachine entityState)
         {
             if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
             {
