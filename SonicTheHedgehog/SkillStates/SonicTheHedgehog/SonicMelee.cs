@@ -6,6 +6,7 @@ using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Survivors;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -351,10 +352,37 @@ namespace SonicTheHedgehog.SkillStates
             {
                 origin -= Vector3.Cross(forward, Vector3.up) * 3;
             }
-            
-            RoR2.Projectile.ProjectileManager.instance.FireProjectile(Projectiles.superMeleeProjectilePrefab, origin, Util.QuaternionSafeLookRotation(base.GetAimRay().direction), 
+
+            string skinName = base.modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken;
+
+            RoR2.Projectile.ProjectileManager.instance.FireProjectile(GetSuperProjectile(skinName), origin, Util.QuaternionSafeLookRotation(base.GetAimRay().direction), 
                 base.gameObject, this.damageCoefficient * StaticValues.superMeleeExtraDamagePercent * this.damageStat, 0, 
                 Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, 120);
+        }
+
+        public virtual GameObject GetSuperProjectile(string skinName)
+        {
+            if (swingIndex%2 == 0 && swingIndex != 4)
+            {
+                switch (skinName)
+                {
+                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
+                        return Projectiles.superMeleePunchProjectilePrefab;
+                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
+                        return Projectiles.superMetalMeleePunchProjectilePrefab;
+                }
+            }
+            else
+            {
+                switch (skinName)
+                {
+                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
+                        return Projectiles.superMeleeKickProjectilePrefab;
+                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
+                        return Projectiles.superMetalMeleeKickProjectilePrefab;
+                }
+            }
+            return Projectiles.superMeleePunchProjectilePrefab;
         }
         public void PrepareOverlapAttack()
         {

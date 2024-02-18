@@ -2,6 +2,7 @@
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules;
 using System;
 using Unity.Collections;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace SonicTheHedgehog.SkillStates
         protected SuperSonicComponent superSonic;
         protected string transformSoundString = "Play_super_transform";
 
+        public bool emeraldAnimation;
         public float duration;
         protected Animator animator;
 
@@ -42,6 +44,10 @@ namespace SonicTheHedgehog.SkillStates
                 if (NetworkServer.active)
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
+                }
+                if (emeraldAnimation)
+                {
+                    EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
                 }
 
                 this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest

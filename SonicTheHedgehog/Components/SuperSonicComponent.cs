@@ -53,7 +53,7 @@ namespace SonicTheHedgehog.Components
 
         public void Transform(EntityStateMachine entityState)
         {
-            if (entityState.SetInterruptState(new SuperSonicTransformation(), InterruptPriority.Frozen))
+            if (entityState.SetInterruptState(new SuperSonicTransformation { emeraldAnimation = !SuperSonicHandler.instance.NetworkteamSuper }, InterruptPriority.Frozen))
             {
                 if (NetworkServer.active)
                 {

@@ -10,7 +10,10 @@ namespace SonicTheHedgehog.Modules
     {
         internal static GameObject sonicBoomPrefab;
         internal static GameObject superSonicBoomPrefab;
-        internal static GameObject superMeleeProjectilePrefab;
+        internal static GameObject superMeleePunchProjectilePrefab;
+        internal static GameObject superMeleeKickProjectilePrefab;
+        internal static GameObject superMetalMeleePunchProjectilePrefab;
+        internal static GameObject superMetalMeleeKickProjectilePrefab;
         internal static GameObject superSonicAfterimageRainPrefab;
 
         internal static void RegisterProjectiles()
@@ -22,7 +25,7 @@ namespace SonicTheHedgehog.Modules
 
             AddProjectile(sonicBoomPrefab);
             AddProjectile(superSonicBoomPrefab);
-            AddProjectile(superMeleeProjectilePrefab);
+            AddProjectile(superMeleePunchProjectilePrefab);
             AddProjectile(superSonicAfterimageRainPrefab);
         }
 
@@ -78,10 +81,15 @@ namespace SonicTheHedgehog.Modules
 
         private static void CreateSuperMeleeProjectile()
         {
-            superMeleeProjectilePrefab = CloneProjectilePrefab("FMJ", "SuperSonicMeleeProjectile");
+            Material material = LegacyResourcesAPI.Load<Material>("Materials/matGhostEffect");
+            material.SetColor("_TintColor", new Color(1, 0.5f, 0.1f, 1));
+            material.SetColor("_Color", new Color(1, 0.5f, 0.1f, 1));
+            material.SetColor("_EmissionColor", new Color(1, 0.5f, 0.1f, 1));
 
-            ProjectileDamage damage = superMeleeProjectilePrefab.GetComponent<ProjectileDamage>();
-            ProjectileSimple simple = superMeleeProjectilePrefab.GetComponent<ProjectileSimple>();
+            superMeleePunchProjectilePrefab = CloneProjectilePrefab("FMJ", "SuperSonicMeleePunchProjectile");
+
+            ProjectileDamage damage = superMeleePunchProjectilePrefab.GetComponent<ProjectileDamage>();
+            ProjectileSimple simple = superMeleePunchProjectilePrefab.GetComponent<ProjectileSimple>();
 
             damage.damage = 1;
 
@@ -100,9 +108,25 @@ namespace SonicTheHedgehog.Modules
             impactExplosion.lifetimeAfterImpact = 0f;
             */
 
-            ProjectileController bombController = superMeleeProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
+            ProjectileController bombController = superMeleePunchProjectilePrefab.GetComponent<ProjectileController>();
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SuperMeleePunchGhost", material);
             bombController.startSound = "";
+            CreateOtherSuperMeleeProjectiles(material);
+        }
+
+        private static void CreateOtherSuperMeleeProjectiles(Material material)
+        {
+            superMeleeKickProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperSonicMeleeKickProjectile");
+            ProjectileController controller = superMeleeKickProjectilePrefab.GetComponent<ProjectileController>();
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMeleeKickGhost", material);
+
+            superMetalMeleePunchProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperMetalMeleePunchProjectile");
+            controller = superMetalMeleePunchProjectilePrefab.GetComponent<ProjectileController>();
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleePunchGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleePunchGhost", material);
+
+            superMetalMeleeKickProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperMetalMeleeKickProjectile");
+            controller = superMetalMeleeKickProjectilePrefab.GetComponent<ProjectileController>();
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleeKickGhost", material);
         }
 
         private static void CreateSuperSonicAfterimageRain()
@@ -160,6 +184,17 @@ namespace SonicTheHedgehog.Modules
             if (!ghostPrefab.GetComponent<ProjectileGhostController>()) ghostPrefab.AddComponent<ProjectileGhostController>();
 
             Modules.Assets.ConvertAllRenderersToHopooShader(ghostPrefab);
+
+            return ghostPrefab;
+        }
+
+        private static GameObject CreateGhostPrefab(string ghostName, Material superGhostMaterial)
+        {
+            GameObject ghostPrefab = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>(ghostName);
+            if (!ghostPrefab.GetComponent<NetworkIdentity>()) ghostPrefab.AddComponent<NetworkIdentity>();
+            if (!ghostPrefab.GetComponent<ProjectileGhostController>()) ghostPrefab.AddComponent<ProjectileGhostController>();
+
+            ghostPrefab.GetComponentInChildren<Renderer>().material = superGhostMaterial;
 
             return ghostPrefab;
         }

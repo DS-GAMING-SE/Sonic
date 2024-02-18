@@ -2,6 +2,7 @@
 using SonicTheHedgehog.Components;
 using System;
 using System.Drawing;
+using System.Text;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
@@ -46,8 +47,10 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "NAME", "Sonic");
             LanguageAPI.Add(prefix + "DESCRIPTION", desc);
             LanguageAPI.Add(prefix + "SUBTITLE", "Fastest Thing Alive");
-            LanguageAPI.Add(prefix + "LORE", "maybe one day there will be a logbook entry");
+
+            LanguageAPI.Add(prefix + "LORE", "<style=cMono>UES Planetary Observation Network Logs\nVessel: Contact Light</style>\n\n>Welcome captain. Please enter log id…\n>082303\n\n[LOG 082303]\nSummation: Third observation of unknown organic entity 072391 by PON Control AI.\n[07:32:15:76] - [Satellite M2Y]: high speed mass detected in atmosphere; Rallypoint Epsilon potentially within initial estimated trajectory; issuing intercontinental bombardment warning to Epsilon; time to impact <9.35 seconds.\r\n[07:32:23:22] - [Satellite M2Y]: Trajectory has abruptly shifted 86.7 degrees at speeds exceeding atmospheric re-entry levels; rescinding warning and requesting additional observation; potential enemy aircraft.\n[07:32:34:62] - [Satellite T3I]: Target is moving less than 20 feet above sea level; speed exceeds 19,300 mph.\n[07:32:38:17] - [PON Control]: 072391 suspected; initiating capture protocol; observation drones S2, S6 and BR to convene at attached waypoint; observation drones T2, K3 and AC to pursue and direct target toward waypoint.\n[07:32:38:23] - [Drones AC/BR/K3/S2/S6/T2]: Orders received; moving out.\n[07:33:14:33] - [Drone T2]: Visual established; confirmed 072391; target traveling across the northern ocean’s surface; appears to be running on the water; assuming high-speed formation with K3 and AC; pursuing.\n[07:33:27:86] - [Drone T2]: Target’s speed exceeds onboard thrusters; target approaching limit of camera range.\n[07:33:29:02] - [PON Control]: Override 767 issued; continue pursuit.\n[07:33:31:07] - [Drones AC/K3/T2]: Overclocking thrusters; speed exceeding 19,500 mph.\n[07:33:34:21] - [Drones AC/K3/T2] : WARNING; thrusters overheating - explosion imminent.\n[07:33:40:87] - [Drone T2]: Re-established visual; target appears to be running backwards; target appears to be winking at this unit.\n[07:33:44:43] - [Drone T2]: Massive increase to target’s speed; target exceeding camera range; shockwave incoming. \n[07:33:45:14] - [Drones AC/K3/T2]: WARNING thrusters’ structural integrity compromised; internal combustion detected; losing altitude.\n[07:33:46:14] - [Drones AC/K3/T2]: WARNING waterlogging detected; systems failing.\n[07:33:47:01] -  [AC/K3/T2 LOST]\n[07:33:49:65] - [PON Control]: Target approaching intercept point; speed exceeding 20,000 mph; drones prepare stun field.\n[07:33:51:01] - [Drones BR/S2/S6]: Stun emitters deployed; ready to fire.\n[07:33:53:13] - [PON Control]: Massive increase to target’s speed; tracking lost; estimated time to intercept point <2 seconds; fire stun field.\n[07:33:54:01] - [Drones BR/S2/S6]: ERROR: Stun emitters missing.\n[07:33:55:23] -  [Drone S2] Audio parsed: \"You’re.\"\n[07:33:55:25] -  [S2 LOST]\n[07:33:56:37] -  [Drone BR] Audio parsed: \"Too.\"\n[07:33:56:40] -  [BR LOST]\n[07:33:57:33] -  [Drone S6] Audio parsed: \"Slow.\"\n[07:33:57:36] -  [S6 LOST]\n[07:34:01:02] -  [TARGET LOST]\n\n<style=cMono>[END LOG]</style>\n\n>Officer commentary appended to case file: \"He’s definitely messing with us.\"");
             //lore idea: something about ancients getting scooped up by providence before their planet got blown up, drew chaos emeralds to ror planet
+
             LanguageAPI.Add(prefix + "OUTRO_FLAVOR", outro);
             LanguageAPI.Add(prefix + "OUTRO_FAILURE", outroFailure);
 
@@ -256,9 +259,59 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "PURPLE_EMERALD_PICKUP", "<color=#c437c0>One</color>" + chaosEmeraldPickup);
             LanguageAPI.Add(prefix + "PURPLE_EMERALD_DESC", chaosEmeraldDesc);
 
+            #region Emerald Lore
+
+            string dataScraperOpening = "<style=cMono>Welcome to DataScraper (v3.1.53 – beta branch)\n$ Scraping memory... error.\n$ Resolving...\n$";
+
+            string dataScraperEnding = "\n$ Combing for relevant data... done.\nDisplaying partial result.</style>\n\n";
+
+            StringBuilder sb = new StringBuilder();
+
+            LanguageAPI.Add(prefix + "BLUE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 0) + dataScraperEnding +
+                "before attack");
+
+            LanguageAPI.Add(prefix + "CYAN_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 1) + dataScraperEnding +
+                "Only a fraction of us were able to make it off world before the attack.");
+
+            LanguageAPI.Add(prefix + "GRAY_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 2) + dataScraperEnding +
+                "settling on new planet, end shows up at.. uhh.. the end");
+
+            LanguageAPI.Add(prefix + "GREEN_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 3) + dataScraperEnding +
+                "Before, we had run away and lost almost everything. Now, not only was what little we had left in danger once more, we had also dragged a planet that's not our own into this conflict.\n\nWe could've run again, we could've tried to hide on another world, we could've left this world to die like ours.\n\nHow much would we lose in our rushed and desperate escape? Was there any guarantee it wouldn't find us again? How many more worlds would be in danger from this... thing?\n\nWe could've run away.\n\nWe didn't.");
+
+            LanguageAPI.Add(prefix + "PURPLE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 4) + dataScraperEnding +
+                "aftermath of battle, ancients fade away");
+
+            LanguageAPI.Add(prefix + "RED_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 5) + dataScraperEnding +
+                "It's hard not to miss times long gone, but there's no use dwelling on the past. Life moves on, with or without us. From the rubble and ruins of our ----");
+
+            LanguageAPI.Add(prefix + "YELLOW_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 6) + dataScraperEnding +
+                "To those who find any of what we've left behind, please take what you wish. Perhaps it can save you from suffering a fate like ours.");
+
             #endregion
 
             #endregion
+
+            #endregion
+        }
+
+        internal static string FileNotFoundEmeraldLogHelper(StringBuilder sb, int index)
+        {
+            sb.Clear();
+            int count = 0;
+            while (count < 7)
+            {
+                if (count == index)
+                {
+                    sb.Append(" [Found]");
+                }
+                else
+                {
+                    sb.Append(" [X]");
+                }
+                count++;
+            }
+            return sb.ToString();
         }
     }
 }

@@ -483,6 +483,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                                        "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME";
             sonicBoom.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                               "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION";
+            sonicBoom.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texCrossSlashIcon");
             SuperSonicComponent.sonicBoom = Modules.Skills.CreateSkillDef(sonicBoom);
 
             parry.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
