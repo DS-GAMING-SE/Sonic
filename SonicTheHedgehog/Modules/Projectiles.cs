@@ -82,11 +82,13 @@ namespace SonicTheHedgehog.Modules
         private static void CreateSuperMeleeProjectile()
         {
             Material material = LegacyResourcesAPI.Load<Material>("Materials/matGhostEffect");
-            material.SetColor("_TintColor", new Color(1, 0.5f, 0.1f, 1));
-            material.SetColor("_Color", new Color(1, 0.5f, 0.1f, 1));
-            material.SetColor("_EmissionColor", new Color(1, 0.5f, 0.1f, 1));
+            material.SetColor("_TintColor", new Color(1, 0.2f, 0f, 1));
+            material.SetColor("_Color", new Color(1, 0.2f, 0f, 1.5f));
+            material.SetColor("_EmissionColor", new Color(1, 0.2f, 0f, 2));
 
             superMeleePunchProjectilePrefab = CloneProjectilePrefab("FMJ", "SuperSonicMeleePunchProjectile");
+
+            superMeleePunchProjectilePrefab.transform.localScale *= 1.4f;
 
             ProjectileDamage damage = superMeleePunchProjectilePrefab.GetComponent<ProjectileDamage>();
             ProjectileSimple simple = superMeleePunchProjectilePrefab.GetComponent<ProjectileSimple>();

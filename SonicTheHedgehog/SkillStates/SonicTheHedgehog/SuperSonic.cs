@@ -68,17 +68,7 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 if (base.skillLocator)
                 {
-                    base.skillLocator.primary.SetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
-                    if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
-                    {
-                        base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
-                    }
-                    else
-                    {
-                        base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
-                    }
-                    base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
-                    base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
+                    SkillOverrides(true);
                 }
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicTransformationEffect, base.gameObject, "Chest", true);
             }
@@ -104,17 +94,7 @@ namespace SonicTheHedgehog.SkillStates
 
             if (base.isAuthority && base.skillLocator)
             {
-                base.skillLocator.primary.UnsetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
-                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
-                {
-                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-                else
-                {
-                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-                base.skillLocator.utility.UnsetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
-                base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
+                SkillOverrides(false);
             }
 
             base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.5f);
@@ -140,6 +120,62 @@ namespace SonicTheHedgehog.SkillStates
                     superSonicComponent.superSonicState.SetNextState(new BaseSonic());
                 }
                 return;
+            }
+        }
+
+        public virtual void SkillOverrides(bool set)
+        {
+            if (set)
+            {
+                if (base.skillLocator.primary.baseSkill == SonicTheHedgehogCharacter.primarySkillDef)
+                {
+                    base.skillLocator.primary.SetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+
+                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
+                {
+                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+                else if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.parrySkillDef)
+                {
+                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+
+                if (base.skillLocator.utility.baseSkill == SonicTheHedgehogCharacter.boostSkillDef)
+                {
+                    base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+
+                if (base.skillLocator.special.baseSkill == SonicTheHedgehogCharacter.grandSlamSkillDef)
+                {
+                    base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+            }
+            else
+            {
+                if (base.skillLocator.primary.baseSkill == SonicTheHedgehogCharacter.primarySkillDef)
+                {
+                    base.skillLocator.primary.UnsetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+
+                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
+                {
+                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+                else
+                {
+                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+
+                if (base.skillLocator.utility.baseSkill == SonicTheHedgehogCharacter.boostSkillDef)
+                {
+                    base.skillLocator.utility.UnsetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
+                }
+
+                if (base.skillLocator.special.baseSkill == SonicTheHedgehogCharacter.grandSlamSkillDef)
+                {
+                    base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
+                }
             }
         }
 

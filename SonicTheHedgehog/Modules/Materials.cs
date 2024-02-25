@@ -87,6 +87,16 @@ namespace SonicTheHedgehog.Modules
             return tempMat;
         }
 
+        public static Material ShinyMaterial(this Material mat)
+        {
+            SetHopooMaterial(mat);
+
+            mat.SetFloat("_SpecularHighlights", 1);
+            mat.SetFloat("_Metallic", 1);
+            mat.SetFloat("_Glossiness", 1);
+
+            return mat;
+        }
         /// <summary>
         /// Makes this a unique material if we already have this material cached (i.e. you want an altered version). New material will not be cached
         /// <para>If it was not cached in the first place, simply returns as it is already unique.</para>

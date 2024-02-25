@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine.Networking.NetworkSystem;
+using EntityStates;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -33,7 +35,7 @@ namespace SonicTheHedgehog.Modules
             handlerPrefab.AddComponent<NetworkIdentity>();
             //handlerPrefab = new GameObject("SuperSonicHandler", typeof(SuperSonicHandler));
             PrefabAPI.RegisterNetworkPrefab(handlerPrefab);
-            Content.AddNetworkedObjectPrefab(handlerPrefab);
+            //Content.AddNetworkedObjectPrefab(handlerPrefab);
         }
         
         private void OnEnable()
@@ -227,9 +229,13 @@ namespace SonicTheHedgehog.Modules
 
         public static PurchaseInteraction purchaseInteractionBase;
 
-        private static Vector3 dropVelocity = Vector3.up * 15;
+        private static Vector3 dropVelocity = Vector3.up * 20;
+
+        public static Material ringMaterial;
 
         public PurchaseInteraction purchaseInteraction;
+
+        public EntityStateMachine stateMachine;
 
         public PickupDisplay pickupDisplay;
 
@@ -240,9 +246,10 @@ namespace SonicTheHedgehog.Modules
 
 
         public static void Initialize()
-        {           
-            prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicAtlasInteractable");
-
+        {
+            Debug.Log("Starting Emerald Interactable Init");
+            prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("ChaosEmeraldInteractable");
+            Debug.Log("Loaded Base");
             prefabBase.AddComponent<NetworkIdentity>();
 
             if (!prefabBase.TryGetComponent<RoR2.PurchaseInteraction>(out purchaseInteractionBase))
@@ -250,7 +257,9 @@ namespace SonicTheHedgehog.Modules
                 purchaseInteractionBase = prefabBase.AddComponent<RoR2.PurchaseInteraction>();
             }
 
-            prefabBase.GetComponent<Highlight>().targetRenderer = prefabBase.transform.Find("SuperSonicMesh").GetComponent<MeshRenderer>();
+            Debug.Log("PurchaseInteraction added");
+
+            prefabBase.GetComponent<Highlight>().targetRenderer = prefabBase.transform.Find("RingParent/Ring").GetComponent<MeshRenderer>();
 
             GameObject trigger = prefabBase.transform.Find("Trigger").gameObject;
 
@@ -263,6 +272,8 @@ namespace SonicTheHedgehog.Modules
                 trigger.AddComponent<RoR2.EntityLocator>().entity = prefabBase;
             }
 
+            Debug.Log("Trigger done");
+
             purchaseInteractionBase.available = true;
             purchaseInteractionBase.cost = StaticValues.chaosEmeraldCost;
             purchaseInteractionBase.automaticallyScaleCostWithDifficulty = true;
@@ -273,12 +284,25 @@ namespace SonicTheHedgehog.Modules
             prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
 
             prefabBase.transform.Find("PickupDisplay").gameObject.AddComponent<PickupDisplay>();
+            Debug.Log("PickupDisplay done");
 
+            Materials.ShinyMaterial(Assets.mainAssetBundle.LoadAsset<Material>("matRing"));
+
+            Debug.Log("Material Done");
+            
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
+
+            var entityStateMachine = prefabBase.AddComponent<EntityStateMachine>();
+            entityStateMachine.customName = "Body";
+            entityStateMachine.initialStateType.stateType = typeof(BaseState);
+            entityStateMachine.mainStateType.stateType = typeof(BaseState);
+
+            var networkStateMachine = prefabBase.AddComponent<NetworkStateMachine>();
+            networkStateMachine.stateMachines = new EntityStateMachine[] { entityStateMachine };
 
             PrefabAPI.RegisterNetworkPrefab(prefabBase);
 
-            Content.AddNetworkedObjectPrefab(prefabBase);
+            //Content.AddNetworkedObjectPrefab(prefabBase);
         }
 
         private void Start()
@@ -288,6 +312,8 @@ namespace SonicTheHedgehog.Modules
             pickupDisplay = base.GetComponentInChildren<PickupDisplay>();
             purchaseInteraction = base.GetComponent<PurchaseInteraction>();
             purchaseInteraction.onPurchase.AddListener(OnPurchase);
+
+            stateMachine = EntityStateMachine.FindByCustomName(gameObject, "Body");
 
             if (NetworkServer.active)
             {
@@ -334,21 +360,26 @@ namespace SonicTheHedgehog.Modules
 
         public void OnPurchase(Interactor interactor)
         {
-            pickupDisplay.SetPickupIndex(PickupIndex.none);
             Debug.Log("Bought " + color + " Chaos Emerald.");
             purchaseInteraction.SetAvailable(false);
-            DropPickup();
+            this.stateMachine.SetNextState(new SkillStates.InteractablePurchased());
         }
 
-        [Server]
         public void DropPickup()
         {
+            pickupDisplay.SetPickupIndex(PickupIndex.none);
             if (!NetworkServer.active)
             {
-                Debug.LogWarning("[Server] function 'ChaosEmeraldInteractable::DropPickup()' called on client");
+                //Debug.LogWarning("[Server] function 'ChaosEmeraldInteractable::DropPickup()' called on client");
                 return;
             }
             PickupDropletController.CreatePickupDroplet(this.pickupIndex, (pickupDisplay.transform).position, base.transform.TransformVector(dropVelocity));
+        }
+
+        public void Disappear()
+        {
+            gameObject.transform.Find("Trigger").gameObject.SetActive(false);
+            gameObject.transform.Find("RingParent/Ring").gameObject.SetActive(false);
         }
 
         public enum EmeraldColor : uint
