@@ -511,10 +511,10 @@ namespace SonicTheHedgehog.Modules.Survivors
                 keywordTokens = new string[]
                     { SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texIDWAttackIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(IDWAttack)),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(IDWAttackSearch)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
-                baseRechargeInterval = 4f,
+                baseRechargeInterval = 3f,
                 beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,

@@ -21,6 +21,7 @@ namespace SonicTheHedgehog.Components
         private EntityStateMachine bodyState;
 
         private HurtBox trackingTarget;
+        private HurtBox nearbyTarget;
         public bool isTrackingTargetClose;
         public bool enemiesNearby;
 
@@ -70,8 +71,8 @@ namespace SonicTheHedgehog.Components
                 }
                 else
                 {
-                    this.SearchForTarget(inputBank.GetAimRay());
                     EnemiesNearby();
+                    this.SearchForTarget(inputBank.GetAimRay());
                     this.indicator.targetTransform = CanHomingAttack() ? this.trackingTarget.transform : null;
                 }
             }
@@ -89,11 +90,15 @@ namespace SonicTheHedgehog.Components
             this.search.maxAngleFilter = 12;
             this.search.RefreshCandidates();
             this.search.FilterOutGameObject(base.gameObject);
-            HurtBox result = this.search.GetResults().FirstOrDefault<HurtBox>();
-            this.trackingTarget = result;
-            if (result != null)
+            this.trackingTarget = this.search.GetResults().FirstOrDefault<HurtBox>();
+            if (this.trackingTarget != null)
             {
-                this.isTrackingTargetClose = 8 >= Mathf.Abs(Vector3.Magnitude(characterBody.transform.position - result.transform.position));
+                this.isTrackingTargetClose = 8 >= Mathf.Abs(Vector3.Magnitude(characterBody.transform.position - this.trackingTarget.transform.position));
+            }
+            else if (nearbyTarget != null)
+            {
+                this.trackingTarget = nearbyTarget;
+                this.isTrackingTargetClose = true;
             }
         }
 
@@ -104,7 +109,12 @@ namespace SonicTheHedgehog.Components
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));
-            this.enemiesNearby = sphereSearch.GetHurtBoxes().Any();
+            this.nearbyTarget = sphereSearch.GetHurtBoxes().FirstOrDefault<HurtBox>();
+            this.enemiesNearby = nearbyTarget;
+            if (nearbyTarget && Vector3.Dot((this.nearbyTarget.transform.position - characterBody.transform.position).normalized, inputBank.GetAimRay().direction) < 0.2f)
+            {
+                this.nearbyTarget = null;
+            }
         }
 
         public bool CanHoming()

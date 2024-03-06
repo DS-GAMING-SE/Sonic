@@ -26,6 +26,8 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject transformationEmeraldSwirl;
 
         internal static GameObject superSonicAura;
+        internal static GameObject superSonicWarning;
+
         internal static GameObject meleeHitEffect;
         internal static GameObject meleeImpactEffect;
         internal static GameObject homingAttackLaunchEffect;
@@ -33,6 +35,7 @@ namespace SonicTheHedgehog.Modules
 
         internal static GameObject parryEffect;
         internal static GameObject parryActivateEffect;
+        internal static GameObject idwAttackEffect;
 
         internal static GameObject superSonicBlurEffect;
 
@@ -133,6 +136,8 @@ namespace SonicTheHedgehog.Modules
 
             superSonicAura = Assets.LoadEffect("SonicSuperAura", true);
             superSonicAura.GetComponent<DestroyOnTimer>().enabled = false;
+            superSonicWarning = Assets.LoadEffect("SonicSuperWarning", true);
+            superSonicWarning.GetComponent<DestroyOnTimer>().enabled = false;
 
             meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", true);
             meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
@@ -141,6 +146,7 @@ namespace SonicTheHedgehog.Modules
 
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
+            idwAttackEffect = Assets.LoadEffect("SonicIDWAttack", true);
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 

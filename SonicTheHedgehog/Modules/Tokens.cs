@@ -281,13 +281,13 @@ namespace SonicTheHedgehog.Modules
                 "Before, we had run away and lost almost everything. Now, not only was what little we had left in danger once more, we had also dragged a planet that's not our own into this conflict.\n\nWe could've run again, we could've tried to hide on another world, we could've left this world to die like ours.\n\nHow much would we lose in our rushed and desperate escape? Was there any guarantee it wouldn't find us again? How many more worlds would be in danger from this... thing?\n\nWe could've run away.\n\nWe didn't.");
 
             LanguageAPI.Add(prefix + "PURPLE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 4) + dataScraperEnding +
-                "aftermath of battle, ancients fade away");
+                "---. It has been locked away in cyber space.");
 
             LanguageAPI.Add(prefix + "RED_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 5) + dataScraperEnding +
-                "It's hard not to miss times long gone, but there's no use dwelling on the past. Life moves on, with or without us. From the rubble and ruins of our ----");
+                "All that remains are our memories. Blips of love, of fear, of hope, of life, tethered to the charms we once held so close to our hearts.\n\n--My home has been reduced to rubble and data--. Even so, life moves on, with or without us. I no longer have any desire to rebuild all that has been lost. I remain only to ensure the ---world is safe---.\n\nI remain, awaiting the sight of a thriving world to wash away my regrets and set my soul free.");
 
             LanguageAPI.Add(prefix + "YELLOW_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 6) + dataScraperEnding +
-                "To those who find any of what we've left behind, please take what you wish. Perhaps it can save you from suffering a fate like ours.");
+                "To those who find any of what we've left behind, please take what you wish. Perhaps it can save you from suffering a fate like ours.\n\nWhen it mattered most, I wasn't able to do anything. I was unable to save anyone, not even myself. Maybe being able to save you, whoever you are, will be enough to help me move on.");
 
             #endregion
 
@@ -304,7 +304,7 @@ namespace SonicTheHedgehog.Modules
             {
                 if (count == index)
                 {
-                    sb.Append(" [Found]");
+                    sb.Append(" [ ]");
                 }
                 else
                 {

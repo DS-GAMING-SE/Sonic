@@ -9,6 +9,8 @@ namespace SonicTheHedgehog.Modules
     {
         internal static void RegisterStates()
         {
+            Modules.Content.AddEntityState(typeof(InteractablePurchased));
+
             Modules.Content.AddEntityState(typeof(SonicEntityState));
 
             Modules.Content.AddEntityState(typeof(Death));
@@ -24,6 +26,7 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(Parry));
             Modules.Content.AddEntityState(typeof(ParryExit));
+            Modules.Content.AddEntityState(typeof(IDWAttackSearch));
             Modules.Content.AddEntityState(typeof(IDWAttack));
 
             Modules.Content.AddEntityState(typeof(Boost));

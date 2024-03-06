@@ -16,7 +16,10 @@ namespace SonicTheHedgehog.SkillStates
     public class SuperSonic : BaseState
     {
         SuperSonicComponent superSonicComponent;
+
         GameObject superAura;
+        GameObject warning;
+
         bool superBuffApplied;
 
         CharacterModel characterModel;
@@ -91,6 +94,10 @@ namespace SonicTheHedgehog.SkillStates
                 Destroy(this.superAura);
             }
             // Aura despawned because all assets loaded are automatically given a component that makes them go away after 12 seconds. Why no one tells me this
+            if (this.warning)
+            {
+                Destroy(this.warning);
+            }
 
             if (base.isAuthority && base.skillLocator)
             {
@@ -106,6 +113,10 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.FixedUpdate();
             this.superAura.SetActive(this.characterModel.invisibilityCount <= 0);
+            if (base.fixedAge >= StaticValues.superSonicDuration - StaticValues.superSonicWarningDuration && !warning)
+            {
+                this.warning = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicWarning, base.FindModelChild("Chest"));
+            }
             if (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff))
             {
                 if (!superBuffApplied)

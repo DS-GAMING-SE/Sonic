@@ -106,7 +106,9 @@ namespace SonicTheHedgehog.Modules
         // Super Sonic -----------------------------
 
         internal const float superSonicDuration = 50f;
-        
+
+        internal const float superSonicWarningDuration = 10f;
+
         internal const float superSonicMovementSpeed = 1f; // value multiplied by base move speed stat
 
         internal const float superSonicAttackSpeed = 0.3f;

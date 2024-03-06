@@ -136,7 +136,7 @@ namespace SonicTheHedgehog.SkillStates
         private void IdleExtraAnimation()
         {
             if (base.characterBody.inputBank.moveVector != Vector3.zero || !base.characterMotor.isGrounded ||
-                base.characterBody.inputBank.jump.down || emoting)
+                base.characterBody.inputBank.jump.down || emoting || base.modelAnimator.GetFloat("isSuperFloat") >= 1)
             {
                 idleExtraTimer = idleExtraDefault;
                 idleExtraCount = 0;

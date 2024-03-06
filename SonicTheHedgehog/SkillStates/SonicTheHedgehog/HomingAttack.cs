@@ -220,7 +220,7 @@ namespace SonicTheHedgehog.SkillStates
 
                 animationEnded = true;
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
-                base.PlayAnimation("Body", "Backflip");
+                base.PlayAnimation("Body", "Backflip", "Slash.playbackRate", this.homingAttackEndLag * 2);
             }
 
             if (!this.inHitPause)

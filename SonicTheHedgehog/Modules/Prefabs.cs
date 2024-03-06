@@ -135,7 +135,7 @@ namespace SonicTheHedgehog.Modules {
 
             if (modelBaseTransform != null) SetupCharacterDirection(newBodyPrefab, modelBaseTransform, model.transform);
             SetupFootstepController(model);
-            SetupRagdoll(model);
+            //SetupRagdoll(model);
 
             Modules.Content.AddCharacterBodyPrefab(newBodyPrefab);
 
@@ -198,9 +198,6 @@ namespace SonicTheHedgehog.Modules {
             /*ModelPanelParameters panel = characterModel.gameObject.AddComponent<ModelPanelParameters>();
 
             panel.focusPointTransform = panel.gameObject.transform;
-            panel.focusPointTransform.position = Vector3.forward / 2 + Vector3.up;
-            panel.focusPointTransform.rotation = Quaternion.identity;
-            panel.focusPointTransform.localScale = Vector3.one;
 
             panel.cameraPositionTransform = panel.focusPointTransform;
             panel.cameraPositionTransform.position = Vector3.back * 2 + Vector3.up * 1.3f + Vector3.right / 2;

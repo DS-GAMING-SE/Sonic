@@ -47,7 +47,7 @@ namespace SonicTheHedgehog.Components
             model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-            GetSuperModel();
+            GetSuperModel(model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken);
             flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
         }
 
@@ -159,9 +159,8 @@ namespace SonicTheHedgehog.Components
                 GenericSkill.SkillOverridePriority.Contextual);
         }
 
-        public virtual void GetSuperModel()
+        public virtual void GetSuperModel(string skinName)
         {
-            string skinName = model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken;
             switch (skinName)
             {
                 case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":

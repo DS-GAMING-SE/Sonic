@@ -88,6 +88,7 @@ namespace SonicTheHedgehog.Modules
                 Inventory.onInventoryChangedGlobal += OnInventoryChanged;
                 RoR2Application.onFixedUpdate += OnFixedUpdate;
                 eventsSubscribed = true;
+                UpdateEmeraldCheck();
             }
             if (!active && eventsSubscribed)
             {
@@ -98,6 +99,11 @@ namespace SonicTheHedgehog.Modules
         }
 
         public void OnInventoryChanged(Inventory inventory)
+        {
+            UpdateEmeraldCheck();
+        }
+
+        public void UpdateEmeraldCheck()
         {
             bool yellow = false;
             bool blue = false;
