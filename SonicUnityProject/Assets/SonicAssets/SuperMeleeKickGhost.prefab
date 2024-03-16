@@ -71,7 +71,7 @@ PrefabInstance:
     - target: {fileID: 5715648793797622540, guid: ac0b7c888c9b67c49908d892720654fe,
         type: 3}
       propertyPath: m_Name
-      value: SuperMeleePunchGhost Variant
+      value: SuperMeleeKickGhost
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac0b7c888c9b67c49908d892720654fe, type: 3}

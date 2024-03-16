@@ -51,7 +51,7 @@ namespace SonicTheHedgehog.SkillStates
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
             base.characterMotor.disableAirControlUntilCollision = false;
-
+            Util.PlaySound("Play_swing", base.gameObject);
             base.StartAimMode(this.searchTime, false);
         }
 

@@ -19,6 +19,7 @@ namespace SonicTheHedgehog.SkillStates
 
         GameObject superAura;
         GameObject warning;
+        LoopSoundManager.SoundLoopPtr superLoop;
 
         bool superBuffApplied;
 
@@ -49,6 +50,8 @@ namespace SonicTheHedgehog.SkillStates
             this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
 
             superSonicComponent.SuperModel();
+
+            superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Assets.superLoopSoundDef);
 
             UpdateFlight(true);
 
@@ -88,6 +91,8 @@ namespace SonicTheHedgehog.SkillStates
             UpdateFlight(false);
 
             superSonicComponent.TransformEnd();
+
+            LoopSoundManager.StopSoundLoopLocal(superLoop);
 
             if (this.superAura)
             {

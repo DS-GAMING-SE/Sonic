@@ -75,9 +75,9 @@ namespace SonicTheHedgehog.SkillStates
             this.damageCoefficient = swingIndex == 4 ? Modules.StaticValues.finalMeleeDamageCoefficient : Modules.StaticValues.meleeDamageCoefficient;
             this.attackRecoil = swingIndex == 4 ? 2.5f : 0.6f;
             this.duration = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed / this.attackSpeedStat;
-            this.earlyExitTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.2f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.1f / this.attackSpeedStat;
-            this.attackStartTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.6f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.45f / this.attackSpeedStat;
-            this.attackEndTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.8f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.7f / this.attackSpeedStat;
+            this.earlyExitTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.1f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.1f / this.attackSpeedStat;
+            this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of duration
+            this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of duration
             this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
             this.hitHopVelocity = Flying() ? 0 : 3 + (3 / this.attackSpeedStat);
             StartAimMode();

@@ -90,7 +90,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1250128192882927161, guid: 2605b06cad3f9174fb7aae07fd9fb093,
+  m_Motion: {fileID: 1250128192882927161, guid: afd10ac91629a19438022c31637af037,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -106,9 +106,6 @@ AnimatorStateMachine:
   m_PrefabAsset: {fileID: 0}
   m_Name: Base Layer
   m_ChildStates:
-  - serializedVersion: 1
-    m_State: {fileID: 1102492543536006502}
-    m_Position: {x: 440, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102748262839223108}
     m_Position: {x: 440, y: 250, z: 0}

@@ -47,7 +47,11 @@ namespace SonicTheHedgehog.SkillStates
                 }
                 if (emeraldAnimation)
                 {
-                    EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
+                    Util.PlaySound("Play_emerald", base.gameObject);
+                    if (base.isAuthority)
+                    {
+                        EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
+                    }
                 }
 
                 this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
@@ -97,6 +101,18 @@ namespace SonicTheHedgehog.SkillStates
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.Vehicle;
+        }
+
+        public override void OnSerialize(NetworkWriter writer)
+        {
+            base.OnSerialize(writer);
+            writer.Write(emeraldAnimation);
+        }
+
+        public override void OnDeserialize(NetworkReader reader)
+        {
+            base.OnDeserialize(reader);
+            emeraldAnimation = reader.ReadBoolean();
         }
     }
 }

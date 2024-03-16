@@ -59,7 +59,6 @@ namespace SonicTheHedgehog.SkillStates
             this.maxAttackCount = (int) Math.Ceiling(base.characterBody.attackSpeed*baseAttackCount);
             this.hitboxName = "LargeBall";
             //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.attackDuration);
-            Util.PlaySound("HenryRoll", base.gameObject);
             base.PlayAnimation("FullBody, Override", "Ball", "Slash.playbackRate", this.attackDuration/maxAttackCount);
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;

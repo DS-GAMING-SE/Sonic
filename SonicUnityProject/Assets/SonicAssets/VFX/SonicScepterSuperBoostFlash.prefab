@@ -4907,6 +4907,31 @@ PrefabInstance:
       propertyPath: LightsModule.randomDistribution
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6676012524869130686, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 4.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6676012524869130686, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 6676012524869130686, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.atime1
+      value: 11951
+      objectReference: {fileID: 0}
+    - target: {fileID: 6676012524869130686, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6676012524869130686, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7483484561677714551, guid: 65619ba6d174d0d4cb1ca6e5ec8a1cad,
         type: 3}
       propertyPath: m_IsActive

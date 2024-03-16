@@ -17,10 +17,11 @@ namespace SonicTheHedgehog.Modules
         public static GameObject handlerPrefab;
 
         public static List<ChaosEmeraldInteractable.EmeraldColor> available;
-
-        public static bool allEmeralds;
         
         public bool eventsSubscribed = false;
+
+        [SyncVar]
+        public static bool allEmeralds;
 
         [SyncVar]
         public static bool teamSuper;
@@ -123,7 +124,7 @@ namespace SonicTheHedgehog.Modules
                 if (player.master.inventory.GetItemCount(Items.purpleEmerald) > 0) { purple = true; }
             }
 
-            allEmeralds = yellow && blue && red && gray && green && cyan && purple;
+            NetworkallEmeralds = yellow && blue && red && gray && green && cyan && purple;
         }
 
         public void RemoveEmeralds()
@@ -189,11 +190,25 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
+        public bool NetworkallEmeralds
+        {
+            get
+            {
+                return allEmeralds;
+            }
+            [param: In]
+            set
+            {
+                base.SetSyncVar<bool>(value, ref allEmeralds, 2U);
+            }
+        }
+
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             if (initialState)
             {
                 writer.Write(teamSuper);
+                writer.Write(allEmeralds);
                 return true;
             }
             bool flag = false;
@@ -206,6 +221,15 @@ namespace SonicTheHedgehog.Modules
                 }
                 writer.Write(teamSuper);
             }
+            if ((base.syncVarDirtyBits & 2U) != 0U)
+            {
+                if (!flag)
+                {
+                    writer.WritePackedUInt32(base.syncVarDirtyBits);
+                    flag = true;
+                }
+                writer.Write(allEmeralds);
+            }
             return flag;
         }
 
@@ -214,12 +238,17 @@ namespace SonicTheHedgehog.Modules
             if (initialState)
             {
                 teamSuper = reader.ReadBoolean();
+                allEmeralds = reader.ReadBoolean();
                 return;
             }
             int num = (int)reader.ReadPackedUInt32();
             if ((num & 1U) != 0U)
             {
                 teamSuper = reader.ReadBoolean();
+            }
+            if ((num & 2U) != 0U)
+            {
+                allEmeralds = reader.ReadBoolean();
             }
         }
     }
@@ -287,6 +316,10 @@ namespace SonicTheHedgehog.Modules
             purchaseInteractionBase.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
 
+            var hologramController = prefabBase.AddComponent<RoR2.Hologram.HologramProjector>();
+            hologramController.hologramPivot = prefabBase.transform.Find("Hologram");
+            hologramController.displayDistance = 10;
+
             prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
 
             prefabBase.transform.Find("PickupDisplay").gameObject.AddComponent<PickupDisplay>();
@@ -300,11 +333,11 @@ namespace SonicTheHedgehog.Modules
 
             var entityStateMachine = prefabBase.AddComponent<EntityStateMachine>();
             entityStateMachine.customName = "Body";
-            entityStateMachine.initialStateType.stateType = typeof(BaseState);
-            entityStateMachine.mainStateType.stateType = typeof(BaseState);
+            entityStateMachine.initialStateType.stateType = typeof(EntityState);
+            entityStateMachine.mainStateType.stateType = typeof(EntityState);
 
             var networkStateMachine = prefabBase.AddComponent<NetworkStateMachine>();
-            networkStateMachine.stateMachines = new EntityStateMachine[] { entityStateMachine };
+            Helpers.Append(ref networkStateMachine.stateMachines, new List<EntityStateMachine> { entityStateMachine });
 
             PrefabAPI.RegisterNetworkPrefab(prefabBase);
 
@@ -323,15 +356,16 @@ namespace SonicTheHedgehog.Modules
 
             if (NetworkServer.active)
             {
-                UpdateColor(SuperSonicHandler.available[0]);
+                this.color = SuperSonicHandler.available[0];
                 SuperSonicHandler.available.Remove(this.color);
             }
-            
+            UpdateColor();
+
         }
 
         public PickupIndex GetPickupIndex()
         {
-            switch (color)
+            switch (this.color)
             {
                 default:
                     return PickupCatalog.FindPickupIndex(Items.yellowEmerald.itemIndex);
@@ -350,9 +384,8 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public void UpdateColor(EmeraldColor color)
+        public void UpdateColor()
         {
-            this.color = color;
             if (purchaseInteraction)
             {
                 purchaseInteraction.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
@@ -423,13 +456,13 @@ namespace SonicTheHedgehog.Modules
         {
             if (initialState)
             {
-                color = (EmeraldColor)reader.ReadUInt32();
+                this.color = (EmeraldColor)reader.ReadUInt32();
                 return;
             }
             int num = (int)reader.ReadPackedUInt32();
             if ((num & 1U) != 0U)
             {
-                color = (EmeraldColor)reader.ReadUInt32();
+                this.color = (EmeraldColor)reader.ReadUInt32();
             }
         }
 

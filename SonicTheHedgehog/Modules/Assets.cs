@@ -9,6 +9,7 @@ using RoR2.UI;
 using System;
 using SonicTheHedgehog.Components;
 using RoR2.Audio;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -59,6 +60,8 @@ namespace SonicTheHedgehog.Modules
         internal static NetworkSoundEventDef meleeFinalHitSoundEvent;
         internal static NetworkSoundEventDef homingHitSoundEvent;
         internal static NetworkSoundEventDef grandSlamHitSoundEvent;
+
+        internal static LoopSoundDef superLoopSoundDef;
 
         #endregion
 
@@ -146,13 +149,13 @@ namespace SonicTheHedgehog.Modules
 
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
-            idwAttackEffect = Assets.LoadEffect("SonicIDWAttack", true);
+            idwAttackEffect = DistortionMaterial(Assets.LoadEffect("SonicIDWAttack", true), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/");
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
-            powerBoostFlashEffect = Assets.LoadEffect("SonicPowerBoostFlash", true);
+            powerBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
 
-            scepterPowerBoostFlashEffect = Assets.LoadEffect("SonicScepterPowerBoostFlash", true);
+            scepterPowerBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
             if (scepterPowerBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -184,7 +187,7 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterSuperBoostFlashEffect = Assets.LoadEffect("SonicScepterSuperBoostFlash", true);
+            scepterSuperBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicScepterSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
             if (scepterSuperBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -203,13 +206,17 @@ namespace SonicTheHedgehog.Modules
 
 
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
-            superBoostFlashEffect = Assets.LoadEffect("SonicSuperBoostFlash", true);
+            superBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 
             meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit");
             meleeFinalHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit_final");
             homingHitSoundEvent = CreateNetworkSoundEventDef("Play_homing_impact");
             grandSlamHitSoundEvent = CreateNetworkSoundEventDef("Play_strong_impact");
+
+            superLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
+            superLoopSoundDef.startSoundName = "Play_super_loop";
+            superLoopSoundDef.stopSoundName = "Stop_super_loop";
 
             if (sonicBoomImpactEffect)
             {
@@ -232,10 +239,20 @@ namespace SonicTheHedgehog.Modules
                 };
             }
 
-            superSonicOverlay = LegacyResourcesAPI.Load<Material>("Materials/matLunarGolemShield");
+            superSonicOverlay = new Material(LegacyResourcesAPI.Load<Material>("Materials/matLunarGolemShield"));
             superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);
+        }
+
+        private static GameObject DistortionMaterial(GameObject prefab, string assetPath, string pathToParticle = "")
+        {
+            Transform distort = prefab.transform.Find(pathToParticle + "Distortion");
+            if (distort)
+            {
+                distort.GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(assetPath).WaitForCompletion();
+            }
+            return prefab;
         }
 
         private static GameObject CreateTracer(string originalTracerName, string newTracerName)

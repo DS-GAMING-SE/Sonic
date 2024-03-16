@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5752109706804592097}
   - component: {fileID: 1988760590053746052}
   m_Layer: 0
-  m_Name: SuperSonicMesh
+  m_Name: SonicMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -7419968932877572440, guid: bbc0fad42e56c9d409e564b733a06189, type: 3}
+  m_Mesh: {fileID: -7419968932877572440, guid: afd10ac91629a19438022c31637af037, type: 3}
   m_Bones:
   - {fileID: 0}
   - {fileID: 0}
