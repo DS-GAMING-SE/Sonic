@@ -16,6 +16,8 @@ namespace SonicTheHedgehog.Components
     {
         public EntityStateMachine superSonicState;
 
+        public FormDef form;
+
         public Material superSonicMaterial;
         public Material defaultMaterial;
 

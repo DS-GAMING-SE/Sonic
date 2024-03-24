@@ -284,6 +284,9 @@ namespace SonicTheHedgehog.Modules
         {
             Debug.Log("Starting Emerald Interactable Init");
             prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("ChaosEmeraldInteractable");
+
+            Assets.MaterialSwap(prefabBase, "RoR2/Base/Common/VFX/matInverseDistortion.mat", "RingParent/PurchaseParticle/Distortion");
+
             Debug.Log("Loaded Base");
             prefabBase.AddComponent<NetworkIdentity>();
 
@@ -333,8 +336,8 @@ namespace SonicTheHedgehog.Modules
 
             var entityStateMachine = prefabBase.AddComponent<EntityStateMachine>();
             entityStateMachine.customName = "Body";
-            entityStateMachine.initialStateType.stateType = typeof(EntityState);
-            entityStateMachine.mainStateType.stateType = typeof(EntityState);
+            entityStateMachine.initialStateType = new EntityStates.SerializableEntityStateType(typeof(EntityState));
+            entityStateMachine.mainStateType = new EntityStates.SerializableEntityStateType(typeof(EntityState));
 
             var networkStateMachine = prefabBase.AddComponent<NetworkStateMachine>();
             Helpers.Append(ref networkStateMachine.stateMachines, new List<EntityStateMachine> { entityStateMachine });

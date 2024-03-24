@@ -1,8 +1,10 @@
 ﻿using EntityStates;
+using IL.RoR2.ConVar;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Survivors;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -52,6 +54,7 @@ namespace SonicTheHedgehog.SkillStates
         private float speedMultiplier;
         private bool animationEnded=false;
         private bool effectFired = false;
+        private bool projectileFired = false;
         private Vector3 superProjectilePosition;
 
         public override void OnEnter()
@@ -72,7 +75,6 @@ namespace SonicTheHedgehog.SkillStates
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
-            superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, -3, 0);
 
             PrepareOverlapAttack();
         }
@@ -89,6 +91,11 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
+            if (hasFired && !projectileFired)
+            {
+                projectileFired = true;
+                FireProjectile();
+            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -102,6 +109,11 @@ namespace SonicTheHedgehog.SkillStates
                 //Util.PlaySound(this.hitSoundString, base.gameObject);
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.grandSlamHitEffect, base.gameObject, this.muzzleString, true);
                 effectFired = true;
+            }
+            if (!projectileFired)
+            {
+                projectileFired = true;
+                FireProjectile();
             }
             if (base.isAuthority)
             {
@@ -170,12 +182,8 @@ namespace SonicTheHedgehog.SkillStates
                         if (!hasFired)
                         {
                             hasFired = true;
-                            if (base.characterBody.HasBuff(Buffs.superSonicBuff))
-                            {
-                                GameObject prefab = Projectiles.superSonicAfterimageRainPrefab;
-                                RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 10, base.RollCrit());
-                            }
                             EndChrysalis();
+                            superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 0.5f, 0);
                         }
                         if (this.target!=null)
                         {
@@ -249,6 +257,27 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     UnityEngine.Object.Destroy(chrysalis.gameObject);
                 }
+            }
+        }
+
+        public virtual GameObject GetProjectilePrefab(string skinName)
+        {
+            switch (skinName)
+            {
+                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
+                    return Projectiles.superSonicAfterimageRainPrefab;
+                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
+                    return Projectiles.superMetalAfterimageRainPrefab;
+            }
+            return Projectiles.superSonicAfterimageRainPrefab;
+        }
+
+        public virtual void FireProjectile()
+        {
+            if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+            {
+                GameObject prefab = GetProjectilePrefab(modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken);
+                RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 0, base.RollCrit());
             }
         }
 

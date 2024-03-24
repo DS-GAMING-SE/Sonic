@@ -9,6 +9,8 @@ namespace SonicTheHedgehog.Modules
 {
     internal static class Projectiles
     {
+        internal static Material superProjectileMaterial;
+        
         internal static GameObject sonicBoomPrefab;
         internal static GameObject superSonicBoomPrefab;
         internal static GameObject superMeleePunchProjectilePrefab;
@@ -16,9 +18,12 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject superMetalMeleePunchProjectilePrefab;
         internal static GameObject superMetalMeleeKickProjectilePrefab;
         internal static GameObject superSonicAfterimageRainPrefab;
+        internal static GameObject superMetalAfterimageRainPrefab;
 
         internal static void RegisterProjectiles()
         {
+            CreateProjectileMaterial();
+            
             CreateSonicBoom();
             CreateSuperSonicBoom();
             CreateSuperMeleeProjectile();
@@ -38,6 +43,18 @@ namespace SonicTheHedgehog.Modules
         internal static void AddProjectile(GameObject projectileToAdd)
         {
             Modules.Content.AddProjectilePrefab(projectileToAdd);
+        }
+
+        private static void CreateProjectileMaterial()
+        {
+            superProjectileMaterial = new Material(LegacyResourcesAPI.Load<Material>("Materials/matGhostEffect"));
+            //material.SetColor("_TintColor", new Color(1, 0.2f, 0f, 1));
+            //material.SetColor("_Color", new Color(1, 0.2f, 0f, 1.5f));
+            //material.SetColor("_EmissionColor", new Color(1, 0.2f, 0f, 2));
+
+            superProjectileMaterial.SetTexture("_RemapTex", Modules.Assets.mainAssetBundle.LoadAsset<Texture>("texRampSuperProjectile"));
+
+            superProjectileMaterial.SetColor("_TintColor", new Color(1, 0.8f, 0f));
         }
 
         private static void CreateSonicBoom()
@@ -74,7 +91,7 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.destroyOnEnemy = true;
             bombImpactExplosion.destroyOnWorld = true;
             bombImpactExplosion.lifetime = 1.3f;
-            bombImpactExplosion.impactEffect = Modules.Assets.sonicBoomImpactEffect;
+            bombImpactExplosion.impactEffect = Modules.Assets.crossSlashImpactEffect;
             //bombImpactExplosion.lifetimeExpiredSound = Modules.Assets.CreateNetworkSoundEventDef("Play_sonic_boom_hit");
             bombImpactExplosion.timerAfterImpact = false;
             bombImpactExplosion.lifetimeAfterImpact = 0f;
@@ -87,15 +104,6 @@ namespace SonicTheHedgehog.Modules
 
         private static void CreateSuperMeleeProjectile()
         {
-            Material material = new Material(LegacyResourcesAPI.Load<Material>("Materials/matGhostEffect"));
-            //material.SetColor("_TintColor", new Color(1, 0.2f, 0f, 1));
-            //material.SetColor("_Color", new Color(1, 0.2f, 0f, 1.5f));
-            //material.SetColor("_EmissionColor", new Color(1, 0.2f, 0f, 2));
-
-            material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampParentTeleport.png").WaitForCompletion());
-
-            material.SetColor("_TintColor", new Color(1, 0.8f, 0f, 1f));
-
             superMeleePunchProjectilePrefab = CloneProjectilePrefab("FMJRamping", "SuperSonicMeleePunchProjectile");
 
             ProjectileDamage damage = superMeleePunchProjectilePrefab.GetComponent<ProjectileDamage>();
@@ -115,50 +123,85 @@ namespace SonicTheHedgehog.Modules
 
             ProjectileController bombController = superMeleePunchProjectilePrefab.GetComponent<ProjectileController>();
             bombController.procCoefficient = StaticValues.superMeleeExtraProcCoefficient;
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SuperMeleePunchGhost", material);
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SuperMeleePunchGhost", superProjectileMaterial);
             bombController.startSound = "";
-            CreateOtherSuperMeleeProjectiles(material);
+            //CreateOtherSuperMeleeProjectiles();
+            superMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMeleeKickGhost", "SuperSonicMeleeKickProjectile");
+            superMetalMeleePunchProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMetalMeleePunchGhost", "SuperMetalMeleePunchProjectile");
+            superMetalMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMetalMeleeKickGhost", "SuperMetalMeleeKickProjectile");
         }
 
-        private static void CreateOtherSuperMeleeProjectiles(Material material)
+        private static void CreateOtherSuperMeleeProjectiles()
         {
             superMeleeKickProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperSonicMeleeKickProjectile");
             ProjectileController controller = superMeleeKickProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMeleeKickGhost", material);
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMeleeKickGhost", superProjectileMaterial);
 
             superMetalMeleePunchProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperMetalMeleePunchProjectile");
             controller = superMetalMeleePunchProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleePunchGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleePunchGhost", material);
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleePunchGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleePunchGhost", superProjectileMaterial);
 
             superMetalMeleeKickProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperMetalMeleeKickProjectile");
             controller = superMetalMeleeKickProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleeKickGhost", material);
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleeKickGhost", superProjectileMaterial);
+        }
+
+        //I don't think the prefabName actually matters for anything
+        public static GameObject CreateOtherSuperMeleeProjectile(string ghostPrefabName, string prefabName)
+        {
+            GameObject prefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, prefabName);
+            ProjectileController controller = prefab.GetComponent<ProjectileController>();
+            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>(ghostPrefabName) != null) controller.ghostPrefab = CreateGhostPrefab(ghostPrefabName, superProjectileMaterial);
+            return prefab;
         }
 
         private static void CreateSuperSonicAfterimageRain()
         {
-            /*superMeleeAfterimageRainPrefab = PrefabAPI.InstantiateClone(Assets.mainAssetBundle.LoadAsset<GameObject>("SonicSuperMeleeBase"), "SuperSonicAfterimageRainProjectile");
-             * 
-             * superMeleeAfterimageRainPrefab.AddComponent<NetworkIdentity>();
-             * superMeleeAfterimageRainPrefab.AddComponent<TeamFilter>();
-             * HitBoxGroup hitboxes = superMeleeAfterimageRainPrefab.AddComponent<HitBoxGroup>();
-             * hitboxes.hitboxes = // make hitboxes on the projectile like the melees. Rex uses two boxes rotated 45 degrees to kinda get a cylinder. Rex size is about 10
-             * 
-             * ProjectileDotZone dot = superMeleeAfterimageRainPrefab.AddComponent<ProjectileDotZone>();
-             * dot.overlapProcCoefficient = StaticValues.superGrandSlamDOTProcCoefficient;
-             * dot.resetFrequency = 3;
-             * dot.lifetime = StaticValues.superGrandSlamDOTLifetime;
-             * dot.forceVector = Vector3.down * 15;
-             * 
-             * ProjectileDamage damage = superMeleeAfterimageRainPrefab.AddComponent<ProjectileDamage>();
-             * damage.damage = StaticValues.superGrandSlamDOTDamage;
-             * damage.force = 10;
-             * 
-             * superMeleeAfterimageRainPrefab.AddComponent<ProjectileController>();
-             * 
-             */
+            superSonicAfterimageRainPrefab = PrefabAPI.InstantiateClone(Assets.mainAssetBundle.LoadAsset<GameObject>("SonicSuperAfterimageRainBase"),"SuperAfterimageRainProjectile");
+            if (superSonicAfterimageRainPrefab)
+            {
+                Debug.Log("the risk of rain is real");
+            }
 
-            superSonicAfterimageRainPrefab = CloneProjectilePrefab("TreebotMortarRain", "SuperSonicAfterimageRainProjectile");
+            superSonicAfterimageRainPrefab.AddComponent<NetworkIdentity>();
+            superSonicAfterimageRainPrefab.AddComponent<TeamFilter>();
+
+            ProjectileController controller = superSonicAfterimageRainPrefab.AddComponent<ProjectileController>();
+            controller.cannotBeDeleted = true;
+
+            Debug.Log("Afterimage Rain hitboxes");
+            HitBoxGroup hitboxes = superSonicAfterimageRainPrefab.AddComponent<HitBoxGroup>();
+
+            HitBox hitBox = superSonicAfterimageRainPrefab.transform.Find("Hitboxes/Hitbox0").gameObject.AddComponent<HitBox>();
+            superSonicAfterimageRainPrefab.transform.Find("Hitboxes/Hitbox0").gameObject.layer = LayerIndex.projectile.intVal;
+
+            HitBox hitBox1 = superSonicAfterimageRainPrefab.transform.Find("Hitboxes/Hitbox1").gameObject.AddComponent<HitBox>();
+            superSonicAfterimageRainPrefab.transform.Find("Hitboxes/Hitbox1").gameObject.layer = LayerIndex.projectile.intVal;
+
+            hitboxes.hitBoxes = new HitBox[] { hitBox, hitBox1 }; // make hitboxes on the projectile like the melees. Rex uses two boxes rotated 45 degrees to kinda get a cylinder. Rex size is about 10
+
+            Debug.Log("Afterimage Rain mat swap");
+            Assets.MaterialSwap(superSonicAfterimageRainPrefab, "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Effects/Blur");
+            Assets.MaterialSwap(superSonicAfterimageRainPrefab, superProjectileMaterial, "Effects/Sonics");
+
+            Debug.Log("Afterimage Rain damage");
+            ProjectileDamage damage = superSonicAfterimageRainPrefab.AddComponent<ProjectileDamage>();
+            damage.damage = StaticValues.superGrandSlamDOTDamage;
+
+            ProjectileDotZone dot = superSonicAfterimageRainPrefab.AddComponent<ProjectileDotZone>();
+            dot.damageCoefficient = 1;
+            dot.overlapProcCoefficient = StaticValues.superGrandSlamDOTProcCoefficient;
+            dot.resetFrequency = 3;
+            dot.fireFrequency = 6;
+            dot.lifetime = StaticValues.superGrandSlamDOTLifetime;
+            dot.forceVector = Vector3.down * 50;
+
+
+            superMetalAfterimageRainPrefab = CreateOtherAfterimageRain(Assets.mainAssetBundle.LoadAsset<GameObject>("MetalSonicAfterimageMesh").GetComponent<MeshFilter>().sharedMesh, "SuperMetalAfterimageRainProjectile");
+
+            /*Old Super Grand Slam, still uses Rex visuals
+             * 
+             * superSonicAfterimageRainPrefab = CloneProjectilePrefab("TreebotMortarRain", "SuperSonicAfterimageRainProjectile");
             //Vector3 scale = superSonicAfterimageRainPrefab.transform.localScale * 5;
             //scale.y *= 2;
             //superSonicAfterimageRainPrefab.transform.localScale = scale;
@@ -178,6 +221,21 @@ namespace SonicTheHedgehog.Modules
             rainController.cannotBeDeleted = true;
             //if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost") != null) rainController.ghostPrefab = CreateGhostPrefab("SuperMeleePunchGhost");
             rainController.startSound = "";
+            */
+        }
+
+        // This replaces the falling Sonics mesh with whatever mesh you want
+        // The mesh should not have an armature, it should just be a normal mesh in the pose. Apply the armature modifier in blender to get rid of the armature and have just the posed mesh
+        // Also please use and apply decimate modifier to keep the tri count low. These should be super low detail, they won't even have their materials. Mine are like 1/5 tris of normal
+        // If you have issues with the mesh not showing up at all, try checking Read/Write Enabled in your mesh import. It worked for me, though I'm not sure why
+        // I don't think prefab name actually matters
+        public static GameObject CreateOtherAfterimageRain(Mesh mesh, string prefabName)
+        {
+            GameObject prefab = PrefabAPI.InstantiateClone(superSonicAfterimageRainPrefab, prefabName);
+
+            prefab.transform.Find("Effects/Sonics").gameObject.GetComponent<ParticleSystemRenderer>().mesh = mesh;
+
+            return prefab;
         }
 
         private static void InitializeImpactExplosion(ProjectileImpactExplosion projectileImpactExplosion)

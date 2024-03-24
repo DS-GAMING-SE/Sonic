@@ -83,9 +83,11 @@ namespace SonicTheHedgehog.Modules
             itemDef.loreToken = prefix + token + "_LORE";
             itemDef.tags = new[]
             {
-                ItemTag.InteractableRelated,
                 ItemTag.CannotCopy,
-                ItemTag.CannotSteal
+                ItemTag.CannotSteal,
+                ItemTag.CannotDuplicate,
+                ItemTag.WorldUnique,
+                ItemTag.AIBlacklist
             };
 
             itemDef.CreatePickupDef();

@@ -17,9 +17,10 @@ namespace SonicTheHedgehog.SkillStates
         protected static DamageType damageType = DamageType.Stun1s | DamageType.AOE;
         protected static float damageCoefficient = Modules.StaticValues.idwAttackDamageCoefficient;
         protected static float procCoefficient = StaticValues.idwAttackProcCoefficient;
-        protected static float attackDuration = 1.8f;
+        protected static float baseAttackDuration = 1.6f;
+        protected static float increasePerAdditionalStock = 0.20f;
         protected static float range = 25;
-        protected static int baseAttackCount = 9;
+        protected static int baseAttackCount = 8;
         protected static float pushForce = 400f;
         protected static float baseEndLag = 1.6f;
         protected float endLag;
@@ -27,11 +28,7 @@ namespace SonicTheHedgehog.SkillStates
         public HurtBox target = null;
         protected Vector3 targetPosition = Vector3.zero;
 
-        protected string chargeSoundString = "Play_spindash_charge";
-        protected string launchSoundString = "Play_spindash_release";
-        protected string hitSoundString = "Play_homing_impact";
-        protected string muzzleString = "SwingCenter";
-
+        public float attackDuration;
         public float duration;
         private bool hasFired;
         protected bool inHitPause;
@@ -62,13 +59,26 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterMotor.Motor.ForceUnground();
             }
-
+            this.attackDuration = baseAttackDuration * (1 + (increasePerAdditionalStock * (base.skillLocator.secondary.maxStock-1)));
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
             base.characterMotor.disableAirControlUntilCollision = false;
             Util.PlaySound("Play_idw", base.gameObject);
             idwAttackEffect = UnityEngine.GameObject.Instantiate<GameObject>(Assets.idwAttackEffect);
+
+            EffectManager.SimpleMuzzleFlash(Assets.superSonicBlurEffect, base.gameObject, "BlurForward", true);
+            hasFired = true;
+            if (this.characterModel)
+            {
+                this.characterModel.invisibilityCount++;
+            }
+            invisible = true;
+            this.maxAttackCount = (int)Math.Ceiling((base.characterBody.attackSpeed * baseAttackCount) * (1 + (increasePerAdditionalStock * (base.skillLocator.secondary.maxStock - 1))));
+            if (NetworkServer.active)
+            {
+                base.characterBody.AddBuff(RoR2Content.Buffs.Intangible);
+            }
         }
 
         public override void OnExit()
@@ -109,21 +119,6 @@ namespace SonicTheHedgehog.SkillStates
 
             if (this.fixedAge <= attackDuration) // attack
             {
-                if (!this.hasFired)
-                {
-                    EffectManager.SimpleMuzzleFlash(Assets.superSonicBlurEffect, base.gameObject, "BlurForward", true);
-                    hasFired = true;
-                    if (this.characterModel)
-                    {
-                        this.characterModel.invisibilityCount++;
-                    }
-                    invisible = true;
-                    this.maxAttackCount = (int)Math.Ceiling(base.characterBody.attackSpeed * baseAttackCount);
-                    if (NetworkServer.active)
-                    {
-                        base.characterBody.AddBuff(RoR2Content.Buffs.Intangible);
-                    }
-                }
                 if (this.fixedAge > (attackDuration / this.maxAttackCount * (this.attackCount + 1)))
                 {
                     if (this.target != null)

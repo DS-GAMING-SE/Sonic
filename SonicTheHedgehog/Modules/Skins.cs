@@ -8,6 +8,7 @@ namespace SonicTheHedgehog.Modules
 {
     internal static class Skins
     {
+        // If you're making a skin or something for Sonic, use 0.14 scale no convert units on the import settings. Don't ask why, I don't have an answer
         internal static SkinDef CreateSkinDef(string skinName, Sprite skinIcon, CharacterModel.RendererInfo[] defaultRendererInfos, GameObject root, UnlockableDef unlockableDef = null)
         {
             SkinDefInfo skinDefInfo = new SkinDefInfo

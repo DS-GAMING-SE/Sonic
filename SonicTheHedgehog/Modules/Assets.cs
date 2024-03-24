@@ -22,6 +22,7 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject sonicBoomKickEffect;
         internal static GameObject homingAttackTrailEffect;
         internal static GameObject sonicBoomImpactEffect;
+        internal static GameObject crossSlashImpactEffect;
 
         internal static GameObject superSonicTransformationEffect;
         internal static GameObject transformationEmeraldSwirl;
@@ -133,6 +134,7 @@ namespace SonicTheHedgehog.Modules
             sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick", true);
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
             sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
+            crossSlashImpactEffect = Assets.LoadEffect("SonicCrossSlashImpact");
 
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
             transformationEmeraldSwirl = Assets.LoadEffect("SonicChaosEmeraldSwirl");
@@ -149,13 +151,13 @@ namespace SonicTheHedgehog.Modules
 
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
-            idwAttackEffect = DistortionMaterial(Assets.LoadEffect("SonicIDWAttack", true), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/");
+            idwAttackEffect = MaterialSwap(Assets.LoadEffect("SonicIDWAttack", true), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/Distortion");
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
-            powerBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
+            powerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
 
-            scepterPowerBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
+            scepterPowerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterPowerBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -187,7 +189,7 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterSuperBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicScepterSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
+            scepterSuperBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterSuperBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -206,7 +208,7 @@ namespace SonicTheHedgehog.Modules
 
 
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
-            superBoostFlashEffect = DistortionMaterial(Assets.LoadEffect("SonicSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat");
+            superBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 
             meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit");
@@ -245,12 +247,21 @@ namespace SonicTheHedgehog.Modules
             superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);
         }
 
-        private static GameObject DistortionMaterial(GameObject prefab, string assetPath, string pathToParticle = "")
+        public static GameObject MaterialSwap(GameObject prefab, string assetPath, string pathToParticle = "")
         {
-            Transform distort = prefab.transform.Find(pathToParticle + "Distortion");
-            if (distort)
+            Transform transform = prefab.transform.Find(pathToParticle);
+            if (transform)
             {
-                distort.GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(assetPath).WaitForCompletion();
+                transform.GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(assetPath).WaitForCompletion();
+            }
+            return prefab;
+        }
+        public static GameObject MaterialSwap(GameObject prefab, Material material, string pathToParticle = "")
+        {
+            Transform transform = prefab.transform.Find(pathToParticle);
+            if (transform)
+            {
+                transform.GetComponent<ParticleSystemRenderer>().sharedMaterial = material;
             }
             return prefab;
         }

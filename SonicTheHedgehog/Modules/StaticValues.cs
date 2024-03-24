@@ -113,19 +113,19 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superSonicAttackSpeed = 0.3f;
 
-        internal const float superSonicBaseDamage = 0.7f;
+        internal const float superSonicBaseDamage = 1f;
 
         internal const float superSonicJumpHeight = 0.5f;
 
         // Super Melee
 
-        internal const float superMeleeExtraDamagePercent = 0.4f;
+        internal const float superMeleeExtraDamagePercent = 0.5f;
 
         internal const float superMeleeExtraProcCoefficient = 0f;
 
         // Super Sonic Boom
 
-        internal const float superSonicBoomDamageCoefficient = sonicBoomDamageCoefficient*2;
+        internal const float superSonicBoomDamageCoefficient = sonicBoomDamageCoefficient * 2;
 
         // Super Parry
 
@@ -133,7 +133,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superParryMovementSpeedDebuff = 2f; //half
 
-        internal const float superParryArmorDebuff = 100f;
+        internal const float superParryArmorDebuff = 50f;
 
         internal const float superParryAttackSpeedDebuff = 2f; //half
 
@@ -161,7 +161,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superGrandSlamDOTProcCoefficient = 0.3f;
 
-        internal const float superGrandSlamDOTLifetime = 6f;
+        internal const float superGrandSlamDOTLifetime = 4f;
 
     }
 }

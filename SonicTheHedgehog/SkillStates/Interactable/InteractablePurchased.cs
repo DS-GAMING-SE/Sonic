@@ -11,11 +11,9 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class InteractablePurchased : EntityState
     {
-        public const float dropTime = 0.3f;
+        public const float dropTime = 0.5f;
         
         public ChaosEmeraldInteractable interactable;
-
-        public Animator animator;
 
         private bool soundPlayed = false;
 
@@ -25,7 +23,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.OnEnter();
             Debug.Log("Emerald Interactable purchase state enter");
-            this.animator = this.gameObject.GetComponentInChildren<Animator>();
             this.interactable = this.gameObject.GetComponent<ChaosEmeraldInteractable>();
             base.gameObject.transform.Find("RingParent/PurchaseParticle").gameObject.GetComponent<ParticleSystem>().Play();
         }
