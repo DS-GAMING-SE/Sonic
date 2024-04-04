@@ -55,6 +55,10 @@ namespace SonicTheHedgehog.Modules
             superProjectileMaterial.SetTexture("_RemapTex", Modules.Assets.mainAssetBundle.LoadAsset<Texture>("texRampSuperProjectile"));
 
             superProjectileMaterial.SetColor("_TintColor", new Color(1, 0.8f, 0f));
+
+            superProjectileMaterial.SetFloat("_FresnelPower", 1);
+
+            superProjectileMaterial.SetFloat("_AlphaBoost", 2);
         }
 
         private static void CreateSonicBoom()
@@ -168,6 +172,7 @@ namespace SonicTheHedgehog.Modules
 
             ProjectileController controller = superSonicAfterimageRainPrefab.AddComponent<ProjectileController>();
             controller.cannotBeDeleted = true;
+            //controller.flightSoundLoop = Assets.superGrandSlamLoopSoundDef;
 
             Debug.Log("Afterimage Rain hitboxes");
             HitBoxGroup hitboxes = superSonicAfterimageRainPrefab.AddComponent<HitBoxGroup>();
@@ -195,6 +200,8 @@ namespace SonicTheHedgehog.Modules
             dot.fireFrequency = 6;
             dot.lifetime = StaticValues.superGrandSlamDOTLifetime;
             dot.forceVector = Vector3.down * 50;
+            dot.soundLoopStopString = Assets.superGrandSlamLoopSoundDef.stopSoundName;
+            dot.soundLoopString = Assets.superGrandSlamLoopSoundDef.startSoundName;
 
 
             superMetalAfterimageRainPrefab = CreateOtherAfterimageRain(Assets.mainAssetBundle.LoadAsset<GameObject>("MetalSonicAfterimageMesh").GetComponent<MeshFilter>().sharedMesh, "SuperMetalAfterimageRainProjectile");

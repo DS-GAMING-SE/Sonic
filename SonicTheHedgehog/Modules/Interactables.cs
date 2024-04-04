@@ -12,7 +12,7 @@ namespace SonicTheHedgehog.Modules
 {
     public class SuperSonicHandler : NetworkBehaviour
     {
-        // Basically everything except the teamSuper var is only handled by server and won't be accurate for clients
+        // Basically everything except the SyncVars is only handled by server and won't be accurate for clients
         public static SuperSonicHandler instance { get; private set; }
         public static GameObject handlerPrefab;
 

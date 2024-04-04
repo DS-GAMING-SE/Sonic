@@ -63,6 +63,7 @@ namespace SonicTheHedgehog.Modules
         internal static NetworkSoundEventDef grandSlamHitSoundEvent;
 
         internal static LoopSoundDef superLoopSoundDef;
+        internal static LoopSoundDef superGrandSlamLoopSoundDef;
 
         #endregion
 
@@ -219,6 +220,10 @@ namespace SonicTheHedgehog.Modules
             superLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
             superLoopSoundDef.startSoundName = "Play_super_loop";
             superLoopSoundDef.stopSoundName = "Stop_super_loop";
+
+            superGrandSlamLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
+            superGrandSlamLoopSoundDef.startSoundName = "Play_super_grand_slam_loop";
+            superGrandSlamLoopSoundDef.stopSoundName = "Stop_super_grand_slam_loop";
 
             if (sonicBoomImpactEffect)
             {

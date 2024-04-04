@@ -183,7 +183,6 @@ namespace SonicTheHedgehog.SkillStates
                         {
                             hasFired = true;
                             EndChrysalis();
-                            superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 0.5f, 0);
                         }
                         if (this.target!=null)
                         {
@@ -276,6 +275,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (base.characterBody.HasBuff(Buffs.superSonicBuff))
             {
+                superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 2.5f, 0);
                 GameObject prefab = GetProjectilePrefab(modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken);
                 RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 0, base.RollCrit());
             }
