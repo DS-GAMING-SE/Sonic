@@ -148,7 +148,7 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public bool CanTransform()
+        public virtual bool CanTransform()
         {
             Debug.Log("All Emeralds? " + allEmeralds + ". Team Super? " + teamSuper);
             return allEmeralds || teamSuper;
@@ -276,7 +276,7 @@ namespace SonicTheHedgehog.Modules
 
         public PickupIndex pickupIndex;
 
-        [SyncVar(hook = nameof(UpdateColor))]
+        [SyncVar]
         public EmeraldColor color;
 
 
@@ -353,12 +353,12 @@ namespace SonicTheHedgehog.Modules
 
             pickupDisplay = base.GetComponentInChildren<PickupDisplay>();
             purchaseInteraction = base.GetComponent<PurchaseInteraction>();
-            purchaseInteraction.onPurchase.AddListener(OnPurchase);
 
             stateMachine = EntityStateMachine.FindByCustomName(gameObject, "Body");
 
             if (NetworkServer.active)
             {
+                purchaseInteraction.onPurchase.AddListener(OnPurchase);
                 this.color = SuperSonicHandler.available[0];
                 SuperSonicHandler.available.Remove(this.color);
             }
@@ -424,7 +424,7 @@ namespace SonicTheHedgehog.Modules
             gameObject.transform.Find("RingParent/Ring").gameObject.SetActive(false);
         }
 
-        public enum EmeraldColor : uint
+        public enum EmeraldColor : byte
         {
             Yellow = 0,
             Blue = 1,
@@ -435,23 +435,26 @@ namespace SonicTheHedgehog.Modules
             Purple = 6
         }
 
+        // I don't know why the commented out parts of the OnSerialize and OnDeserialize methods break the OnPurchase syncing and animation.
+        // I have no idea why, but it doesn't really matter since those lines are only for Chaos Emeralds changing color dynamically, which can't happen anyway :)
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             if (initialState)
             {
-                writer.Write((uint)color);
+                writer.Write((byte)color);
                 return true;
             }
             bool flag = false;
-            if ((base.syncVarDirtyBits & 1U) != 0U)
+            /*if ((base.syncVarDirtyBits & 1U) != 0U)
             {
                 if (!flag)
                 {
                     writer.WritePackedUInt32(base.syncVarDirtyBits);
                     flag = true;
                 }
-                writer.Write((uint)color);
+                writer.Write((byte)color);
             }
+            */
             return flag;
         }
 
@@ -459,14 +462,15 @@ namespace SonicTheHedgehog.Modules
         {
             if (initialState)
             {
-                this.color = (EmeraldColor)reader.ReadUInt32();
+                this.color = (EmeraldColor)reader.ReadByte();
                 return;
             }
-            int num = (int)reader.ReadPackedUInt32();
+            /*int num = (int)reader.ReadPackedUInt32();
             if ((num & 1U) != 0U)
             {
-                this.color = (EmeraldColor)reader.ReadUInt32();
+                this.color = (EmeraldColor)reader.ReadByte();
             }
+            */
         }
 
     }

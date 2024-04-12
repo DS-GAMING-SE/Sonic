@@ -55,7 +55,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0.05
+    scalar: 0
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -193,7 +193,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.4
+      scalar: 2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -261,8 +261,8 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 6.283185
-      minScalar: 0
+      scalar: 1.8325957
+      minScalar: 1.3089969
       maxCurve:
         serializedVersion: 2
         m_Curve: []
@@ -464,7 +464,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0.48509222
+          value: 0.27408606
           inSlope: 0.013953356
           outSlope: 0.013953356
           tangentMode: 0
@@ -472,8 +472,8 @@ ParticleSystem:
           inWeight: 0.3333333
           outWeight: 0.7356357
         - serializedVersion: 3
-          time: 0.16193113
-          value: 0.46241343
+          time: 0.19125089
+          value: 0.22388041
           inSlope: 1.0119294
           outSlope: 1.0119294
           tangentMode: 0
@@ -510,7 +510,7 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 1
-      scalar: 1
+      scalar: 3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -518,12 +518,21 @@ ParticleSystem:
         - serializedVersion: 3
           time: 0
           value: 1
-          inSlope: -2
-          outSlope: -2
+          inSlope: -7.6448245
+          outSlope: -7.6448245
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.3333333
-          outWeight: 0.3333333
+          outWeight: 0.27843946
+        - serializedVersion: 3
+          time: 0.20286462
+          value: 0.17334765
+          inSlope: -0.24304359
+          outSlope: -0.24304359
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.2209404
         - serializedVersion: 3
           time: 1
           value: 0
@@ -2031,12 +2040,7 @@ ParticleSystem:
   SubModule:
     serializedVersion: 2
     enabled: 0
-    subEmitters:
-    - serializedVersion: 3
-      emitter: {fileID: 0}
-      type: 0
-      properties: 0
-      emitProbability: 1
+    subEmitters: []
   LightsModule:
     enabled: 0
     ratio: 0
@@ -2604,6 +2608,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4324498241246116125, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701019665922825808, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7701019665922825808, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
         type: 3}
       propertyPath: InitialModule.startSize.scalar
@@ -2643,6 +2657,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.minMaxState
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701019666025298059, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7701019666025298059, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
         type: 3}
@@ -2726,6 +2745,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7701019667457479301, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
         type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701019667457479301, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: SubModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701019667457479301, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: startDelay.scalar
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701019667457479301, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
       propertyPath: InitialModule.startSize.scalar
       value: 6
       objectReference: {fileID: 0}
@@ -2743,6 +2777,21 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
       value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701019667457479301, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: SubModule.subEmitters.Array.data[0].emitter
+      value: 
+      objectReference: {fileID: 2878598345955016838}
+    - target: {fileID: 7701019667457479301, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: SubModule.subEmitters.Array.data[0].properties
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947939850624136434, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8947939850624136434, guid: 82b7e3aa93e72084eb6f1022377ec4f2,
         type: 3}

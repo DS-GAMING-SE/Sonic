@@ -134,8 +134,17 @@ namespace SonicTheHedgehog.Modules
 
             sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick", true);
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
+
             sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
+            if (sonicBoomImpactEffect)
+            {
+                sonicBoomImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonic_boom_explode";
+            }
             crossSlashImpactEffect = Assets.LoadEffect("SonicCrossSlashImpact");
+            if (crossSlashImpactEffect)
+            {
+                crossSlashImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonic_boom_explode";
+            }
 
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
             transformationEmeraldSwirl = Assets.LoadEffect("SonicChaosEmeraldSwirl");
@@ -224,11 +233,6 @@ namespace SonicTheHedgehog.Modules
             superGrandSlamLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
             superGrandSlamLoopSoundDef.startSoundName = "Play_super_grand_slam_loop";
             superGrandSlamLoopSoundDef.stopSoundName = "Stop_super_grand_slam_loop";
-
-            if (sonicBoomImpactEffect)
-            {
-                sonicBoomImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonic_boom_explode";
-            }
 
             if (superSonicTransformationEffect)
             {
