@@ -1,8 +1,8 @@
 {
     "name": "SonicTheHedgehog",
-    "version_number": "1.2.1",
+    "version_number": "2.0.0",
     "website_url": "https://github.com/DS-GAMING-SE/Sonic",
-    "description": "Adds Sonic the Hedgehog as a playable survivor with a moveset mostly based on his from Sonic Frontiers.",
+    "description": "Adds Sonic the Hedgehog as a playable survivor. Now with Super Sonic!",
     "dependencies": [
 	"tristanmcpherson-R2API-4.0.11",
         "bbepis-BepInExPack-5.4.1902"
