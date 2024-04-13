@@ -7,6 +7,7 @@ using RoR2.Skills;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
+using SonicTheHedgehog.Modules.Forms;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;

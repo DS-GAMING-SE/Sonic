@@ -38,6 +38,7 @@ namespace SonicTheHedgehog.Modules
             AddProjectile(superMetalMeleeKickProjectilePrefab);
 
             AddProjectile(superSonicAfterimageRainPrefab);
+            AddProjectile(superMetalAfterimageRainPrefab);
         }
 
         internal static void AddProjectile(GameObject projectileToAdd)
@@ -135,21 +136,6 @@ namespace SonicTheHedgehog.Modules
             superMetalMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMetalMeleeKickGhost", "SuperMetalMeleeKickProjectile");
         }
 
-        private static void CreateOtherSuperMeleeProjectiles()
-        {
-            superMeleeKickProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperSonicMeleeKickProjectile");
-            ProjectileController controller = superMeleeKickProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMeleeKickGhost", superProjectileMaterial);
-
-            superMetalMeleePunchProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperMetalMeleePunchProjectile");
-            controller = superMetalMeleePunchProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleePunchGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleePunchGhost", superProjectileMaterial);
-
-            superMetalMeleeKickProjectilePrefab = PrefabAPI.InstantiateClone(superMeleePunchProjectilePrefab, "SuperMetalMeleeKickProjectile");
-            controller = superMetalMeleeKickProjectilePrefab.GetComponent<ProjectileController>();
-            if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMetalMeleeKickGhost") != null) controller.ghostPrefab = CreateGhostPrefab("SuperMetalMeleeKickGhost", superProjectileMaterial);
-        }
-
         //I don't think the prefabName actually matters for anything
         public static GameObject CreateOtherSuperMeleeProjectile(string ghostPrefabName, string prefabName)
         {
@@ -167,7 +153,9 @@ namespace SonicTheHedgehog.Modules
                 Debug.Log("the risk of rain is real");
             }
 
-            superSonicAfterimageRainPrefab.AddComponent<NetworkIdentity>();
+            NetworkIdentity network = superSonicAfterimageRainPrefab.AddComponent<NetworkIdentity>();
+            network.localPlayerAuthority = true;
+
             superSonicAfterimageRainPrefab.AddComponent<TeamFilter>();
 
             ProjectileController controller = superSonicAfterimageRainPrefab.AddComponent<ProjectileController>();

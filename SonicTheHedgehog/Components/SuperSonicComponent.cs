@@ -5,6 +5,7 @@ using RoR2;
 using RoR2.Skills;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
+using SonicTheHedgehog.Modules.Forms;
 using SonicTheHedgehog.SkillStates;
 using UnityEngine;
 using UnityEngine.AddressableAssets;

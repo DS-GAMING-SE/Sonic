@@ -94,7 +94,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", $"{superSonicColor}Super Melee</color>");
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION",
                 meleeDescription +
-                $" {superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
+                $"\n{superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
 
             #endregion
 
@@ -125,10 +125,10 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #region Super Parry
-            string idwAttackName = $"IDW Attack(NAME PENDING)";
+            string idwAttackName = $"IDW Attack";
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Perfect Parry</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}Reduce all nearby enemies attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. \nAfter a successful parry, replace this skill with \"{idwAttackName}\". \n\nThis can only be triggered once.</color>");
+                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} \n{superSonicColor}Reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. \nReplace this skill with \"{idwAttackName}\". \n\nThis can only be triggered once.</color>");
 
             #endregion
 
@@ -136,7 +136,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_NAME",
                 $"{superSonicColor}{idwAttackName}</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION",
-                $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{StaticValues.idwAttackDamageCoefficient * 100f}% damage</style> in a large area. \n\n{superSonicColor}This can only be triggered once.</color>");
+                $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{StaticValues.idwAttackDamageCoefficient * 100f}% damage</style> in a large area around the targeted enemy. \n\n{superSonicColor}This can only be triggered once.</color>");
 
             #endregion
 
@@ -190,7 +190,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", $"{superSonicColor}Super Grand Slam</color>");
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION",
                 grandSlamDescription +
-                $"{superSonicColor} Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.</color>");
+                $"\n{superSonicColor}Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.</color>");
 
             #endregion
 
@@ -262,32 +262,32 @@ namespace SonicTheHedgehog.Modules
 
             #region Emerald Lore
 
-            string dataScraperOpening = "<style=cMono>Welcome to DataScraper (v3.1.53 – beta branch)\n$ Scraping memory... error.\n$ Resolving...\n$";
+            //string dataScraperOpening = "<style=cMono>Welcome to DataScraper (v3.1.53 – beta branch)\n$ Scraping memory... error.\n$ Resolving...\n$";
 
-            string dataScraperEnding = "\n$ Combing for relevant data... done.\nDisplaying partial result.</style>\n\n";
+            //string dataScraperEnding = "\n$ Combing for relevant data... done.\nDisplaying partial result.</style>\n\n";
 
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
-            LanguageAPI.Add(prefix + "BLUE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 0) + dataScraperEnding +
-                "Only a fraction of us were able to make it off world before it attacked. It was as if death itself had claimed our homeworld, leaving nothing but smoldering rock where our home planet once was.\n\nThe emeralds powered our engines. It was only with their power that any of us managed to escape.\n\nAll we could do then was move forward into the darkness with only the glimmering light of the emeralds to guide us.");
+            //LanguageAPI.Add(prefix + "BLUE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 0) + dataScraperEnding +
+            //    "Only a fraction of us were able to make it off world before it attacked. It was as if death itself had claimed our homeworld, leaving nothing but smoldering rock where our home planet once was.\n\nThe emeralds powered our engines. It was only with their power that any of us managed to escape.\n\nAll we could do then was move forward into the darkness with only the glimmering light of the emeralds to guide us.");
 
-            LanguageAPI.Add(prefix + "CYAN_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 1) + dataScraperEnding +
-                "There's far more to these gems than we know about. It couldn't have just been random chance that drew us to this world. The emeralds reacted to something.. no.. something took control of the emeralds, and by extension, our ships. Whatever it is, it's connected to the emeralds in some way. In the end, it doesn't really matter why it brought us here anyway. I had long since gotten used to the chaos.\n\nThe world that strange force had brought us to was a primitive one, many millenia behind us. We chose to isolate ourselves on an uninhabited archipelago to avoid interfering too much with this world's inhabitants. With our numbers so slim, these islands had plenty of room for us. Besides, we are no conquerors.\n\nNo one should have their home taken away from them.");
+            //LanguageAPI.Add(prefix + "CYAN_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 1) + dataScraperEnding +
+            //    "There's far more to these gems than we know about. It couldn't have just been random chance that drew us to this world. The emeralds reacted to something.. no.. something took control of the emeralds, and by extension, our ships. Whatever it is, it's connected to the emeralds in some way. In the end, it doesn't really matter why it brought us here anyway. I had long since gotten used to the chaos.\n\nThe world that strange force had brought us to was a primitive one, many millenia behind us. We chose to isolate ourselves on an uninhabited archipelago to avoid interfering too much with this world's inhabitants. With our numbers so slim, these islands had plenty of room for us. Besides, we are no conquerors.\n\nNo one should have their home taken away from them.");
 
-            LanguageAPI.Add(prefix + "GRAY_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 2) + dataScraperEnding +
-                "---. In cyber space we kept our history, our memories, our hopes, our souls. In the digital dream, it felt as if the home we had lost was still with us.");
+            //LanguageAPI.Add(prefix + "GRAY_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 2) + dataScraperEnding +
+            //    "---. In cyber space we kept our history, our memories, our hopes, our souls. In the digital dream, it felt as if the home we had lost was still with us.");
 
-            LanguageAPI.Add(prefix + "GREEN_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 3) + dataScraperEnding +
-                "Before, we had run away and lost almost everything. Now, not only was what little we had left in danger once more, we had also dragged a planet that's not our own into this conflict.\n\nWe could've run again, we could've tried to hide on another world, we could've left this world to die like ours.\n\nHow much would we lose in our rushed and desperate escape? Was there any guarantee it wouldn't find us again? How many more worlds would be in danger from this... thing?\n\nWe could've run away.\n\nWe didn't.");
+            //LanguageAPI.Add(prefix + "GREEN_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 3) + dataScraperEnding +
+            //    "Before, we had run away and lost almost everything. Now, not only was what little we had left in danger once more, we had also dragged a planet that's not our own into this conflict.\n\nWe could've run again, we could've tried to hide on another world, we could've left this world to die like ours.\n\nHow much would we lose in our rushed and desperate escape? Was there any guarantee it wouldn't find us again? How many more worlds would be in danger from this... thing?\n\nWe could've run away.\n\nWe didn't.");
 
-            LanguageAPI.Add(prefix + "PURPLE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 4) + dataScraperEnding +
-                "The emeralds powered our greatest weapons in this fight. Once again, they were the key to our survival. But, once again, their power wasn't enough to destroy the entity that threatened us.\n\n----. It has been locked away in cyber space. The toll this took on us was too great. ");
+            //LanguageAPI.Add(prefix + "PURPLE_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 4) + dataScraperEnding +
+            //    "The emeralds powered our greatest weapons in this fight. Once again, they were the key to our survival. But, once again, their power wasn't enough to destroy the entity that threatened us.\n\n----. It has been locked away in cyber space. The toll this took on us was too great. ");
 
-            LanguageAPI.Add(prefix + "RED_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 5) + dataScraperEnding +
-                "All that remains are our memories. Blips of love, of fear, of hope, of life, tethered to the charms we once held so close to our hearts. Even me and my ramblings of the past are all data stored in cyber space. It's the only thing keeping the last of our civilization from being forgotten. --It pains me that there's nothing more I can do--. Even so, I hope no one finds us, lest they release the very thing that reduced us to this state.\n\nAfter everything thats happened, life moves on, with or without us. I no longer have any desire to rebuild all that has been lost. I remain only to ensure that no world will end up like ours.");
+            //LanguageAPI.Add(prefix + "RED_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 5) + dataScraperEnding +
+            //    "All that remains are our memories. Blips of love, of fear, of hope, of life, tethered to the charms we once held so close to our hearts. Even me and my ramblings of the past are all data stored in cyber space. It's the only thing keeping the last of our civilization from being forgotten. --It pains me that there's nothing more I can do--. Even so, I hope no one finds us, lest they release the very thing that reduced us to this state.\n\nAfter everything thats happened, life moves on, with or without us. I no longer have any desire to rebuild all that has been lost. I remain only to ensure that no world will end up like ours.");
 
-            LanguageAPI.Add(prefix + "YELLOW_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 6) + dataScraperEnding +
-                "To those who find any of what we've left behind, please take what you wish. Perhaps it can save you from suffering a fate like ours.\n\nWhen it mattered most, I wasn't able to do anything. I was unable to save anyone, not even myself. Maybe being able to save you, whoever you may be, will be enough for me to move on.");
+            //LanguageAPI.Add(prefix + "YELLOW_EMERALD_LORE", dataScraperOpening + FileNotFoundEmeraldLogHelper(sb, 6) + dataScraperEnding +
+            //    "To those who find any of what we've left behind, please take what you wish. Perhaps it can save you from suffering a fate like ours.\n\nWhen it mattered most, I wasn't able to do anything. I was unable to save anyone, not even myself. Maybe being able to save you, whoever you may be, will be enough for me to move on.");
 
             #endregion
 
