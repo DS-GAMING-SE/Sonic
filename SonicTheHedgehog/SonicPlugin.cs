@@ -91,7 +91,7 @@ namespace SonicTheHedgehog
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.Items.RegisterItems(); // silly Items thingy.
-            Forms.Initialize();
+            Modules.Forms.Forms.Initialize();
             SuperSonicHandler.Initialize();
             ChaosEmeraldInteractable.Initialize();
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules

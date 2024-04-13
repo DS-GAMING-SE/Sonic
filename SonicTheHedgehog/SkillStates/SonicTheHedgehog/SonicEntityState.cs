@@ -87,9 +87,11 @@ namespace SonicTheHedgehog.SkillStates
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = false;
+            }
+            if (base.modelAnimator)
+            {
                 base.modelAnimator.SetBool("isBall", false);
             }
-
             if (SonicTheHedgehogPlugin.emoteAPILoaded)
             {
                 EmoteAPI(false);

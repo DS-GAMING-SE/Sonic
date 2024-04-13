@@ -195,16 +195,14 @@ namespace SonicTheHedgehog.Modules {
             characterModel.invisibilityCount = 0;
             characterModel.temporaryOverlays = new List<TemporaryOverlay>();
 
-            /*ModelPanelParameters panel = characterModel.gameObject.AddComponent<ModelPanelParameters>();
+            ModelPanelParameters panel = characterModel.gameObject.AddComponent<ModelPanelParameters>();
 
-            panel.focusPointTransform = panel.gameObject.transform;
+            panel.focusPointTransform = characterModel.gameObject.transform.Find("FocusPoint");
 
-            panel.cameraPositionTransform = panel.focusPointTransform;
-            panel.cameraPositionTransform.position = Vector3.back * 2 + Vector3.up * 1.3f + Vector3.right / 2;
+            panel.cameraPositionTransform = characterModel.gameObject.transform.Find("FocusPoint/CameraPosition");
 
             panel.minDistance = 0.7f;
             panel.maxDistance = 2.5f;
-            */
             
 
             if (!preattached) {

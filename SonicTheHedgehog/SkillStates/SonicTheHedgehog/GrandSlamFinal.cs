@@ -91,9 +91,8 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
-            if (hasFired && !projectileFired)
+            if (hasFired && !projectileFired && base.isAuthority)
             {
-                projectileFired = true;
                 FireProjectile();
             }
             base.OnExit();
@@ -112,13 +111,9 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (!projectileFired)
             {
-                projectileFired = true;
                 FireProjectile();
             }
-            if (base.isAuthority)
-            {
-                base.characterMotor.Motor.ForceUnground();
-            }
+            base.characterMotor.Motor.ForceUnground();
             base.characterMotor.velocity = Vector3.up * 9f;
             this.hasHit = true;
             this.stopwatch = 0f;
@@ -273,11 +268,15 @@ namespace SonicTheHedgehog.SkillStates
 
         public virtual void FireProjectile()
         {
-            if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+            if (base.isAuthority)
             {
-                superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 2.5f, 0);
-                GameObject prefab = GetProjectilePrefab(modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken);
-                RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 0, base.RollCrit());
+                projectileFired = true;
+                if (base.characterBody.HasBuff(Buffs.superSonicBuff))
+                {
+                    superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 2.5f, 0);
+                    GameObject prefab = GetProjectilePrefab(modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken);
+                    RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 0, base.RollCrit());
+                }
             }
         }
 
