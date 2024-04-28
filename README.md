@@ -33,3 +33,8 @@ Once all seven Chaos Emeralds have been collected, anyone playing as Sonic can t
 - FORCED_REASSEMBLY (Rigging the mastery skin)
 - Shader Forge (A tool that let me make the custom Chaos Emerald shaders without losing my mind https://github.com/CuteWaterBeary/ShaderForge)
 - Sandwich (Writing the Sonic logbook)
+
+# For unfinished builds
+You can get the latest builds from over [here](https://github.com/DS-GAMING-SE/Sonic/actions/workflows/cli.yml?query=branch%3Amaster)
+In there you will see a list of builds that have been created select the latest one and you should see a Artifact called ``DLL``, that Artifact will upon you clicking on it download a zip file containing the Mod DLL.
+If you want the full zip containing the mod manifest and Icon you will need to download the ``ds_gaming-SonicTheHedgehog`` Artifact instead.
