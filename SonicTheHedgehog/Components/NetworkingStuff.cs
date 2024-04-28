@@ -6,6 +6,7 @@ using UnityEngine;
 using SonicTheHedgehog.SkillStates;
 using EntityStates;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Forms;
 
 namespace SonicTheHedgehog.Components
 {
@@ -91,21 +92,27 @@ namespace SonicTheHedgehog.Components
     {
         NetworkInstanceId netId;
 
+        FormIndex formIndex;
+
         public SuperSonicTransform()
         {
 
         }
 
-        public SuperSonicTransform(NetworkInstanceId netId)
+        public SuperSonicTransform(NetworkInstanceId netId, FormIndex formIndex)
         {
             this.netId = netId;
+            this.formIndex = formIndex;
         }
 
         public void OnReceived()
         {
-            if (SuperSonicHandler.instance)
+            GameObject body = Util.FindNetworkObject(netId);
+            if (!body) { return; }
+            if (Forms.formToHandlerObject.TryGetValue(Forms.GetFormDef(formIndex), out GameObject handlerObject))
             {
-                SuperSonicHandler.instance.OnTransform();
+                FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
+                handler.OnTransform(body);
             }
 
         }
@@ -113,11 +120,26 @@ namespace SonicTheHedgehog.Components
         public void Serialize(NetworkWriter writer)
         {
             writer.Write(netId);
+            writer.Write(formIndex);
         }
 
         public void Deserialize(NetworkReader reader)
         {
             netId = reader.ReadNetworkId();
+            formIndex = reader.ReadFormIndex();
+        }
+    }
+
+    public static class Extensions
+    {
+        public static void Write(this NetworkWriter writer, FormIndex formIndex)
+        {
+            writer.WritePackedIndex32((int)formIndex);
+        }
+
+        public static FormIndex ReadFormIndex(this NetworkReader reader)
+        {
+            return (FormIndex)reader.ReadPackedIndex32();
         }
     }
 

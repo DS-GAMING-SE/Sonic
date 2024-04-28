@@ -105,21 +105,21 @@ namespace SonicTheHedgehog.SkillStates
             base.OnExit();
         }
 
-        public override void Update()
+        /*public override void Update()
         {
             base.Update();
             if (base.isAuthority && superSonicComponent && base.characterBody.isPlayerControlled && !base.characterBody.HasBuff(Buffs.superSonicBuff)) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
                 if (Config.SuperTransformKey().Value.IsPressed())
                 {
-                    if (SuperSonicHandler.instance.CanTransform())
+                    if (FormHandler.instance.CanTransform())
                     {
                         Debug.Log("Attempt Super Transform");
                         superSonicComponent.Transform(this.outer);
                     }
                 }
             }
-        }
+        }*/
 
         public override void FixedUpdate()
         {

@@ -16,28 +16,13 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SonicFormBase : BaseState
     {
-        SuperSonicComponent superSonicComponent;
+        public FormDef form;
 
-        public FormDef formDef;
+        protected SuperSonicComponent superSonicComponent;
 
-        GameObject aura;
-        GameObject warning;
-        LoopSoundManager.SoundLoopPtr superLoop;
+        protected bool buffApplied;
 
-        bool buffApplied;
-
-        CharacterModel characterModel;
-
-        private static float cameraDistance = -15;
-        private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
-        {
-            maxPitch = 70f,
-            minPitch = -70f,
-            pivotVerticalOffset = 1.3f,
-            idealLocalCameraPos = new Vector3(0f, 0f, cameraDistance),
-            wallCushion = 0.1f
-        };
-        private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
+        protected CharacterModel characterModel;
 
         public override void OnEnter()
         {
@@ -50,104 +35,46 @@ namespace SonicTheHedgehog.SkillStates
 
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
 
-            this.aura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
+            superSonicComponent.OnTransform(form);
 
-            superSonicComponent.SuperModel();
-
-            superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Assets.superLoopSoundDef);
-
-            if (formDef.flight)
+            if (form.flight)
             {
                 UpdateFlight(true);
             }
 
-            this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
-            {
-                cameraParamsData = this.cameraParams,
-                priority = 0f
-            }, 0f);
-
-            if (base.isAuthority)
-            {
-                FireBlastAttack();
-
-                if (base.characterBody.healthComponent)
-                {
-                    ProcChainMask proc = default(ProcChainMask);
-                    proc.AddProc(ProcType.RepeatHeal);
-                    proc.AddProc(ProcType.CritHeal);
-                    base.characterBody.healthComponent.HealFraction(1, proc);
-                }
-                if (base.skillLocator)
-                {
-                    SkillOverrides(true);
-                }
-                EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicTransformationEffect, base.gameObject, "Chest", true);
-            }
-            if (NetworkServer.active)
-            {
-                RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
-                if (formDef.duration <= 0)
-                base.characterBody.AddTimedBuff(formDef.buff, formDef.duration+1, 1);
-            }
+            AddBuff();
 
         }
 
         public virtual void AddBuff()
         {
-            if (formDef.duration <= 0)
+            if (NetworkServer.active)
             {
-                base.characterBody.AddBuff(formDef.buff);
-            }
-            else
-            {
-                base.characterBody.AddTimedBuff(formDef.buff, formDef.duration, 1);
+                if (form.duration <= 0)
+                {
+                    base.characterBody.AddBuff(form.buff);
+                }
+                else
+                {
+                    base.characterBody.AddTimedBuff(form.buff, form.duration, 1);
+                }
             }
         }
 
         public override void OnExit()
         {
-            if (formDef.flight)
+            if (form.flight)
             {
                 UpdateFlight(false);
             }
-
             superSonicComponent.TransformEnd();
-
-            LoopSoundManager.StopSoundLoopLocal(superLoop);
-
-            if (this.aura)
-            {
-                Destroy(this.aura);
-            }
-            // Aura despawned because all assets loaded are automatically given a component that makes them go away after 12 seconds. Why no one tells me this
-            if (this.warning)
-            {
-                Destroy(this.warning);
-            }
-
-            if (base.isAuthority && base.skillLocator)
-            {
-                SkillOverrides(false);
-            }
-
-            base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.5f);
-
             base.OnExit();
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            if (this.aura)
-            {
-                this.aura.SetActive(this.characterModel.invisibilityCount <= 0);
-            }
-            if (base.fixedAge >= formDef.duration - StaticValues.superSonicWarningDuration && !warning)
-            {
-                this.warning = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicWarning, base.FindModelChild("Chest"));
-            }
-            if (base.characterBody.HasBuff(formDef.buff))
+            if (base.characterBody.HasBuff(form.buff))
             {
                 if (!buffApplied)
                 {
@@ -164,59 +91,14 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        public virtual void SkillOverrides(bool set)
+        public virtual void Heal(float healFraction)
         {
-            if (set)
+            if (base.characterBody.healthComponent && base.isAuthority)
             {
-                if (base.skillLocator.primary.baseSkill == SonicTheHedgehogCharacter.primarySkillDef)
-                {
-                    base.skillLocator.primary.SetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
-                {
-                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-                else if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.parrySkillDef)
-                {
-                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.utility.baseSkill == SonicTheHedgehogCharacter.boostSkillDef)
-                {
-                    base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.special.baseSkill == SonicTheHedgehogCharacter.grandSlamSkillDef)
-                {
-                    base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-            }
-            else
-            {
-                if (base.skillLocator.primary.baseSkill == SonicTheHedgehogCharacter.primarySkillDef)
-                {
-                    base.skillLocator.primary.UnsetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
-                {
-                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-                else
-                {
-                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.utility.baseSkill == SonicTheHedgehogCharacter.boostSkillDef)
-                {
-                    base.skillLocator.utility.UnsetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.special.baseSkill == SonicTheHedgehogCharacter.grandSlamSkillDef)
-                {
-                    base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
-                }
+                ProcChainMask proc = default(ProcChainMask);
+                proc.AddProc(ProcType.RepeatHeal);
+                proc.AddProc(ProcType.CritHeal);
+                base.characterBody.healthComponent.HealFraction(healFraction, proc);
             }
         }
 
@@ -236,24 +118,16 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        private void FireBlastAttack()
+        public override void OnSerialize(NetworkWriter writer)
         {
-            if (base.isAuthority)
-            {
-                BlastAttack blastAttack = new BlastAttack();
-                blastAttack.radius = 20;
-                blastAttack.procCoefficient = 0;
-                blastAttack.position = base.transform.position;
-                blastAttack.attacker = base.gameObject;
-                blastAttack.crit = false;
-                blastAttack.baseDamage = 0;
-                blastAttack.falloffModel = BlastAttack.FalloffModel.Linear;
-                blastAttack.damageType = DamageType.Generic;
-                blastAttack.baseForce = 7000;
-                blastAttack.teamIndex = base.teamComponent.teamIndex;
-                blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
-                blastAttack.Fire();
-            }
+            base.OnSerialize(writer);
+            writer.Write(form.formIndex);
+        }
+
+        public override void OnDeserialize(NetworkReader reader)
+        {
+            base.OnDeserialize(reader);
+            form = Forms.GetFormDef(reader.ReadFormIndex());
         }
     }
 }
