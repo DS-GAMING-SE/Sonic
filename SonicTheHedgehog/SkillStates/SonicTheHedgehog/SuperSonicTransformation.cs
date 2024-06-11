@@ -2,7 +2,7 @@
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
-using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Forms;
 using System;
 using Unity.Collections;
 using UnityEngine;
@@ -12,6 +12,8 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SuperSonicTransformation : BaseSkillState
     {
+        public FormDef form;
+        
         protected float baseDuration = 2.4f;
         protected float transformationDuration = Modules.StaticValues.superSonicDuration;
         protected bool effectFired = false;
@@ -36,8 +38,9 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
+            this.form = Forms.superSonicDef; // to make sure nothing breaks yet
             this.superSonic= base.GetComponent<SuperSonicComponent>();
-            if (!base.HasBuff(Modules.Buffs.superSonicBuff))
+            if (form != superSonic.form)
             {
                 this.duration = this.baseDuration;
                 base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
@@ -85,7 +88,10 @@ namespace SonicTheHedgehog.SkillStates
                 Util.PlaySound(this.transformSoundString, base.gameObject);
                 if (base.isAuthority)
                 {
-                    this.superSonic.superSonicState.SetNextState(new SuperSonic());
+                    //this.superSonic.superSonicState.SetNextState(new SuperSonic { form = Forms.superSonicDef });
+                    SonicFormBase formState = (SonicFormBase)EntityStateCatalog.InstantiateState(form.formState);
+                    formState.form = this.form;
+                    this.superSonic.superSonicState.SetNextState(formState);
                     base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.2f);
                 }
             }

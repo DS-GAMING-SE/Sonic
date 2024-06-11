@@ -13,17 +13,11 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class SuperSonic : BaseState
+    public class SuperSonic : SonicFormBase
     {
-        SuperSonicComponent superSonicComponent;
-
-        GameObject superAura;
-        GameObject warning;
-        LoopSoundManager.SoundLoopPtr superLoop;
-
-        bool superBuffApplied;
-
-        CharacterModel characterModel;
+        private GameObject superAura;
+        private GameObject warning;
+        private LoopSoundManager.SoundLoopPtr superLoop;
 
         private static float cameraDistance = -15;
         private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
@@ -39,21 +33,9 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            Transform modelTransform = base.GetModelTransform();
-            if (modelTransform)
-            {
-                this.characterModel = modelTransform.GetComponent<CharacterModel>();
-            }
-
-            superSonicComponent = base.GetComponent<SuperSonicComponent>();
-
             this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
 
-            superSonicComponent.SuperModel();
-
             superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Assets.superLoopSoundDef);
-
-            UpdateFlight(true);
 
             this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
             {
@@ -65,13 +47,8 @@ namespace SonicTheHedgehog.SkillStates
             {
                 FireBlastAttack();
 
-                if (base.characterBody.healthComponent)
-                {
-                    ProcChainMask proc = default(ProcChainMask);
-                    proc.AddProc(ProcType.RepeatHeal);
-                    proc.AddProc(ProcType.CritHeal);
-                    base.characterBody.healthComponent.HealFraction(1, proc);
-                }
+                Heal(1);
+
                 if (base.skillLocator)
                 {
                     SkillOverrides(true);
@@ -81,24 +58,19 @@ namespace SonicTheHedgehog.SkillStates
             if (NetworkServer.active)
             {
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
-                base.characterBody.AddTimedBuff(Modules.Buffs.superSonicBuff, Modules.StaticValues.superSonicDuration+1, 1);
             }
 
         }
 
         public override void OnExit()
         {
-            UpdateFlight(false);
-
-            superSonicComponent.TransformEnd();
-
             LoopSoundManager.StopSoundLoopLocal(superLoop);
 
             if (this.superAura)
             {
                 Destroy(this.superAura);
             }
-            // Aura despawned because all assets loaded are automatically given a component that makes them go away after 12 seconds. Why no one tells me this
+            // Aura had despawning problem because all assets loaded are automatically given a component that makes them go away after 12 seconds
             if (this.warning)
             {
                 Destroy(this.warning);
@@ -121,21 +93,6 @@ namespace SonicTheHedgehog.SkillStates
             if (base.fixedAge >= StaticValues.superSonicDuration - StaticValues.superSonicWarningDuration && !warning)
             {
                 this.warning = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicWarning, base.FindModelChild("Chest"));
-            }
-            if (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff))
-            {
-                if (!superBuffApplied)
-                {
-                    superBuffApplied = true;
-                }
-            }
-            else if (superBuffApplied)
-            {
-                if (superSonicComponent)
-                {
-                    superSonicComponent.superSonicState.SetNextState(new BaseSonic());
-                }
-                return;
             }
         }
 
@@ -192,22 +149,6 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
                 }
-            }
-        }
-
-        private void UpdateFlight(bool flying)
-        {
-            if (base.characterBody.GetComponent<ICharacterFlightParameterProvider>() != null)
-            {
-                CharacterFlightParameters flightParameters = base.characterBody.GetComponent<ICharacterFlightParameterProvider>().flightParameters;
-                flightParameters.channeledFlightGranterCount += flying ? 1 : -1;
-                base.characterBody.GetComponent<ICharacterFlightParameterProvider>().flightParameters = flightParameters;
-            }
-            if (base.characterBody.GetComponent<ICharacterGravityParameterProvider>() != null)
-            {
-                CharacterGravityParameters gravityParameters = base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters;
-                gravityParameters.channeledAntiGravityGranterCount += flying ? 1 : -1;
-                base.characterBody.GetComponent<ICharacterGravityParameterProvider>().gravityParameters = gravityParameters;
             }
         }
 

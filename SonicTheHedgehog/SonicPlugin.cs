@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security;
 using System.Security.Permissions;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Forms;
 using IL.RoR2.UI;
 using UnityEngine;
 using EmotesAPI;
@@ -26,6 +27,7 @@ using R2API.Networking.Interfaces;
 using R2API.Networking;
 using UnityEngine.SceneManagement;
 using System;
+using HarmonyLib;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -55,7 +57,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "2.0.0";
+        public const string MODVERSION = "2.1.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -92,7 +94,6 @@ namespace SonicTheHedgehog
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.Items.RegisterItems(); // silly Items thingy.
             Modules.Forms.Forms.Initialize();
-            SuperSonicHandler.Initialize();
             ChaosEmeraldInteractable.Initialize();
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
 
@@ -377,24 +378,34 @@ namespace SonicTheHedgehog
 
         private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
         {
-            EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.gameObject, "Body");
-            if (stateMachine)
+            if (!NetworkServer.active) { return; }
+            if (self)
             {
-                EntityState state = stateMachine.state;
-                NetworkIdentity network = self.gameObject.GetComponent<NetworkIdentity>();
-                if (state.GetType() == typeof(Parry) && network)
+                EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.gameObject, "Body");
+                if (stateMachine)
                 {
-                    ((Parry)state).OnTakeDamage(damage);
-                    new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
+                    EntityState state = stateMachine.state;
+                    NetworkIdentity network = self.gameObject.GetComponent<NetworkIdentity>();
+                    if (state.GetType() == typeof(Parry) && network)
+                    {
+                        ((Parry)state).OnTakeDamage(damage);
+                        new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
+                    }
                 }
-            }
-            if (self.body.HasBuff(Buffs.superSonicBuff))
-            {
-                damage.rejected = true;
-                EffectManager.SpawnEffect(HealthComponent.AssetReferences.damageRejectedPrefab, new EffectData
+                if (self.gameObject.TryGetComponent(out SuperSonicComponent formComponent))
                 {
-                    origin = damage.position
-                }, true);
+                    if (formComponent.form)
+                    {
+                        if (formComponent.form.invincible)
+                        {
+                            damage.rejected = true;
+                            EffectManager.SpawnEffect(HealthComponent.AssetReferences.damageRejectedPrefab, new EffectData
+                            {
+                                origin = damage.position
+                            }, true);
+                        }
+                    }
+                }
             }
             orig(self, damage);
         }
@@ -451,15 +462,19 @@ namespace SonicTheHedgehog
                 Vector3 vector = new Vector3(38, 23, 36);
             }*/
 
-            if (!SuperSonicHandler.instance)
+            if (!Forms.formToHandlerObject.GetValueSafe(Forms.superSonicDef))
             {
-                NetworkServer.Spawn(GameObject.Instantiate<GameObject>(SuperSonicHandler.handlerPrefab));
+                NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(Forms.superSonicDef)));
             }
+
+            if (!Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject superSonicHandler)) { return; }
+
+            SuperSonicHandler emeraldSpawner = superSonicHandler.GetComponent<SuperSonicHandler>();
 
             bool someoneIsSonic = false;
             foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
             {
-                if (BodyCatalog.FindBodyIndex(player.master.bodyPrefab) == BodyCatalog.FindBodyIndex("SonicTheHedgehog"))
+                if (Forms.superSonicDef.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(player.master.bodyPrefab)))
                 {
                     someoneIsSonic = true;
                 }
@@ -467,7 +482,7 @@ namespace SonicTheHedgehog
             Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
             if (!someoneIsSonic)
             {
-                SuperSonicHandler.instance.SetEvents(false);
+                emeraldSpawner.SetEvents(false);
                 return;
             }
 
@@ -476,15 +491,13 @@ namespace SonicTheHedgehog
             Debug.Log("Metamorphosis? " + metamorphosis);
             if (metamorphosis)
             {
-                SuperSonicHandler.instance.SetEvents(false);
+                emeraldSpawner.SetEvents(false);
                 return;
             }
 
-            SuperSonicHandler.instance.SetEvents(true);
+            emeraldSpawner.SetEvents(true);
 
-            SuperSonicHandler.instance.ResetAvailable();
-
-            SuperSonicHandler.instance.FilterOwnedEmeralds();
+            emeraldSpawner.FilterOwnedEmeralds();
 
             if (SuperSonicHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid") && !scene.cachedName.Contains("voidstage")) 
             {

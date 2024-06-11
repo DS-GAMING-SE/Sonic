@@ -10,6 +10,9 @@ using SonicTheHedgehog.SkillStates;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using HarmonyLib;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace SonicTheHedgehog.Components
 {
@@ -19,10 +22,10 @@ namespace SonicTheHedgehog.Components
 
         public FormDef form;
 
-        public Material superSonicMaterial;
+        public Material formMaterial;
         public Material defaultMaterial;
 
-        public Mesh superSonicModel;
+        public Mesh formMesh;
         public Mesh defaultModel;
 
         private CharacterBody body;
@@ -44,33 +47,87 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDef grandSlam;
 
+        public Dictionary<FormDef, ItemTracker> formToItemTracker = new Dictionary<FormDef, ItemTracker>();
+
         private void Start()
         {
             body = GetComponent<CharacterBody>();
             model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-            GetSuperModel(model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken);
             flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
+
+            CreateUnsyncItemTrackers();
         }
 
-        public void Transform(EntityStateMachine entityState)
+        public void CreateUnsyncItemTrackers()
         {
-            if (entityState.SetInterruptState(new SuperSonicTransformation { emeraldAnimation = !SuperSonicHandler.instance.NetworkteamSuper }, InterruptPriority.Frozen))
+            foreach (FormDef form in Forms.formsCatalog)
             {
-                if (NetworkServer.active)
+                if (form.neededItems.Count()>0 && !form.shareItems)
                 {
-                    SuperSonicHandler.instance.OnTransform();
-                }
-                else
-                {
-                    new SuperSonicTransform(GetComponent<NetworkIdentity>().netId).Send(NetworkDestination.Server);
+                    CreateTrackerForForm(form);
                 }
             }
         }
 
+        public virtual void CreateTrackerForForm(FormDef form)
+        {
+            ItemTracker itemTracker = body.gameObject.AddComponent<ItemTracker>();
+            itemTracker.form = form;
+            formToItemTracker.Add(form, itemTracker);
+        }
+
+        public void FixedUpdate()
+        {
+            if (body.hasAuthority && body.isPlayerControlled && form != Forms.superSonicDef) // Adding isPlayerControlled I guess fixed super transforming all Sonics
+            {
+                if (Config.SuperTransformKey().Value.IsPressed())
+                {
+                    if (Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handlerObject))
+                    {
+                        FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
+                        if (handler.CanTransform(this))
+                        {
+                            Debug.Log("Attempt Super Transform");
+                            Transform();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Transform()
+        {
+            EntityStateMachine bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
+            if (!bodyState) { return; }
+            if (!Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handlerObject)) { return; }
+            FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
+            if (bodyState.SetInterruptState(new SuperSonicTransformation { emeraldAnimation = !handler.NetworkteamSuper }, InterruptPriority.Frozen))
+            {
+                if (NetworkServer.active)
+                {
+                    //FormHandler.instance.OnTransform();
+                    handler.OnTransform(base.gameObject);
+                }
+                else
+                {
+                    new SuperSonicTransform(GetComponent<NetworkIdentity>().netId, Forms.superSonicDef.formIndex).Send(NetworkDestination.Server);
+                }
+            }
+        }
+
+        public void OnTransform(FormDef form)
+        {
+            this.form = form;
+            if (!form) return;
+            GetSuperModel(model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken);
+            SuperModel();
+        }
+
         public void TransformEnd()
         {
+            this.form = null;
             body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack,
                 GenericSkill.SkillOverridePriority.Contextual);
             body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry,
@@ -82,20 +139,20 @@ namespace SonicTheHedgehog.Components
         public void SuperModel()
         {
             defaultMaterial = model.baseRendererInfos[0].defaultMaterial; // Textures
-            if (superSonicMaterial)
+            if (formMaterial)
             {
-                model.baseRendererInfos[0].defaultMaterial = superSonicMaterial;
+                model.baseRendererInfos[0].defaultMaterial = formMaterial;
             }
             
-            if (modelAnimator) // Animations
+            if (modelAnimator && form.superAnimations) // Animations
             {
                 modelAnimator.SetFloat("isSuperFloat", 1f);
             }
 
-            if (superSonicModel) // Model
+            if (formMesh) // Model
             {
                 defaultModel = model.mainSkinnedMeshRenderer.sharedMesh;
-                model.mainSkinnedMeshRenderer.sharedMesh = superSonicModel;
+                model.mainSkinnedMeshRenderer.sharedMesh = formMesh;
             }
 
             if (model)
@@ -126,7 +183,7 @@ namespace SonicTheHedgehog.Components
                 modelAnimator.SetFloat("isSuperFloat", 0f);
             }
 
-            if (superSonicModel) // Model
+            if (formMesh) // Model
             {
                 model.mainSkinnedMeshRenderer.sharedMesh = defaultModel;
             }
@@ -164,18 +221,77 @@ namespace SonicTheHedgehog.Components
 
         public virtual void GetSuperModel(string skinName)
         {
-            switch (skinName)
+            if (form.renderDictionary.TryGetValue(skinName, out RenderReplacements replacements))
+            {
+                formMesh = replacements.mesh;
+                formMaterial = replacements.material;
+            }
+
+
+            /*switch (skinName)
             {
                 case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
-                    superSonicMaterial = Materials.CreateHopooMaterial("matSuperSonic");
-                    superSonicModel = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh")
+                    formMaterial = Materials.CreateHopooMaterial("matSuperSonic");
+                    formMesh = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh")
                         .GetComponent<SkinnedMeshRenderer>().sharedMesh;
                     break;
                 case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                    superSonicMaterial = Materials.CreateHopooMaterial("matSuperMetalSonic");
-                    superSonicModel = null;
+                    formMaterial = Materials.CreateHopooMaterial("matSuperMetalSonic");
+                    formMesh = null;
                     break;
+            }*/
+        }
+    }
+
+    public class ItemTracker : MonoBehaviour
+    {
+        public FormDef form;
+        
+        public Inventory inventory;
+
+        public bool allItems;
+
+        private bool eventsSubscribed;
+        
+        private void Start()
+        {
+            inventory = GetComponent<CharacterBody>().inventory;
+        }
+
+        private void OnDisable()
+        {
+            SubscribeEvents(false);
+        }
+
+        public void SubscribeEvents(bool subscribe)
+        {
+            if (eventsSubscribed ^ subscribe)
+            {
+                if (subscribe)
+                {
+                    inventory.onInventoryChanged += CheckItems;
+                    eventsSubscribed = true;
+                    CheckItems();
+                }
+                else
+                {
+                    inventory.onInventoryChanged -= CheckItems;
+                    eventsSubscribed = false;
+                }
             }
+        }
+
+        public void CheckItems()
+        {
+            foreach (NeededItem item in form.neededItems)
+            {
+                if (inventory.GetItemCount(item) < item.count)
+                {
+                    allItems = false;
+                    return;
+                }
+            }
+            allItems = true;
         }
     }
 }
