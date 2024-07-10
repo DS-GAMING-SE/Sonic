@@ -31,12 +31,23 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
     - name: Build
       run: msbuild Sonic.sln /t:SonicTheHedgehog /p:Configuration=Debug
-    - name: Copy Artifacts
+    - name: Copy DLL
       run: mkdir staging && cp .\SonicTheHedgehog\bin\Debug\netstandard2.0\Sonic*.dll staging
-    - name: Upload a Build Artifact
+    - name: Upload the DLL Archive
       uses: actions/upload-artifact@v3.1.3
       with:
         # Artifact name
         name: DLL
+        path: .\staging\
+        if-no-files-found: error
+    - name: Copy Thunderstore Assets
+      run: cp .\Thunderstore\* staging
+    - name: Copy ReadMe
+      run: cp .\README.md staging
+    - name: Upload the Mod Archive
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        # Artifact name
+        name: ds_gaming-SonicTheHedgehog
         path: .\staging\
         if-no-files-found: error
