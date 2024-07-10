@@ -19,8 +19,6 @@ namespace SonicTheHedgehog.Modules
     public class FormHandler : NetworkBehaviour
     {
         // Basically everything except the SyncVars is only handled by server and won't be accurate for clients
-        public static GameObject handlerPrefab;
-
         public INeededItemTracker itemTracker;
 
         public FormDef form;
@@ -28,29 +26,31 @@ namespace SonicTheHedgehog.Modules
         public bool eventsSubscribed = false;
 
         [SyncVar]
-        public static bool teamSuper;
+        public bool teamSuper;
 
         public const float teamSuperTimerDuration = 10f;
-        public static float teamSuperTimer;
+        public float teamSuperTimer;
 
         
         private void OnEnable()
         {
-            if (!Forms.Forms.formToHandlerObject.GetValueSafe(form))
+            if (!(form && Forms.Forms.formsCatalog.Contains(form))) { Debug.LogError("FormHandler does not have a valid formDef set."); }
+            if (!Forms.Forms.formToHandlerObject.ContainsKey(form))
             {
                 itemTracker = GetComponent<INeededItemTracker>();
                 Forms.Forms.formToHandlerObject.Add(form, gameObject);
+                Debug.Log("FormHandler for form " + form.ToString() + " created");
                 return;
             }
-            Debug.LogErrorFormat(this, "Duplicate instance of singleton class {0}. Only one should exist at a time.", new object[]
+            Debug.LogErrorFormat(this, "Duplicate instance of formHandler {0}. Only one should exist at a time.", new object[]
             {
-                base.GetType().Name
+                form.ToString()
             });
         }
 
         private void OnDisable()
         {
-            if (Forms.Forms.formToHandlerObject.GetValueSafe(form) == this)
+            if (Forms.Forms.formToHandlerObject.GetValueSafe(form) == this.gameObject)
             {
                 Forms.Forms.formToHandlerObject.Remove(form);
                 SetEvents(false);
@@ -73,7 +73,7 @@ namespace SonicTheHedgehog.Modules
 
         public virtual bool HasItems(SuperSonicComponent superSonicComponent)
         {
-            if (form.neededItems.Count() > 0)
+            if (form.requiresItems)
             {
                 if (itemTracker != null)
                 {
@@ -86,7 +86,7 @@ namespace SonicTheHedgehog.Modules
         public virtual bool CanTransform(SuperSonicComponent component)
         {
             bool hasItems = HasItems(component);
-            Debug.Log("Team Super? " + teamSuper + ". Has Items? " + hasItems);
+            Debug.Log("FormHandler with form " + form.ToString() + "\nTeam Super? " + teamSuper + ". Has Items? " + hasItems);
             return (hasItems) || teamSuper;
         }
 
@@ -110,7 +110,7 @@ namespace SonicTheHedgehog.Modules
                 teamSuperTimer -= Time.deltaTime;
                 if (teamSuperTimer <= 0)
                 {
-                    NetworkteamSuper = false;
+                    teamSuper = false;
                     Debug.Log("Team Super window ended");
                 }
             }
@@ -226,7 +226,7 @@ namespace SonicTheHedgehog.Modules
 
         public void OnInventoryChanged(Inventory inventory)
         {
-            if (inventory.TryGetComponent<CharacterMaster>(out CharacterMaster master))
+            if (inventory.TryGetComponent(out CharacterMaster master))
             {
                 if (master.playerCharacterMasterController) // Only check items again if a player's inventory changes
                 {
@@ -334,6 +334,7 @@ namespace SonicTheHedgehog.Modules
 
         public bool ItemRequirementMet(SuperSonicComponent component)
         {
+            Debug.Log("Checking unsynceditemtracker");
             return component.formToItemTracker.GetValueSafe(handler.form).allItems;
         }
 
@@ -352,6 +353,7 @@ namespace SonicTheHedgehog.Modules
                         else
                         {
                             Debug.LogWarning("Does not have the items to be removed for transforming");
+                            characterBody.master.inventory.RemoveItem(item, characterBody.master.inventory.GetItemCount(item));
                         }
                     }
                 }

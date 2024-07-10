@@ -12,11 +12,14 @@ using RoR2;
 using HarmonyLib;
 using SonicTheHedgehog.Components;
 
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 namespace SonicTheHedgehog.Modules.Forms
 {
     public static class Forms
     {
         public static FormDef superSonicDef;
+
+        public static FormDef testFormDef;
 
         public static FormDef[] formsCatalog = Array.Empty<FormDef>();
 
@@ -25,6 +28,7 @@ namespace SonicTheHedgehog.Modules.Forms
         public static Dictionary<FormDef, GameObject> formToHandlerObject = new Dictionary<FormDef, GameObject>();
 
         // Look at VarianceAPI for catalog coding
+        // Stuff broke from SystemInitializer stuff but idk why
         public static void Initialize()
         {
             Dictionary<string, RenderReplacements> superRenderDictionary = new Dictionary<string, RenderReplacements>
@@ -32,25 +36,36 @@ namespace SonicTheHedgehog.Modules.Forms
                 { SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME", new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperSonic"), mesh = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh } },
                 { SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME", new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperMetalSonic"), mesh = null } }
             };
-            superSonicDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration,
-                new NeededItem[] { Items.yellowEmerald, Items.redEmerald, Items.blueEmerald, Items.cyanEmerald, Items.grayEmerald, Items.greenEmerald, Items.purpleEmerald }, true, true,
-                1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), superRenderDictionary, typeof(SuperSonicHandler),
-                new AllowedBodyList { whitelist = true, bodyNames = new string[] { "SonicTheHedgehog" } });
+            superSonicDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, true, true,
+                1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), superRenderDictionary, SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX", 
+                typeof(SuperSonicHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
+
+            testFormDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_TEST_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, false, false,
+                1, false, false, false, new SerializableEntityStateType(typeof(SkillStates.SonicFormBase)), new Dictionary<string, RenderReplacements>(), SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
+                typeof(FormHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
 
             CatalogAddFormDefs(new FormDef[]
             {
-                superSonicDef
+                superSonicDef,
+                testFormDef
             });
         }
 
-        public static FormDef CreateFormDef(string name, RoR2.BuffDef buff, float duration, NeededItem[] neededItems, bool shareItems, bool consumeItems, int maxTransforms, bool invincible, bool flight, bool superAnimations, SerializableEntityStateType formState, 
-            Dictionary<string, RenderReplacements> renderDictionary, Type handlerComponent, AllowedBodyList allowedBodyList)
+        [SystemInitializer(typeof(ItemCatalog))]
+        public static void InitializeFormItemRequirements()
+        {
+            superSonicDef.neededItems = new NeededItem[] { Items.yellowEmerald, Items.redEmerald, Items.blueEmerald, Items.cyanEmerald, Items.grayEmerald, Items.greenEmerald, Items.purpleEmerald };
+            testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom, count = 10 } };
+        }
+
+        public static FormDef CreateFormDef(string name, BuffDef buff, float duration, bool requiresItems, bool shareItems, bool consumeItems, int maxTransforms, bool invincible, bool flight, bool superAnimations, SerializableEntityStateType formState, 
+            Dictionary<string, RenderReplacements> renderDictionary, string transformationNameToken, Type handlerComponent, AllowedBodyList allowedBodyList)
         {
             FormDef form = ScriptableObject.CreateInstance<FormDef>();
             form.name = name;
             form.buff = buff;
             form.duration = duration;
-            form.neededItems = neededItems;
+            form.requiresItems = requiresItems;
             form.shareItems = shareItems;
             form.consumeItems = consumeItems;
             form.maxTransforms = maxTransforms;
@@ -59,7 +74,8 @@ namespace SonicTheHedgehog.Modules.Forms
             form.superAnimations = superAnimations;
             form.formState = formState;
             form.renderDictionary = renderDictionary;
-            if (!handlerComponent.IsSubclassOf(typeof(FormHandler)))
+            form.transformationNameToken = transformationNameToken;
+            if (!(handlerComponent.IsSubclassOf(typeof(FormHandler)) || handlerComponent == typeof(FormHandler)))
             { 
                 Debug.LogWarningFormat("handlerComponent of type {0} is not a subclass of FormHandler.", new object[] { handlerComponent.Name }); 
             };
@@ -71,7 +87,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
         public static void CatalogAddFormDefs(FormDef[] forms)
         {
-            Debug.LogFormat("Adding new FormDef(s) to catalog. {0}", new object[] { string.Concat(forms.Select(x => x.ToString() + "\n")) });
+            Debug.LogFormat("Adding new FormDef(s) to catalog.\n {0}", new object[] { string.Concat(forms.Select(x => x.ToString() + "\n")) });
             int length = formsCatalog.Length;
             Array.Resize(ref formsCatalog, length + forms.Length);
             for (int i = 0; i < forms.Length; i++)
@@ -80,15 +96,14 @@ namespace SonicTheHedgehog.Modules.Forms
                 formsCatalog[length + i] = forms[i];
 
                 // Creating handler prefab
-                GameObject handlerPrefab = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicHandler");
-                FormHandler handlerComponent = (FormHandler)handlerPrefab.AddComponent(forms[i].handlerComponent);
+                GameObject handlerPrefab = PrefabAPI.InstantiateClone(Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicHandler"), forms[i].name + " " + forms[i].handlerComponent.Name);
+                FormHandler handlerComponent = (FormHandler) handlerPrefab.AddComponent(forms[i].handlerComponent);
                 handlerComponent.form = forms[i];
-                handlerPrefab.name = forms[i].handlerComponent.Name;
-                if (forms[i].neededItems.Count() > 0)
+                if (forms[i].requiresItems)
                 {
                     handlerPrefab.AddComponent(forms[i].shareItems ? typeof(SyncedItemTracker) : typeof(UnsyncedItemTracker));
                 }
-                PrefabAPI.RegisterNetworkPrefab(handlerPrefab);
+                //PrefabAPI.RegisterNetworkPrefab(handlerPrefab);
                 formToHandlerPrefab.Add(forms[i], handlerPrefab);
                 Debug.LogFormat("FormDef {0} added to catalog. Created new {1} prefab", new object[] { forms[i].name, forms[i].handlerComponent.Name });
 
@@ -96,7 +111,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
             formsCatalog = formsCatalog.OrderBy(form => form.name).ToArray();
 
-            Debug.LogFormat("FormDef(s) added to formCatalog. formCatalog now contains: {0}", new object[] { string.Concat(formsCatalog.Select(x => x.ToString() + "\n")) });
+            Debug.LogFormat("FormDef(s) added to formCatalog. formCatalog now contains:\n {0}", new object[] { string.Concat(formsCatalog.Select(x => x.ToString() + "\n")) });
 
 
         }
@@ -113,7 +128,7 @@ namespace SonicTheHedgehog.Modules.Forms
                 SuperSonicComponent component = gameObject.GetComponent<SuperSonicComponent>();
                 if (component)
                 {
-                    return component.form == form;
+                    return component.activeForm == form;
                 }
             }
             return false;
@@ -127,6 +142,32 @@ namespace SonicTheHedgehog.Modules.Forms
             }
             return false;
         }
+
+        [SystemInitializer(typeof(BodyCatalog))]
+        public static void SuperSonicComponentsForEveryone()
+        {
+            foreach (GameObject body in BodyCatalog.allBodyPrefabs)
+            {
+                foreach (FormDef form in formsCatalog)
+                {
+                    if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(body)))
+                    {
+                        body.AddComponent<SuperSonicComponent>();
+
+                        EntityStateMachine superSonicState = body.AddComponent<EntityStateMachine>();
+                        superSonicState.customName = "SonicForms";
+                        superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
+
+                        NetworkStateMachine network = body.GetComponent<NetworkStateMachine>();
+                        if (network)
+                        {
+                            Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public class FormDef : ScriptableObject
@@ -134,10 +175,13 @@ namespace SonicTheHedgehog.Modules.Forms
         //Name can't be seen by the player, only used for internal stuff
 
         [Tooltip("The buff given to you when you're transformed. This should be a buff unique to the form you're making.\nUse this buff for applying whatever stat increases you want.\nThis will be applied as a timed buff and will end the form when it goes away.")]
-        public RoR2.BuffDef buff;
+        public BuffDef buff;
 
         [Tooltip("The duration of the transformation in seconds. The actual duration of the form may be slightly longer to account for the transformation animation. If duration is <=0, a normal buff will be used instead of a timed buff")]
         public float duration;
+
+        [Tooltip("Whether or not the form requires having certain items in order to transform. The specific items needed to transform are defined in neededItems once the ItemsCatalog is done.")]
+        public bool requiresItems;
 
         [Tooltip("The item or items that are needed to transform. NeededItem struct stores a RoR2.ItemDef and a uint for how many of that item is needed. You can also just use ItemDefs here if you won't need multiple of the same item, there is an implicit cast")]
         public NeededItem[] neededItems;
@@ -166,6 +210,9 @@ namespace SonicTheHedgehog.Modules.Forms
 
         [Tooltip("Stores the material and mesh changes that will be applied when transforming based on what skin you're using.\nKey is the string token of the skin. RenderReplacements is a struct containing a material and mesh.\nPutting null for material or mesh will make them not change when transforming.")]
         public Dictionary<string, RenderReplacements> renderDictionary;
+
+        [Tooltip("The name prefix/suffix that will be added when transformed. {0} will be replaced with whatever the character's normal name is.\nIf the string is left empty, like \"\", there will be no name change.\nEg. \"Super {0}\" would be Super Sonic")]
+        public string transformationNameToken;
 
         [Tooltip("The component that will track information about your form, such as whether all necessary items have been collected. This component will be put on a gameObject that will exist throughout the run and persist between stages.\nIf you're unsure what to put here, use typeof(FormHandler).\nYou can create a subclass of FormHandler and put it here if you want to add code, such as an extra requirement for transforming.")]
         public Type handlerComponent;

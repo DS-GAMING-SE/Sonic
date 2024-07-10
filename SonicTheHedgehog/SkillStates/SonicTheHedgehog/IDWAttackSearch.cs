@@ -104,9 +104,16 @@ namespace SonicTheHedgehog.SkillStates
         private void TargetLocked()
         {
             this.targetLocked = true;
-            if (superSonicComponent && base.isAuthority)
+            if (base.isAuthority)
             {
-                superSonicComponent.IDWAttackActivated();
+                EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
+                if (superStateMachine)
+                {
+                    if (superStateMachine.state.GetType() == typeof(SuperSonic))
+                    {
+                        ((SuperSonic)superStateMachine.state).IDWAttackActivated();
+                    }
+                }
             }
         }
 

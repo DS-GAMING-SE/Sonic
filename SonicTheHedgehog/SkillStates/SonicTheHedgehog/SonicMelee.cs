@@ -59,6 +59,7 @@ namespace SonicTheHedgehog.SkillStates
         private bool effectPlayed = false;
         private bool swingSoundPlayed = false;
         private bool bufferedHomingAttack = false;
+        private bool bufferedSprint = false;
 
         public override void OnEnter()
         {
@@ -244,7 +245,7 @@ namespace SonicTheHedgehog.SkillStates
                 Vector3 vector;
                 vector = base.characterBody.inputBank.moveVector * base.characterBody.moveSpeed;
                 vector *= meleeDisplacement;
-                vector *= swingIndex == 4 ? 0.6f : 1;
+                vector *= swingIndex == 4 ? 0.9f : 1.3f;
                 if (Flying())
                 {
                     vector *= 1.5f;

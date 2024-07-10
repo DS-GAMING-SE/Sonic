@@ -247,7 +247,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     if (fixedAge < this.estimatedHomingAttackTime)
                     {
-                        this.homingAttackSpeed = (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 5;
+                        this.homingAttackSpeed = homingTracker.Speed();
                         if (this.target != null)
                         {
                             targetDirection = this.target.transform.position - base.characterMotor.transform.position;

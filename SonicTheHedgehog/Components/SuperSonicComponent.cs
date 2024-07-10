@@ -20,7 +20,11 @@ namespace SonicTheHedgehog.Components
     {
         public EntityStateMachine superSonicState;
 
-        public FormDef form;
+        [Tooltip("The form you have selected. Not necessarily the form you are currently in, but the one that you're focused on. Attempting to transform will transform you into this form.")]
+        public FormDef targetedForm;
+
+        [Tooltip("The form you're currently in. If not transformed into anything, this will be null.")]
+        public FormDef activeForm;
 
         public Material formMaterial;
         public Material defaultMaterial;
@@ -30,28 +34,22 @@ namespace SonicTheHedgehog.Components
 
         private CharacterBody body;
         private CharacterModel model;
+        private Inventory inventory;
         private Animator modelAnimator;
 
-        private TemporaryOverlay temporaryOverlay;
         private TemporaryOverlay flashOverlay;
         private static Material flashMaterial;
-
-        public static SkillDef melee;
-
-        public static SkillDef sonicBoom;
-        public static SkillDef parry;
-        public static SkillDef idwAttack;
-        public static SkillDef emptyParry;
-
-        public static SkillDef boost;
-
-        public static SkillDef grandSlam;
 
         public Dictionary<FormDef, ItemTracker> formToItemTracker = new Dictionary<FormDef, ItemTracker>();
 
         private void Start()
         {
-            body = GetComponent<CharacterBody>();
+            targetedForm = Forms.superSonicDef;
+            body = base.GetComponent<CharacterBody>();
+            if (!body.isPlayerControlled)
+            {
+                Destroy(this);
+            }
             model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
@@ -64,7 +62,7 @@ namespace SonicTheHedgehog.Components
         {
             foreach (FormDef form in Forms.formsCatalog)
             {
-                if (form.neededItems.Count()>0 && !form.shareItems)
+                if (form.requiresItems && !form.shareItems)
                 {
                     CreateTrackerForForm(form);
                 }
@@ -75,22 +73,26 @@ namespace SonicTheHedgehog.Components
         {
             ItemTracker itemTracker = body.gameObject.AddComponent<ItemTracker>();
             itemTracker.form = form;
+            itemTracker.body = body;
             formToItemTracker.Add(form, itemTracker);
         }
 
         public void FixedUpdate()
         {
-            if (body.hasAuthority && body.isPlayerControlled && form != Forms.superSonicDef) // Adding isPlayerControlled I guess fixed super transforming all Sonics
+            if (body.hasAuthority && body.isPlayerControlled)
             {
-                if (Config.SuperTransformKey().Value.IsPressed())
+                if (activeForm != targetedForm) // Adding isPlayerControlled I guess fixed super transforming all Sonics
                 {
-                    if (Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handlerObject))
+                    if (Config.SuperTransformKey().Value.IsPressed())
                     {
-                        FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-                        if (handler.CanTransform(this))
+                        if (Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject))
                         {
-                            Debug.Log("Attempt Super Transform");
-                            Transform();
+                            FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
+                            if (handler.CanTransform(this))
+                            {
+                                Debug.Log("Attempt Transform");
+                                Transform();
+                            }
                         }
                     }
                 }
@@ -101,7 +103,7 @@ namespace SonicTheHedgehog.Components
         {
             EntityStateMachine bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
             if (!bodyState) { return; }
-            if (!Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handlerObject)) { return; }
+            if (!Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject)) { return; }
             FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
             if (bodyState.SetInterruptState(new SuperSonicTransformation { emeraldAnimation = !handler.NetworkteamSuper }, InterruptPriority.Frozen))
             {
@@ -112,26 +114,24 @@ namespace SonicTheHedgehog.Components
                 }
                 else
                 {
-                    new SuperSonicTransform(GetComponent<NetworkIdentity>().netId, Forms.superSonicDef.formIndex).Send(NetworkDestination.Server);
+                    new SuperSonicTransform(GetComponent<NetworkIdentity>().netId, targetedForm.formIndex).Send(NetworkDestination.Server);
                 }
             }
         }
 
         public void OnTransform(FormDef form)
         {
-            this.form = form;
-            if (!form) return;
+            this.activeForm = form;
+            if (!form) { return; }
+            ModelSkinController skin = model.GetComponentInChildren<ModelSkinController>();
+            if (!skin) { return; }
             GetSuperModel(model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken);
             SuperModel();
         }
 
         public void TransformEnd()
         {
-            this.form = null;
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack,
-                GenericSkill.SkillOverridePriority.Contextual);
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.emptyParry,
-                GenericSkill.SkillOverridePriority.Contextual);
+            this.activeForm = null;
             ResetModel();
         }
 
@@ -144,7 +144,7 @@ namespace SonicTheHedgehog.Components
                 model.baseRendererInfos[0].defaultMaterial = formMaterial;
             }
             
-            if (modelAnimator && form.superAnimations) // Animations
+            if (modelAnimator && activeForm.superAnimations) // Animations
             {
                 modelAnimator.SetFloat("isSuperFloat", 1f);
             }
@@ -157,13 +157,6 @@ namespace SonicTheHedgehog.Components
 
             if (model)
             {
-                temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Outline
-                temporaryOverlay.originalMaterial = Assets.superSonicOverlay;
-                temporaryOverlay.destroyComponentOnEnd = true;
-                temporaryOverlay.enabled = true;
-                temporaryOverlay.AddToCharacerModel(model);
-
-
                 flashOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Flash
                 flashOverlay.duration = 1;
                 flashOverlay.animateShaderAlpha = true;
@@ -188,11 +181,6 @@ namespace SonicTheHedgehog.Components
                 model.mainSkinnedMeshRenderer.sharedMesh = defaultModel;
             }
 
-            if (temporaryOverlay) // Outline
-            {
-                temporaryOverlay.RemoveFromCharacterModel();
-            }
-
             if (model) // Flash
             {
                 flashOverlay = model.gameObject.AddComponent<TemporaryOverlay>();
@@ -205,23 +193,9 @@ namespace SonicTheHedgehog.Components
             }
         }
 
-        public void ParryActivated()
-        {
-            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.idwAttack,
-                GenericSkill.SkillOverridePriority.Contextual);
-        }
-
-        public void IDWAttackActivated()
-        {
-            body.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.idwAttack,
-                GenericSkill.SkillOverridePriority.Contextual);
-            body.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.emptyParry,
-                GenericSkill.SkillOverridePriority.Contextual);
-        }
-
         public virtual void GetSuperModel(string skinName)
         {
-            if (form.renderDictionary.TryGetValue(skinName, out RenderReplacements replacements))
+            if (activeForm.renderDictionary.TryGetValue(skinName, out RenderReplacements replacements))
             {
                 formMesh = replacements.mesh;
                 formMaterial = replacements.material;
@@ -246,51 +220,74 @@ namespace SonicTheHedgehog.Components
     public class ItemTracker : MonoBehaviour
     {
         public FormDef form;
-        
+
+        public CharacterBody body;
+
         public Inventory inventory;
 
         public bool allItems;
 
         private bool eventsSubscribed;
-        
-        private void Start()
-        {
-            inventory = GetComponent<CharacterBody>().inventory;
-        }
 
+        // HOW DO I GET THE INVENTORY?!?!?
         private void OnDisable()
         {
             SubscribeEvents(false);
         }
 
+        private void FixedUpdate()
+        {
+            if (!eventsSubscribed)
+            {
+                if (body)
+                {
+                    if (body.inventory)
+                    {
+                        Debug.Log("inventory found");
+                        inventory = body.inventory;
+                        SubscribeEvents(true);
+                    }
+                }
+            }
+        }
+
         public void SubscribeEvents(bool subscribe)
         {
-            if (eventsSubscribed ^ subscribe)
+            if (inventory)
             {
-                if (subscribe)
+                if (eventsSubscribed ^ subscribe)
                 {
-                    inventory.onInventoryChanged += CheckItems;
-                    eventsSubscribed = true;
-                    CheckItems();
-                }
-                else
-                {
-                    inventory.onInventoryChanged -= CheckItems;
-                    eventsSubscribed = false;
+                    if (subscribe)
+                    {
+                        inventory.onInventoryChanged += CheckItems;
+                        Debug.Log("subscribe");
+                        eventsSubscribed = true;
+                        CheckItems();
+                    }
+                    else
+                    {
+                        inventory.onInventoryChanged -= CheckItems;
+                        eventsSubscribed = false;
+                    }
                 }
             }
         }
 
         public void CheckItems()
         {
+            if (!form) { Debug.LogError("No form??"); allItems= false; return; }
+            if (!inventory) { Debug.LogError("No inventory????????"); allItems = false; return; }
             foreach (NeededItem item in form.neededItems)
             {
+                if (!item.item) { Debug.LogError("No item????????"); return; }
                 if (inventory.GetItemCount(item) < item.count)
                 {
                     allItems = false;
+                    Debug.Log("Missing items for " + form.ToString() + ": \n" + (new NeededItem { item = item.item, count = (uint)(item.count - inventory.GetItemCount(item))}).ToString());
                     return;
                 }
             }
+            Debug.Log("All items needed for " + form.ToString());
             allItems = true;
         }
     }

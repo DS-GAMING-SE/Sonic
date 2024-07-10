@@ -15,6 +15,12 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SuperSonic : SonicFormBase
     {
+        protected CharacterModel model;
+
+        protected Transform chest;
+
+        private TemporaryOverlay temporaryOverlay;
+
         private GameObject superAura;
         private GameObject warning;
         private LoopSoundManager.SoundLoopPtr superLoop;
@@ -30,10 +36,27 @@ namespace SonicTheHedgehog.SkillStates
         };
         private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
 
+        public static SkillDef melee;
+
+        public static SkillDef sonicBoom;
+        public static SkillDef parry;
+        public static SkillDef idwAttack;
+        public static SkillDef emptyParry;
+
+        public static SkillDef boost;
+
+        public static SkillDef grandSlam;
+
         public override void OnEnter()
         {
             base.OnEnter();
-            this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
+            chest = base.FindModelChild("Chest");
+            if (chest)
+            {
+                this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
+            }
+
+            ApplyOutline();
 
             superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Assets.superLoopSoundDef);
 
@@ -66,6 +89,11 @@ namespace SonicTheHedgehog.SkillStates
         {
             LoopSoundManager.StopSoundLoopLocal(superLoop);
 
+            if (temporaryOverlay)
+            {
+                temporaryOverlay.RemoveFromCharacterModel();
+            }
+            
             if (this.superAura)
             {
                 Destroy(this.superAura);
@@ -79,6 +107,7 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority && base.skillLocator)
             {
                 SkillOverrides(false);
+                base.skillLocator.secondary.UnsetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
             }
 
             base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.5f);
@@ -89,66 +118,76 @@ namespace SonicTheHedgehog.SkillStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            this.superAura.SetActive(this.characterModel.invisibilityCount <= 0);
-            if (base.fixedAge >= StaticValues.superSonicDuration - StaticValues.superSonicWarningDuration && !warning)
+            if (this.superAura)
             {
-                this.warning = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicWarning, base.FindModelChild("Chest"));
+                this.superAura.SetActive(this.characterModel.invisibilityCount <= 0);
+            }
+            if (base.fixedAge >= StaticValues.superSonicDuration - StaticValues.superSonicWarningDuration && !warning && chest)
+            {
+                this.warning = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicWarning, chest);
             }
         }
 
         public virtual void SkillOverrides(bool set)
         {
-            if (set)
+            if (!base.skillLocator) { return; }
+            SkillHelper(base.skillLocator.primary, SonicTheHedgehogCharacter.primarySkillDef, melee, set);
+            if (!SkillHelper(base.skillLocator.secondary, SonicTheHedgehogCharacter.sonicBoomSkillDef, sonicBoom, set))
             {
-                if (base.skillLocator.primary.baseSkill == SonicTheHedgehogCharacter.primarySkillDef)
-                {
-                    base.skillLocator.primary.SetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
-                }
+                SkillHelper(base.skillLocator.secondary, SonicTheHedgehogCharacter.parrySkillDef, parry, set);
+            }
+            SkillHelper(base.skillLocator.utility, SonicTheHedgehogCharacter.boostSkillDef, boost, set);
+            SkillHelper(base.skillLocator.special, SonicTheHedgehogCharacter.grandSlamSkillDef, grandSlam, set);
+        }
 
-                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
+        protected bool SkillHelper(GenericSkill slot, SkillDef original, SkillDef upgrade, bool set)
+        {
+            if (slot)
+            {
+                if (slot.baseSkill == original)
                 {
-                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-                else if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.parrySkillDef)
-                {
-                    base.skillLocator.secondary.SetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.utility.baseSkill == SonicTheHedgehogCharacter.boostSkillDef)
-                {
-                    base.skillLocator.utility.SetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.special.baseSkill == SonicTheHedgehogCharacter.grandSlamSkillDef)
-                {
-                    base.skillLocator.special.SetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
+                    if (set)
+                    {
+                        slot.SetSkillOverride(this, upgrade, GenericSkill.SkillOverridePriority.Upgrade);
+                        return true;
+                    }
+                    else
+                    {
+                        slot.UnsetSkillOverride(this, upgrade, GenericSkill.SkillOverridePriority.Upgrade);
+                        return true;
+                    }
                 }
             }
-            else
+            return false;
+        }
+        public void ParryActivated()
+        {
+            base.skillLocator.secondary.SetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+        }
+
+        public void IDWAttackActivated()
+        {
+            base.skillLocator.secondary.UnsetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+            base.skillLocator.secondary.SetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+        }
+
+        private void ApplyOutline()
+        {
+            if (base.characterBody.modelLocator)
             {
-                if (base.skillLocator.primary.baseSkill == SonicTheHedgehogCharacter.primarySkillDef)
+                if (base.characterBody.modelLocator.modelTransform)
                 {
-                    base.skillLocator.primary.UnsetSkillOverride(this, SuperSonicComponent.melee, GenericSkill.SkillOverridePriority.Upgrade);
+                    model = base.characterBody.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
                 }
+            }
 
-                if (base.skillLocator.secondary.baseSkill == SonicTheHedgehogCharacter.sonicBoomSkillDef)
-                {
-                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.sonicBoom, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-                else
-                {
-                    base.skillLocator.secondary.UnsetSkillOverride(this, SuperSonicComponent.parry, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.utility.baseSkill == SonicTheHedgehogCharacter.boostSkillDef)
-                {
-                    base.skillLocator.utility.UnsetSkillOverride(this, SuperSonicComponent.boost, GenericSkill.SkillOverridePriority.Upgrade);
-                }
-
-                if (base.skillLocator.special.baseSkill == SonicTheHedgehogCharacter.grandSlamSkillDef)
-                {
-                    base.skillLocator.special.UnsetSkillOverride(this, SuperSonicComponent.grandSlam, GenericSkill.SkillOverridePriority.Upgrade);
-                }
+            if (model)
+            {
+                temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Outline
+                temporaryOverlay.originalMaterial = Assets.superSonicOverlay;
+                temporaryOverlay.destroyComponentOnEnd = true;
+                temporaryOverlay.enabled = true;
+                temporaryOverlay.AddToCharacerModel(model);
             }
         }
 

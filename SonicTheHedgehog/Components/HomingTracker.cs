@@ -129,12 +129,12 @@ namespace SonicTheHedgehog.Components
 
         public float MaxRange()
         {
-            return 15f + characterBody.moveSpeed * 2f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
+            return 15f + characterBody.moveSpeed * 2.5f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
         }
 
         public float Speed()
         {
-            return characterBody.moveSpeed * 4 * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
+            return characterBody.moveSpeed * 5f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
         }
     }
 }

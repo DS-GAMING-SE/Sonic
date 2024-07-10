@@ -16,6 +16,7 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(Death));
 
             Modules.Content.AddEntityState(typeof(SuperSonic));
+            Modules.Content.AddEntityState(typeof(SonicFormBase));
             Modules.Content.AddEntityState(typeof(BaseSonic));
 
             Modules.Content.AddEntityState(typeof(SonicMeleeEnter));
@@ -36,6 +37,7 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(GrandSlamSpin));
             Modules.Content.AddEntityState(typeof(GrandSlamFinal));
 
+            Modules.Content.AddEntityState(typeof(TransformationBase));
             Modules.Content.AddEntityState(typeof(SuperSonicTransformation));
         }
     }

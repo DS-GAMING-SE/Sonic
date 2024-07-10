@@ -42,6 +42,9 @@
     <Reference Include="CustomEmotesAPI">
       <HintPath>..\libs\CustomEmotesAPI.dll</HintPath>
     </Reference>
+    <Reference Include="LookingGlass">
+      <HintPath>..\libs\LookingGlass.dll</HintPath>
+    </Reference>
     <Reference Include="R2API">
       <HintPath>..\libs\R2API.dll</HintPath>
     </Reference>

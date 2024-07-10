@@ -30,7 +30,7 @@ namespace SonicTheHedgehog.SkillStates
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
             idleExtraTimer = idleExtraDefault;
             idleExtraCount = 0;
-            if (base.isGrounded && base.characterBody.isSprinting)
+            if (base.isGrounded && base.characterBody.isSprinting && base.inputBank.moveVector != Vector3.zero)
             {
                 base.PlayCrossfade("Body", "Sprint", 0.3f);
             }

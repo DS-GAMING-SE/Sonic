@@ -50,10 +50,13 @@ namespace SonicTheHedgehog.SkillStates
                     EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
                     if (base.characterBody.HasBuff(Buffs.superSonicBuff))
                     {
-                        SuperSonicComponent superSonicComponent = base.characterBody.GetComponent<SuperSonicComponent>();
-                        if (superSonicComponent)
+                        EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
+                        if (superStateMachine)
                         {
-                            superSonicComponent.ParryActivated();
+                            if (superStateMachine.state.GetType() == typeof(SuperSonic))
+                            {
+                                ((SuperSonic)superStateMachine.state).ParryActivated();
+                            }
                         }
                     }
                 }
