@@ -75,7 +75,7 @@ namespace SonicTheHedgehog.Components
             // Flying (Thank you Starstorm 2 Back Thrusters for inspiration)
             if (flight!=null && flight.isFlying)
             {
-                if (body.characterMotor.velocity != Vector3.zero && (bodyStateMachine.state.GetType() == typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost) || bodyStateMachine.state.GetType() == typeof(ScepterBoost)))
+                if (body.characterMotor.velocity != Vector3.zero && (bodyStateMachine.state.GetType() == typeof(SonicEntityState) || typeof(Boost).IsAssignableFrom(bodyStateMachine.state.GetType())))
                 {
                     this.calced = false;
                     Vector3 velocity = Vector3.Normalize(body.characterMotor.velocity);
@@ -115,7 +115,7 @@ namespace SonicTheHedgehog.Components
 
 
             // Not Flying
-            if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || bodyStateMachine.state.GetType() == typeof(Boost) || bodyStateMachine.state.GetType() == typeof(ScepterBoost)))
+            if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || typeof(Boost).IsAssignableFrom(bodyStateMachine.state.GetType())))
             {
                 calced = false;
                 Vector3 forward = VelocityOnGround(body.characterMotor.velocity); //body.characterMotor.moveDirection.normalized;

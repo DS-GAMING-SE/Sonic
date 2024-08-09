@@ -11,6 +11,7 @@ using SonicTheHedgehog.Modules.Forms;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -23,6 +24,9 @@ namespace SonicTheHedgehog.SkillStates
         protected bool buffApplied;
 
         protected CharacterModel characterModel;
+
+        private TemporaryOverlay flashOverlay;
+        private static Material flashMaterial;
 
         public override void OnEnter()
         {
@@ -100,6 +104,46 @@ namespace SonicTheHedgehog.SkillStates
                 proc.AddProc(ProcType.CritHeal);
                 base.characterBody.healthComponent.HealFraction(healFraction, proc);
             }
+        }
+
+        protected void Flash(float duration)
+        {
+            if (characterModel)
+            {
+                if (!flashMaterial)
+                {
+                    flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
+                }
+
+                flashOverlay = characterModel.gameObject.AddComponent<TemporaryOverlay>(); // Flash
+                flashOverlay.duration = duration;
+                flashOverlay.animateShaderAlpha = true;
+                flashOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0f);
+                flashOverlay.originalMaterial = flashMaterial;
+                flashOverlay.destroyComponentOnEnd = true;
+                flashOverlay.AddToCharacerModel(characterModel);
+            }
+        }
+
+        protected bool SkillHelper(GenericSkill slot, SkillDef original, SkillDef upgrade, bool set)
+        {
+            if (slot)
+            {
+                if (slot.baseSkill == original)
+                {
+                    if (set)
+                    {
+                        slot.SetSkillOverride(this, upgrade, GenericSkill.SkillOverridePriority.Upgrade);
+                        return true;
+                    }
+                    else
+                    {
+                        slot.UnsetSkillOverride(this, upgrade, GenericSkill.SkillOverridePriority.Upgrade);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void UpdateFlight(bool flying)

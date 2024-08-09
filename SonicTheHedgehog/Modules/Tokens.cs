@@ -74,9 +74,11 @@ namespace SonicTheHedgehog.Modules
 
             #endregion
 
-            #region Super Prefix
+            #region Super Form
 
             LanguageAPI.Add(prefix + "SUPER_PREFIX", "Super {0}");
+
+            LanguageAPI.Add(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", "Super");
 
             #endregion
 

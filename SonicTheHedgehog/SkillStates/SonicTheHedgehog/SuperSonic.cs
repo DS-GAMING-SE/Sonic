@@ -21,6 +21,8 @@ namespace SonicTheHedgehog.SkillStates
 
         private TemporaryOverlay temporaryOverlay;
 
+        private BoostLogic boostLogic;
+
         private GameObject superAura;
         private GameObject warning;
         private LoopSoundManager.SoundLoopPtr superLoop;
@@ -56,6 +58,12 @@ namespace SonicTheHedgehog.SkillStates
                 this.superAura = GameObject.Instantiate<GameObject>(Modules.Assets.superSonicAura, base.FindModelChild("Chest"));
             }
 
+            boostLogic = base.GetComponent<BoostLogic>();
+            if (boostLogic)
+            {
+                boostLogic.alwaysMaxBoost = true;
+            }
+
             ApplyOutline();
 
             superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Assets.superLoopSoundDef);
@@ -83,6 +91,7 @@ namespace SonicTheHedgehog.SkillStates
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
             }
 
+            Flash(1);
         }
 
         public override void OnExit()
@@ -93,7 +102,12 @@ namespace SonicTheHedgehog.SkillStates
             {
                 temporaryOverlay.RemoveFromCharacterModel();
             }
-            
+
+            if (boostLogic)
+            {
+                boostLogic.alwaysMaxBoost = false;
+            }
+
             if (this.superAura)
             {
                 Destroy(this.superAura);
@@ -111,6 +125,8 @@ namespace SonicTheHedgehog.SkillStates
             }
 
             base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.5f);
+
+            Flash(0.35f);
 
             base.OnExit();
         }
@@ -140,26 +156,6 @@ namespace SonicTheHedgehog.SkillStates
             SkillHelper(base.skillLocator.special, SonicTheHedgehogCharacter.grandSlamSkillDef, grandSlam, set);
         }
 
-        protected bool SkillHelper(GenericSkill slot, SkillDef original, SkillDef upgrade, bool set)
-        {
-            if (slot)
-            {
-                if (slot.baseSkill == original)
-                {
-                    if (set)
-                    {
-                        slot.SetSkillOverride(this, upgrade, GenericSkill.SkillOverridePriority.Upgrade);
-                        return true;
-                    }
-                    else
-                    {
-                        slot.UnsetSkillOverride(this, upgrade, GenericSkill.SkillOverridePriority.Upgrade);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
         public void ParryActivated()
         {
             base.skillLocator.secondary.SetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);

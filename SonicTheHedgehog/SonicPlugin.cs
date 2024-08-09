@@ -445,7 +445,7 @@ namespace SonicTheHedgehog
                 {
                     EntityState state = stateMachine.state;
                     NetworkIdentity network = self.gameObject.GetComponent<NetworkIdentity>();
-                    if (state.GetType() == typeof(Parry) && network)
+                    if ((state.GetType() == typeof(Parry) || typeof(Parry).IsAssignableFrom(state.GetType())) && network)
                     {
                         ((Parry)state).OnTakeDamage(damage);
                         new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
@@ -531,6 +531,7 @@ namespace SonicTheHedgehog
             {
                 if (!Forms.formToHandlerObject.ContainsKey(form))
                 {
+                    Debug.Log("Spawning new handler object for form " + form.ToString());
                     NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(form)));
                 }
 

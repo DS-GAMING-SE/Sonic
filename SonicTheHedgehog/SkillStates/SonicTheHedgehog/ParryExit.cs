@@ -36,29 +36,15 @@ namespace SonicTheHedgehog.SkillStates
             Util.PlaySound("Play_swing_low", base.gameObject);
             if (parrySuccess)
             {
+                OnSuccessfulParry();
                 if (NetworkServer.active)
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, StaticValues.parryLingeringInvincibilityDuration, 1);
                     base.characterBody.AddTimedBuff(Buffs.parryBuff, StaticValues.parryBuffDuration, 1);
-                    if (base.characterBody.HasBuff(Buffs.superSonicBuff))
-                    {
-                        SuperParryBlast();
-                    }
                 }
                 if (base.isAuthority)
                 {
                     EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
-                    if (base.characterBody.HasBuff(Buffs.superSonicBuff))
-                    {
-                        EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-                        if (superStateMachine)
-                        {
-                            if (superStateMachine.state.GetType() == typeof(SuperSonic))
-                            {
-                                ((SuperSonic)superStateMachine.state).ParryActivated();
-                            }
-                        }
-                    }
                 }
                 Util.PlaySound("Play_parry", base.gameObject);
                 RechargeCooldowns();
@@ -102,6 +88,11 @@ namespace SonicTheHedgehog.SkillStates
                 base.skillLocator.utility.RunRecharge(StaticValues.parryCooldownReduction);
             }
             base.skillLocator.special.RunRecharge(StaticValues.parryCooldownReduction);
+        }
+
+        protected virtual void OnSuccessfulParry()
+        {
+
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

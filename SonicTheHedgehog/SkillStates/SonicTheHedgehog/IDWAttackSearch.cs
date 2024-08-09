@@ -4,6 +4,7 @@ using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.stopwatch += Time.fixedDeltaTime;
 
-            if (!base.characterBody.HasBuff(Buffs.superSonicBuff))
+            if (!Forms.GetIsInForm(base.characterBody, Forms.superSonicDef))
             {
                 this.outer.SetNextStateToMain();
                 return;

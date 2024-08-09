@@ -13,8 +13,10 @@ namespace SonicTheHedgehog.SkillStates
     {
         private static float checksPerSecond = 8;
 
-        private static readonly float damageRadius = 4f;
-        private static readonly float superDamageRadius = 6;
+        protected virtual float damageRadius
+        {
+            get { return 4f; }
+        }
 
         private static readonly float pushOutForceMagnitude = 500;
         private static readonly float pushUpForceMagnitude = 100;
@@ -56,7 +58,7 @@ namespace SonicTheHedgehog.SkillStates
             this.damageTimer = 0f;
 
             this.sphereSearch.origin = characterBody.transform.position;
-            this.sphereSearch.radius = base.characterBody.HasBuff(Buffs.superSonicBuff) ? superDamageRadius : damageRadius;
+            this.sphereSearch.radius = damageRadius;
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(teamComponent.teamIndex));
@@ -87,7 +89,7 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
         
-        private void CalculateDamage(HurtBox hurtBox)
+        protected virtual void CalculateDamage(HurtBox hurtBox)
         {
             this.damage = (StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed;
             Vector3 pushOutForce = Vector3.Normalize(base.characterMotor.velocity) * pushOutForceMagnitude * (this.damage/2f);
@@ -124,7 +126,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (power)
             {
-                return base.characterBody.HasBuff(Buffs.superSonicBuff) ? Assets.scepterSuperBoostFlashEffect : Assets.scepterPowerBoostFlashEffect;
+                return Assets.scepterPowerBoostFlashEffect;
             }
             else
             {

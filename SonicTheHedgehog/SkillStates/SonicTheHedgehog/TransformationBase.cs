@@ -28,6 +28,8 @@ namespace SonicTheHedgehog.SkillStates
             get;
         }
 
+        public bool fromTeamSuper;
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -35,13 +37,22 @@ namespace SonicTheHedgehog.SkillStates
             this.form = superSonic.targetedForm;
             if (form != superSonic.activeForm)
             {
-                if (BodyCatalog.GetBodyName(base.characterBody.bodyIndex) == "SonicTheHedgehog")
+                if (duration > 0)
                 {
-                    base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
+                    if (BodyCatalog.GetBodyName(base.characterBody.bodyIndex) == "SonicTheHedgehog")
+                    {
+                        base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
+                    }
+                    if (NetworkServer.active)
+                    {
+                        base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
+                    }
                 }
-                if (NetworkServer.active)
+                else
                 {
-                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
+                    Transform();
+                    this.outer.SetNextStateToMain();
+                    return;
                 }
             }
             else
@@ -99,11 +110,13 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnSerialize(NetworkWriter writer)
         {
             base.OnSerialize(writer);
+            writer.Write(fromTeamSuper);
         }
 
         public override void OnDeserialize(NetworkReader reader)
         {
             base.OnDeserialize(reader);
+            fromTeamSuper = reader.ReadBoolean();
         }
     }
 }

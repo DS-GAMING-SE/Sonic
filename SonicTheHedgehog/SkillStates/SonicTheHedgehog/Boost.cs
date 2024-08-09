@@ -54,9 +54,15 @@ namespace SonicTheHedgehog.SkillStates
         private bool checkBoostEffects = false;
         private bool boostChangedEffect = false;
 
+        protected virtual bool drainBoostMeter
+        {
+            get { return true; }
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();
+            base.characterBody.skillLocator.utility.onSkillChanged += OnSkillChanged;
             flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             base.GetModelAnimator().SetBool("isBoosting", true);
             if (base.characterMotor)
@@ -64,7 +70,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterMotor.onHitGroundAuthority += OnHitGround;
             }
             boostLogic = GetComponent<BoostLogic>();
-            if (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving())
+            if (ShouldPowerBoost())
             {
                 powerBoosting = true;
             }
@@ -139,7 +145,7 @@ namespace SonicTheHedgehog.SkillStates
 
             if (Moving())
             {
-                if (!base.HasBuff(Modules.Buffs.superSonicBuff))
+                if (drainBoostMeter)
                 {
                     if (NetworkServer.active)
                     {
@@ -200,16 +206,21 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        private void UpdatePowerBoosting()
+        protected virtual bool ShouldPowerBoost()
         {
-            if (!powerBoosting && base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving())
+            return base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth >= 0.9f && Moving();
+        }
+
+        protected virtual void UpdatePowerBoosting()
+        {
+            if (!powerBoosting && ShouldPowerBoost())
             {
                 base.characterBody.MarkAllStatsDirty();
                 powerBoosting = true;
                 OnPowerBoostChanged();
                 return;
             }
-            if (powerBoosting && (base.characterBody.healthComponent.health / base.characterBody.healthComponent.fullHealth < 0.9f || !Moving()))
+            if (powerBoosting && !ShouldPowerBoost())
             {
                 base.characterBody.MarkAllStatsDirty();
                 powerBoosting = false;
@@ -218,7 +229,7 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        private void UpdateBoosting()
+        protected virtual void UpdateBoosting()
         {
             if (!boosting && Moving())
             {
@@ -234,7 +245,7 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        private void OnPowerBoostChanged()
+        protected void OnPowerBoostChanged()
         {
             boostLogic.powerBoosting = powerBoosting;
             if (powerBoosting)
@@ -261,13 +272,13 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        private void OnBoostingChanged()
+        protected void OnBoostingChanged()
         {
             checkBoostEffects = true;
             boostChangedEffect = true;
         }
 
-        private void PlayBoostEffects()
+        protected virtual void PlayBoostEffects()
         {
             if (boosting && boostEffectCooldown <= 0)
             {
@@ -283,8 +294,7 @@ namespace SonicTheHedgehog.SkillStates
 
                 boostEffectCooldown = 0.6f;
 
-                bool super = base.characterBody.HasBuff(Buffs.superSonicBuff);
-                if (powerBoosting || super)
+                if (powerBoosting)
                 {
                     Util.PlaySound(boostChangedEffect ? GetSoundString() : Boost.boostChangeSoundString, base.gameObject);
                     if (base.isAuthority)
@@ -305,7 +315,7 @@ namespace SonicTheHedgehog.SkillStates
                         temporaryOverlay.duration = 0.2f;
                         temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 3f, 0.25f);
                         temporaryOverlay.destroyComponentOnEnd = false;
-                        temporaryOverlay.originalMaterial = super ? LegacyResourcesAPI.Load<Material>("Materials/matStrongerBurn") : LegacyResourcesAPI.Load<Material>("Materials/matOnHelfire");
+                        temporaryOverlay.originalMaterial = GetOverlayMaterial();
                         temporaryOverlay.enabled = true;
                         temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());
                     }
@@ -380,15 +390,16 @@ namespace SonicTheHedgehog.SkillStates
             {
                 EntityState.Destroy(temporaryOverlay);
             }
+            base.characterBody.skillLocator.utility.onSkillChanged -= OnSkillChanged;
             base.OnExit();
         }
 
-        private bool Flying()
+        protected bool Flying()
         {
             return flight != null && flight.isFlying;
         }
 
-        private bool Moving()
+        protected bool Moving()
         {
             return base.characterBody.inputBank.moveVector != Vector3.zero || (!base.isGrounded && (!Flying() || base.fixedAge < extendedDuration));
         }
@@ -412,11 +423,24 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (power)
             {
-                return base.characterBody.HasBuff(Buffs.superSonicBuff) ? Assets.superBoostFlashEffect : Assets.powerBoostFlashEffect;
+                return Assets.powerBoostFlashEffect;
             }
             else
             {
                 return Assets.boostFlashEffect;
+            }
+        }
+
+        public virtual Material GetOverlayMaterial()
+        {
+            return LegacyResourcesAPI.Load<Material>("Materials/matOnHelfire");
+        }
+
+        public virtual void OnSkillChanged(GenericSkill skill)
+        {
+            if (typeof(Boost).IsAssignableFrom(skill.activationState.stateType))
+            {
+                outer.SetNextState(EntityStateCatalog.InstantiateState(skill.activationState));
             }
         }
 

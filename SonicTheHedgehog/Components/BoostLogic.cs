@@ -28,6 +28,8 @@ namespace SonicTheHedgehog.Components
 
         public float predictedMeter;
 
+        public bool alwaysMaxBoost;
+
         public bool boostDraining = false;
         public bool powerBoosting = false;
 
@@ -61,7 +63,7 @@ namespace SonicTheHedgehog.Components
                 PredictMeter();
                 if (NetworkServer.active)
                 {
-                    if (this.boostRegen >= Boost.boostMeterDrain || body.HasBuff(Buffs.superSonicBuff))
+                    if (this.boostRegen >= Boost.boostMeterDrain || alwaysMaxBoost)
                     {
                         this.AddBoost(maxBoostMeter);
                     }
@@ -113,8 +115,8 @@ namespace SonicTheHedgehog.Components
         private void BoostExists()
         {
             bool prevBoostExists = boostExists;
-            boostExists = body.skillLocator.utility.activationState.stateType == typeof(Boost) || body.skillLocator.utility.activationState.stateType == typeof(ScepterBoost);
-            scepterBoostExists = body.skillLocator.utility.activationState.stateType == typeof(ScepterBoost);
+            boostExists = typeof(Boost).IsAssignableFrom(body.skillLocator.utility.activationState.stateType);
+            scepterBoostExists = typeof(ScepterBoost).IsAssignableFrom(body.skillLocator.utility.activationState.stateType);
             if (!prevBoostExists)
             {
                 this.NetworkboostAvailable = true;
@@ -193,7 +195,7 @@ namespace SonicTheHedgehog.Components
 
         private void PredictMeter()
         {
-            if (this.boostRegen >= Boost.boostMeterDrain || body.HasBuff(Buffs.superSonicBuff))
+            if (this.boostRegen >= Boost.boostMeterDrain || alwaysMaxBoost)
             {
                 predictedMeter = maxBoostMeter;
             }

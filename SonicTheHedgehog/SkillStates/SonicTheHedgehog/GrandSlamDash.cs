@@ -185,6 +185,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
                     }
+                    OnLaunch();
                 }
                 base.characterDirection.forward = targetDirection.normalized;
                 if (fixedAge >= this.attackStartTime + (this.estimatedDashTime * 0.75f)) // Slow to stop at end
@@ -205,6 +206,11 @@ namespace SonicTheHedgehog.SkillStates
                 this.outer.SetNextStateToMain();
                 return;
             }
+        }
+
+        protected virtual void OnLaunch()
+        {
+
         }
 
         private void EndChrysalis()

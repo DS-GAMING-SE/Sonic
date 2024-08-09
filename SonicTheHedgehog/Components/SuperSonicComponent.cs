@@ -34,11 +34,7 @@ namespace SonicTheHedgehog.Components
 
         private CharacterBody body;
         private CharacterModel model;
-        private Inventory inventory;
         private Animator modelAnimator;
-
-        private TemporaryOverlay flashOverlay;
-        private static Material flashMaterial;
 
         public Dictionary<FormDef, ItemTracker> formToItemTracker = new Dictionary<FormDef, ItemTracker>();
 
@@ -53,7 +49,6 @@ namespace SonicTheHedgehog.Components
             model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-            flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
 
             CreateUnsyncItemTrackers();
         }
@@ -79,9 +74,9 @@ namespace SonicTheHedgehog.Components
 
         public void FixedUpdate()
         {
-            if (body.hasAuthority && body.isPlayerControlled)
+            if (body.hasAuthority && body.isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
-                if (activeForm != targetedForm) // Adding isPlayerControlled I guess fixed super transforming all Sonics
+                if (activeForm != targetedForm)
                 {
                     if (Config.SuperTransformKey().Value.IsPressed())
                     {
@@ -105,7 +100,9 @@ namespace SonicTheHedgehog.Components
             if (!bodyState) { return; }
             if (!Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject)) { return; }
             FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-            if (bodyState.SetInterruptState(new SuperSonicTransformation { emeraldAnimation = !handler.NetworkteamSuper }, InterruptPriority.Frozen))
+            TransformationBase transformState = (TransformationBase)EntityStateCatalog.InstantiateState(targetedForm.transformState);
+            transformState.fromTeamSuper = handler.teamSuper;
+            if (bodyState.SetInterruptState(transformState, InterruptPriority.Frozen))
             {
                 if (NetworkServer.active)
                 {
@@ -154,17 +151,6 @@ namespace SonicTheHedgehog.Components
                 defaultModel = model.mainSkinnedMeshRenderer.sharedMesh;
                 model.mainSkinnedMeshRenderer.sharedMesh = formMesh;
             }
-
-            if (model)
-            {
-                flashOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Flash
-                flashOverlay.duration = 1;
-                flashOverlay.animateShaderAlpha = true;
-                flashOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0f);
-                flashOverlay.originalMaterial = flashMaterial;
-                flashOverlay.destroyComponentOnEnd = true;
-                flashOverlay.AddToCharacerModel(model);
-            }
         }
 
         public void ResetModel()
@@ -179,17 +165,6 @@ namespace SonicTheHedgehog.Components
             if (formMesh) // Model
             {
                 model.mainSkinnedMeshRenderer.sharedMesh = defaultModel;
-            }
-
-            if (model) // Flash
-            {
-                flashOverlay = model.gameObject.AddComponent<TemporaryOverlay>();
-                flashOverlay.duration = 0.35f;
-                flashOverlay.animateShaderAlpha = true;
-                flashOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
-                flashOverlay.originalMaterial = flashMaterial;
-                flashOverlay.destroyComponentOnEnd = true;
-                flashOverlay.AddToCharacerModel(model);
             }
         }
 
@@ -273,7 +248,7 @@ namespace SonicTheHedgehog.Components
             }
         }
 
-        public void CheckItems()
+        public void CheckItems() // You can tell how much suffering part of code has brought its writer by seeing how many logs there are
         {
             if (!form) { Debug.LogError("No form??"); allItems= false; return; }
             if (!inventory) { Debug.LogError("No inventory????????"); allItems = false; return; }

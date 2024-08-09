@@ -11,24 +11,23 @@ namespace SonicTheHedgehog.SkillStates
     {
         public bool easedIn = false;
 
-        private static float damageCoefficient = Modules.StaticValues.sonicBoomDamageCoefficient;
-        private static float superDamageCoefficient = Modules.StaticValues.superSonicBoomDamageCoefficient;
+        public static float damageCoefficient = Modules.StaticValues.sonicBoomDamageCoefficient;
         public static float procCoefficient = 0.75f;
         public static float baseDuration = Modules.StaticValues.sonicBoomFireTime* (Modules.StaticValues.sonicBoomCount*1.23f);
         public static float baseFireTime = Modules.StaticValues.sonicBoomFireTime;
         public static float baseProjectileSpeed = 90f;
-        public static float baseSuperProjectileSpeed = 135f;
         public static float force = 80f;
         public static float recoil = 0f;
         public static float range = 100f;
-        public static float baseMovementReduction=0.3f;
-        public static float baseSuperMovementReduction=0.85f;
-        public static GameObject projectilePrefab;
-        private static float offset = 0.4f;
+        public virtual float baseMovementReduction
+        {
+            get { return 0.3f; }
+        }
+        protected static float offset = 0.4f;
 
-        private float duration;
-        private float fireTime;
-        private int firedCounter;
+        protected float duration;
+        protected float fireTime;
+        protected int firedCounter;
         private string muzzleString="SwingCenter";
         private float movementReduction;
         private Vector3 targetVelocity;
@@ -50,7 +49,7 @@ namespace SonicTheHedgehog.SkillStates
             base.OnExit();
         }
 
-        private void Fire()
+        protected virtual void Fire()
         {
             this.firedCounter++;
             Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
@@ -58,38 +57,63 @@ namespace SonicTheHedgehog.SkillStates
             {
                 StartAimMode();
                 base.characterBody.AddSpreadBloom(1.5f);
-                if ((firedCounter==1 || this.fireTime>=0.06f) && !base.characterBody.HasBuff(Buffs.superSonicBuff))
+                if ((firedCounter==1 || this.fireTime>=0.06f))
                 {
-                    EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
+                    FireProjectileMuzzleFlash();
                 }
 
-                projectilePrefab = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? Modules.Projectiles.superSonicBoomPrefab : Modules.Projectiles.sonicBoomPrefab;
-                Quaternion direction = Util.QuaternionSafeLookRotation(base.GetAimRay().direction);
-                Vector3 up = direction * Vector3.up;
-                if (!base.characterBody.HasBuff(Buffs.superSonicBuff))
-                {
-                    if (firedCounter == 1)
-                    {
-                        Vector3 right = direction * Vector3.right;
-                        up = Vector3.RotateTowards(up, right, offset, 1);
-                    }
-                    else
-                    {
-                        Vector3 left = direction * Vector3.left;
-                        up = Vector3.RotateTowards(up, left, offset, 1);
-                    }
-                }
-                direction= Util.QuaternionSafeLookRotation(base.GetAimRay().direction,up);
 
-
-                RoR2.Projectile.ProjectileManager.instance.FireProjectile(projectilePrefab, base.GetAimRay().origin, direction, base.gameObject, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superDamageCoefficient : damageCoefficient) * this.damageStat, force, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? baseSuperProjectileSpeed : baseProjectileSpeed));
+                FireProjectile();
             }
+        }
+
+        protected virtual void FireProjectileMuzzleFlash()
+        {
+            EffectManager.SimpleMuzzleFlash(Modules.Assets.sonicBoomKickEffect, base.gameObject, this.muzzleString, true);
+        }
+
+        protected virtual void FireProjectile()
+        {
+            RoR2.Projectile.ProjectileManager.instance.FireProjectile(ProjectilePrefab(), base.GetAimRay().origin, ProjectileRotation(), base.gameObject, 
+                damageCoefficient * this.damageStat, force, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, baseProjectileSpeed);
+        }
+
+        protected virtual GameObject ProjectilePrefab()
+        {
+            return Projectiles.sonicBoomPrefab;
+        }
+
+        protected virtual Quaternion ProjectileRotation()
+        {
+            Quaternion direction = Util.QuaternionSafeLookRotation(base.GetAimRay().direction);
+            Vector3 up = direction * Vector3.up;
+
+            if (firedCounter == 1)
+            {
+                Vector3 right = direction * Vector3.right;
+                up = Vector3.RotateTowards(up, right, offset, 1);
+            }
+            else
+            {
+                Vector3 left = direction * Vector3.left;
+                up = Vector3.RotateTowards(up, left, offset, 1);
+            }
+
+            return Util.QuaternionSafeLookRotation(base.GetAimRay().direction, up);
+        }
+
+        protected virtual void SetNextState()
+        {
+            this.outer.SetNextState(new SonicBoom
+            {
+                easedIn = true
+            });
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            movementReduction = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? baseSuperMovementReduction : baseMovementReduction;
+            movementReduction = baseMovementReduction;
             targetVelocity = (base.inputBank.moveVector.normalized*base.characterBody.moveSpeed)*movementReduction;
             targetVelocity.y = -0.5f;
             base.characterMotor.velocity = easedIn ? targetVelocity : Vector3.Lerp(base.characterMotor.velocity, targetVelocity, base.fixedAge/this.duration);
@@ -99,10 +123,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (base.fixedAge>=this.fireTime*Modules.StaticValues.sonicBoomCount && base.isAuthority&&base.skillLocator.secondary.stock>0&&base.inputBank.skill2.down)
             {
-                this.outer.SetNextState(new SonicBoom
-                {
-                    easedIn=true
-                });
+                SetNextState();
                 base.skillLocator.secondary.DeductStock(1);
                 return;
             }

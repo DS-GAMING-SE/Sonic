@@ -11,13 +11,12 @@ namespace SonicTheHedgehog.SkillStates
     {
         public static float minDuration = Modules.StaticValues.parryMinimumDuration;
         public static float baseMaxDuration = Modules.StaticValues.parryMaximumDuration;
-        public static float baseSuperMaxDuration = StaticValues.superParryMaxDuration;
 
         public static float baseEnterAnimationPercent = 1f;
         public static float superEnterAnimationPercent = 0.8f;
-        private float enterAnimationPercent;
+        protected float enterAnimationPercent;
 
-        private float maxDuration;
+        protected float maxDuration;
 
         private bool canParry = true;
         private bool parrySuccess;
@@ -32,10 +31,10 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.maxDuration = base.characterBody.HasBuff(Buffs.superSonicBuff) ? baseSuperMaxDuration : baseMaxDuration;
+            this.maxDuration = baseMaxDuration;
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
-            this.enterAnimationPercent = base.characterBody.HasBuff(Buffs.superSonicBuff) ? superEnterAnimationPercent : baseEnterAnimationPercent;
+            this.enterAnimationPercent = baseEnterAnimationPercent;
             base.PlayAnimation("FullBody, Override", "ParryEnter", "Slash.playbackRate", minDuration * enterAnimationPercent);
             Util.PlaySound("Play_swing", base.gameObject);
             this.collider = (CapsuleCollider)base.characterBody.mainHurtBox.collider;
@@ -66,17 +65,26 @@ namespace SonicTheHedgehog.SkillStates
         public void OnTakeDamage(DamageInfo damage)
         {
             Debug.Log("Hit while parrying");
-            if (!parrySuccess && canParry && damage.damage>0 && ((damage.damageType & DamageType.DoT) != DamageType.DoT) && ((damage.damageType & DamageType.VoidDeath) != DamageType.VoidDeath) && ((damage.damageType & DamageType.BypassArmor) != DamageType.BypassArmor) && ((damage.damageType & DamageType.BypassBlock) != DamageType.BypassBlock) && ((damage.damageType & DamageType.OutOfBounds) != DamageType.OutOfBounds) && ((damage.damageType & DamageType.FallDamage) != DamageType.FallDamage))
+            if (!parrySuccess && canParry && damage.damage>0 && !damage.damageType.HasFlag(DamageType.DoT)
+                && !damage.damageType.HasFlag(DamageType.VoidDeath)
+                && !damage.damageType.HasFlag(DamageType.BypassArmor)
+                && !damage.damageType.HasFlag(DamageType.BypassBlock)
+                && !damage.damageType.HasFlag(DamageType.OutOfBounds)
+                && !damage.damageType.HasFlag(DamageType.FallDamage))
             {
                 parrySuccess = true;
                 canParry = false;
                 Debug.Log("Parry");
-                this.outer.SetNextState(new ParryExit
-                {
-                    parrySuccess = true
-                });
-
+                SetNextState(true);
             }    
+        }
+
+        protected virtual void SetNextState(bool success)
+        {
+            this.outer.SetNextState(new ParryExit
+            {
+                parrySuccess = success
+            });
         }
 
         public override void FixedUpdate()
@@ -88,7 +96,7 @@ namespace SonicTheHedgehog.SkillStates
             if (canParry && base.isAuthority && ((base.fixedAge >= minDuration && !base.inputBank.skill2.down) || (base.fixedAge >= maxDuration)))
             {
                 canParry = false;
-                this.outer.SetNextState(new ParryExit());
+                SetNextState(false);
             }
             /*if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady()) // Cancel into boost
             {

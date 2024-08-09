@@ -16,8 +16,6 @@ namespace SonicTheHedgehog.SkillStates
 
         protected override string transformSoundString => "Play_super_transform";
 
-        public bool emeraldAnimation;
-
         private static float cameraDistance = -7;
         private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
         {
@@ -29,26 +27,24 @@ namespace SonicTheHedgehog.SkillStates
         };
         private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
 
+
         public override void OnEnter()
         {
             base.OnEnter();
-            if (form != superSonic.activeForm)
+            if (!fromTeamSuper)
             {
-                if (emeraldAnimation)
+                Util.PlaySound("Play_emerald", base.gameObject);
+                if (base.isAuthority)
                 {
-                    Util.PlaySound("Play_emerald", base.gameObject);
-                    if (base.isAuthority)
-                    {
-                        EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
-                    }
+                    EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
                 }
-
-                this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
-                {
-                    cameraParamsData = this.cameraParams,
-                    priority = 1f
-                }, duration / 2f);
             }
+
+            this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
+            {
+                cameraParamsData = this.cameraParams,
+                priority = 1f
+            }, duration / 2f);
 
         }
 
@@ -61,13 +57,13 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnSerialize(NetworkWriter writer)
         {
             base.OnSerialize(writer);
-            writer.Write(emeraldAnimation);
+            writer.Write(fromTeamSuper);
         }
 
         public override void OnDeserialize(NetworkReader reader)
         {
             base.OnDeserialize(reader);
-            emeraldAnimation = reader.ReadBoolean();
+            fromTeamSuper = reader.ReadBoolean();
         }
     }
 }

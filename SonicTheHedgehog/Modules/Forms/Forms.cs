@@ -37,11 +37,11 @@ namespace SonicTheHedgehog.Modules.Forms
                 { SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME", new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperMetalSonic"), mesh = null } }
             };
             superSonicDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, true, true,
-                1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), superRenderDictionary, SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX", 
+                1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), superRenderDictionary, SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX", 
                 typeof(SuperSonicHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
 
             testFormDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_TEST_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, false, false,
-                1, false, false, false, new SerializableEntityStateType(typeof(SkillStates.SonicFormBase)), new Dictionary<string, RenderReplacements>(), SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
+                3, false, false, false, new SerializableEntityStateType(typeof(SkillStates.SonicFormBase)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), new Dictionary<string, RenderReplacements>(), SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
                 typeof(FormHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
 
             CatalogAddFormDefs(new FormDef[]
@@ -58,7 +58,8 @@ namespace SonicTheHedgehog.Modules.Forms
             testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom, count = 10 } };
         }
 
-        public static FormDef CreateFormDef(string name, BuffDef buff, float duration, bool requiresItems, bool shareItems, bool consumeItems, int maxTransforms, bool invincible, bool flight, bool superAnimations, SerializableEntityStateType formState, 
+        // Look at the tooltips in the FormDef class for more information on what all of these parameters mean
+        public static FormDef CreateFormDef(string name, BuffDef buff, float duration, bool requiresItems, bool shareItems, bool consumeItems, int maxTransforms, bool invincible, bool flight, bool superAnimations, SerializableEntityStateType formState, SerializableEntityStateType transformState, 
             Dictionary<string, RenderReplacements> renderDictionary, string transformationNameToken, Type handlerComponent, AllowedBodyList allowedBodyList)
         {
             FormDef form = ScriptableObject.CreateInstance<FormDef>();
@@ -73,6 +74,7 @@ namespace SonicTheHedgehog.Modules.Forms
             form.flight = flight;
             form.superAnimations = superAnimations;
             form.formState = formState;
+            form.transformState = transformState;
             form.renderDictionary = renderDictionary;
             form.transformationNameToken = transformationNameToken;
             if (!(handlerComponent.IsSubclassOf(typeof(FormHandler)) || handlerComponent == typeof(FormHandler)))
@@ -172,7 +174,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
     public class FormDef : ScriptableObject
     {
-        //Name can't be seen by the player, only used for internal stuff
+        //Name should be the name token for the transformation. Eg. "DS_GAMING_SUPER_FORM". The actual name of the form should be handled using LanguageAPI. See Tokens.cs for an example of how that works
 
         [Tooltip("The buff given to you when you're transformed. This should be a buff unique to the form you're making.\nUse this buff for applying whatever stat increases you want.\nThis will be applied as a timed buff and will end the form when it goes away.")]
         public BuffDef buff;
@@ -208,13 +210,16 @@ namespace SonicTheHedgehog.Modules.Forms
         [Tooltip("The entity state used by the \"SonicForms\" entity state machine while transformed. Should be a subclass of SonicFormBase")]
         public SerializableEntityStateType formState;
 
+        [Tooltip("The entity state used by the \"Body\" entity state machine for the transformation animation that will transition you into the form. Should be a subclass of TransformationBase")]
+        public SerializableEntityStateType transformState;
+
         [Tooltip("Stores the material and mesh changes that will be applied when transforming based on what skin you're using.\nKey is the string token of the skin. RenderReplacements is a struct containing a material and mesh.\nPutting null for material or mesh will make them not change when transforming.")]
         public Dictionary<string, RenderReplacements> renderDictionary;
 
-        [Tooltip("The name prefix/suffix that will be added when transformed. {0} will be replaced with whatever the character's normal name is.\nIf the string is left empty, like \"\", there will be no name change.\nEg. \"Super {0}\" would be Super Sonic")]
+        [Tooltip("The name prefix/suffix that will be added when transformed, similar to the names of elites. {0} will be replaced with whatever the character's normal name is.\nIf the string is left empty, like \"\", there will be no name change.\nEg. \"Super {0}\" would be Super Sonic")]
         public string transformationNameToken;
 
-        [Tooltip("The component that will track information about your form, such as whether all necessary items have been collected. This component will be put on a gameObject that will exist throughout the run and persist between stages.\nIf you're unsure what to put here, use typeof(FormHandler).\nYou can create a subclass of FormHandler and put it here if you want to add code, such as an extra requirement for transforming.")]
+        [Tooltip("The component that will track information about your form, such as whether all necessary items have been collected. This component will be put on a gameObject that will be created at the beginning of every stage and will stay for the duration of the stage.\nIf you're unsure what to put here, use typeof(FormHandler).\nYou can create a subclass of FormHandler and put it here if you want to add code, such as an extra requirement for transforming.")]
         public Type handlerComponent;
 
         [Tooltip("Contains information on what characters are allowed to transform.\nIf whitelist, any body name listed under bodyNames will be allowed. If not whitelist, any body name not listed under bodyNames will be allowed.\nBody name refers to the name that survivors and enemies use internally. If you're unsure about what body name means, look into RoR2 BodyCatalog related stuff")]
@@ -224,7 +229,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
         public override string ToString()
         {
-            return this.name;
+            return Language.GetString(this.name, Language.currentLanguageName);
         }
     }
 

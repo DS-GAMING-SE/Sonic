@@ -28,6 +28,9 @@ namespace SonicTheHedgehog.Modules
         [SyncVar]
         public bool teamSuper;
 
+        [SyncVar]
+        public int numberOfTimesTransformed = 0;
+
         public const float teamSuperTimerDuration = 10f;
         public float teamSuperTimer;
 
@@ -86,8 +89,8 @@ namespace SonicTheHedgehog.Modules
         public virtual bool CanTransform(SuperSonicComponent component)
         {
             bool hasItems = HasItems(component);
-            Debug.Log("FormHandler with form " + form.ToString() + "\nTeam Super? " + teamSuper + ". Has Items? " + hasItems);
-            return (hasItems) || teamSuper;
+            Debug.Log("FormHandler with form " + form.ToString() + "\nTeam Super? " + teamSuper + ". Has Items? " + hasItems + ". Number of transforms? " + numberOfTimesTransformed + " out of max " + form.maxTransforms);
+            return (hasItems && (form.maxTransforms <= 0 || numberOfTimesTransformed < form.maxTransforms)) || teamSuper;
         }
 
         public virtual void OnTransform(GameObject body)
@@ -95,6 +98,7 @@ namespace SonicTheHedgehog.Modules
             if (!teamSuper)
             {
                 NetworkteamSuper = true;
+                NetworknumberOfTimesTransformed += 1;
                 teamSuperTimer = teamSuperTimerDuration;
                 if (form.consumeItems)
                 {
@@ -129,11 +133,25 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
+        public int NetworknumberOfTimesTransformed
+        {
+            get
+            {
+                return numberOfTimesTransformed;
+            }
+            [param: In]
+            set
+            {
+                base.SetSyncVar<int>(value, ref numberOfTimesTransformed, 2U);
+            }
+        }
+
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             if (initialState)
             {
                 writer.Write(teamSuper);
+                writer.Write(numberOfTimesTransformed);
                 return true;
             }
             bool flag = false;
@@ -146,6 +164,19 @@ namespace SonicTheHedgehog.Modules
                 }
                 writer.Write(teamSuper);
             }
+            if ((base.syncVarDirtyBits & 2U) != 0U)
+            {
+                if (!flag)
+                {
+                    writer.WritePackedUInt32(base.syncVarDirtyBits);
+                    flag = true;
+                }
+                writer.Write(numberOfTimesTransformed);
+            }
+            if (!flag)
+            {
+                writer.WritePackedUInt32(base.syncVarDirtyBits);
+            }
             return flag;
         }
 
@@ -154,12 +185,17 @@ namespace SonicTheHedgehog.Modules
             if (initialState)
             {
                 teamSuper = reader.ReadBoolean();
+                numberOfTimesTransformed = reader.ReadInt32();
                 return;
             }
             int num = (int)reader.ReadPackedUInt32();
             if ((num & 1U) != 0U)
             {
                 teamSuper = reader.ReadBoolean();
+            }
+            if ((num & 2U) != 0U)
+            {
+                numberOfTimesTransformed = reader.ReadInt32();
             }
         }
     }
@@ -221,7 +257,7 @@ namespace SonicTheHedgehog.Modules
                 }
             }
             NetworkallItems = missingItems.Count() == 0;
-            Debug.Log("Missing items: " + string.Concat(missingItems.Select(x => x.ToString())));
+            Debug.Log("Missing items for "+ handler.form.ToString() + ": " + string.Concat(missingItems.Select(x => x.ToString())));
         }
 
         public void OnInventoryChanged(Inventory inventory)
