@@ -28,6 +28,9 @@ using R2API.Networking;
 using UnityEngine.SceneManagement;
 using System;
 using HarmonyLib;
+using LookingGlass.LookingGlassLanguage;
+using LookingGlass.BuffDescriptions;
+using LookingGlass.ItemStatsNameSpace;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -38,6 +41,7 @@ namespace SonicTheHedgehog
     [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.weliveinasociety.CustomEmotesAPI", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(LookingGlass.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
@@ -57,7 +61,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "2.1.0";
+        public const string MODVERSION = "3.0.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -65,8 +69,11 @@ namespace SonicTheHedgehog
         public static SonicTheHedgehogPlugin instance;
         public static bool emoteAPILoaded = false;
         public static bool betterUILoaded = false;
+        public static bool lookingGlassLoaded = false;
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
+        public static bool celestialWarTankLoaded = false;
+
 
         private void Awake()
         {
@@ -79,6 +86,9 @@ namespace SonicTheHedgehog
 
             betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
             Log.Message("Better UI exists? " + betterUILoaded);
+
+            lookingGlassLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(LookingGlass.PluginInfo.PLUGIN_GUID);
+            Log.Message("Looking Glass exists? " + lookingGlassLoaded);
 
             riskOfOptionsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
             Log.Message("Risk of Options exists? " + riskOfOptionsLoaded);
@@ -146,6 +156,11 @@ namespace SonicTheHedgehog
             }
 
             On.RoR2.SceneDirector.Start += SceneDirectorOnStart;
+
+            if (lookingGlassLoaded)
+            {
+                RoR2Application.onLoad += LookingGlassSetup;
+            }
         }
 
         private void EmoteSkeleton()
@@ -240,6 +255,52 @@ namespace SonicTheHedgehog
             RegisterBuffInfo(Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"-{StaticValues.superParryArmorDebuff * 100} Armor. -{(1/StaticValues.superParryAttackSpeedDebuff) * 100}% Attack speed. -{(1 / StaticValues.superParryMovementSpeedDebuff) * 100}% Movement speed.");
         }
 
+        public static void LookingGlassSetup()
+        {
+            if (Language.languagesByName.TryGetValue("en", out Language language))
+            {
+                RegisterLookingGlassBuff(language, Buffs.boostBuff, "Sonic Boost", $"Gain <style=cIsUtility>+{StaticValues.boostArmor} armor</style>. If <style=cIsDamage>health</style> is above <style=cIsDamage>90%</style>, gain <style=cIsUtility>+{StaticValues.powerBoostListedSpeedCoefficient * 100}% movement speed</style>. Otherwise, gain <style=cIsUtility>+{StaticValues.boostListedSpeedCoefficient * 100}% movement speed</style>.");
+                RegisterLookingGlassBuff(language, Buffs.ballBuff, "Sonic Ball", $"Gain <style=cIsUtility>+{StaticValues.ballArmor} armor</style>.");
+                RegisterLookingGlassBuff(language, Buffs.superSonicBuff, "Super Sonic", $"Immune to all attacks. Gain <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}% damage</style>, <style=cIsUtility>+{100f * StaticValues.superSonicAttackSpeed}% attack speed</style>, and <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}% base movement speed</style>.");
+                RegisterLookingGlassBuff(language, Buffs.parryBuff, "Sonic Parry", $"Gain <style=cIsUtility>+{StaticValues.parryAttackSpeedBuff * 100}% attack speed</style> and <style=cIsUtility>+{StaticValues.parryMovementSpeedBuff * 100}% movement speed</style>.");
+                RegisterLookingGlassBuff(language, Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superParryArmorDebuff * 100}, reduces <style=cIsUtility>attack speed and movement speed</style> by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%.");
+            }
+
+            ItemStatsDef emeraldStats = new ItemStatsDef();
+            emeraldStats.descriptions.Add("Unique Emeralds: ");
+            emeraldStats.valueTypes.Add(ItemStatsDef.ValueType.Stack);
+            emeraldStats.measurementUnits.Add(ItemStatsDef.MeasurementUnits.Number);
+            emeraldStats.calculateValuesNew = (luck, stackCount, procChance) =>
+            {
+                var list = new List<float>();
+                if (Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handler))
+                {
+                    if (handler.TryGetComponent(out SuperSonicHandler emeraldSpawner))
+                    {
+                        list.Add(7 - ((SyncedItemTracker)emeraldSpawner.itemTracker).missingItems.Count);
+                    }
+                }
+                else
+                {
+                    list.Add(-1);
+                }
+                return list;
+            };
+            ItemDefinitions.allItemDefinitions.Add((int)Items.redEmerald.itemIndex, emeraldStats);
+            ItemDefinitions.allItemDefinitions.Add((int)Items.yellowEmerald.itemIndex, emeraldStats);
+            ItemDefinitions.allItemDefinitions.Add((int)Items.greenEmerald.itemIndex, emeraldStats);
+            ItemDefinitions.allItemDefinitions.Add((int)Items.blueEmerald.itemIndex, emeraldStats);
+            ItemDefinitions.allItemDefinitions.Add((int)Items.purpleEmerald.itemIndex, emeraldStats);
+            ItemDefinitions.allItemDefinitions.Add((int)Items.cyanEmerald.itemIndex, emeraldStats);
+            ItemDefinitions.allItemDefinitions.Add((int)Items.grayEmerald.itemIndex, emeraldStats);
+        }
+
+        private static void RegisterLookingGlassBuff(Language language, BuffDef buff, string name, string description) // There's a method just like this in lookingglass but I can't access it due to protection level. I might be missing something 
+        {
+            LookingGlassLanguageAPI.SetupToken(language, $"NAME_{buff.name}", name);
+            LookingGlassLanguageAPI.SetupToken(language, $"DESCRIPTION_{buff.name}", description);
+        }
+
         private static void RiskOfOptionsSetup()
         {
             Sprite icon = (Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicIcon"));
@@ -259,7 +320,21 @@ namespace SonicTheHedgehog
 
             Modules.Config.ForceUnlockMastery().SettingChanged += SonicTheHedgehogCharacter.UnlockMasteryConfig;
 
-            ModSettingsManager.AddOption(new KeyBindOption(Modules.Config.SuperTransformKey()));
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.EmeraldsWithoutSonic()));
+
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldsPerStage(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 1, max = 7 }));
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldsPerSimulacrumStage(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 1, max = 7 }));
+
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldCost(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 0, max = 400 }));
+
+            Modules.Config.EmeraldCost().SettingChanged += Modules.ChaosEmeraldInteractable.UpdateInteractableCost;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ConsumeEmeraldsOnUse()));
+
+            Modules.Config.ConsumeEmeraldsOnUse().SettingChanged += Forms.UpdateConsumeEmeraldsConfig;
+
+
+            //ModSettingsManager.AddOption(new KeyBindOption(Modules.Config.SuperTransformKey()));
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
@@ -344,7 +419,7 @@ namespace SonicTheHedgehog
 
         private bool CanApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_CanApplyAmmoPack orig, GenericSkill self)
         {
-            if (self.activationState.stateType == typeof(Boost) || self.activationState.stateType == typeof(ScepterBoost))
+            if (typeof(Boost).IsAssignableFrom(self.activationState.stateType))
             {
                 BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
                 if (boost)
@@ -357,7 +432,7 @@ namespace SonicTheHedgehog
         private void ApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_ApplyAmmoPack orig, GenericSkill self)
         {
             orig(self);
-            if (self.activationState.stateType == typeof(Boost) || self.activationState.stateType == typeof(ScepterBoost))
+            if (typeof(Boost).IsAssignableFrom(self.activationState.stateType))
             {
                 BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
                 if (boost)
@@ -386,7 +461,7 @@ namespace SonicTheHedgehog
                 {
                     EntityState state = stateMachine.state;
                     NetworkIdentity network = self.gameObject.GetComponent<NetworkIdentity>();
-                    if (state.GetType() == typeof(Parry) && network)
+                    if (typeof(Parry).IsAssignableFrom(state.GetType()) && network)
                     {
                         ((Parry)state).OnTakeDamage(damage);
                         new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
@@ -394,9 +469,9 @@ namespace SonicTheHedgehog
                 }
                 if (self.gameObject.TryGetComponent(out SuperSonicComponent formComponent))
                 {
-                    if (formComponent.form)
+                    if (formComponent.activeForm)
                     {
-                        if (formComponent.form.invincible)
+                        if (formComponent.activeForm.invincible)
                         {
                             damage.rejected = true;
                             EffectManager.SpawnEffect(HealthComponent.AssetReferences.damageRejectedPrefab, new EffectData
@@ -414,17 +489,19 @@ namespace SonicTheHedgehog
         {
             if (bodyObject)
             {
-                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-                if (body)
+                if (bodyObject.TryGetComponent(out SuperSonicComponent superSonic))
                 {
-                    if (body.HasBuff(Buffs.superSonicBuff))
+                    if (superSonic.activeForm)
                     {
-                        string text = orig(bodyObject);
-                        text = Language.GetStringFormatted(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX", new object[]
+                        if (superSonic.activeForm.transformationNameToken != "")
                         {
+                            string text = orig(bodyObject);
+                            text = Language.GetStringFormatted(superSonic.activeForm.transformationNameToken, new object[]
+                            {
                             text
-                        });
-                        return text;
+                            });
+                            return text;
+                        }
                     }
                 }
             }
@@ -462,46 +539,59 @@ namespace SonicTheHedgehog
                 Vector3 vector = new Vector3(38, 23, 36);
             }*/
 
-            if (!Forms.formToHandlerObject.GetValueSafe(Forms.superSonicDef))
-            {
-                NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(Forms.superSonicDef)));
-            }
-
-            if (!Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject superSonicHandler)) { return; }
-
-            SuperSonicHandler emeraldSpawner = superSonicHandler.GetComponent<SuperSonicHandler>();
-
-            bool someoneIsSonic = false;
-            foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
-            {
-                if (Forms.superSonicDef.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(player.master.bodyPrefab)))
-                {
-                    someoneIsSonic = true;
-                }
-            }
-            Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
-            if (!someoneIsSonic)
-            {
-                emeraldSpawner.SetEvents(false);
-                return;
-            }
-
             // Metamorphosis causes issues with emeralds spawning because character rerolls happen after emeralds spawn. Emeralds would only spawn the stage after you were Sonic
             bool metamorphosis = RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef);
             Debug.Log("Metamorphosis? " + metamorphosis);
-            if (metamorphosis)
-            {
-                emeraldSpawner.SetEvents(false);
-                return;
-            }
 
-            emeraldSpawner.SetEvents(true);
+            foreach (FormDef form in FormCatalog.formsCatalog)
+            {
+                bool someoneCanUseForm = false;
+                bool someoneIsSonic = false;
+                foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
+                {
+                    if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(player.master.bodyPrefab)))
+                    {
+                        someoneCanUseForm = true;
+                    }
+                    if (BodyCatalog.GetBodyName(BodyCatalog.FindBodyIndex(player.master.bodyPrefab)) == "SonicTheHedgehog")
+                    {
+                        someoneIsSonic = true;
+                    }
+                    if (someoneCanUseForm && someoneIsSonic)
+                    {
+                        break;
+                    }
+                }
+                Debug.Log("Anyone playing Sonic? " + someoneIsSonic + "\nAnyone can use the form? " + someoneCanUseForm);
+
+                bool formAvailable = someoneCanUseForm && (form != Forms.superSonicDef || (someoneIsSonic && !metamorphosis || Modules.Config.EmeraldsWithoutSonic().Value));
+                // Complicated bool mess here is mostly just to make sure Chaos Emeralds should spawn and, by extension, Super Sonic should be available.
+                // Checks metamorphosis, but metamorphosis is okay if emeralds can spawn without Sonic, etc
+
+                if (!Forms.formToHandlerObject.ContainsKey(form) && formAvailable)
+                {
+                    Debug.Log("Spawning new handler object for form " + form.ToString());
+                    NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(form)));
+                }
+                else
+                {
+                    Debug.Log("Did NOT spawn handler object for form " + form.ToString());
+                    continue;
+                }
+
+                FormHandler formHandler = Forms.formToHandlerObject.GetValueSafe(form).GetComponent(typeof(FormHandler)) as FormHandler;
+
+                formHandler.SetEvents(formAvailable);
+            }
+            if (!Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handler)) { return; }
+
+            if (!handler.TryGetComponent(out SuperSonicHandler emeraldSpawner)) { return; }
 
             emeraldSpawner.FilterOwnedEmeralds();
 
             if (SuperSonicHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid") && !scene.cachedName.Contains("voidstage")) 
             {
-                int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
+                int maxEmeralds = Run.instance is InfiniteTowerRun ? Modules.Config.EmeraldsPerSimulacrumStage().Value : Modules.Config.EmeraldsPerStage().Value;
                 
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 

@@ -33,8 +33,10 @@ namespace SonicTheHedgehog.SkillStates
         protected float homingAttackSpeed;
         protected float estimatedHomingAttackTime;
         protected float homingAttackOvershoot;
-        protected float baseHomingAttackEndLag = 0.3f;
-        protected float superHomingAttackEndLag = 0.1f;
+        protected virtual float baseHomingAttackEndLag
+        {
+            get { return 0.3f; }
+        }
         protected float homingAttackEndLag;
         protected float homingAttackHitHopVelocity = 12;
         public HurtBox target;
@@ -103,7 +105,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             EndChrysalis();
             this.estimatedHomingAttackTime = (targetDirection.magnitude / homingAttackSpeed) * homingAttackOvershoot;
-            this.homingAttackEndLag = (base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superHomingAttackEndLag : baseHomingAttackEndLag) / this.attackSpeedStat;
+            this.homingAttackEndLag = baseHomingAttackEndLag / this.attackSpeedStat;
             this.hitboxName = "Ball";
             //this.hitSoundString = "Play_homing_impact";
             this.impactSound = Assets.homingHitSoundEvent.index;
@@ -247,7 +249,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     if (fixedAge < this.estimatedHomingAttackTime)
                     {
-                        this.homingAttackSpeed = (base.characterBody.moveSpeed * base.characterBody.sprintingSpeedMultiplier) * 5;
+                        this.homingAttackSpeed = homingTracker.Speed();
                         if (this.target != null)
                         {
                             targetDirection = this.target.transform.position - base.characterMotor.transform.position;

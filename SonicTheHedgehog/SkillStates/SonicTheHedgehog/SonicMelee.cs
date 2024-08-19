@@ -20,6 +20,11 @@ namespace SonicTheHedgehog.SkillStates
 
         protected string hitboxName;
 
+        protected virtual Type enterStateType
+        {
+            get { return typeof(SonicMeleeEnter); }
+        }
+
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient;
         protected float procCoefficient;
@@ -59,6 +64,7 @@ namespace SonicTheHedgehog.SkillStates
         private bool effectPlayed = false;
         private bool swingSoundPlayed = false;
         private bool bufferedHomingAttack = false;
+        private bool bufferedSprint = false;
 
         public override void OnEnter()
         {
@@ -158,10 +164,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
 
-                    if (base.HasBuff(Buffs.superSonicBuff))
-                    {
-                        FireSuperProjectile();
-                    }
+                    OnFireAuthority();
                 }
             }
 
@@ -188,27 +191,24 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (bufferedHomingAttack)
                 {
-                    this.outer.SetNextState(new SonicMeleeEnter
-                    {
-                        swingIndex = index
-                    });
+                    SonicMeleeEnter meleeEnterType = (SonicMeleeEnter)EntityStateCatalog.InstantiateState(enterStateType);
+                    meleeEnterType.swingIndex = index;
+                    this.outer.SetNextState(meleeEnterType);
                     base.characterBody.OnSkillActivated(skillLocator.primary);
                 }
                 else
                 {
-                    this.outer.SetNextState(new SonicMelee
-                    {
-                        swingIndex = index,
-                    });
+                    SonicMelee meleeType = (SonicMelee)EntityStateCatalog.InstantiateState(this.GetType());
+                    meleeType.swingIndex = index;
+                    this.outer.SetNextState(meleeType);
                     base.characterBody.OnSkillActivated(skillLocator.primary);
                 }
             }
             else
             {
-                this.outer.SetNextState(new SonicMeleeEnter
-                {
-                    swingIndex = index
-                });
+                SonicMeleeEnter meleeEnterType = (SonicMeleeEnter)EntityStateCatalog.InstantiateState(enterStateType);
+                meleeEnterType.swingIndex = index;
+                this.outer.SetNextState(meleeEnterType);
                 base.characterBody.OnSkillActivated(skillLocator.primary);
             }
         }
@@ -244,7 +244,7 @@ namespace SonicTheHedgehog.SkillStates
                 Vector3 vector;
                 vector = base.characterBody.inputBank.moveVector * base.characterBody.moveSpeed;
                 vector *= meleeDisplacement;
-                vector *= swingIndex == 4 ? 0.6f : 1;
+                vector *= swingIndex == 4 ? 0.9f : 1.3f;
                 if (Flying())
                 {
                     vector *= 1.5f;
@@ -338,51 +338,9 @@ namespace SonicTheHedgehog.SkillStates
             return flight != null && flight.isFlying;
         }
 
-        private void FireSuperProjectile()
+        protected virtual void OnFireAuthority()
         {
-            Vector3 origin = base.GetAimRay().origin;
-            origin -= base.GetAimRay().direction * 8;
-            Vector3 forward = base.characterDirection.forward;
-            if (swingIndex % 2 == 0)
-            {
-                origin += Vector3.Cross(forward, Vector3.up) * 3;
 
-            }
-            else
-            {
-                origin -= Vector3.Cross(forward, Vector3.up) * 3;
-            }
-
-            string skinName = base.modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken;
-
-            RoR2.Projectile.ProjectileManager.instance.FireProjectile(GetSuperProjectile(skinName), origin, Util.QuaternionSafeLookRotation(base.GetAimRay().direction), 
-                base.gameObject, this.damageCoefficient * StaticValues.superMeleeExtraDamagePercent * this.damageStat, 0, 
-                Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, 120);
-        }
-
-        public virtual GameObject GetSuperProjectile(string skinName)
-        {
-            if (swingIndex%2 == 0 && swingIndex != 4)
-            {
-                switch (skinName)
-                {
-                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
-                        return Projectiles.superMeleePunchProjectilePrefab;
-                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                        return Projectiles.superMetalMeleePunchProjectilePrefab;
-                }
-            }
-            else
-            {
-                switch (skinName)
-                {
-                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
-                        return Projectiles.superMeleeKickProjectilePrefab;
-                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                        return Projectiles.superMetalMeleeKickProjectilePrefab;
-                }
-            }
-            return Projectiles.superMeleePunchProjectilePrefab;
         }
         public void PrepareOverlapAttack()
         {

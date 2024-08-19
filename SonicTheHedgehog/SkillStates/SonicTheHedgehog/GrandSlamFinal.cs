@@ -18,8 +18,10 @@ namespace SonicTheHedgehog.SkillStates
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient = Modules.StaticValues.grandSlamFinalDamageCoefficient;
         protected float procCoefficient = StaticValues.grandSlamFinalProcCoefficient;
-        protected float basePushForce = 3000f;
-        protected float superPushForce = 11000f;
+        protected virtual float basePushForce
+        {
+            get { return 3000f; }
+        }
         protected Vector3 bonusForce = Vector3.down;
         protected float attackRecoil = 11f;
         protected float startUpTime = 0.5f;
@@ -41,7 +43,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private float earlyExitTime;
         public float duration;
-        private bool hasFired;
+        protected bool hasFired;
         private bool hasHit;
         private float hitPauseTimer;
         private OverlapAttack attack;
@@ -54,8 +56,9 @@ namespace SonicTheHedgehog.SkillStates
         private float speedMultiplier;
         private bool animationEnded=false;
         private bool effectFired = false;
-        private bool projectileFired = false;
-        private Vector3 superProjectilePosition;
+
+        protected float startUpVelocityMax = 60f;
+        protected float startUpVelocityMin = 3f;
 
         public override void OnEnter()
         {
@@ -91,10 +94,6 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
-            if (hasFired && !projectileFired && base.isAuthority)
-            {
-                FireProjectile();
-            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -108,10 +107,6 @@ namespace SonicTheHedgehog.SkillStates
                 //Util.PlaySound(this.hitSoundString, base.gameObject);
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.grandSlamHitEffect, base.gameObject, this.muzzleString, true);
                 effectFired = true;
-            }
-            if (!projectileFired)
-            {
-                FireProjectile();
             }
             base.characterMotor.Motor.ForceUnground();
             base.characterMotor.velocity = Vector3.up * 9f;
@@ -170,7 +165,7 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     if (fixedAge <= this.startUpTime)
                     {
-                        base.characterMotor.velocity = base.characterBody.HasBuff(Buffs.superSonicBuff) ? Vector3.up * (Mathf.Lerp(110f, 10f, fixedAge / this.startUpTime)) : Vector3.up*(Mathf.Lerp(60f,3f,fixedAge/this.startUpTime));
+                        base.characterMotor.velocity = GetStartUpVelocity();
                     }
                     else if (fixedAge <= this.startUpTime+this.maxAttackTime)
                     {   
@@ -217,6 +212,11 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+        protected virtual Vector3 GetStartUpVelocity()
+        {
+            return Vector3.up * (Mathf.Lerp(startUpVelocityMax, startUpVelocityMin, fixedAge / this.startUpTime));
+        }
+
         public void PrepareOverlapAttack()
         {
             HitBoxGroup hitBoxGroup = null;
@@ -236,7 +236,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.procCoefficient = this.procCoefficient;
             this.attack.hitEffectPrefab = this.hitEffectPrefab;
             this.attack.forceVector = this.bonusForce;
-            this.attack.pushAwayForce = base.characterBody.HasBuff(Modules.Buffs.superSonicBuff) ? superPushForce : basePushForce;
+            this.attack.pushAwayForce = basePushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;
@@ -250,32 +250,6 @@ namespace SonicTheHedgehog.SkillStates
                 if (chrysalis.stopwatch >= chrysalis.duration && NetworkServer.active)
                 {
                     UnityEngine.Object.Destroy(chrysalis.gameObject);
-                }
-            }
-        }
-
-        public virtual GameObject GetProjectilePrefab(string skinName)
-        {
-            switch (skinName)
-            {
-                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
-                    return Projectiles.superSonicAfterimageRainPrefab;
-                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                    return Projectiles.superMetalAfterimageRainPrefab;
-            }
-            return Projectiles.superSonicAfterimageRainPrefab;
-        }
-
-        public virtual void FireProjectile()
-        {
-            if (base.isAuthority)
-            {
-                projectileFired = true;
-                if (base.characterBody.HasBuff(Buffs.superSonicBuff))
-                {
-                    superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 2.5f, 0);
-                    GameObject prefab = GetProjectilePrefab(modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken);
-                    RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 0, base.RollCrit());
                 }
             }
         }

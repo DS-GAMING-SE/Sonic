@@ -64,7 +64,7 @@ namespace SonicTheHedgehog.Components
             {
                 this.trackerUpdateStopwatch = 0;
                 System.Type stateType = this.bodyState.state.GetType();
-                bool notTargetingState = stateType == typeof(Boost) || stateType == typeof(ScepterBoost) || stateType == typeof(Death) || stateType == typeof(Parry) || stateType == typeof(GrandSlamSpin) || stateType == typeof(GrandSlamFinal) || stateType == typeof(SuperSonicTransformation);
+                bool notTargetingState = typeof(Boost).IsAssignableFrom(stateType) || stateType == typeof(Death) || typeof(Parry).IsAssignableFrom(stateType) || typeof(GrandSlamSpin).IsAssignableFrom(stateType) || typeof(GrandSlamFinal).IsAssignableFrom(stateType) || typeof(TransformationBase).IsAssignableFrom(stateType);
                 if (notTargetingState)
                 {
                     this.indicator.targetTransform = null;
@@ -129,12 +129,12 @@ namespace SonicTheHedgehog.Components
 
         public float MaxRange()
         {
-            return 15f + characterBody.moveSpeed * 2f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
+            return 15f + characterBody.moveSpeed * 2.5f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
         }
 
         public float Speed()
         {
-            return characterBody.moveSpeed * 4 * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
+            return characterBody.moveSpeed * 5f * (characterBody.isSprinting ? 1 : characterBody.sprintingSpeedMultiplier);
         }
     }
 }

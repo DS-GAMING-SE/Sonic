@@ -10,19 +10,11 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class SuperSonicTransformation : BaseSkillState
+    public class SuperSonicTransformation : TransformationBase
     {
-        public FormDef form;
-        
-        protected float baseDuration = 2.4f;
-        protected float transformationDuration = Modules.StaticValues.superSonicDuration;
-        protected bool effectFired = false;
-        protected SuperSonicComponent superSonic;
-        protected string transformSoundString = "Play_super_transform";
+        protected override float duration => 2.4f;
 
-        public bool emeraldAnimation;
-        public float duration;
-        protected Animator animator;
+        protected override string transformSoundString => "Play_super_transform";
 
         private static float cameraDistance = -7;
         private CharacterCameraParamsData cameraParams = new CharacterCameraParamsData
@@ -35,90 +27,31 @@ namespace SonicTheHedgehog.SkillStates
         };
         private CameraTargetParams.CameraParamsOverrideHandle camOverrideHandle;
 
+
         public override void OnEnter()
         {
             base.OnEnter();
-            this.form = Forms.superSonicDef; // to make sure nothing breaks yet
-            this.superSonic= base.GetComponent<SuperSonicComponent>();
-            if (form != superSonic.form)
+            if (!fromTeamSuper)
             {
-                this.duration = this.baseDuration;
-                base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
-                if (NetworkServer.active)
-                {
-                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
-                }
-                if (emeraldAnimation)
-                {
-                    Util.PlaySound("Play_emerald", base.gameObject);
-                    if (base.isAuthority)
-                    {
-                        EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
-                    }
-                }
-
-                this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
-                {
-                    cameraParamsData = this.cameraParams,
-                    priority = 1f
-                }, duration / 2f);
-                //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", baseDuration);
-            }
-            else
-            {
-                effectFired = true;
-                this.outer.SetNextStateToMain();
-                return;
-            }
-
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
-        }
-
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-            base.characterMotor.velocity = Vector3.zero;
-            if (fixedAge >= this.duration / 2 && !effectFired && this.superSonic)
-            {
-                effectFired = true;
-                Util.PlaySound(this.transformSoundString, base.gameObject);
+                Util.PlaySound("Play_emerald", base.gameObject);
                 if (base.isAuthority)
                 {
-                    //this.superSonic.superSonicState.SetNextState(new SuperSonic { form = Forms.superSonicDef });
-                    SonicFormBase formState = (SonicFormBase)EntityStateCatalog.InstantiateState(form.formState);
-                    formState.form = this.form;
-                    this.superSonic.superSonicState.SetNextState(formState);
-                    base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.2f);
+                    EffectManager.SimpleEffect(Modules.Assets.transformationEmeraldSwirl, base.gameObject.transform.position, base.gameObject.transform.rotation, true);
                 }
             }
-           
-            
-            if (fixedAge >= this.duration && base.isAuthority)
+
+            this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
             {
-                this.outer.SetNextStateToMain();
-                return;
-            }
+                cameraParamsData = this.cameraParams,
+                priority = 1f
+            }, duration / 2f);
+
         }
 
-        public override InterruptPriority GetMinimumInterruptPriority()
+        public override void Transform()
         {
-            return InterruptPriority.Vehicle;
-        }
-
-        public override void OnSerialize(NetworkWriter writer)
-        {
-            base.OnSerialize(writer);
-            writer.Write(emeraldAnimation);
-        }
-
-        public override void OnDeserialize(NetworkReader reader)
-        {
-            base.OnDeserialize(reader);
-            emeraldAnimation = reader.ReadBoolean();
+            base.Transform();
+            base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.2f);
         }
     }
 }

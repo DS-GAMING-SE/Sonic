@@ -14,6 +14,16 @@ namespace SonicTheHedgehog.SkillStates
     {
         private HomingTracker homingTracker;
         public int swingIndex = 0;
+
+        protected virtual Type homingAttackStateType
+        {
+            get { return typeof(HomingAttack); }
+        }
+        protected virtual Type meleeStateType
+        {
+            get { return typeof(SonicMelee); }
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -22,17 +32,15 @@ namespace SonicTheHedgehog.SkillStates
                 homingTracker = base.characterBody.GetComponent<HomingTracker>();
                 if (homingTracker && homingTracker.CanHomingAttack())
                 {
-                    this.outer.SetNextState(new HomingAttack
-                    {
-                        target = homingTracker.GetTrackingTarget()
-                    });
+                    HomingAttack homingState = (HomingAttack)EntityStateCatalog.InstantiateState(homingAttackStateType);
+                    homingState.target = homingTracker.GetTrackingTarget();
+                    this.outer.SetNextState(homingState);
                 }
                 else
                 {
-                    this.outer.SetNextState(new SonicMelee
-                    {
-                        swingIndex=this.swingIndex
-                    });
+                    SonicMelee meleeState = (SonicMelee)EntityStateCatalog.InstantiateState(meleeStateType);
+                    meleeState.swingIndex = this.swingIndex;
+                    this.outer.SetNextState(meleeState);
                 }
             }
         }

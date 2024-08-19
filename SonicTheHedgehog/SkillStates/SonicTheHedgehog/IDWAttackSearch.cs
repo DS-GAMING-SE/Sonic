@@ -4,6 +4,7 @@ using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.stopwatch += Time.fixedDeltaTime;
 
-            if (!base.characterBody.HasBuff(Buffs.superSonicBuff))
+            if (!Forms.GetIsInForm(base.characterBody, Forms.superSonicDef))
             {
                 this.outer.SetNextStateToMain();
                 return;
@@ -104,9 +105,16 @@ namespace SonicTheHedgehog.SkillStates
         private void TargetLocked()
         {
             this.targetLocked = true;
-            if (superSonicComponent && base.isAuthority)
+            if (base.isAuthority)
             {
-                superSonicComponent.IDWAttackActivated();
+                EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
+                if (superStateMachine)
+                {
+                    if (superStateMachine.state.GetType() == typeof(SuperSonic))
+                    {
+                        ((SuperSonic)superStateMachine.state).IDWAttackActivated();
+                    }
+                }
             }
         }
 

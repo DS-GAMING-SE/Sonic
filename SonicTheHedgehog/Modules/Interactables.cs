@@ -4,6 +4,9 @@ using R2API;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using EntityStates;
+using System;
+using BepInEx.Configuration;
+using RoR2.Hologram;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -18,6 +21,8 @@ namespace SonicTheHedgehog.Modules
         public static GameObject prefabBase;
 
         public static PurchaseInteraction purchaseInteractionBase;
+
+        public static HologramProjector hologramBase;
 
         private static Vector3 dropVelocity = Vector3.up * 20;
 
@@ -67,16 +72,15 @@ namespace SonicTheHedgehog.Modules
 
             Debug.Log("Trigger done");
 
+            hologramBase = prefabBase.AddComponent<RoR2.Hologram.HologramProjector>();
+            hologramBase.hologramPivot = prefabBase.transform.Find("Hologram");
+            hologramBase.displayDistance = 10;
+
             purchaseInteractionBase.available = true;
-            purchaseInteractionBase.cost = StaticValues.chaosEmeraldCost;
+            UpdateInteractableCost();
             purchaseInteractionBase.automaticallyScaleCostWithDifficulty = true;
-            purchaseInteractionBase.costType = CostTypeIndex.Money;
             purchaseInteractionBase.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
-
-            var hologramController = prefabBase.AddComponent<RoR2.Hologram.HologramProjector>();
-            hologramController.hologramPivot = prefabBase.transform.Find("Hologram");
-            hologramController.displayDistance = 10;
 
             prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
 
@@ -100,6 +104,18 @@ namespace SonicTheHedgehog.Modules
             PrefabAPI.RegisterNetworkPrefab(prefabBase);
 
             //Content.AddNetworkedObjectPrefab(prefabBase);
+        }
+
+        public static void UpdateInteractableCost(object sender, EventArgs args)
+        {
+            UpdateInteractableCost();
+        }
+
+        private static void UpdateInteractableCost()
+        {
+            purchaseInteractionBase.cost = Config.EmeraldCost().Value;
+            purchaseInteractionBase.costType = Config.EmeraldCost().Value == 0 ? CostTypeIndex.None : CostTypeIndex.Money;
+            hologramBase.enabled = Config.EmeraldCost().Value != 0;
         }
 
         private void Start()

@@ -36,26 +36,15 @@ namespace SonicTheHedgehog.SkillStates
             Util.PlaySound("Play_swing_low", base.gameObject);
             if (parrySuccess)
             {
+                OnSuccessfulParry();
                 if (NetworkServer.active)
                 {
                     base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, StaticValues.parryLingeringInvincibilityDuration, 1);
                     base.characterBody.AddTimedBuff(Buffs.parryBuff, StaticValues.parryBuffDuration, 1);
-                    if (base.characterBody.HasBuff(Buffs.superSonicBuff))
-                    {
-                        SuperParryBlast();
-                    }
                 }
                 if (base.isAuthority)
                 {
                     EffectManager.SimpleMuzzleFlash(Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
-                    if (base.characterBody.HasBuff(Buffs.superSonicBuff))
-                    {
-                        SuperSonicComponent superSonicComponent = base.characterBody.GetComponent<SuperSonicComponent>();
-                        if (superSonicComponent)
-                        {
-                            superSonicComponent.ParryActivated();
-                        }
-                    }
                 }
                 Util.PlaySound("Play_parry", base.gameObject);
                 RechargeCooldowns();
@@ -86,7 +75,7 @@ namespace SonicTheHedgehog.SkillStates
         private void RechargeCooldowns()
         {
             base.skillLocator.primary.RunRecharge(StaticValues.parryCooldownReduction);
-            if ((base.skillLocator.utility.activationState.stateType == typeof(Boost) || base.skillLocator.utility.activationState.stateType == typeof(ScepterBoost)) && NetworkServer.active)
+            if (typeof(Boost).IsAssignableFrom(base.skillLocator.utility.activationState.stateType) && NetworkServer.active)
             {
                 BoostLogic boost = base.characterBody.GetComponent<BoostLogic>();
                 if (boost)
@@ -99,6 +88,11 @@ namespace SonicTheHedgehog.SkillStates
                 base.skillLocator.utility.RunRecharge(StaticValues.parryCooldownReduction);
             }
             base.skillLocator.special.RunRecharge(StaticValues.parryCooldownReduction);
+        }
+
+        protected virtual void OnSuccessfulParry()
+        {
+
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
