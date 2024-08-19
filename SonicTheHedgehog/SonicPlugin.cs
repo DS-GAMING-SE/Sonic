@@ -61,7 +61,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "2.1.0";
+        public const string MODVERSION = "3.0.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -72,6 +72,8 @@ namespace SonicTheHedgehog
         public static bool lookingGlassLoaded = false;
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
+        public static bool celestialWarTankLoaded = false;
+
 
         private void Awake()
         {
@@ -318,7 +320,21 @@ namespace SonicTheHedgehog
 
             Modules.Config.ForceUnlockMastery().SettingChanged += SonicTheHedgehogCharacter.UnlockMasteryConfig;
 
-            ModSettingsManager.AddOption(new KeyBindOption(Modules.Config.SuperTransformKey()));
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.EmeraldsWithoutSonic()));
+
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldsPerStage(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 1, max = 7 }));
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldsPerSimulacrumStage(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 1, max = 7 }));
+
+            ModSettingsManager.AddOption(new IntSliderOption(Modules.Config.EmeraldCost(), new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 0, max = 400 }));
+
+            Modules.Config.EmeraldCost().SettingChanged += Modules.ChaosEmeraldInteractable.UpdateInteractableCost;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ConsumeEmeraldsOnUse()));
+
+            Modules.Config.ConsumeEmeraldsOnUse().SettingChanged += Forms.UpdateConsumeEmeraldsConfig;
+
+
+            //ModSettingsManager.AddOption(new KeyBindOption(Modules.Config.SuperTransformKey()));
         }
 
         private void SonicRecalculateStats(CharacterBody self, RecalculateStatsAPI.StatHookEventArgs stats)
@@ -403,7 +419,7 @@ namespace SonicTheHedgehog
 
         private bool CanApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_CanApplyAmmoPack orig, GenericSkill self)
         {
-            if (self.activationState.stateType == typeof(Boost) || self.activationState.stateType == typeof(ScepterBoost))
+            if (typeof(Boost).IsAssignableFrom(self.activationState.stateType))
             {
                 BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
                 if (boost)
@@ -416,7 +432,7 @@ namespace SonicTheHedgehog
         private void ApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_ApplyAmmoPack orig, GenericSkill self)
         {
             orig(self);
-            if (self.activationState.stateType == typeof(Boost) || self.activationState.stateType == typeof(ScepterBoost))
+            if (typeof(Boost).IsAssignableFrom(self.activationState.stateType))
             {
                 BoostLogic boost = self.characterBody.GetComponent<BoostLogic>();
                 if (boost)
@@ -445,7 +461,7 @@ namespace SonicTheHedgehog
                 {
                     EntityState state = stateMachine.state;
                     NetworkIdentity network = self.gameObject.GetComponent<NetworkIdentity>();
-                    if ((state.GetType() == typeof(Parry) || typeof(Parry).IsAssignableFrom(state.GetType())) && network)
+                    if (typeof(Parry).IsAssignableFrom(state.GetType()) && network)
                     {
                         ((Parry)state).OnTakeDamage(damage);
                         new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
@@ -527,27 +543,45 @@ namespace SonicTheHedgehog
             bool metamorphosis = RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef);
             Debug.Log("Metamorphosis? " + metamorphosis);
 
-            foreach (FormDef form in Forms.formsCatalog)
+            foreach (FormDef form in FormCatalog.formsCatalog)
             {
-                if (!Forms.formToHandlerObject.ContainsKey(form))
-                {
-                    Debug.Log("Spawning new handler object for form " + form.ToString());
-                    NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(form)));
-                }
-
-                FormHandler formHandler = Forms.formToHandlerObject.GetValueSafe(form).GetComponent(typeof(FormHandler)) as FormHandler;
-
+                bool someoneCanUseForm = false;
                 bool someoneIsSonic = false;
                 foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
                 {
                     if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(player.master.bodyPrefab)))
                     {
+                        someoneCanUseForm = true;
+                    }
+                    if (BodyCatalog.GetBodyName(BodyCatalog.FindBodyIndex(player.master.bodyPrefab)) == "SonicTheHedgehog")
+                    {
                         someoneIsSonic = true;
                     }
+                    if (someoneCanUseForm && someoneIsSonic)
+                    {
+                        break;
+                    }
                 }
-                Debug.Log("Anyone playing Sonic? " + someoneIsSonic);
+                Debug.Log("Anyone playing Sonic? " + someoneIsSonic + "\nAnyone can use the form? " + someoneCanUseForm);
 
-                formHandler.SetEvents(someoneIsSonic && (form != Forms.superSonicDef || !(metamorphosis || form.allowedBodyList.whitelist)));
+                bool formAvailable = someoneCanUseForm && (form != Forms.superSonicDef || (someoneIsSonic && !metamorphosis || Modules.Config.EmeraldsWithoutSonic().Value));
+                // Complicated bool mess here is mostly just to make sure Chaos Emeralds should spawn and, by extension, Super Sonic should be available.
+                // Checks metamorphosis, but metamorphosis is okay if emeralds can spawn without Sonic, etc
+
+                if (!Forms.formToHandlerObject.ContainsKey(form) && formAvailable)
+                {
+                    Debug.Log("Spawning new handler object for form " + form.ToString());
+                    NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(form)));
+                }
+                else
+                {
+                    Debug.Log("Did NOT spawn handler object for form " + form.ToString());
+                    continue;
+                }
+
+                FormHandler formHandler = Forms.formToHandlerObject.GetValueSafe(form).GetComponent(typeof(FormHandler)) as FormHandler;
+
+                formHandler.SetEvents(formAvailable);
             }
             if (!Forms.formToHandlerObject.TryGetValue(Forms.superSonicDef, out GameObject handler)) { return; }
 
@@ -557,7 +591,7 @@ namespace SonicTheHedgehog
 
             if (SuperSonicHandler.available.Count > 0 && scene && scene.sceneType == SceneType.Stage && !scene.cachedName.Contains("moon") && !scene.cachedName.Contains("voidraid") && !scene.cachedName.Contains("voidstage")) 
             {
-                int maxEmeralds = Run.instance is InfiniteTowerRun ? StaticValues.chaosEmeraldsMaxPerStageSimulacrum : StaticValues.chaosEmeraldsMaxPerStage;
+                int maxEmeralds = Run.instance is InfiniteTowerRun ? Modules.Config.EmeraldsPerSimulacrumStage().Value : Modules.Config.EmeraldsPerStage().Value;
                 
                 SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
 

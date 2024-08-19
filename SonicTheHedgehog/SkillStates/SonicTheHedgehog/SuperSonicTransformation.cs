@@ -53,17 +53,5 @@ namespace SonicTheHedgehog.SkillStates
             base.Transform();
             base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.2f);
         }
-
-        public override void OnSerialize(NetworkWriter writer)
-        {
-            base.OnSerialize(writer);
-            writer.Write(fromTeamSuper);
-        }
-
-        public override void OnDeserialize(NetworkReader reader)
-        {
-            base.OnDeserialize(reader);
-            fromTeamSuper = reader.ReadBoolean();
-        }
     }
 }

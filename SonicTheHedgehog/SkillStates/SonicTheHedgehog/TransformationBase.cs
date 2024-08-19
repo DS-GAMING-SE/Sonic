@@ -34,6 +34,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.OnEnter();
             this.superSonic= base.GetComponent<SuperSonicComponent>();
+            this.superSonic.superSonicState.SetNextStateToMain();
             this.form = superSonic.targetedForm;
             if (form != superSonic.activeForm)
             {
@@ -47,12 +48,6 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
                     }
-                }
-                else
-                {
-                    Transform();
-                    this.outer.SetNextStateToMain();
-                    return;
                 }
             }
             else
@@ -72,10 +67,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            if (base.characterMotor)
-            {
-                base.characterMotor.velocity = Vector3.zero;
-            }
             if (fixedAge >= this.duration / 2 && !effectFired && this.superSonic)
             {
                 Transform();
@@ -86,6 +77,11 @@ namespace SonicTheHedgehog.SkillStates
             {
                 this.outer.SetNextStateToMain();
                 return;
+            }
+
+            if (base.characterMotor)
+            {
+                base.characterMotor.velocity = Vector3.zero;
             }
         }
 

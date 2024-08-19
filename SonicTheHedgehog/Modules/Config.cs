@@ -45,9 +45,29 @@ namespace SonicTheHedgehog.Modules
             return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Mastery", false, "Automatically unlock the achievement \"Sonic: Mastery\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
         }
 
-        public static ConfigEntry<KeyboardShortcut> SuperTransformKey()
+        public static ConfigEntry<bool> EmeraldsWithoutSonic()
         {
-            return SonicTheHedgehogPlugin.instance.Config.Bind<KeyboardShortcut>("Controls", "Super Transform Key", new KeyboardShortcut(KeyCode.V), "The key you press to transform into Super Sonic. Default is V.");
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Chaos Emeralds", "Spawn Emeralds Without Sonic", false, "Determines whether the Chaos Emeralds are allowed to spawn even if no one is playing as Sonic. Host's config takes priority. Default is false.");
+        }
+
+        public static ConfigEntry<int> EmeraldsPerStage()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Emeralds Per Stage", 3, "The maximum number of Chaos Emeralds that can spawn in one stage. Host's config takes priority. Default is 3.");
+        }
+
+        public static ConfigEntry<int> EmeraldsPerSimulacrumStage()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Emeralds Per Simulacrum Stage", 5, "The maximum number of Chaos Emeralds that can spawn in one stage in Simulacrum. Host's config takes priority. Default is 5.");
+        }
+
+        public static ConfigEntry<int> EmeraldCost()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Cost", 50, "How much it costs to buy a Chaos Emerald. Default is 50.\n\nFor reference:\nChest: 25\nLarge Chest: 50\nAltar of Gold: 200\nLegendary Chest: 400");
+        }
+
+        public static ConfigEntry<bool> ConsumeEmeraldsOnUse()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Chaos Emeralds", "Consume Emeralds On Use", true, "Determines whether the Chaos Emeralds will be consumed when transforming into Super Sonic. If not, the emeralds will stay but won't be able to be used until the next stage. Host's config takes priority. Default is true.");
         }
     }
 }

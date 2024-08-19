@@ -102,6 +102,7 @@ namespace SonicTheHedgehog.SkillStates
                 ProcChainMask proc = default(ProcChainMask);
                 proc.AddProc(ProcType.RepeatHeal);
                 proc.AddProc(ProcType.CritHeal);
+                proc.AddProc(ProcType.VoidSurvivorCrush);
                 base.characterBody.healthComponent.HealFraction(healFraction, proc);
             }
         }

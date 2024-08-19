@@ -37,7 +37,7 @@ namespace SonicTheHedgehog.Modules
         
         private void OnEnable()
         {
-            if (!(form && Forms.Forms.formsCatalog.Contains(form))) { Debug.LogError("FormHandler does not have a valid formDef set."); }
+            if (!(form && FormCatalog.formsCatalog.Contains(form))) { Debug.LogError("FormHandler does not have a valid formDef set."); }
             if (!Forms.Forms.formToHandlerObject.ContainsKey(form))
             {
                 itemTracker = GetComponent<INeededItemTracker>();
@@ -60,7 +60,7 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public void SetEvents(bool active)
+        public virtual void SetEvents(bool active)
         {
             if (active && !eventsSubscribed)
             {

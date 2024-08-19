@@ -21,8 +21,6 @@ namespace SonicTheHedgehog.SkillStates
 
         private TemporaryOverlay temporaryOverlay;
 
-        private BoostLogic boostLogic;
-
         private GameObject superAura;
         private GameObject warning;
         private LoopSoundManager.SoundLoopPtr superLoop;
@@ -48,6 +46,10 @@ namespace SonicTheHedgehog.SkillStates
         public static SkillDef boost;
 
         public static SkillDef grandSlam;
+
+        // Character specific Super compat
+        private BoostLogic boostLogic;
+        private VoidSurvivorController viend;
 
         public override void OnEnter()
         {
@@ -89,6 +91,7 @@ namespace SonicTheHedgehog.SkillStates
             if (NetworkServer.active)
             {
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
+                viend = base.GetComponent<VoidSurvivorController>();
             }
 
             Flash(1);
@@ -124,6 +127,11 @@ namespace SonicTheHedgehog.SkillStates
                 base.skillLocator.secondary.UnsetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
             }
 
+            if (viend && NetworkServer.active)
+            {
+                viend.AddCorruption(-100);
+            }
+
             base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, 0.5f);
 
             Flash(0.35f);
@@ -134,6 +142,10 @@ namespace SonicTheHedgehog.SkillStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+            if (viend && NetworkServer.active)
+            {
+                viend.AddCorruption(100);
+            }
             if (this.superAura)
             {
                 this.superAura.SetActive(this.characterModel.invisibilityCount <= 0);

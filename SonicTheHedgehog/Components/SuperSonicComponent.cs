@@ -40,7 +40,6 @@ namespace SonicTheHedgehog.Components
 
         private void Start()
         {
-            targetedForm = Forms.superSonicDef;
             body = base.GetComponent<CharacterBody>();
             if (!body.isPlayerControlled)
             {
@@ -55,7 +54,7 @@ namespace SonicTheHedgehog.Components
 
         public void CreateUnsyncItemTrackers()
         {
-            foreach (FormDef form in Forms.formsCatalog)
+            foreach (FormDef form in FormCatalog.formsCatalog)
             {
                 if (form.requiresItems && !form.shareItems)
                 {
@@ -76,20 +75,31 @@ namespace SonicTheHedgehog.Components
         {
             if (body.hasAuthority && body.isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
-                if (activeForm != targetedForm)
+                DecideTargetForm();
+                if (targetedForm != null && activeForm != targetedForm)
                 {
-                    if (Config.SuperTransformKey().Value.IsPressed())
+                    if (Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject))
                     {
-                        if (Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject))
+                        FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
+                        if (handler.CanTransform(this))
                         {
-                            FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-                            if (handler.CanTransform(this))
-                            {
-                                Debug.Log("Attempt Transform");
-                                Transform();
-                            }
+                            Debug.Log("Attempt Transform");
+                            Transform();
                         }
                     }
+                }
+            }
+        }
+
+        public void DecideTargetForm()
+        {
+            targetedForm = null;
+            foreach (FormDef form in FormCatalog.formsCatalog)
+            {
+                if (form.keybind.Value.IsDown())
+                {
+                    targetedForm = form;
+                    break;
                 }
             }
         }
@@ -122,12 +132,26 @@ namespace SonicTheHedgehog.Components
             if (!form) { return; }
             ModelSkinController skin = model.GetComponentInChildren<ModelSkinController>();
             if (!skin) { return; }
-            GetSuperModel(model.GetComponentInChildren<ModelSkinController>().skins[body.skinIndex].nameToken);
-            SuperModel();
+            if (skin.skins.Length > body.skinIndex) // heretic causing errors without this check
+            {
+                GetSuperModel(skin.skins[body.skinIndex].nameToken);
+                SuperModel();
+            }
         }
 
         public void TransformEnd()
         {
+            if (body.HasBuff(activeForm.buff))
+            {
+                if (activeForm.duration > 0)
+                {
+                    body.RemoveOldestTimedBuff(activeForm.buff);
+                }
+                else
+                {
+                    body.RemoveBuff(activeForm.buff);
+                }
+            }
             this.activeForm = null;
             ResetModel();
         }
@@ -174,6 +198,17 @@ namespace SonicTheHedgehog.Components
             {
                 formMesh = replacements.mesh;
                 formMaterial = replacements.material;
+            }
+            else
+            {
+                if (defaultModel)
+                {
+                    formMesh = defaultModel;
+                }
+                if (defaultMaterial)
+                {
+                    formMaterial = defaultMaterial;
+                }
             }
 
 
