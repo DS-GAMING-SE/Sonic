@@ -26,25 +26,27 @@ namespace SonicTheHedgehog.Modules.Forms
         }
         public static void AddFormDefs(FormDef[] forms)
         {
+            string formNamesListed = string.Concat(forms.Select(x => x.ToString() + "\n"));
             if (availability.available)
             {
-                Debug.LogErrorFormat("Forms {0} are trying to be added after the catalog is initialized", new object[] { string.Concat(forms.Select(x => x.ToString() + "\n")) });
+                Log.Message("Forms "+formNamesListed+" are trying to be added after the catalog is initialized");
                 return;
             }
 
-            Debug.LogFormat("Adding new FormDef(s) to catalog.\n {0}", new object[] { string.Concat(forms.Select(x => x.ToString() + "\n")) });
+            Log.Message("Adding new FormDef(s) to catalog.\n"+ formNamesListed);
             int length = formsCatalog.Length;
             Array.Resize(ref formsCatalog, length + forms.Length);
             for (int i = 0; i < forms.Length; i++)
             {
                 // Adding form to catalog
                 formsCatalog[length + i] = forms[i];
-                Debug.LogFormat("FormDef {0} added to catalog", new object[] { forms[i].name });
+                Log.Message("FormDef "+ forms[i].name +" added to catalog");
             }
 
             formsCatalog = formsCatalog.OrderBy(form => form.name).ToArray();
 
-            Debug.LogFormat("FormDef(s) added to formCatalog. formCatalog now contains:\n {0}", new object[] { string.Concat(formsCatalog.Select(x => x.ToString() + "\n")) });
+            string allForms = string.Concat(formsCatalog.Select(x => x.ToString() + "\n"));
+            Log.Message("FormDef(s) added to formCatalog. formCatalog now contains:\n"+allForms);
         }
 
         // I will make all modded forms require risk of options to sort out controls. Otherwise I'd have to put effort into some kind of form picker ui wheel and that would be mega complicated

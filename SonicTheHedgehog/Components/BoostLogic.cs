@@ -108,7 +108,7 @@ namespace SonicTheHedgehog.Components
 
         public void OnSkillChanged(GenericSkill skill)
         {
-            Debug.Log("Change");
+            Log.Message("Utility skill changed");
             BoostExists();
         }
 
@@ -134,7 +134,7 @@ namespace SonicTheHedgehog.Components
         {
             if (!NetworkServer.active)
             {
-                Debug.LogWarning("AddBoost run on client");
+                Log.Warning("AddBoost run on client");
                 return;
             }
             this.NetworkboostMeter = Mathf.Clamp(this.boostMeter + amount, 0, this.maxBoostMeter);
@@ -151,7 +151,7 @@ namespace SonicTheHedgehog.Components
         {
             if (!NetworkServer.active)
             {
-                Debug.LogWarning("RemoveBoost run on client");
+                Log.Warning("RemoveBoost run on client");
                 return;
             }
             this.NetworkboostMeter = Mathf.Clamp(this.boostMeter - amount, 0, this.maxBoostMeter);

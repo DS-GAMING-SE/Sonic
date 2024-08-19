@@ -55,7 +55,7 @@ namespace SonicTheHedgehog.Modules.Achievements
 
         private void OnFixedUpdate()
         {
-            if (base.localUser.cachedBody && base.localUser.cachedBody.characterMotor.isGrounded && this.bodyStateMachine.state.GetType() != typeof(HomingAttack))
+            if (base.localUser.cachedBody && base.localUser.cachedBody.characterMotor.isGrounded && !typeof(HomingAttack).IsAssignableFrom(this.bodyStateMachine.state.GetType()))
             {
                 this.pityTimer += Time.fixedDeltaTime;
                 if (this.pityTimer >= pityTime && count > 0)
@@ -73,7 +73,7 @@ namespace SonicTheHedgehog.Modules.Achievements
                 this.count += 1;
                 this.hitEnemies.Add(hurtBox.healthComponent);
                 this.pityTimer = 0;
-                Debug.Log(this.count.ToString());
+                Log.Message("Homing attack achievement progress: "+this.count.ToString());
                 if (this.count >= countRequired)
                 {
                     base.Grant();

@@ -22,7 +22,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            Debug.Log("Emerald Interactable purchase state enter");
+            Log.Message("Emerald Interactable purchase state enter");
             this.interactable = this.gameObject.GetComponent<ChaosEmeraldInteractable>();
             base.gameObject.transform.Find("RingParent/PurchaseParticle").gameObject.GetComponent<ParticleSystem>().Play();
         }

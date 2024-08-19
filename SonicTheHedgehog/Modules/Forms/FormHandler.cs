@@ -37,18 +37,15 @@ namespace SonicTheHedgehog.Modules
         
         private void OnEnable()
         {
-            if (!(form && FormCatalog.formsCatalog.Contains(form))) { Debug.LogError("FormHandler does not have a valid formDef set."); }
+            if (!(form && FormCatalog.formsCatalog.Contains(form))) { Log.Error("FormHandler does not have a valid formDef set."); }
             if (!Forms.Forms.formToHandlerObject.ContainsKey(form))
             {
                 itemTracker = GetComponent<INeededItemTracker>();
                 Forms.Forms.formToHandlerObject.Add(form, gameObject);
-                Debug.Log("FormHandler for form " + form.ToString() + " created");
+                Log.Message("FormHandler for form " + form.ToString() + " created");
                 return;
             }
-            Debug.LogErrorFormat(this, "Duplicate instance of formHandler {0}. Only one should exist at a time.", new object[]
-            {
-                form.ToString()
-            });
+            Log.Error("Duplicate instance of formHandler "+ form.ToString() +". Only one should exist at a time.");
         }
 
         private void OnDisable()
@@ -89,7 +86,7 @@ namespace SonicTheHedgehog.Modules
         public virtual bool CanTransform(SuperSonicComponent component)
         {
             bool hasItems = HasItems(component);
-            Debug.Log("FormHandler with form " + form.ToString() + "\nTeam Super? " + teamSuper + ". Has Items? " + hasItems + ". Number of transforms? " + numberOfTimesTransformed + " out of max " + form.maxTransforms);
+            Log.Message("FormHandler with form " + form.ToString() + "\nTeam Super? " + teamSuper + ". Has Items? " + hasItems + ". Number of transforms? " + numberOfTimesTransformed + " out of max " + form.maxTransforms);
             return (hasItems && (form.maxTransforms <= 0 || numberOfTimesTransformed < form.maxTransforms)) || teamSuper;
         }
 
@@ -115,7 +112,7 @@ namespace SonicTheHedgehog.Modules
                 if (teamSuperTimer <= 0)
                 {
                     teamSuper = false;
-                    Debug.Log("Team Super window ended");
+                    Log.Message("Team Super window ended");
                 }
             }
         }
@@ -238,7 +235,7 @@ namespace SonicTheHedgehog.Modules
         public void CheckItems()
         {
             missingItems = new List<NeededItem>();
-            if (!handler) { Debug.LogWarning("no handler yet"); }
+            if (!handler) { Log.Warning("no handler yet"); }
             foreach (NeededItem item in handler.form.neededItems)
             {
                 int collectiveItemCount = 0;
@@ -257,7 +254,7 @@ namespace SonicTheHedgehog.Modules
                 }
             }
             NetworkallItems = missingItems.Count() == 0;
-            Debug.Log("Missing items for "+ handler.form.ToString() + ": " + string.Concat(missingItems.Select(x => x.ToString())));
+            Log.Message("Missing items for "+ handler.form.ToString() + ": " + string.Concat(missingItems.Select(x => x.ToString())));
         }
 
         public void OnInventoryChanged(Inventory inventory)
@@ -288,7 +285,7 @@ namespace SonicTheHedgehog.Modules
                 }
                 if (neededItems > 0)
                 {
-                    Debug.LogWarning("Does not have the items to be removed for transforming");
+                    Log.Warning("Does not have the items to be removed for transforming");
                 }
             }
         }
@@ -370,7 +367,7 @@ namespace SonicTheHedgehog.Modules
 
         public bool ItemRequirementMet(SuperSonicComponent component)
         {
-            Debug.Log("Checking unsynceditemtracker");
+            Log.Message("Checking unsynceditemtracker");
             return component.formToItemTracker.GetValueSafe(handler.form).allItems;
         }
 
@@ -388,7 +385,7 @@ namespace SonicTheHedgehog.Modules
                         }
                         else
                         {
-                            Debug.LogWarning("Does not have the items to be removed for transforming");
+                            Log.Warning("Does not have the items to be removed for transforming");
                             characterBody.master.inventory.RemoveItem(item, characterBody.master.inventory.GetItemCount(item));
                         }
                     }

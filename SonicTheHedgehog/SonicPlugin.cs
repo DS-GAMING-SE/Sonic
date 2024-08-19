@@ -541,7 +541,7 @@ namespace SonicTheHedgehog
 
             // Metamorphosis causes issues with emeralds spawning because character rerolls happen after emeralds spawn. Emeralds would only spawn the stage after you were Sonic
             bool metamorphosis = RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef);
-            Debug.Log("Metamorphosis? " + metamorphosis);
+            Log.Message("Metamorphosis? " + metamorphosis);
 
             foreach (FormDef form in FormCatalog.formsCatalog)
             {
@@ -562,7 +562,7 @@ namespace SonicTheHedgehog
                         break;
                     }
                 }
-                Debug.Log("Anyone playing Sonic? " + someoneIsSonic + "\nAnyone can use the form? " + someoneCanUseForm);
+                Log.Message("Anyone playing Sonic? " + someoneIsSonic + "\nAnyone can use the form? " + someoneCanUseForm);
 
                 bool formAvailable = someoneCanUseForm && (form != Forms.superSonicDef || (someoneIsSonic && !metamorphosis || Modules.Config.EmeraldsWithoutSonic().Value));
                 // Complicated bool mess here is mostly just to make sure Chaos Emeralds should spawn and, by extension, Super Sonic should be available.
@@ -570,12 +570,12 @@ namespace SonicTheHedgehog
 
                 if (!Forms.formToHandlerObject.ContainsKey(form) && formAvailable)
                 {
-                    Debug.Log("Spawning new handler object for form " + form.ToString());
+                    Log.Message("Spawning new handler object for form " + form.ToString());
                     NetworkServer.Spawn(GameObject.Instantiate<GameObject>(Forms.formToHandlerPrefab.GetValueSafe(form)));
                 }
                 else
                 {
-                    Debug.Log("Did NOT spawn handler object for form " + form.ToString());
+                    Log.Message("Did NOT spawn handler object for form " + form.ToString());
                     continue;
                 }
 

@@ -83,7 +83,7 @@ namespace SonicTheHedgehog.Components
                         FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
                         if (handler.CanTransform(this))
                         {
-                            Debug.Log("Attempt Transform");
+                            Log.Message("Attempt Transform");
                             Transform();
                         }
                     }
@@ -253,7 +253,7 @@ namespace SonicTheHedgehog.Components
                 {
                     if (body.inventory)
                     {
-                        Debug.Log("inventory found");
+                        Log.Message("inventory found");
                         inventory = body.inventory;
                         SubscribeEvents(true);
                     }
@@ -270,7 +270,7 @@ namespace SonicTheHedgehog.Components
                     if (subscribe)
                     {
                         inventory.onInventoryChanged += CheckItems;
-                        Debug.Log("subscribe");
+                        Log.Message("subscribe");
                         eventsSubscribed = true;
                         CheckItems();
                     }
@@ -285,19 +285,19 @@ namespace SonicTheHedgehog.Components
 
         public void CheckItems() // You can tell how much suffering part of code has brought its writer by seeing how many logs there are
         {
-            if (!form) { Debug.LogError("No form??"); allItems= false; return; }
-            if (!inventory) { Debug.LogError("No inventory????????"); allItems = false; return; }
+            if (!form) { Log.Error("No form??"); allItems= false; return; }
+            if (!inventory) { Log.Error("No inventory????????"); allItems = false; return; }
             foreach (NeededItem item in form.neededItems)
             {
-                if (!item.item) { Debug.LogError("No item????????"); return; }
+                if (!item.item) { Log.Error("No item????????"); return; }
                 if (inventory.GetItemCount(item) < item.count)
                 {
                     allItems = false;
-                    Debug.Log("Missing items for " + form.ToString() + ": \n" + (new NeededItem { item = item.item, count = (uint)(item.count - inventory.GetItemCount(item))}).ToString());
+                    Log.Message("Missing items for " + form.ToString() + ": \n" + (new NeededItem { item = item.item, count = (uint)(item.count - inventory.GetItemCount(item))}).ToString());
                     return;
                 }
             }
-            Debug.Log("All items needed for " + form.ToString());
+            Log.Message("All items needed for " + form.ToString());
             allItems = true;
         }
     }

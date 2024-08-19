@@ -150,7 +150,7 @@ namespace SonicTheHedgehog.Modules
             superSonicAfterimageRainPrefab = PrefabAPI.InstantiateClone(Assets.mainAssetBundle.LoadAsset<GameObject>("SonicSuperAfterimageRainBase"),"SuperAfterimageRainProjectile");
             if (superSonicAfterimageRainPrefab)
             {
-                Debug.Log("the risk of rain is real");
+                Log.Message("the risk of rain is real");
             }
 
             NetworkIdentity network = superSonicAfterimageRainPrefab.AddComponent<NetworkIdentity>();
@@ -162,7 +162,7 @@ namespace SonicTheHedgehog.Modules
             controller.cannotBeDeleted = true;
             //controller.flightSoundLoop = Assets.superGrandSlamLoopSoundDef;
 
-            Debug.Log("Afterimage Rain hitboxes");
+            Log.Message("Afterimage Rain hitboxes");
             HitBoxGroup hitboxes = superSonicAfterimageRainPrefab.AddComponent<HitBoxGroup>();
 
             HitBox hitBox = superSonicAfterimageRainPrefab.transform.Find("Hitboxes/Hitbox0").gameObject.AddComponent<HitBox>();
@@ -173,11 +173,11 @@ namespace SonicTheHedgehog.Modules
 
             hitboxes.hitBoxes = new HitBox[] { hitBox, hitBox1 }; // make hitboxes on the projectile like the melees. Rex uses two boxes rotated 45 degrees to kinda get a cylinder. Rex size is about 10
 
-            Debug.Log("Afterimage Rain mat swap");
+            Log.Message("Afterimage Rain mat swap");
             Assets.MaterialSwap(superSonicAfterimageRainPrefab, "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Effects/Blur");
             Assets.MaterialSwap(superSonicAfterimageRainPrefab, superProjectileMaterial, "Effects/Sonics");
 
-            Debug.Log("Afterimage Rain damage");
+            Log.Message("Afterimage Rain damage");
             ProjectileDamage damage = superSonicAfterimageRainPrefab.AddComponent<ProjectileDamage>();
             damage.damage = StaticValues.superGrandSlamDOTDamage;
 

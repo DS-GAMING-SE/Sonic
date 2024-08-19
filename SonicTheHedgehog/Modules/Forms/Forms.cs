@@ -78,7 +78,7 @@ namespace SonicTheHedgehog.Modules.Forms
             form.transformationNameToken = transformationNameToken;
             if (!typeof(FormHandler).IsAssignableFrom(handlerComponent))
             {
-                Debug.LogWarningFormat("handlerComponent of type {0} is not assignable from FormHandler.", new object[] { handlerComponent.Name });
+                Log.Warning("handlerComponent of type "+handlerComponent.Name+" is not assignable from FormHandler.");
             };
             form.handlerComponent = handlerComponent;
             form.allowedBodyList = allowedBodyList;
@@ -93,14 +93,14 @@ namespace SonicTheHedgehog.Modules.Forms
             }
             //PrefabAPI.RegisterNetworkPrefab(handlerPrefab);
             formToHandlerPrefab.Add(form, handlerPrefab);
-            Debug.LogFormat("FormDef {0} created. Created new {1} prefab", new object[] { form.name, form.handlerComponent.Name });
+            Log.Message("FormDef "+form.name+" created. Created new "+form.handlerComponent.Name+" prefab");
 
             return form;
         }
 
         public static FormDef GetFormDef(FormIndex formIndex)
         {
-            if (!FormCatalog.availability.available) { Debug.LogWarning("Can't get FormDef from FormIndex before catalog is initialized"); }
+            if (!FormCatalog.availability.available) { Log.Warning("Can't get FormDef from FormIndex before catalog is initialized"); }
             return ArrayUtils.GetSafe(FormCatalog.formsCatalog, (int)formIndex);
         }
 
@@ -221,7 +221,7 @@ namespace SonicTheHedgehog.Modules.Forms
         { 
             get 
             {
-                if (!FormCatalog.availability.available) { Debug.LogWarning("Can't get FormIndex before catalog is initialized"); return FormIndex.None; }
+                if (!FormCatalog.availability.available) { Log.Warning("Can't get FormIndex before catalog is initialized"); return FormIndex.None; }
                 return (FormIndex)Array.IndexOf(FormCatalog.formsCatalog, this); 
             }
         }

@@ -29,7 +29,7 @@ namespace SonicTheHedgehog.Components
         public void OnReceived()
         {
             if (NetworkServer.active) return;
-            Debug.Log("Parry Recieved Client");
+            Log.Message("Parry Recieved Client");
             GameObject body = Util.FindNetworkObject(netId);
             if (body)
             {
@@ -71,7 +71,7 @@ namespace SonicTheHedgehog.Components
         public void OnReceived()
         {
             if (!NetworkServer.active) return;
-            Debug.Log("Scepter Boost Damage Received Server");
+            Log.Message("Scepter Boost Damage Received Server");
             ScepterBoost.DealDamage(this.hurtbox, this.damageInfo);
         }
 

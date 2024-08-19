@@ -313,7 +313,7 @@ namespace SonicTheHedgehog.Modules {
 
             if (!childLocator.FindChild("MainHurtbox"))
             {
-                Debug.LogWarning("Could not set up main hurtbox: make sure you have a transform pair in your prefab's ChildLocator component called 'MainHurtbox'");
+                Log.Warning("Could not set up main hurtbox: make sure you have a transform pair in your prefab's ChildLocator component called 'MainHurtbox'");
                 return;
             }
 

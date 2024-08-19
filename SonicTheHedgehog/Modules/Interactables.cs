@@ -42,12 +42,12 @@ namespace SonicTheHedgehog.Modules
 
         public static void Initialize()
         {
-            Debug.Log("Starting Emerald Interactable Init");
+            Log.Message("Starting Emerald Interactable Init");
             prefabBase = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("ChaosEmeraldInteractable");
 
             Assets.MaterialSwap(prefabBase, "RoR2/Base/Common/VFX/matInverseDistortion.mat", "RingParent/PurchaseParticle/Distortion");
 
-            Debug.Log("Loaded Base");
+            Log.Message("Loaded Base");
             prefabBase.AddComponent<NetworkIdentity>();
 
             if (!prefabBase.TryGetComponent<RoR2.PurchaseInteraction>(out purchaseInteractionBase))
@@ -55,7 +55,7 @@ namespace SonicTheHedgehog.Modules
                 purchaseInteractionBase = prefabBase.AddComponent<RoR2.PurchaseInteraction>();
             }
 
-            Debug.Log("PurchaseInteraction added");
+            Log.Message("PurchaseInteraction added");
 
             prefabBase.GetComponent<Highlight>().targetRenderer = prefabBase.transform.Find("RingParent/Ring").GetComponent<MeshRenderer>();
 
@@ -70,7 +70,7 @@ namespace SonicTheHedgehog.Modules
                 trigger.AddComponent<RoR2.EntityLocator>().entity = prefabBase;
             }
 
-            Debug.Log("Trigger done");
+            Log.Message("Trigger done");
 
             hologramBase = prefabBase.AddComponent<RoR2.Hologram.HologramProjector>();
             hologramBase.hologramPivot = prefabBase.transform.Find("Hologram");
@@ -85,11 +85,11 @@ namespace SonicTheHedgehog.Modules
             prefabBase.AddComponent<PingInfoProvider>().pingIconOverride = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
 
             prefabBase.transform.Find("PickupDisplay").gameObject.AddComponent<PickupDisplay>();
-            Debug.Log("PickupDisplay done");
+            Log.Message("PickupDisplay done");
 
             Materials.ShinyMaterial(Assets.mainAssetBundle.LoadAsset<Material>("matRing"));
 
-            Debug.Log("Material Done");
+            Log.Message("Material Done");
             
             prefabBase.AddComponent<ChaosEmeraldInteractable>();
 
@@ -120,7 +120,7 @@ namespace SonicTheHedgehog.Modules
 
         private void Start()
         {
-            Debug.Log("Emerald Start");
+            Log.Message("Emerald Start");
 
             pickupDisplay = base.GetComponentInChildren<PickupDisplay>();
             purchaseInteraction = base.GetComponent<PurchaseInteraction>();
@@ -173,7 +173,7 @@ namespace SonicTheHedgehog.Modules
 
         public void OnPurchase(Interactor interactor)
         {
-            Debug.Log("Bought " + color + " Chaos Emerald.");
+            Log.Message("Bought " + color + " Chaos Emerald.");
             purchaseInteraction.SetAvailable(false);
             this.stateMachine.SetNextState(new SkillStates.InteractablePurchased());
         }

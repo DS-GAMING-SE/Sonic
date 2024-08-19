@@ -128,7 +128,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static void UnlockParryConfig(object orig, EventArgs self)
         {
             // Thanks RealerCheatUnlocks
-            Debug.Log("Unlock Parry Attempt");
+            Log.Message("Unlock Parry Attempt");
 
             UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
             string achievement = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE";
@@ -165,7 +165,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static void UnlockMasteryConfig(object orig, EventArgs self)
         {
             // Thanks RealerCheatUnlocks
-            Debug.Log("Unlock Mastery Attempt");
+            Log.Message("Unlock Mastery Attempt");
 
             UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
             string achievement = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE";
@@ -467,7 +467,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //bodyPrefab.AddComponent<Components.SuperSonicComponent>();
 
-            Debug.Log("Making Super Sonic: Starting Stuff");
+            Log.Message("Making Super Sonic: Starting Stuff");
 
             primary.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperSonicMeleeEnter));
             primary.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME";
@@ -537,7 +537,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             grandSlam.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperGrandSlamIcon");
             SuperSonic.grandSlam = Modules.Skills.CreateSkillDef(grandSlam);
 
-            Debug.Log("Making Super Sonic: All Skills");
+            Log.Message("Making Super Sonic: All Skills");
 
             //NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
             //Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
@@ -546,7 +546,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void ScepterSkill(SkillDefInfo boost)
         {
-            Debug.Log("Sonic Scepter skill started");
+            Log.Message("Sonic Scepter skill started");
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_DESCRIPTION";
@@ -554,7 +554,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             boost.skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texScepterBoostIcon");
             SkillDef skillDef = Skills.CreateSkillDef(boost);
             Content.AddEntityState(typeof(ScepterBoost));
-            Debug.Log("Sonic Scepter skill created? " +
+            Log.Message("Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
                           boostSkillDef)).ToString());
 
@@ -564,7 +564,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperScepterBoost));
             boost.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperScepterBoostIcon");
             skillDef = Skills.CreateSkillDef(boost);
-            Debug.Log("Super Sonic Scepter skill created? " +
+            Log.Message("Super Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
                           SuperSonic.boost)).ToString());
 
