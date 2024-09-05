@@ -110,7 +110,7 @@ namespace SonicTheHedgehog.Components
             if (!bodyState) { return; }
             if (!Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject)) { return; }
             FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-            TransformationBase transformState = (TransformationBase)EntityStateCatalog.InstantiateState(targetedForm.transformState);
+            TransformationBase transformState = (TransformationBase)EntityStateCatalog.InstantiateState(targetedForm.transformState.stateType);
             transformState.fromTeamSuper = handler.teamSuper;
             if (bodyState.SetInterruptState(transformState, InterruptPriority.Frozen))
             {

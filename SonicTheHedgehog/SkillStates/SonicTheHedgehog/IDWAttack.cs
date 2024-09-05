@@ -66,9 +66,9 @@ namespace SonicTheHedgehog.SkillStates
             this.animator.SetBool("attacking", true);
             base.characterMotor.disableAirControlUntilCollision = false;
             Util.PlaySound("Play_idw", base.gameObject);
-            idwAttackEffect = UnityEngine.GameObject.Instantiate<GameObject>(Assets.idwAttackEffect);
+            idwAttackEffect = UnityEngine.GameObject.Instantiate<GameObject>(Modules.Assets.idwAttackEffect);
 
-            EffectManager.SimpleMuzzleFlash(Assets.superSonicBlurEffect, base.gameObject, "BlurForward", true);
+            EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicBlurEffect, base.gameObject, "BlurForward", true);
             hasFired = true;
             if (this.characterModel)
             {
@@ -155,7 +155,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (invisible)
                 {
-                    EffectManager.SimpleMuzzleFlash(Assets.superSonicBlurEffect, base.gameObject, "BlurSide", true);
+                    EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicBlurEffect, base.gameObject, "BlurSide", true);
                     idwAttackEffect.GetComponentInChildren<ParticleSystem>().Stop();
                     if (this.characterModel)
                     {

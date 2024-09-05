@@ -38,8 +38,8 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "Play_strong_impact";
         protected string muzzleString = "SwingBottom";
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound = Assets.grandSlamHitSoundEvent.index;
+        protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;
+        protected NetworkSoundEventIndex impactSound = Modules.Assets.grandSlamHitSoundEvent.index;
 
         private float earlyExitTime;
         public float duration;

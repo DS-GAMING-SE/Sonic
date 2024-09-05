@@ -30,8 +30,8 @@ namespace SonicTheHedgehog.SkillStates
         private Vector3 forwardDirection;
         public BoostLogic boostLogic;
 
-        private TemporaryOverlay temporaryOverlay;
-        private GameObject trailObject;
+        private TemporaryOverlayInstance temporaryOverlay;
+        //private GameObject trailObject;
 
         private float boostEffectCooldown;
         private ICharacterFlightParameterProvider flight;
@@ -254,9 +254,9 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     checkBoostEffects = true;
                 }
-                else if (temporaryOverlay)
+                else
                 {
-                    temporaryOverlay.AddToCharacerModel(base.GetModelTransform().GetComponent<CharacterModel>());
+                    CreateTemporaryOverlay();
                 }
             }
             else
@@ -302,23 +302,7 @@ namespace SonicTheHedgehog.SkillStates
                         base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
                         EffectManager.SimpleMuzzleFlash(GetEffectPrefab(true), base.gameObject, "BallHitbox", true);
                     }
-
-                    if (temporaryOverlay)
-                    {
-                        EntityState.Destroy(temporaryOverlay);
-                    }
-                    Transform modelTransform = base.GetModelTransform();
-                    if (modelTransform)
-                    {
-                        temporaryOverlay = modelTransform.gameObject.AddComponent<TemporaryOverlay>();
-                        temporaryOverlay.animateShaderAlpha = true;
-                        temporaryOverlay.duration = 0.2f;
-                        temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 3f, 0.25f);
-                        temporaryOverlay.destroyComponentOnEnd = false;
-                        temporaryOverlay.originalMaterial = GetOverlayMaterial();
-                        temporaryOverlay.enabled = true;
-                        temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());
-                    }
+                    CreateTemporaryOverlay();
                 }
                 else
                 {
@@ -328,21 +312,42 @@ namespace SonicTheHedgehog.SkillStates
                         base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
                         EffectManager.SimpleMuzzleFlash(GetEffectPrefab(false), base.gameObject, "BallHitbox", true);
                     }
-                    if (temporaryOverlay)
-                    {
-                        temporaryOverlay.RemoveFromCharacterModel();
-                    }
+
+                    RemoveTemporaryOverlay();
                 }
             }
             else
             {
                 base.cameraTargetParams.RemoveParamsOverride(this.camOverrideHandle, duration * 2f);
-                if (temporaryOverlay && !powerBoosting)
+                if (!powerBoosting)
                 {
-                    temporaryOverlay.RemoveFromCharacterModel();
+                    RemoveTemporaryOverlay();
                 }
             }
             boostChangedEffect = false;
+        }
+
+        private void CreateTemporaryOverlay()
+        {
+            Transform modelTransform = base.GetModelTransform();
+            CharacterModel model = modelTransform.GetComponent<CharacterModel>();
+            if (modelTransform)
+            {
+                temporaryOverlay = TemporaryOverlayManager.AddOverlay(model.gameObject);
+                temporaryOverlay.animateShaderAlpha = true;
+                temporaryOverlay.duration = 0.2f;
+                temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 3f, 0.25f);
+                temporaryOverlay.destroyComponentOnEnd = false;
+                temporaryOverlay.originalMaterial = GetOverlayMaterial();
+                temporaryOverlay.inspectorCharacterModel = model;
+                temporaryOverlay.AddToCharacterModel(model);
+            }
+        }
+
+        private void RemoveTemporaryOverlay()
+        {
+            if (temporaryOverlay == null) { return; }
+            temporaryOverlay.destroyComponentOnEnd = true;
         }
 
         private void UpdateDirection()
@@ -386,10 +391,9 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.RemoveBuff(Modules.Buffs.boostBuff);
             }
-            if (temporaryOverlay)
-            {
-                EntityState.Destroy(temporaryOverlay);
-            }
+
+            RemoveTemporaryOverlay();
+
             base.characterBody.skillLocator.utility.onSkillChanged -= OnSkillChanged;
             base.OnExit();
         }
@@ -423,11 +427,11 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (power)
             {
-                return Assets.powerBoostFlashEffect;
+                return Modules.Assets.powerBoostFlashEffect;
             }
             else
             {
-                return Assets.boostFlashEffect;
+                return Modules.Assets.boostFlashEffect;
             }
         }
 
@@ -440,7 +444,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (typeof(Boost).IsAssignableFrom(skill.activationState.stateType))
             {
-                outer.SetNextState(EntityStateCatalog.InstantiateState(skill.activationState));
+                outer.SetNextState(EntityStateCatalog.InstantiateState(skill.activationState.stateType));
             }
         }
 

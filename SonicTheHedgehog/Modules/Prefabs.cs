@@ -193,7 +193,7 @@ namespace SonicTheHedgehog.Modules {
 
             characterModel.autoPopulateLightInfos = true;
             characterModel.invisibilityCount = 0;
-            characterModel.temporaryOverlays = new List<TemporaryOverlay>();
+            characterModel.temporaryOverlays = new List<TemporaryOverlayInstance>();
 
             ModelPanelParameters panel = characterModel.gameObject.AddComponent<ModelPanelParameters>();
 

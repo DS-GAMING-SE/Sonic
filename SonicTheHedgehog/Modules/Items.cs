@@ -18,20 +18,18 @@ namespace SonicTheHedgehog.Modules
 
         internal static void RegisterItems()
         {
-            ItemTierDef emeraldTier = new ItemTierDef
-            {
-                _tier = ItemTier.AssignedAtRuntime,
-                isDroppable = true,
-                canRestack = false,
-                pickupRules = ItemTierDef.PickupRules.Default,
-                name = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_CHAOS_EMERALD",
-                highlightPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/HighlightTier1Item.prefab").WaitForCompletion(),
-                dropletDisplayPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Tier1Orb.prefab").WaitForCompletion(),
-                canScrap = false,
-                colorIndex = ColorCatalog.ColorIndex.Tier1Item,
-                darkColorIndex = ColorCatalog.ColorIndex.Tier1ItemDark,
-                bgIconTexture = Assets.mainAssetBundle.LoadAsset<Texture>("texBGEmerald")
-            };
+            ItemTierDef emeraldTier = ScriptableObject.CreateInstance<ItemTierDef>();
+            emeraldTier.tier = ItemTier.AssignedAtRuntime;
+            emeraldTier.isDroppable = true;
+            emeraldTier.canRestack = false;
+            emeraldTier.pickupRules = ItemTierDef.PickupRules.Default;
+            emeraldTier.name = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_CHAOS_EMERALD";
+            emeraldTier.highlightPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/HighlightTier1Item.prefab").WaitForCompletion();
+            emeraldTier.dropletDisplayPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Tier1Orb.prefab").WaitForCompletion();
+            emeraldTier.canScrap = false;
+            emeraldTier.colorIndex = ColorCatalog.ColorIndex.Tier1Item;
+            emeraldTier.darkColorIndex = ColorCatalog.ColorIndex.Tier1ItemDark;
+            emeraldTier.bgIconTexture = Assets.mainAssetBundle.LoadAsset<Texture>("texBGEmerald");
 
             Content.AddItemTierDef(emeraldTier);
 
@@ -74,7 +72,7 @@ namespace SonicTheHedgehog.Modules
             itemDef.pickupModelPrefab = pickupModelPrefab;
             itemDef.pickupIconSprite = icon;
             itemDef.canRemove = canRemove;
-            itemDef.deprecatedTier = ItemTier.AssignedAtRuntime;
+            //itemDef.deprecatedTier = ItemTier.AssignedAtRuntime;
             itemDef._itemTierDef = itemTier;
             
             itemDef.nameToken = prefix + token; // stylised name

@@ -32,8 +32,8 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "Play_melee_hit";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound = Assets.meleeHitSoundEvent.index;
+        protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;
+        protected NetworkSoundEventIndex impactSound = Modules.Assets.meleeHitSoundEvent.index;
 
         private float earlyExitTime;
         public float duration;
@@ -83,7 +83,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 //Util.PlaySound(this.hitSoundString, base.gameObject);
                 Quaternion direction = Quaternion.Lerp(Util.QuaternionSafeLookRotation(base.characterDirection.forward), Util.QuaternionSafeLookRotation(Vector3.up, base.characterDirection.forward*-1),0.6f);
-                EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, direction, true);
+                EffectManager.SimpleEffect(Modules.Assets.homingAttackHitEffect, base.gameObject.transform.position, direction, true);
                 effectFired = true;
             }
         }

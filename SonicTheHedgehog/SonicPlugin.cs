@@ -25,7 +25,6 @@ using System.Security.Claims;
 using UnityEngine.Networking;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
-using UnityEngine.SceneManagement;
 using System;
 using HarmonyLib;
 using LookingGlass.LookingGlassLanguage;
@@ -38,7 +37,19 @@ using LookingGlass.ItemStatsNameSpace;
 //rename this namespace
 namespace SonicTheHedgehog
 {
-    [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+    //[BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.content_management", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.prefab", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.language", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.networking", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.unlockable", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.items", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.addressables", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.skins", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.sound", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.director", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api.tempvisualeffect", BepInDependency.DependencyFlags.HardDependency)]
+
     [BepInDependency("com.weliveinasociety.CustomEmotesAPI", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(LookingGlass.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
@@ -72,7 +83,6 @@ namespace SonicTheHedgehog
         public static bool lookingGlassLoaded = false;
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
-        public static bool celestialWarTankLoaded = false;
 
 
         private void Awake()

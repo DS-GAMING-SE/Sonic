@@ -24,7 +24,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 
         public override GameObject GetEffectPrefab(bool power)
         {
-            return Assets.superBoostFlashEffect;
+            return Modules.Assets.superBoostFlashEffect;
         }
 
         public override Material GetOverlayMaterial()

@@ -15,7 +15,7 @@ namespace SonicTheHedgehog.Modules.Achievements
         }
     }*/
     // I have no god damn clue what SonicSkins.Mastery is or what a reward identifier is I just ignore it and hope it works
-    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", "SonicSkins.Mastery", null, null)]
+    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", "SonicSkins.Mastery", null, 10, null)]
     public class SonicMasteryAchievement : BaseMasteryUnlockable
     {
         public const string identifier = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE";

@@ -17,8 +17,6 @@ namespace SonicTheHedgehog.Modules
     {
         #region Sonic's stuff
         // particle effects
-        internal static GameObject swordSwingEffect;
-        internal static GameObject swordHitImpactEffect;
         internal static GameObject sonicBoomKickEffect;
         internal static GameObject homingAttackTrailEffect;
         internal static GameObject sonicBoomImpactEffect;

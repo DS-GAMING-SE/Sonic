@@ -53,6 +53,7 @@ namespace SonicTheHedgehog.Modules.Forms
         [SystemInitializer(typeof(ItemCatalog))]
         public static void InitializeFormItemRequirements()
         {
+            Log.Message("NeededItems initialized");
             superSonicDef.neededItems = new NeededItem[] { Items.yellowEmerald, Items.redEmerald, Items.blueEmerald, Items.cyanEmerald, Items.grayEmerald, Items.greenEmerald, Items.purpleEmerald };
             testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom, count = 10 } };
         }
@@ -135,6 +136,7 @@ namespace SonicTheHedgehog.Modules.Forms
         [SystemInitializer(typeof(BodyCatalog), typeof(FormCatalog))]
         public static void SuperSonicComponentsForEveryone()
         {
+            Log.Message("SuperSonicComponentsForEveryone");
             foreach (GameObject body in BodyCatalog.allBodyPrefabs)
             {
                 foreach (FormDef form in FormCatalog.formsCatalog)

@@ -68,7 +68,7 @@ namespace SonicTheHedgehog.SkillStates
 
             ApplyOutline();
 
-            superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Assets.superLoopSoundDef);
+            superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Modules.Assets.superLoopSoundDef);
 
             this.camOverrideHandle = base.cameraTargetParams.AddParamsOverride(new CameraTargetParams.CameraParamsOverrideRequest
             {
@@ -192,7 +192,7 @@ namespace SonicTheHedgehog.SkillStates
             if (model)
             {
                 temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Outline
-                temporaryOverlay.originalMaterial = Assets.superSonicOverlay;
+                temporaryOverlay.originalMaterial = Modules.Assets.superSonicOverlay;
                 temporaryOverlay.destroyComponentOnEnd = true;
                 temporaryOverlay.enabled = true;
                 temporaryOverlay.AddToCharacerModel(model);

@@ -40,20 +40,15 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "Play_homing_impact";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound = Assets.homingHitSoundEvent.index;
+        protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;
+        protected NetworkSoundEventIndex impactSound = Modules.Assets.homingHitSoundEvent.index;
 
-        private float earlyExitTime;
         public float duration;
         private bool hasFired;
-        private float hitPauseTimer;
         private OverlapAttack attack;
         protected bool inHitPause;
-        private bool hasHopped;
         protected float stopwatch;
         protected Animator animator;
-        private BaseState.HitStopCachedState hitStopCachedState;
-        private Vector3 storedVelocity;
         private bool hasHit=false;
         private HomingTracker homingTracker;
 
@@ -128,7 +123,7 @@ namespace SonicTheHedgehog.SkillStates
             if (!hasHit)
             {
                 hasHit= true;
-                EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+                EffectManager.SimpleEffect(Modules.Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
             }    
             SetNextState();
         }
@@ -183,7 +178,7 @@ namespace SonicTheHedgehog.SkillStates
                     Util.PlaySound(launchSoundString, base.gameObject);
                     if (base.isAuthority)
                     {
-                        EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+                        EffectManager.SimpleEffect(Modules.Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
                     }
                     OnLaunch();
                 }

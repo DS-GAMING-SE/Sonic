@@ -76,8 +76,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override void InitializeCharacter()
         {
             base.InitializeCharacter();
-            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState =
-                new EntityStates.SerializableEntityStateType(typeof(Death));
+            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(Death));
         }
 
         public override void InitializeUnlockables()

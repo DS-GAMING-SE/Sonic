@@ -1,16 +1,8 @@
-﻿using EntityStates;
-using R2API;
-using Rewired;
-using RiskOfOptions.Components.AssetResolution.Data;
-using RoR2;
-using RoR2.Audio;
-using SonicTheHedgehog.Components;
+﻿using RoR2;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
 using System;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {

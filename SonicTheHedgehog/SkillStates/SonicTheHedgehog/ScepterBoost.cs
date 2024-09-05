@@ -126,11 +126,11 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (power)
             {
-                return Assets.scepterPowerBoostFlashEffect;
+                return Modules.Assets.scepterPowerBoostFlashEffect;
             }
             else
             {
-                return Assets.scepterBoostFlashEffect;
+                return Modules.Assets.scepterBoostFlashEffect;
             }
         }
     }

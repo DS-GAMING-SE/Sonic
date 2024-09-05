@@ -235,7 +235,8 @@ namespace SonicTheHedgehog.Modules
         public void CheckItems()
         {
             missingItems = new List<NeededItem>();
-            if (!handler) { Log.Warning("no handler yet"); }
+            if (!handler) { Log.Warning("no handler yet"); return; }
+            if (handler.form.neededItems == null) { return; } // What did they do to SystemInitializer I JUST started using it and now it doesn't work after DLC update
             foreach (NeededItem item in handler.form.neededItems)
             {
                 int collectiveItemCount = 0;
@@ -243,6 +244,7 @@ namespace SonicTheHedgehog.Modules
                 {
                     if (player)
                     {
+                        if (!player.master || !player.master.inventory) { continue; }
                         collectiveItemCount += player.master.inventory.GetItemCount(item);
                     }
                 }
@@ -298,6 +300,7 @@ namespace SonicTheHedgehog.Modules
                 {
                     Inventory.onInventoryChangedGlobal += OnInventoryChanged;
                     eventsSubscribed = true;
+                    Log.Message("Subscribed to inventory events");
                     CheckItems();
                 }
                 else

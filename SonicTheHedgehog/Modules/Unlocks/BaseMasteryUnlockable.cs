@@ -22,7 +22,7 @@ namespace SonicTheHedgehog.Modules
             if (runReport.gameEnding && runReport.gameEnding.isWin)
             {
                 DifficultyIndex difficultyIndex = runReport.ruleBook.FindDifficulty();
-                DifficultyDef runDifficulty = DifficultyCatalog.GetDifficultyDef(runReport.ruleBook.FindDifficulty());
+                DifficultyDef runDifficulty = DifficultyCatalog.GetDifficultyDef(difficultyIndex);
                 //checking run difficulty
                 if (runDifficulty != null &&
                     ((runDifficulty.countsAsHardMode && runDifficulty.scalingValue >= RequiredDifficultyCoefficient) ||

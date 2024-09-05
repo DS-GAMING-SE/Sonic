@@ -48,8 +48,8 @@ namespace SonicTheHedgehog.SkillStates
         protected string homingAttackSoundString = "Play_homing_attack";
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound = Assets.meleeHitSoundEvent.index;
+        protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;
+        protected NetworkSoundEventIndex impactSound = Modules.Assets.meleeHitSoundEvent.index;
         protected GameObject homingAttackEffect;
 
         public float duration;
@@ -100,7 +100,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterMotor.Motor.ForceUnground();
                 if (targetDirection != Vector3.zero)
                 {
-                    EffectManager.SimpleEffect(Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+                    EffectManager.SimpleEffect(Modules.Assets.homingAttackLaunchEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
                 }
             }
             EndChrysalis();
@@ -108,7 +108,7 @@ namespace SonicTheHedgehog.SkillStates
             this.homingAttackEndLag = baseHomingAttackEndLag / this.attackSpeedStat;
             this.hitboxName = "Ball";
             //this.hitSoundString = "Play_homing_impact";
-            this.impactSound = Assets.homingHitSoundEvent.index;
+            this.impactSound = Modules.Assets.homingHitSoundEvent.index;
             base.PlayAnimation("FullBody, Override", "Ball");
             base.characterMotor.disableAirControlUntilCollision = false;
 
@@ -149,7 +149,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void PlayHomingAttackHitEffect()
         {
-            EffectManager.SimpleEffect(Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
+            EffectManager.SimpleEffect(Modules.Assets.homingAttackHitEffect, base.gameObject.transform.position, Util.QuaternionSafeLookRotation(targetDirection), true);
             if (this.homingAttackEffect)
             {
                 this.homingAttackEffect.transform.parent = null;

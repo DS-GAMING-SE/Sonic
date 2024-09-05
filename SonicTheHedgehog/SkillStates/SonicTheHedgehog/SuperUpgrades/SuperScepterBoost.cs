@@ -42,7 +42,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 
         public override GameObject GetEffectPrefab(bool power)
         {
-            return Assets.scepterSuperBoostFlashEffect;
+            return Modules.Assets.scepterSuperBoostFlashEffect;
         }
 
         public override Material GetOverlayMaterial()

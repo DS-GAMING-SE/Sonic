@@ -44,8 +44,8 @@ namespace SonicTheHedgehog.SkillStates
         protected string hitSoundString = "";
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
-        protected GameObject hitEffectPrefab = Assets.meleeImpactEffect;
-        protected NetworkSoundEventIndex impactSound = Assets.meleeHitSoundEvent.index;
+        protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;
+        protected NetworkSoundEventIndex impactSound = Modules.Assets.meleeHitSoundEvent.index;
 
         private float earlyExitTime;
         public float duration;
@@ -74,7 +74,7 @@ namespace SonicTheHedgehog.SkillStates
             this.hasFired = false;
 
             //this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
-            this.impactSound = swingIndex == 4 ? Assets.meleeFinalHitSoundEvent.index : Assets.meleeHitSoundEvent.index;
+            this.impactSound = swingIndex == 4 ? Modules.Assets.meleeFinalHitSoundEvent.index : Modules.Assets.meleeHitSoundEvent.index;
             this.swingSoundString = swingIndex == 4 ? "Play_swing_low" : "Play_swing";
             this.hitboxName = "Sword";
             this.procCoefficient = StaticValues.meleeProcCoefficient;
