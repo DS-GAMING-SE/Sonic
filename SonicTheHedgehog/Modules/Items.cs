@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.UIElements;
 
 namespace SonicTheHedgehog.Modules
 {
     public static class Items
     {
+        // Emerald item tier
+        internal static ItemTierDef emeraldTier;
+        
         // Definition of all the different chaos emeralds.
         internal static ItemDef yellowEmerald;
         internal static ItemDef redEmerald;
@@ -18,7 +22,7 @@ namespace SonicTheHedgehog.Modules
 
         internal static void RegisterItems()
         {
-            ItemTierDef emeraldTier = ScriptableObject.CreateInstance<ItemTierDef>();
+            emeraldTier = ScriptableObject.CreateInstance<ItemTierDef>();
             emeraldTier.tier = ItemTier.AssignedAtRuntime;
             emeraldTier.isDroppable = true;
             emeraldTier.canRestack = false;
@@ -35,31 +39,44 @@ namespace SonicTheHedgehog.Modules
 
             yellowEmerald = AddNewItem("Chaos Emerald: Yellow", "YELLOW_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texYellowEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("YellowEmerald.prefab"));
+                CreateEmeraldPrefab("YellowEmerald.prefab"));
             
             redEmerald = AddNewItem("Chaos Emerald: Red", "RED_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texRedEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("RedEmerald.prefab"));
+                CreateEmeraldPrefab("RedEmerald.prefab"));
             
             grayEmerald = AddNewItem("Chaos Emerald: Gray", "GRAY_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texGrayEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("GrayEmerald.prefab"));
+                CreateEmeraldPrefab("GrayEmerald.prefab"));
             
             blueEmerald = AddNewItem("Chaos Emerald: Blue", "BLUE_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texBlueEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("BlueEmerald.prefab"));
+                CreateEmeraldPrefab("BlueEmerald.prefab"));
             
             cyanEmerald = AddNewItem("Chaos Emerald: Cyan", "CYAN_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texCyanEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("CyanEmerald.prefab"));
+                CreateEmeraldPrefab("CyanEmerald.prefab"));
             
             greenEmerald = AddNewItem("Chaos Emerald: Green", "GREEN_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texGreenEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("GreenEmerald.prefab"));
+                CreateEmeraldPrefab("GreenEmerald.prefab"));
             
             purpleEmerald = AddNewItem("Chaos Emerald: Purple", "PURPLE_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texPurpleEmeraldIcon"),
-                Assets.mainAssetBundle.LoadAsset<GameObject>("PurpleEmerald.prefab"));
+                CreateEmeraldPrefab("PurpleEmerald.prefab"));
+        }
+
+        internal static GameObject CreateEmeraldPrefab(string assetName)
+        {
+            GameObject emerald = Assets.mainAssetBundle.LoadAsset<GameObject>(assetName);
+            ModelPanelParameters panel = emerald.AddComponent<ModelPanelParameters>();
+            panel.focusPointTransform = emerald.transform.Find("FocusPoint");
+
+            panel.cameraPositionTransform = emerald.transform.Find("FocusPoint/CameraPosition");
+
+            panel.minDistance = 0.7f;
+            panel.maxDistance = 2.5f;
+            return emerald;
         }
 
         // simple helper method

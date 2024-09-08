@@ -19,7 +19,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected Transform chest;
 
-        private TemporaryOverlay temporaryOverlay;
+        private TemporaryOverlayInstance temporaryOverlay;
 
         private GameObject superAura;
         private GameObject warning;
@@ -101,10 +101,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             LoopSoundManager.StopSoundLoopLocal(superLoop);
 
-            if (temporaryOverlay)
-            {
-                temporaryOverlay.RemoveFromCharacterModel();
-            }
+            RemoveOutline();
 
             if (boostLogic)
             {
@@ -181,21 +178,20 @@ namespace SonicTheHedgehog.SkillStates
 
         private void ApplyOutline()
         {
-            if (base.characterBody.modelLocator)
+            if (characterModel)
             {
-                if (base.characterBody.modelLocator.modelTransform)
-                {
-                    model = base.characterBody.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
-                }
-            }
-
-            if (model)
-            {
-                temporaryOverlay = model.gameObject.AddComponent<TemporaryOverlay>(); // Outline
+                temporaryOverlay = TemporaryOverlayManager.AddOverlay(characterModel.gameObject); // Outline
                 temporaryOverlay.originalMaterial = Modules.Assets.superSonicOverlay;
+                temporaryOverlay.destroyComponentOnEnd = false;
+                temporaryOverlay.inspectorCharacterModel = characterModel;
+            }
+        }
+
+        private void RemoveOutline()
+        {
+            if (temporaryOverlay != null)
+            {
                 temporaryOverlay.destroyComponentOnEnd = true;
-                temporaryOverlay.enabled = true;
-                temporaryOverlay.AddToCharacerModel(model);
             }
         }
 

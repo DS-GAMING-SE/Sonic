@@ -57,13 +57,6 @@ namespace SonicTheHedgehog
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
-    [R2APISubmoduleDependency(new string[]
-    {
-        "PrefabAPI",
-        "LanguageAPI",
-        "SoundAPI",
-        "UnlockableAPI"
-    })]
 
     public class SonicTheHedgehogPlugin : BaseUnityPlugin
     {
@@ -171,6 +164,8 @@ namespace SonicTheHedgehog
             {
                 RoR2Application.onLoad += LookingGlassSetup;
             }
+
+            On.RoR2.GenericPickupController.Start += EmeraldDropSound;
         }
 
         private void EmoteSkeleton()
@@ -528,6 +523,23 @@ namespace SonicTheHedgehog
             if (!self.HasAchievement(DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE") && Modules.Config.ForceUnlockMastery().Value)
             {
                 self.AddAchievement(DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", true);
+            }
+        }
+
+        private void EmeraldDropSound(On.RoR2.GenericPickupController.orig_Start orig, GenericPickupController self)
+        {
+            orig(self);
+            if (self.pickupDisplay)
+            {
+                ItemIndex itemIndex = PickupCatalog.GetPickupDef(self.pickupIndex).itemIndex;
+                if (itemIndex != ItemIndex.None)
+                {
+                    ItemDef itemDef = ItemCatalog.GetItemDef(itemIndex);
+                    if (itemDef && itemDef._itemTierDef == Items.emeraldTier)
+                    {
+                        Util.PlaySound("Play_emerald_spawn", self.gameObject);
+                    }
+                }
             }
         }
 

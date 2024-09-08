@@ -22,7 +22,7 @@ namespace SonicTheHedgehog.Modules.Forms
     {
         public static FormDef superSonicDef;
 
-        public static FormDef testFormDef;
+        //public static FormDef testFormDef;
 
         public static Dictionary<FormDef, GameObject> formToHandlerPrefab = new Dictionary<FormDef, GameObject>();
 
@@ -39,14 +39,14 @@ namespace SonicTheHedgehog.Modules.Forms
                 1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), superRenderDictionary, SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
                 typeof(SuperSonicHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
 
-            testFormDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_TEST_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, false, false,
+            /*testFormDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_TEST_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, false, false,
                 3, false, false, false, new SerializableEntityStateType(typeof(SkillStates.SonicFormBase)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), new Dictionary<string, RenderReplacements>(), SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
                 typeof(FormHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
-
+            */
             FormCatalog.AddFormDefs(new FormDef[]
             {
                 superSonicDef,
-                testFormDef
+                //testFormDef
             });
         }
 
@@ -55,7 +55,7 @@ namespace SonicTheHedgehog.Modules.Forms
         {
             Log.Message("NeededItems initialized");
             superSonicDef.neededItems = new NeededItem[] { Items.yellowEmerald, Items.redEmerald, Items.blueEmerald, Items.cyanEmerald, Items.grayEmerald, Items.greenEmerald, Items.purpleEmerald };
-            testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom, count = 10 } };
+            //testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom, count = 10 } };
         }
 
         // Look at the tooltips in the FormDef class for more information on what all of these parameters mean

@@ -1,4 +1,4 @@
-﻿using IL.RoR2.Achievements;
+﻿using RoR2.Achievements;
 using RoR2;
 using SonicTheHedgehog.SkillStates;
 using System;
@@ -8,8 +8,8 @@ using UnityEngine;
 namespace SonicTheHedgehog.Modules.Achievements
 {
     // I have no god damn clue what SonicSkills.Parry is or what a reward identifier is I just ignore it and hope it works
-    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", "SonicSkills.Parry", null, 3, null)]
-    public class SonicHomingAttackAirborneAchievement : RoR2.Achievements.BaseAchievement
+    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE", "SonicSkills.Parry", null, 3)]
+    public class SonicHomingAttackAirborneAchievement : BaseAchievement
     {
         // Hit countRequired different enemies with a homing attack without touching the ground (Unlocks Parry)
         private int count;

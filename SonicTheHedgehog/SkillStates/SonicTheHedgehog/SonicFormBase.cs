@@ -25,7 +25,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected CharacterModel characterModel;
 
-        private TemporaryOverlay flashOverlay;
+        private TemporaryOverlayInstance flashOverlay;
         private static Material flashMaterial;
 
         public override void OnEnter()
@@ -116,13 +116,13 @@ namespace SonicTheHedgehog.SkillStates
                     flashMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashBright.mat").WaitForCompletion();
                 }
 
-                flashOverlay = characterModel.gameObject.AddComponent<TemporaryOverlay>(); // Flash
+                flashOverlay = TemporaryOverlayManager.AddOverlay(characterModel.gameObject); // Flash
                 flashOverlay.duration = duration;
                 flashOverlay.animateShaderAlpha = true;
                 flashOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0f);
                 flashOverlay.originalMaterial = flashMaterial;
                 flashOverlay.destroyComponentOnEnd = true;
-                flashOverlay.AddToCharacerModel(characterModel);
+                flashOverlay.inspectorCharacterModel = characterModel;
             }
         }
 

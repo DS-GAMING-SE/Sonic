@@ -85,17 +85,15 @@ namespace SonicTheHedgehog.Modules.Survivors
             //masterySkinUnlockableDef = Modules.Unlockables.AddUnlockable<Modules.Achievements.MasteryAchievement>();
             masterySkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             masterySkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin");
-            masterySkinUnlockableDef.cachedName = "SonicSkins.Mastery";
-            masterySkinUnlockableDef.nameToken =
-                "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME";
+            masterySkinUnlockableDef.cachedName = "Skins.Sonic.Alt1";
+            masterySkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(masterySkinUnlockableDef);
 
             // I hate achievements almost as much as I hate networking
             parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");
             parryUnlockableDef.cachedName = "SonicSkills.Parry";
-            parryUnlockableDef.nameToken =
-                "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME";
+            parryUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(parryUnlockableDef);
 
             /*UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
@@ -169,7 +167,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
             string achievement = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE";
 
-            if (Config.ForceUnlockParry().Value)
+            if (Config.ForceUnlockMastery().Value)
             {
                 if (!user.HasAchievement(achievement))
                 {

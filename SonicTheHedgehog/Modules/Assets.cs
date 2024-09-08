@@ -248,7 +248,7 @@ namespace SonicTheHedgehog.Modules
                 };
             }
 
-            superSonicOverlay = new Material(LegacyResourcesAPI.Load<Material>("Materials/matLunarGolemShield"));
+            superSonicOverlay = new Material(Addressables.LoadAssetAsync<Material>("RoR2/Base/LunarGolem/matLunarGolemShield.mat").WaitForCompletion());
             superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);

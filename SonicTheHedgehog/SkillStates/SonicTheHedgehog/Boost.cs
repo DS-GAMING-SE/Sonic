@@ -340,7 +340,6 @@ namespace SonicTheHedgehog.SkillStates
                 temporaryOverlay.destroyComponentOnEnd = false;
                 temporaryOverlay.originalMaterial = GetOverlayMaterial();
                 temporaryOverlay.inspectorCharacterModel = model;
-                temporaryOverlay.AddToCharacterModel(model);
             }
         }
 

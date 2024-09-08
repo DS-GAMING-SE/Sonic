@@ -175,6 +175,8 @@ namespace SonicTheHedgehog.Components
                 defaultModel = model.mainSkinnedMeshRenderer.sharedMesh;
                 model.mainSkinnedMeshRenderer.sharedMesh = formMesh;
             }
+
+            model.materialsDirty = true;
         }
 
         public void ResetModel()
@@ -190,6 +192,8 @@ namespace SonicTheHedgehog.Components
             {
                 model.mainSkinnedMeshRenderer.sharedMesh = defaultModel;
             }
+
+            model.materialsDirty = true;
         }
 
         public virtual void GetSuperModel(string skinName)
@@ -235,6 +239,8 @@ namespace SonicTheHedgehog.Components
 
         public Inventory inventory;
 
+        private bool itemsDirty;
+
         public bool allItems;
 
         private bool eventsSubscribed;
@@ -259,6 +265,13 @@ namespace SonicTheHedgehog.Components
                     }
                 }
             }
+            else
+            {
+                if (itemsDirty)
+                {
+                    CheckItems();
+                }
+            }
         }
 
         public void SubscribeEvents(bool subscribe)
@@ -269,22 +282,28 @@ namespace SonicTheHedgehog.Components
                 {
                     if (subscribe)
                     {
-                        inventory.onInventoryChanged += CheckItems;
+                        inventory.onInventoryChanged += SetItemsDirty;
                         Log.Message("subscribe");
                         eventsSubscribed = true;
-                        CheckItems();
+                        SetItemsDirty();
                     }
                     else
                     {
-                        inventory.onInventoryChanged -= CheckItems;
+                        inventory.onInventoryChanged -= SetItemsDirty;
                         eventsSubscribed = false;
                     }
                 }
             }
         }
 
+        public void SetItemsDirty()
+        {
+            itemsDirty = true;
+        }
+
         public void CheckItems() // You can tell how much suffering part of code has brought its writer by seeing how many logs there are
         {
+            itemsDirty = false;
             if (!form) { Log.Error("No form??"); allItems= false; return; }
             if (!inventory) { Log.Error("No inventory????????"); allItems = false; return; }
             foreach (NeededItem item in form.neededItems)
