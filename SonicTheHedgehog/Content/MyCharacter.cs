@@ -88,7 +88,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             masterySkinUnlockableDef.cachedName = "Skins.Sonic.Alt1";
             masterySkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(masterySkinUnlockableDef);
-
+            
             // I hate achievements almost as much as I hate networking
             parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");

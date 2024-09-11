@@ -37,31 +37,34 @@ namespace SonicTheHedgehog.Modules
 
             Content.AddItemTierDef(emeraldTier);
 
-            yellowEmerald = AddNewItem("Chaos Emerald: Yellow", "YELLOW_EMERALD", true, emeraldTier,
+            // The first string input on this method, the name of the itemDef, is an internal name and CANNOT have spaces or other special characters
+            // THIS was the reason the mastery skin wasn't working. THIS was the reason RunReports were breaking
+
+            yellowEmerald = AddNewItem("ChaosEmeraldYellow", "YELLOW_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texYellowEmeraldIcon"),
                 CreateEmeraldPrefab("YellowEmerald.prefab"));
             
-            redEmerald = AddNewItem("Chaos Emerald: Red", "RED_EMERALD", true, emeraldTier,
+            redEmerald = AddNewItem("ChaosEmeraldRed", "RED_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texRedEmeraldIcon"),
                 CreateEmeraldPrefab("RedEmerald.prefab"));
             
-            grayEmerald = AddNewItem("Chaos Emerald: Gray", "GRAY_EMERALD", true, emeraldTier,
+            grayEmerald = AddNewItem("ChaosEmeraldGray", "GRAY_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texGrayEmeraldIcon"),
                 CreateEmeraldPrefab("GrayEmerald.prefab"));
             
-            blueEmerald = AddNewItem("Chaos Emerald: Blue", "BLUE_EMERALD", true, emeraldTier,
+            blueEmerald = AddNewItem("ChaosEmeraldBlue", "BLUE_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texBlueEmeraldIcon"),
                 CreateEmeraldPrefab("BlueEmerald.prefab"));
             
-            cyanEmerald = AddNewItem("Chaos Emerald: Cyan", "CYAN_EMERALD", true, emeraldTier,
+            cyanEmerald = AddNewItem("ChaosEmeraldCyan", "CYAN_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texCyanEmeraldIcon"),
                 CreateEmeraldPrefab("CyanEmerald.prefab"));
             
-            greenEmerald = AddNewItem("Chaos Emerald: Green", "GREEN_EMERALD", true, emeraldTier,
+            greenEmerald = AddNewItem("ChaosEmeraldGreen", "GREEN_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texGreenEmeraldIcon"),
                 CreateEmeraldPrefab("GreenEmerald.prefab"));
             
-            purpleEmerald = AddNewItem("Chaos Emerald: Purple", "PURPLE_EMERALD", true, emeraldTier,
+            purpleEmerald = AddNewItem("ChaosEmeraldPurple", "PURPLE_EMERALD", true, emeraldTier,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texPurpleEmeraldIcon"),
                 CreateEmeraldPrefab("PurpleEmerald.prefab"));
         }

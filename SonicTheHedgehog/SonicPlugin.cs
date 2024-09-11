@@ -166,6 +166,8 @@ namespace SonicTheHedgehog
             }
 
             On.RoR2.GenericPickupController.Start += EmeraldDropSound;
+
+            //On.RoR2.MorgueManager.AddRunReportToHistory += MasteryAchievementDrivingMeInsane;
         }
 
         private void EmoteSkeleton()
@@ -265,6 +267,7 @@ namespace SonicTheHedgehog
             if (Language.languagesByName.TryGetValue("en", out Language language))
             {
                 RegisterLookingGlassBuff(language, Buffs.boostBuff, "Sonic Boost", $"Gain <style=cIsUtility>+{StaticValues.boostArmor} armor</style>. If <style=cIsDamage>health</style> is above <style=cIsDamage>90%</style>, gain <style=cIsUtility>+{StaticValues.powerBoostListedSpeedCoefficient * 100}% movement speed</style>. Otherwise, gain <style=cIsUtility>+{StaticValues.boostListedSpeedCoefficient * 100}% movement speed</style>.");
+                RegisterLookingGlassBuff(language, Buffs.superBoostBuff, "Super Sonic Boost", $"Gain <style=cIsUtility>+{StaticValues.superBoostListedSpeedCoefficient * 100}% movement speed</style>.");
                 RegisterLookingGlassBuff(language, Buffs.ballBuff, "Sonic Ball", $"Gain <style=cIsUtility>+{StaticValues.ballArmor} armor</style>.");
                 RegisterLookingGlassBuff(language, Buffs.superSonicBuff, "Super Sonic", $"Immune to all attacks. Gain <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}% damage</style>, <style=cIsUtility>+{100f * StaticValues.superSonicAttackSpeed}% attack speed</style>, and <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}% base movement speed</style>.");
                 RegisterLookingGlassBuff(language, Buffs.parryBuff, "Sonic Parry", $"Gain <style=cIsUtility>+{StaticValues.parryAttackSpeedBuff * 100}% attack speed</style> and <style=cIsUtility>+{StaticValues.parryMovementSpeedBuff * 100}% movement speed</style>.");
@@ -348,17 +351,15 @@ namespace SonicTheHedgehog
             {
                 if (self.HasBuff(Buffs.boostBuff))
                 {
-                    if (!self.HasBuff(Buffs.superSonicBuff))
-                    {
-                        stats.baseMoveSpeedAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedFlatCoefficient : StaticValues.boostSpeedFlatCoefficient;
-                        stats.moveSpeedMultAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
-                        stats.armorAdd += StaticValues.boostArmor;
-                    }
-                    else
-                    {
-                        stats.baseMoveSpeedAdd += StaticValues.superBoostSpeedFlatCoefficient;
-                        stats.moveSpeedMultAdd += StaticValues.superBoostSpeedCoefficient;
-                    }
+                    stats.baseMoveSpeedAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedFlatCoefficient : StaticValues.boostSpeedFlatCoefficient;
+                    stats.moveSpeedMultAdd += self.healthComponent.health / self.healthComponent.fullHealth >= 0.9f ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
+                    stats.armorAdd += StaticValues.boostArmor;
+                }
+
+                if (self.HasBuff(Buffs.superBoostBuff))
+                {
+                    stats.baseMoveSpeedAdd += StaticValues.superBoostSpeedFlatCoefficient;
+                    stats.moveSpeedMultAdd += StaticValues.superBoostSpeedCoefficient;
                 }
 
                 if (self.HasBuff(Buffs.superSonicBuff))
@@ -543,6 +544,11 @@ namespace SonicTheHedgehog
             }
         }
 
+        /*private void MasteryAchievementDrivingMeInsane(On.RoR2.MorgueManager.orig_AddRunReportToHistory orig, RunReport report)
+        {
+            Log.Message("MorgueManager is run");
+            orig(report);
+        }*/
 
         private void SceneDirectorOnStart(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
         {

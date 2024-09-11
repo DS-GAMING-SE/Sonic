@@ -59,6 +59,11 @@ namespace SonicTheHedgehog.SkillStates
             get { return true; }
         }
 
+        protected virtual BuffDef buff
+        {
+            get { return Buffs.boostBuff; }
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();
@@ -81,7 +86,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (NetworkServer.active)
             {
-                base.characterBody.AddBuff(Modules.Buffs.boostBuff);
+                base.characterBody.AddBuff(buff);
                 base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, 0.6f * duration);
             }
             if (!base.isGrounded)
@@ -388,7 +393,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (NetworkServer.active)
             {
-                base.characterBody.RemoveBuff(Modules.Buffs.boostBuff);
+                base.characterBody.RemoveBuff(buff);
             }
 
             RemoveTemporaryOverlay();

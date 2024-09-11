@@ -92,9 +92,7 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority)
             {
                 //this.superSonic.superSonicState.SetNextState(new SuperSonic { form = Forms.superSonicDef });
-                SonicFormBase formState = (SonicFormBase)EntityStateCatalog.InstantiateState(form.formState.stateType);
-                formState.form = this.form;
-                this.superSonic.superSonicState.SetNextState(formState);
+                this.superSonic.SetNextForm(this.form);
             }
         }
 

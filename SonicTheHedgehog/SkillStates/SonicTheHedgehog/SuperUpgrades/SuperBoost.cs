@@ -17,6 +17,11 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             get { return false; }
         }
 
+        protected override BuffDef buff
+        {
+            get { return Buffs.superBoostBuff; }
+        }
+
         protected override bool ShouldPowerBoost()
         {
             return Moving();

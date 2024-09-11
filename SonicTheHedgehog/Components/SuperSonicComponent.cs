@@ -126,6 +126,20 @@ namespace SonicTheHedgehog.Components
             }
         }
 
+        public void SetNextForm(FormDef form)
+        {
+            if (form != null)
+            {
+                SonicFormBase formState = (SonicFormBase)EntityStateCatalog.InstantiateState(form.formState.stateType);
+                formState.form = form;
+                this.superSonicState.SetNextState(formState);
+            }
+            else
+            {
+                this.superSonicState.SetNextStateToMain();
+            }
+        }
+
         public void OnTransform(FormDef form)
         {
             this.activeForm = form;
@@ -308,7 +322,7 @@ namespace SonicTheHedgehog.Components
             if (!inventory) { Log.Error("No inventory????????"); allItems = false; return; }
             foreach (NeededItem item in form.neededItems)
             {
-                if (!item.item) { Log.Error("No item????????"); return; }
+                if (item == ItemIndex.None) { Log.Error("No item????????"); return; }
                 if (inventory.GetItemCount(item) < item.count)
                 {
                     allItems = false;

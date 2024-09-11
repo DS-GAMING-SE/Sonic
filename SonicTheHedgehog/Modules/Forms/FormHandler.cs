@@ -409,13 +409,13 @@ namespace SonicTheHedgehog.Modules
 
             if (itemTracker.GetType().IsAssignableFrom(typeof(SyncedItemTracker)))
             {
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.yellowEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Yellow); }
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.blueEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Blue); }
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.redEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Red); }
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.grayEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Gray); }
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.greenEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.cyanEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
-                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.purpleEmerald)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.yellowEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Yellow); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.blueEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Blue); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.redEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Red); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.grayEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Gray); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.greenEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Green); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.cyanEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Cyan); }
+                if (!((SyncedItemTracker)itemTracker).missingItems.Contains(Items.purpleEmerald.itemIndex)) { available.Remove(ChaosEmeraldInteractable.EmeraldColor.Purple); }
             }
         }
     }

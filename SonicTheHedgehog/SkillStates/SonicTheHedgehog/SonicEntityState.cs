@@ -30,28 +30,31 @@ namespace SonicTheHedgehog.SkillStates
             superSonicComponent = base.GetComponent<SuperSonicComponent>();
             idleExtraTimer = idleExtraDefault;
             idleExtraCount = 0;
-            if (base.isGrounded && base.characterBody.isSprinting && base.inputBank.moveVector != Vector3.zero)
+            if (base.modelAnimator.isInitialized)
             {
-                base.PlayCrossfade("Body", "Sprint", 0.3f);
-            }
-            else if (base.isGrounded)
-            {
-                if (base.modelAnimator.GetBool("isMoving"))
+                if (base.isGrounded && base.characterBody.isSprinting && base.inputBank.moveVector != Vector3.zero)
                 {
-                    base.PlayCrossfade("Body", "Run", 0.1f);
+                    base.PlayCrossfade("Body", "Sprint", 0.3f);
+                }
+                else if (base.isGrounded)
+                {
+                    if (base.modelAnimator.GetBool("isMoving"))
+                    {
+                        base.PlayCrossfade("Body", "Run", 0.1f);
+                    }
+                    else
+                    {
+                        base.PlayCrossfade("Body", "Idle", 0.3f);
+                    }
+                }
+                else if (base.modelAnimator.GetBool("isBall"))
+                {
+                    base.PlayAnimation("Body", "Ball");
                 }
                 else
                 {
-                    base.PlayCrossfade("Body", "Idle", 0.3f);
+                    base.PlayCrossfade("Body", "AscendDescend", 0.3f);
                 }
-            }
-            else if (base.modelAnimator.GetBool("isBall"))
-            {
-                base.PlayAnimation("Body", "Ball");
-            }
-            else
-            {
-                base.PlayCrossfade("Body", "AscendDescend", 0.3f);
             }
 
             if (base.modelLocator)

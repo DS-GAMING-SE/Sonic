@@ -8,6 +8,7 @@ namespace SonicTheHedgehog.Modules
     {
         // armor buff gained during roll
         internal static BuffDef boostBuff;
+        internal static BuffDef superBoostBuff;
         internal static BuffDef superSonicBuff;
         internal static BuffDef ballBuff;
         internal static BuffDef parryBuff;
@@ -19,6 +20,11 @@ namespace SonicTheHedgehog.Modules
                 LegacyResourcesAPI.Load<BuffDef>("BuffDefs/CloakSpeed").iconSprite, 
                 new Color(0, 0.7f, 1), 
                 false, 
+                false);
+            superBoostBuff = AddNewBuff("bdSuperSonicBoost",
+                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/CloakSpeed").iconSprite,
+                new Color(1f, 0.9f, 0),
+                false,
                 false);
             superSonicBuff = AddNewBuff("bdSuperSonic",
                 //LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,

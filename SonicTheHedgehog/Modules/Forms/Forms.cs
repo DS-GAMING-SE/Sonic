@@ -54,8 +54,8 @@ namespace SonicTheHedgehog.Modules.Forms
         public static void InitializeFormItemRequirements()
         {
             Log.Message("NeededItems initialized");
-            superSonicDef.neededItems = new NeededItem[] { Items.yellowEmerald, Items.redEmerald, Items.blueEmerald, Items.cyanEmerald, Items.grayEmerald, Items.greenEmerald, Items.purpleEmerald };
-            //testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom, count = 10 } };
+            superSonicDef.neededItems = new NeededItem[] { Items.yellowEmerald.itemIndex, Items.redEmerald.itemIndex, Items.blueEmerald.itemIndex, Items.cyanEmerald.itemIndex, Items.grayEmerald.itemIndex, Items.greenEmerald.itemIndex, Items.purpleEmerald.itemIndex };
+            //testFormDef.neededItems = new NeededItem[] { new NeededItem { item = RoR2Content.Items.Mushroom.itemIndex, count = 10 } };
         }
 
         // Look at the tooltips in the FormDef class for more information on what all of these parameters mean
@@ -238,17 +238,18 @@ namespace SonicTheHedgehog.Modules.Forms
 
     public struct NeededItem
     {
-        public ItemDef item;
+        public ItemIndex item;
 
         public uint count;
 
-        public static implicit operator ItemDef(NeededItem x) => x.item;
+        public static implicit operator ItemIndex(NeededItem x) => x.item;
 
-        public static implicit operator NeededItem(ItemDef x) => new NeededItem { item = x, count = 1 };
+        public static implicit operator NeededItem(ItemIndex x) => new NeededItem { item = x, count = 1 };
 
         public override string ToString()
         {
-            return this.item.nameToken + " (" + count + ")\n";
+            if (!ItemCatalog.availability.available) { return ""; }
+            return Language.GetString(ItemCatalog.GetItemDef(this.item).nameToken, Language.currentLanguageName) + " (" + count + ")\n";
         }
     }
 

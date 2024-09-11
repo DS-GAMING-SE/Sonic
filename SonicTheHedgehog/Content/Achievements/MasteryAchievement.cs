@@ -18,4 +18,11 @@ namespace SonicTheHedgehog.Modules.Achievements
         public override float RequiredDifficultyCoefficient => 3;
         
     }
+    /*public class SonicMasteryAchievemnt : BasePerSurvivorClearGameMonsoonAchievement
+    {
+        public override BodyIndex LookUpRequiredBodyIndex()
+        {
+            return BodyCatalog.FindBodyIndex("SonicTheHedgehog");
+        }
+    }*/
 }
