@@ -72,7 +72,7 @@ namespace SonicTheHedgehog
 
         public static SonicTheHedgehogPlugin instance;
         public static bool emoteAPILoaded = false;
-        public static bool betterUILoaded = false;
+        //public static bool betterUILoaded = false;
         public static bool lookingGlassLoaded = false;
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
@@ -87,8 +87,8 @@ namespace SonicTheHedgehog
             emoteAPILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.weliveinasociety.CustomEmotesAPI");
             Log.Message("Emote API exists? " + emoteAPILoaded);
 
-            betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
-            Log.Message("Better UI exists? " + betterUILoaded);
+            /*betterUILoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.xoxfaby.BetterUI");
+            Log.Message("Better UI exists? " + betterUILoaded);*/
 
             lookingGlassLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(LookingGlass.PluginInfo.PLUGIN_GUID);
             Log.Message("Looking Glass exists? " + lookingGlassLoaded);
@@ -120,10 +120,10 @@ namespace SonicTheHedgehog
             // now make a content pack and add it- this part will change with the next update
             new Modules.ContentPacks().Initialize();
 
-            if (betterUILoaded)
+            /*if (betterUILoaded)
             {
                 BetterUISetup();
-            }
+            }*/
 
             if (riskOfOptionsLoaded)
             {
@@ -166,8 +166,6 @@ namespace SonicTheHedgehog
             }
 
             On.RoR2.GenericPickupController.Start += EmeraldDropSound;
-
-            //On.RoR2.MorgueManager.AddRunReportToHistory += MasteryAchievementDrivingMeInsane;
         }
 
         private void EmoteSkeleton()
@@ -188,28 +186,20 @@ namespace SonicTheHedgehog
             };
         }
 
-        private static void BetterUISetup()
+        /*private static void BetterUISetup()
         {
             ProcCoefficientInfo melee = new ProcCoefficientInfo
             {
                 name = "Melee / Homing Attack",
                 procCoefficient = StaticValues.meleeProcCoefficient
             };
-            /*ProcCoefficientInfo homing = new ProcCoefficientInfo
-            {
-                name = "Homing Attack",
-                procCoefficient = StaticValues.homingAttackProcCoefficient
-            };
-            */
             ProcCoefficientInfo superMeleeGhost = new ProcCoefficientInfo
             {
                 name = "Projectile",
                 procCoefficient = StaticValues.superMeleeExtraProcCoefficient
             };
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME", melee); /*new List<ProcCoefficientInfo>
-            {
-                melee//,homing
-            });*/
+            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME", melee);
+
             AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME", new List<ProcCoefficientInfo>
             {
                 melee, superMeleeGhost
@@ -260,7 +250,7 @@ namespace SonicTheHedgehog
             RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Base movement speed. Complete invincibility and flight.");
             RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff*100}% Attack speed. +{StaticValues.parryMovementSpeedBuff*100}% Movement speed.");
             RegisterBuffInfo(Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"-{StaticValues.superParryArmorDebuff * 100} Armor. -{(1/StaticValues.superParryAttackSpeedDebuff) * 100}% Attack speed. -{(1 / StaticValues.superParryMovementSpeedDebuff) * 100}% Movement speed.");
-        }
+        }*/
 
         public static void LookingGlassSetup()
         {

@@ -37,7 +37,7 @@ namespace SonicTheHedgehog.Modules.Forms
             };
             superSonicDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, true, Config.ConsumeEmeraldsOnUse().Value,
                 1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), superRenderDictionary, SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
-                typeof(SuperSonicHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() });
+                typeof(SuperSonicHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() }, KeyCode.V);
 
             /*testFormDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_TEST_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, false, false,
                 3, false, false, false, new SerializableEntityStateType(typeof(SkillStates.SonicFormBase)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), new Dictionary<string, RenderReplacements>(), SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
@@ -60,7 +60,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
         // Look at the tooltips in the FormDef class for more information on what all of these parameters mean
         public static FormDef CreateFormDef(string name, BuffDef buff, float duration, bool requiresItems, bool shareItems, bool consumeItems, int maxTransforms, bool invincible, bool flight, bool superAnimations, SerializableEntityStateType formState, SerializableEntityStateType transformState,
-            Dictionary<string, RenderReplacements> renderDictionary, string transformationNameToken, Type handlerComponent, AllowedBodyList allowedBodyList)
+            Dictionary<string, RenderReplacements> renderDictionary, string transformationNameToken, Type handlerComponent, AllowedBodyList allowedBodyList, KeyCode defaultKeyBind)
         {
             FormDef form = ScriptableObject.CreateInstance<FormDef>();
             form.name = name;
@@ -83,6 +83,7 @@ namespace SonicTheHedgehog.Modules.Forms
             };
             form.handlerComponent = handlerComponent;
             form.allowedBodyList = allowedBodyList;
+            form.defaultKeyBind = defaultKeyBind;
 
             // Creating handler prefab
             GameObject handlerPrefab = PrefabAPI.InstantiateClone(Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicHandler"), form.name + " " + form.handlerComponent.Name);
@@ -141,7 +142,7 @@ namespace SonicTheHedgehog.Modules.Forms
             {
                 foreach (FormDef form in FormCatalog.formsCatalog)
                 {
-                    if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(body)))
+                    if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(body)) && body.GetComponent<CharacterBody>() && EntityStateMachine.FindByCustomName(body, "Body"))
                     {
                         body.AddComponent<SuperSonicComponent>();
 
@@ -219,6 +220,9 @@ namespace SonicTheHedgehog.Modules.Forms
         [Tooltip("Contains information on what characters are allowed to transform.\nIf whitelist, any body name listed under bodyNames will be allowed. If not whitelist, any body name not listed under bodyNames will be allowed.\nBody name refers to the name that survivors and enemies use internally. If you're unsure about what body name means, look into RoR2 BodyCatalog related stuff")]
         public AllowedBodyList allowedBodyList;
 
+        [Tooltip("The default keybind players press to transform into the form. Don't get too attached to this, it's likely these keybinds will need to be changed if forms happen to overlap. If two forms overlap the same key and can be transformed into, the first form alphabetically by name token will be selected. If set to Keybind.None, one of the number keys 1234567890 will automatically be selected.")]
+        public KeyCode defaultKeyBind;
+
         public FormIndex formIndex 
         { 
             get 
@@ -248,7 +252,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
         public override string ToString()
         {
-            if (!ItemCatalog.availability.available) { return ""; }
+            if (!ItemCatalog.availability.available) { Log.Warning("NeededItem.ToString() called before ItemCatalog initialized"); return ""; }
             return Language.GetString(ItemCatalog.GetItemDef(this.item).nameToken, Language.currentLanguageName) + " (" + count + ")\n";
         }
     }

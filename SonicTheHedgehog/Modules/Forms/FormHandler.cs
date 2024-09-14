@@ -111,7 +111,7 @@ namespace SonicTheHedgehog.Modules
                 teamSuperTimer -= Time.deltaTime;
                 if (teamSuperTimer <= 0)
                 {
-                    teamSuper = false;
+                    NetworkteamSuper = false;
                     Log.Message("Team Super window ended");
                 }
             }

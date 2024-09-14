@@ -77,8 +77,8 @@ namespace SonicTheHedgehog.Modules
 
             panel.cameraPositionTransform = emerald.transform.Find("FocusPoint/CameraPosition");
 
-            panel.minDistance = 0.7f;
-            panel.maxDistance = 2.5f;
+            panel.minDistance = 0.6f;
+            panel.maxDistance = 1.5f;
             return emerald;
         }
 

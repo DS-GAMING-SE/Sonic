@@ -53,7 +53,6 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperGrandSlamSpin));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamFinal));
 
-            Modules.Content.AddEntityState(typeof(TransformationBase));
             Modules.Content.AddEntityState(typeof(SuperSonicTransformation));
         }
     }

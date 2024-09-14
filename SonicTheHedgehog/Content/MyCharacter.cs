@@ -565,13 +565,13 @@ namespace SonicTheHedgehog.Modules.Survivors
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
                           SuperSonic.boost)).ToString());
 
-            if (SonicTheHedgehogPlugin.betterUILoaded)
+            /*if (SonicTheHedgehogPlugin.betterUILoaded)
             {
                 ScepterBetterUI();
-            }
+            }*/
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        /*[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void ScepterBetterUI()
         {
             AddSkill(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME",
@@ -588,7 +588,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                     name = "Boost",
                     procCoefficient = StaticValues.scepterBoostProcCoefficient
                 });
-        }
+        }*/
 
         internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
         {

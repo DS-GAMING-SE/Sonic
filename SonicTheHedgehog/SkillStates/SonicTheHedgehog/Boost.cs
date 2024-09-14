@@ -334,24 +334,31 @@ namespace SonicTheHedgehog.SkillStates
 
         private void CreateTemporaryOverlay()
         {
+            if (temporaryOverlay != null && temporaryOverlay.ValidateOverlay()) { return; }
             Transform modelTransform = base.GetModelTransform();
+            if (!modelTransform) { return; }
             CharacterModel model = modelTransform.GetComponent<CharacterModel>();
-            if (modelTransform)
+            if (model)
             {
                 temporaryOverlay = TemporaryOverlayManager.AddOverlay(model.gameObject);
-                temporaryOverlay.animateShaderAlpha = true;
-                temporaryOverlay.duration = 0.2f;
-                temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 3f, 0.25f);
-                temporaryOverlay.destroyComponentOnEnd = false;
                 temporaryOverlay.originalMaterial = GetOverlayMaterial();
+                temporaryOverlay.animateShaderAlpha = true; // Why does animateShaderAlpha make the entire TemporaryOverlayManager (and by extension the ENTIRE GAME) break when I try to destroy an overlay
+                temporaryOverlay.duration = 0.2f;
+                temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 2f, 3f, 0.4f);
+                temporaryOverlay.destroyComponentOnEnd = false;
+                temporaryOverlay.destroyObjectOnEnd = false;
                 temporaryOverlay.inspectorCharacterModel = model;
+                temporaryOverlay.Start();
             }
         }
 
         private void RemoveTemporaryOverlay()
         {
-            if (temporaryOverlay == null) { return; }
-            temporaryOverlay.destroyComponentOnEnd = true;
+            if (temporaryOverlay != null)
+            {
+                temporaryOverlay.animateShaderAlpha = false; // this is necessary trust me
+                temporaryOverlay.Destroy();
+            }
         }
 
         private void UpdateDirection()

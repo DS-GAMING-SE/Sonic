@@ -44,8 +44,9 @@ namespace SonicTheHedgehog.Components
             if (!body.isPlayerControlled)
             {
                 Destroy(this);
+                return;
             }
-            model = body.modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
+            model = body.modelLocator.modelTransform.GetComponent<CharacterModel>();
             modelAnimator = model.transform.GetComponent<Animator>();
             superSonicState = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
 

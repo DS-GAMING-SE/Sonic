@@ -100,24 +100,16 @@ namespace SonicTheHedgehog.SkillStates
             return InterruptPriority.PrioritySkill;
         }
 
-        private void SuperParryBlast()
+        public override void OnSerialize(NetworkWriter writer)
         {
-            SphereSearch sphereSearch = new SphereSearch();
-            sphereSearch.origin = base.characterBody.transform.position;
-            sphereSearch.radius = superParryRange;
-            sphereSearch.mask = LayerIndex.entityPrecise.mask;
-            sphereSearch.RefreshCandidates();
-            sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(base.teamComponent.teamIndex));
-            sphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
-            HurtBox[] hurtBoxes = sphereSearch.GetHurtBoxes();
-            foreach (HurtBox hurtBox in hurtBoxes)
-            {
-                CharacterBody characterBody = hurtBox.healthComponent.body;
-                if (characterBody)
-                {
-                    characterBody.AddTimedBuff(Buffs.superParryDebuff, StaticValues.superParryDebuffDuration);
-                }
-            }
+            base.OnSerialize(writer);
+            writer.Write(parrySuccess);
+        }
+
+        public override void OnDeserialize(NetworkReader reader)
+        {
+            base.OnDeserialize(reader);
+            parrySuccess = reader.ReadBoolean();
         }
     }
 }

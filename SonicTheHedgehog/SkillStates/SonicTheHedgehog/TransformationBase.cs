@@ -28,33 +28,27 @@ namespace SonicTheHedgehog.SkillStates
             get;
         }
 
-        public bool fromTeamSuper;
+        public bool fromTeamSuper = false;
 
         public override void OnEnter()
         {
             base.OnEnter();
             this.superSonic= base.GetComponent<SuperSonicComponent>();
-            this.superSonic.superSonicState.SetNextStateToMain();
-            this.form = superSonic.targetedForm;
-            if (form != superSonic.activeForm)
+            if (base.isAuthority)
             {
-                if (duration > 0)
-                {
-                    if (BodyCatalog.GetBodyName(base.characterBody.bodyIndex) == "SonicTheHedgehog")
-                    {
-                        base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
-                    }
-                    if (NetworkServer.active)
-                    {
-                        base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
-                    }
-                }
+                this.superSonic.superSonicState.SetNextStateToMain();
+                this.form = superSonic.targetedForm;
             }
-            else
+            if (duration > 0)
             {
-                effectFired = true;
-                this.outer.SetNextStateToMain();
-                return;
+                if (BodyCatalog.GetBodyName(base.characterBody.bodyIndex) == "SonicTheHedgehog")
+                {
+                    base.PlayAnimation("FullBody, Override", "Transform", "Roll.playbackRate", this.duration);
+                }
+                if (NetworkServer.active)
+                {
+                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, duration, 1);
+                }
             }
 
         }

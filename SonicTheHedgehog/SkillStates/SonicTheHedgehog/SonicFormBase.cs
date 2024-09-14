@@ -97,7 +97,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public virtual void Heal(float healFraction)
         {
-            if (base.characterBody.healthComponent && base.isAuthority)
+            if (base.characterBody.healthComponent && NetworkServer.active)
             {
                 ProcChainMask proc = default(ProcChainMask);
                 proc.AddProc(ProcType.RepeatHeal);

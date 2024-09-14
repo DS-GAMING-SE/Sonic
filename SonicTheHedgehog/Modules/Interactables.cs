@@ -114,8 +114,6 @@ namespace SonicTheHedgehog.Modules
         private static void UpdateInteractableCost()
         {
             purchaseInteractionBase.cost = Config.EmeraldCost().Value;
-            purchaseInteractionBase.costType = Config.EmeraldCost().Value == 0 ? CostTypeIndex.None : CostTypeIndex.Money;
-            hologramBase.enabled = Config.EmeraldCost().Value != 0;
         }
 
         private void Start()
@@ -124,6 +122,10 @@ namespace SonicTheHedgehog.Modules
 
             pickupDisplay = base.GetComponentInChildren<PickupDisplay>();
             purchaseInteraction = base.GetComponent<PurchaseInteraction>();
+            HologramProjector hologram = base.GetComponent<HologramProjector>();
+
+            purchaseInteraction.costType = purchaseInteraction.cost == 0 ? CostTypeIndex.None : CostTypeIndex.Money;
+            hologram.enabled = purchaseInteraction.cost != 0;
 
             stateMachine = EntityStateMachine.FindByCustomName(gameObject, "Body");
 

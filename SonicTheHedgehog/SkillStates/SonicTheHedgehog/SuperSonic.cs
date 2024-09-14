@@ -9,6 +9,7 @@ using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
@@ -80,8 +81,6 @@ namespace SonicTheHedgehog.SkillStates
             {
                 FireBlastAttack();
 
-                Heal(1);
-
                 if (base.skillLocator)
                 {
                     SkillOverrides(true);
@@ -92,6 +91,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 RoR2.Util.CleanseBody(base.characterBody, true, false, true, true, true, false);
                 viend = base.GetComponent<VoidSurvivorController>();
+                Heal(1);
             }
 
             Flash(1);
@@ -121,6 +121,7 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority && base.skillLocator)
             {
                 SkillOverrides(false);
+                base.skillLocator.secondary.UnsetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);
                 base.skillLocator.secondary.UnsetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
             }
 
@@ -180,10 +181,11 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (characterModel)
             {
-                temporaryOverlay = TemporaryOverlayManager.AddOverlay(characterModel.gameObject); // Outline
+                temporaryOverlay = TemporaryOverlayManager.AddOverlay(characterModel.gameObject);
                 temporaryOverlay.originalMaterial = Modules.Assets.superSonicOverlay;
                 temporaryOverlay.destroyComponentOnEnd = false;
                 temporaryOverlay.inspectorCharacterModel = characterModel;
+                temporaryOverlay.Start(); // Apparently Start() isn't run if the overlay doesn't have animateShaderAlpha on so I gotta do this myself
             }
         }
 
@@ -191,7 +193,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (temporaryOverlay != null)
             {
-                temporaryOverlay.destroyComponentOnEnd = true;
+                temporaryOverlay.Destroy();
             }
         }
 

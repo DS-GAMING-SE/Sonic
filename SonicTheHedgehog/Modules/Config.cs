@@ -62,7 +62,7 @@ namespace SonicTheHedgehog.Modules
 
         public static ConfigEntry<int> EmeraldCost()
         {
-            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Cost", 50, "How much it costs to buy a Chaos Emerald. Default is 50.\n\nFor reference:\nChest: 25\nLarge Chest: 50\nAltar of Gold: 200\nLegendary Chest: 400");
+            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Cost", 50, "How much it costs to buy a Chaos Emerald. Default is 50.\nHost's config takes priority.\nFor reference:\nChest: 25\nLarge Chest: 50\nAltar of Gold: 200\nLegendary Chest: 400");
         }
 
         public static ConfigEntry<bool> ConsumeEmeraldsOnUse()

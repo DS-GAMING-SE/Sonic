@@ -56,12 +56,21 @@ namespace SonicTheHedgehog.Modules.Forms
             {
                 KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9, KeyCode.Alpha0
             };
+            List<KeyCode> usedKeys = new List<KeyCode>();
             int count = 0;
             foreach (FormDef form in formsCatalog)
             {
-                if (form == Forms.superSonicDef)
+                if (form.defaultKeyBind != KeyCode.None)
                 {
-                    form.keybind = SonicTheHedgehogPlugin.instance.Config.Bind<KeyboardShortcut>("Controls", form.ToString() + " Transform Key", new KeyboardShortcut(KeyCode.V), "The key you press to transform into the " + form.ToString() + " form. This config is automatically generated.");
+                    form.keybind = SonicTheHedgehogPlugin.instance.Config.Bind<KeyboardShortcut>("Controls", form.ToString() + " Transform Key", new KeyboardShortcut(form.defaultKeyBind), "The key you press to transform into the " + form.ToString() + " form. This config is automatically generated.");
+                    if (usedKeys.Contains(form.defaultKeyBind))
+                    {
+                        Log.Warning("Multiple forms share the same default keybind of " + form.defaultKeyBind.ToString());
+                    }
+                    else
+                    {
+                        usedKeys.Add(form.defaultKeyBind);
+                    }
                     continue;
                 }
                 form.keybind = SonicTheHedgehogPlugin.instance.Config.Bind<KeyboardShortcut>("Controls", form.ToString() + " Transform Key", new KeyboardShortcut(defaultKeys[count]), "The key you press to transform into the " + form.ToString() + " form. This config is automatically generated.");

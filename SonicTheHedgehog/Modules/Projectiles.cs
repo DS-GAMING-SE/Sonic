@@ -82,6 +82,7 @@ namespace SonicTheHedgehog.Modules
             ProjectileController bombController = sonicBoomPrefab.GetComponent<ProjectileController>();
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
+            bombController.allowPrediction = true;
         }
 
         private static void CreateSuperSonicBoom()
@@ -105,6 +106,7 @@ namespace SonicTheHedgehog.Modules
             bombController.canImpactOnTrigger = false;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("CrossSlashGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("CrossSlashGhost");
             bombController.startSound = "";
+            bombController.allowPrediction = true;
         }
 
         private static void CreateSuperMeleeProjectile()
@@ -130,6 +132,7 @@ namespace SonicTheHedgehog.Modules
             bombController.procCoefficient = StaticValues.superMeleeExtraProcCoefficient;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SuperMeleePunchGhost", superProjectileMaterial);
             bombController.startSound = "";
+            bombController.allowPrediction = true;
             //CreateOtherSuperMeleeProjectiles();
             superMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMeleeKickGhost", "SuperSonicMeleeKickProjectile");
             superMetalMeleePunchProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMetalMeleePunchGhost", "SuperMetalMeleePunchProjectile");
@@ -262,6 +265,7 @@ namespace SonicTheHedgehog.Modules
             GameObject ghostPrefab = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>(ghostName);
             if (!ghostPrefab.GetComponent<NetworkIdentity>()) ghostPrefab.AddComponent<NetworkIdentity>();
             if (!ghostPrefab.GetComponent<ProjectileGhostController>()) ghostPrefab.AddComponent<ProjectileGhostController>();
+            ghostPrefab.AddComponent<VFXAttributes>().DoNotPool = true;
 
             Modules.Assets.ConvertAllRenderersToHopooShader(ghostPrefab);
 
