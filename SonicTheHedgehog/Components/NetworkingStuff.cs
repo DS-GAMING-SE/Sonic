@@ -112,7 +112,7 @@ namespace SonicTheHedgehog.Components
             if (Forms.formToHandlerObject.TryGetValue(Forms.GetFormDef(formIndex), out GameObject handlerObject))
             {
                 FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-                handler.OnTransform(body);
+                handler.OnTransform(body.GetComponent<SuperSonicComponent>());
             }
 
         }

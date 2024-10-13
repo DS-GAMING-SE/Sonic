@@ -13,6 +13,7 @@ using UnityEngine.Networking;
 using HarmonyLib;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace SonicTheHedgehog.Components
 {
@@ -32,7 +33,7 @@ namespace SonicTheHedgehog.Components
         public Mesh formMesh;
         public Mesh defaultModel;
 
-        private CharacterBody body;
+        public CharacterBody body;
         private CharacterModel model;
         private Animator modelAnimator;
 
@@ -57,7 +58,7 @@ namespace SonicTheHedgehog.Components
         {
             foreach (FormDef form in FormCatalog.formsCatalog)
             {
-                if (form.requiresItems && !form.shareItems)
+                if (form.requiresItems)
                 {
                     CreateTrackerForForm(form);
                 }
@@ -118,7 +119,7 @@ namespace SonicTheHedgehog.Components
                 if (NetworkServer.active)
                 {
                     //FormHandler.instance.OnTransform();
-                    handler.OnTransform(base.gameObject);
+                    handler.OnTransform(this);
                 }
                 else
                 {
@@ -250,6 +251,10 @@ namespace SonicTheHedgehog.Components
     {
         public FormDef form;
 
+        private FormHandler formHandler;
+
+        private SyncedItemTracker syncedItemTracker;
+
         public CharacterBody body;
 
         public Inventory inventory;
@@ -258,9 +263,26 @@ namespace SonicTheHedgehog.Components
 
         public bool allItems;
 
+        public int numItemsCollected;
+
         private bool eventsSubscribed;
 
         // HOW DO I GET THE INVENTORY?!?!?
+        private void Start()
+        {
+            if (Forms.formToHandlerObject.TryGetValue(form, out GameObject formObject))
+            {
+                if (formObject.TryGetComponent(out FormHandler handler))
+                {
+                    formHandler = handler;
+                    if (typeof(SyncedItemTracker).IsAssignableFrom(handler.itemTracker.GetType()))
+                    {
+                        syncedItemTracker = handler.itemTracker as SyncedItemTracker;
+                    }
+                }
+            }
+        }
+
         private void OnDisable()
         {
             SubscribeEvents(false);
@@ -298,6 +320,10 @@ namespace SonicTheHedgehog.Components
                     if (subscribe)
                     {
                         inventory.onInventoryChanged += SetItemsDirty;
+                        if (syncedItemTracker)
+                        {
+                            syncedItemTracker.CheckHighestItemCountEvent += HighestItemCount;
+                        }
                         Log.Message("subscribe");
                         eventsSubscribed = true;
                         SetItemsDirty();
@@ -305,6 +331,10 @@ namespace SonicTheHedgehog.Components
                     else
                     {
                         inventory.onInventoryChanged -= SetItemsDirty;
+                        if (syncedItemTracker)
+                        {
+                            syncedItemTracker.CheckHighestItemCountEvent -= HighestItemCount;
+                        }
                         eventsSubscribed = false;
                     }
                 }
@@ -316,23 +346,45 @@ namespace SonicTheHedgehog.Components
             itemsDirty = true;
         }
 
-        public void CheckItems() // You can tell how much suffering part of code has brought its writer by seeing how many logs there are
+        public void CheckItems()
         {
             itemsDirty = false;
-            if (!form) { Log.Error("No form??"); allItems= false; return; }
-            if (!inventory) { Log.Error("No inventory????????"); allItems = false; return; }
+            numItemsCollected = 0;
+            if (!form) { Log.Error("No form?"); allItems= false; return; }
+            if (!inventory) { Log.Error("No inventory?"); allItems = false; return; }
+            bool allItemsTemp = true;
             foreach (NeededItem item in form.neededItems)
             {
-                if (item == ItemIndex.None) { Log.Error("No item????????"); return; }
-                if (inventory.GetItemCount(item) < item.count)
+                if (item == ItemIndex.None) { Log.Error("No item?"); return; }
+                if (inventory.GetItemCount(item) > 0)
                 {
-                    allItems = false;
-                    Log.Message("Missing items for " + form.ToString() + ": \n" + (new NeededItem { item = item.item, count = (uint)(item.count - inventory.GetItemCount(item))}).ToString());
-                    return;
+                    numItemsCollected += Math.Min(item.count, inventory.GetItemCount(item));
+                    if (inventory.GetItemCount(item) < item.count && allItemsTemp)
+                    {
+                        allItemsTemp = false;
+                        Log.Message(body.GetDisplayName() + " player missing items needed for form " + form.ToString() + ": \n" + (new NeededItem { item = item.item, count = item.count - inventory.GetItemCount(item) }).ToString());
+                    }
+                }
+                else
+                {
+                    allItemsTemp = false;
                 }
             }
-            Log.Message("All items needed for " + form.ToString());
-            allItems = true;
+            // FormHandler's item tracking counts numItemsCollected before it gets updated here
+            allItems = allItemsTemp;
+            Log.Message(body.GetDisplayName() + " player's items needed for form " + form.ToString() +"\nNumber of items: " + numItemsCollected + "\nAll: " + allItems);
+            if (syncedItemTracker)
+            {
+                syncedItemTracker.CheckHighestItemCount();
+            }
+        }
+
+        private void HighestItemCount(SyncedItemTracker.CheckHighestItemCountEventArgs args)
+        {
+            if (args.highestItemCount < numItemsCollected)
+            {
+                args.highestItemCount = numItemsCollected;
+            }
         }
     }
 }

@@ -37,17 +37,6 @@ namespace SonicTheHedgehog.SkillStates
             if (parrySuccess)
             {
                 OnSuccessfulParry();
-                if (NetworkServer.active)
-                {
-                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, StaticValues.parryLingeringInvincibilityDuration, 1);
-                    base.characterBody.AddTimedBuff(Buffs.parryBuff, StaticValues.parryBuffDuration, 1);
-                }
-                if (base.isAuthority)
-                {
-                    EffectManager.SimpleMuzzleFlash(Modules.Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
-                }
-                Util.PlaySound("Play_parry", base.gameObject);
-                RechargeCooldowns();
             }
         }
 
@@ -90,9 +79,29 @@ namespace SonicTheHedgehog.SkillStates
             base.skillLocator.special.RunRecharge(StaticValues.parryCooldownReduction);
         }
 
+        protected virtual void GiveBuffs()
+        {
+            base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, StaticValues.parryLingeringInvincibilityDuration, 1);
+            base.characterBody.AddTimedBuff(Buffs.parryBuff, StaticValues.parryBuffDuration, 1);
+        }
+
+        protected virtual void OnParryVFX()
+        {
+            if (base.isAuthority)
+            {
+                EffectManager.SimpleMuzzleFlash(Modules.Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
+            }
+            Util.PlaySound("Play_parry", base.gameObject);
+        }
+
         protected virtual void OnSuccessfulParry()
         {
-
+            if (NetworkServer.active)
+            {
+                GiveBuffs();
+            }
+            OnParryVFX();
+            RechargeCooldowns();
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

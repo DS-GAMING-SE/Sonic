@@ -79,6 +79,7 @@ namespace SonicTheHedgehog.Modules
                 {
                     return itemTracker.ItemRequirementMet(superSonicComponent);
                 }
+                Log.Error("Form that needs items has no itemTracker");
             }
             return true;
         }
@@ -90,7 +91,7 @@ namespace SonicTheHedgehog.Modules
             return (hasItems && (form.maxTransforms <= 0 || numberOfTimesTransformed < form.maxTransforms)) || teamSuper;
         }
 
-        public virtual void OnTransform(GameObject body)
+        public virtual void OnTransform(SuperSonicComponent super)
         {
             if (!teamSuper)
             {
@@ -99,7 +100,28 @@ namespace SonicTheHedgehog.Modules
                 teamSuperTimer = teamSuperTimerDuration;
                 if (form.consumeItems)
                 {
-                    itemTracker.RemoveItems(body);
+                    itemTracker.RemoveItems(super);
+                }
+                if (Config.AnnounceSuperTransformation().Value)
+                {
+                    if (super.body.master && super.body.master.playerCharacterMasterController && super.body.master.playerCharacterMasterController.networkUser)
+                    {
+                        Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                        {
+                            baseToken = form.name + "_ANNOUNCE_TEXT",
+                            subjectAsNetworkUser = super.body.master.playerCharacterMasterController.networkUser,
+                            paramTokens = new string[] { Language.GetString(form.name) }
+                        });
+                    }
+                    else
+                    {
+                        Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                        {
+                            baseToken = form.name + "_ANNOUNCE_TEXT",
+                            subjectAsCharacterBody = super.body,
+                            paramTokens = new string[] { Language.GetString(form.name) }
+                        });
+                    }
                 }
             }
         }
@@ -201,7 +223,7 @@ namespace SonicTheHedgehog.Modules
     {
         bool ItemRequirementMet(SuperSonicComponent component);
 
-        void RemoveItems(GameObject body);
+        void RemoveItems(SuperSonicComponent super);
     }
 
     [RequireComponent(typeof(FormHandler))]
@@ -212,13 +234,32 @@ namespace SonicTheHedgehog.Modules
         [SyncVar]
         public bool allItems;
 
+        [SyncVar]
+        private static byte _serverItemSharing;
+
+        public static FormItemSharing serverItemSharing
+        {
+            get { return (FormItemSharing)_serverItemSharing; }
+        }
+
         public List<NeededItem> missingItems;
 
+        // This value is only accurate when serverItemSharing is on MajorityRule
+        public int highestItemCount;
+
+        public int numNeededItems
+        {
+            get; private set;
+        }
+
         public bool eventsSubscribed;
+
+        private bool itemsDirty;
 
         private void OnEnable()
         {
             handler = this.GetComponent<FormHandler>();
+            numNeededItems = handler.form.numberOfNeededItems;
             SubscribeEvents(true);
         }
 
@@ -229,14 +270,23 @@ namespace SonicTheHedgehog.Modules
         
         public bool ItemRequirementMet(SuperSonicComponent component)
         {
-            return allItems;
+            return allItems && CanTakeSharedItems(handler.form, component);
+        }
+
+        public void FixedUpdate()
+        {
+            if (itemsDirty)
+            {
+                CheckItems();
+            }
         }
 
         public void CheckItems()
         {
             missingItems = new List<NeededItem>();
+            itemsDirty = false;
             if (!handler) { Log.Warning("no handler yet"); return; }
-            if (handler.form.neededItems == null) { return; } // What did they do to SystemInitializer I JUST started using it and now it doesn't work after DLC update
+            if (handler.form.neededItems == null) { Log.Warning("Form says it needs items but has no list of needed items... curious..."); return; }
             foreach (NeededItem item in handler.form.neededItems)
             {
                 int collectiveItemCount = 0;
@@ -251,12 +301,59 @@ namespace SonicTheHedgehog.Modules
                 if (collectiveItemCount < item.count)
                 {
                     NeededItem missing= item;
-                    missing.count = (uint)(item.count - collectiveItemCount);
+                    missing.count = item.count - collectiveItemCount;
                     missingItems.Add(missing);
                 }
             }
-            NetworkallItems = missingItems.Count() == 0;
+            NetworkallItems = missingItems.Count == 0;
             Log.Message("Missing items for "+ handler.form.ToString() + ": " + string.Concat(missingItems.Select(x => x.ToString())));
+        }
+        public bool CanTakeSharedItems(FormDef form, SuperSonicComponent super)
+        {
+            if (super.formToItemTracker.TryGetValue(form, out ItemTracker itemTracker))
+            {
+                switch (serverItemSharing)
+                {
+                    case FormItemSharing.None:
+                        return itemTracker.allItems;
+                    case FormItemSharing.MajorityRule:
+                        return itemTracker.numItemsCollected >= highestItemCount;
+                    case FormItemSharing.Contributor:
+                        return itemTracker.numItemsCollected > 0;
+                    default:
+                        return true;
+                }
+            }
+            else
+            {
+                Log.Error("CanTakeSharedItems run without valid ItemTracker");
+                return serverItemSharing == FormItemSharing.All;
+            }
+        }
+
+        public void CheckHighestItemCount()
+        {
+            if (serverItemSharing != FormItemSharing.MajorityRule) { return; }
+            CheckHighestItemCountArgs = new CheckHighestItemCountEventArgs();
+            if (CheckHighestItemCountEvent != null)
+            {
+                foreach (CheckHighestItemCountEventHandler @event in CheckHighestItemCountEvent.GetInvocationList())
+                {
+                    @event(CheckHighestItemCountArgs);
+                }
+            }
+            highestItemCount = CheckHighestItemCountArgs.highestItemCount;
+            Log.Message("highestItemCount " + highestItemCount);
+        }
+
+        public event CheckHighestItemCountEventHandler CheckHighestItemCountEvent;
+        public delegate void CheckHighestItemCountEventHandler(CheckHighestItemCountEventArgs e);
+
+        public CheckHighestItemCountEventArgs CheckHighestItemCountArgs;
+
+        public class CheckHighestItemCountEventArgs : EventArgs
+        {
+            public int highestItemCount;
         }
 
         public void OnInventoryChanged(Inventory inventory)
@@ -265,16 +362,31 @@ namespace SonicTheHedgehog.Modules
             {
                 if (master.playerCharacterMasterController) // Only check items again if a player's inventory changes
                 {
-                    CheckItems();
+                    SetItemsDirty(); // Only check items once per frame
                 }
             }
         }
 
-        public void RemoveItems(GameObject body)
+        public void SetItemsDirty()
+        {
+            itemsDirty = true;
+        }
+
+        public void RemoveItems(SuperSonicComponent super)
         {
             foreach (NeededItem item in handler.form.neededItems)
             {
-                int neededItems = (int)item.count;
+                int neededItems = item.count;
+                if (super.body.master)
+                {
+                    int numToConstume = Math.Min(super.body.master.inventory.GetItemCount(item), neededItems);
+                    neededItems -= numToConstume;
+                    super.body.master.inventory.RemoveItem(item, numToConstume);
+                    if (neededItems <= 0)
+                    {
+                        continue;
+                    }
+                }
                 foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
                 {
                     int numToConstume = Math.Min(player.master.inventory.GetItemCount(item), neededItems);
@@ -300,16 +412,35 @@ namespace SonicTheHedgehog.Modules
                 {
                     Inventory.onInventoryChangedGlobal += OnInventoryChanged;
                     eventsSubscribed = true;
+                    Config.NeededItemSharing().SettingChanged += UpdateFormItemSharingConfig;
+                    if (NetworkServer.active)
+                    {
+                        Network_serverItemSharing = (byte)Config.NeededItemSharing().Value;
+                    }
                     Log.Message("Subscribed to inventory events");
                     CheckItems();
                 }
                 else
                 {
                     Inventory.onInventoryChangedGlobal -= OnInventoryChanged;
+                    Config.NeededItemSharing().SettingChanged -= UpdateFormItemSharingConfig;
                     eventsSubscribed = false;
                 }
             }
         }
+
+        public void UpdateFormItemSharingConfig(object sender, EventArgs args)
+        {
+            if (NetworkServer.active)
+            {
+                Network_serverItemSharing = (byte)Config.NeededItemSharing().Value;
+                if (Config.NeededItemSharing().Value == FormItemSharing.MajorityRule)
+                {
+                    CheckHighestItemCount();
+                }
+            }
+        }
+
         public bool NetworkallItems
         {
             get
@@ -323,11 +454,25 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
+        public byte Network_serverItemSharing
+        {
+            get
+            {
+                return _serverItemSharing;
+            }
+            [param: In]
+            set
+            {
+                base.SetSyncVar<byte>(value, ref _serverItemSharing, 2U);
+            }
+        }
+
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             if (initialState)
             {
                 writer.Write(allItems);
+                writer.Write(_serverItemSharing);
                 return true;
             }
             bool flag = false;
@@ -340,6 +485,15 @@ namespace SonicTheHedgehog.Modules
                 }
                 writer.Write(allItems);
             }
+            if ((base.syncVarDirtyBits & 2U) != 0U)
+            {
+                if (!flag)
+                {
+                    writer.WritePackedUInt32(base.syncVarDirtyBits);
+                    flag = true;
+                }
+                writer.Write(_serverItemSharing);
+            }
             return flag;
         }
 
@@ -348,12 +502,21 @@ namespace SonicTheHedgehog.Modules
             if (initialState)
             {
                 allItems = reader.ReadBoolean();
+                _serverItemSharing = reader.ReadByte();
                 return;
             }
             int num = (int)reader.ReadPackedUInt32();
             if ((num & 1U) != 0U)
             {
                 allItems = reader.ReadBoolean();
+            }
+            if ((num & 2U) != 0U)
+            {
+                _serverItemSharing = reader.ReadByte();
+                if (serverItemSharing == FormItemSharing.MajorityRule)
+                {
+                    CheckHighestItemCount();
+                }
             }
         }
     }
@@ -374,22 +537,22 @@ namespace SonicTheHedgehog.Modules
             return component.formToItemTracker.GetValueSafe(handler.form).allItems;
         }
 
-        public void RemoveItems(GameObject body)
+        public void RemoveItems(SuperSonicComponent super)
         {
-            if (body.TryGetComponent(out CharacterBody characterBody))
+            if (super.body)
             {
-                if (characterBody.master)
+                if (super.body.master)
                 {
                     foreach (NeededItem item in handler.form.neededItems)
                     {
-                        if (characterBody.master.inventory.GetItemCount(item) >= item.count)
+                        if (super.body.master.inventory.GetItemCount(item) >= item.count)
                         {
-                            characterBody.master.inventory.RemoveItem(item, (int)item.count);
+                            super.body.master.inventory.RemoveItem(item, item.count);
                         }
                         else
                         {
                             Log.Warning("Does not have the items to be removed for transforming");
-                            characterBody.master.inventory.RemoveItem(item, characterBody.master.inventory.GetItemCount(item));
+                            super.body.master.inventory.RemoveItem(item, super.body.master.inventory.GetItemCount(item));
                         }
                     }
                 }

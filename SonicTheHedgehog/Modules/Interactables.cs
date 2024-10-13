@@ -79,6 +79,7 @@ namespace SonicTheHedgehog.Modules
             purchaseInteractionBase.available = true;
             UpdateInteractableCost();
             purchaseInteractionBase.automaticallyScaleCostWithDifficulty = true;
+            purchaseInteractionBase.displayNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_NAME";
             purchaseInteractionBase.contextToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +
                                                "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_CONTEXT";
 
@@ -100,6 +101,17 @@ namespace SonicTheHedgehog.Modules
 
             var networkStateMachine = prefabBase.AddComponent<NetworkStateMachine>();
             Helpers.Append(ref networkStateMachine.stateMachines, new List<EntityStateMachine> { entityStateMachine });
+
+            var inspect = ScriptableObject.CreateInstance<InspectDef>();
+            var info = inspect.Info = new RoR2.UI.InspectInfo();
+
+            info.Visual = Assets.mainAssetBundle.LoadAsset<Sprite>("texEmeraldInteractableIcon");
+            info.DescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_INSPECT";
+            info.TitleToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_EMERALD_TEMPLE_TITLE";
+            inspect.Info = info;
+
+            var giip = prefabBase.gameObject.AddComponent<GenericInspectInfoProvider>();
+            giip.InspectInfo = inspect;
 
             PrefabAPI.RegisterNetworkPrefab(prefabBase);
 

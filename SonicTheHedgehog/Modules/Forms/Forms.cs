@@ -91,7 +91,7 @@ namespace SonicTheHedgehog.Modules.Forms
             handlerObjectComponent.form = form;
             if (form.requiresItems)
             {
-                handlerPrefab.AddComponent(form ? typeof(SyncedItemTracker) : typeof(UnsyncedItemTracker));
+                handlerPrefab.AddComponent(form.shareItems ? typeof(SyncedItemTracker) : typeof(UnsyncedItemTracker));
             }
             //PrefabAPI.RegisterNetworkPrefab(handlerPrefab);
             formToHandlerPrefab.Add(form, handlerPrefab);
@@ -149,6 +149,7 @@ namespace SonicTheHedgehog.Modules.Forms
                         EntityStateMachine superSonicState = body.AddComponent<EntityStateMachine>();
                         superSonicState.customName = "SonicForms";
                         superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
+                        superSonicState.initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
 
                         NetworkStateMachine network = body.GetComponent<NetworkStateMachine>();
                         if (network)
@@ -238,13 +239,33 @@ namespace SonicTheHedgehog.Modules.Forms
         }
 
         public ConfigEntry<KeyboardShortcut> keybind;
+
+        public int numberOfNeededItems
+        {
+            get
+            {
+                if (neededItems != null)
+                {
+                    int num = 0;
+                    foreach (NeededItem item in neededItems)
+                    {
+                        num += item.count;
+                    }
+                    return num;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
     }
 
     public struct NeededItem
     {
         public ItemIndex item;
 
-        public uint count;
+        public int count;
 
         public static implicit operator ItemIndex(NeededItem x) => x.item;
 
@@ -278,6 +299,21 @@ namespace SonicTheHedgehog.Modules.Forms
     {
         public Material material;
         public Mesh mesh;
+    }
+
+    // Handles neededItem sharing and who has permission to transform
+    //
+    // Assuming all items have been collected across the team...
+    // None: Only the player with ALL items can transform
+    // MajorityRule: The player(s) with the MAJORITY number of the needed items can transform
+    // Contributor: Players that have AT LEAST ONE of the needed items can transform
+    // All: Anyone, whether they HAVE ANY ITEMS OR NOT, can transform
+    public enum FormItemSharing
+    {
+        All,
+        Contributor,
+        MajorityRule,
+        None
     }
 
     // Do not set this value. This value is set automatically at runtime

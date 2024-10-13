@@ -11,6 +11,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
     {
         protected override void OnSuccessfulParry()
         {
+            base.OnSuccessfulParry();
             if (NetworkServer.active)
             {
                 SuperParryBlast();

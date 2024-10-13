@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using RiskOfOptions.Options;
 using RiskOfOptions.Utils;
+using SonicTheHedgehog.Modules.Forms;
 using UnityEngine;
 
 namespace SonicTheHedgehog.Modules
@@ -62,12 +63,22 @@ namespace SonicTheHedgehog.Modules
 
         public static ConfigEntry<int> EmeraldCost()
         {
-            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Cost", 50, "How much it costs to buy a Chaos Emerald. Default is 50.\nHost's config takes priority.\nFor reference:\nChest: 25\nLarge Chest: 50\nAltar of Gold: 200\nLegendary Chest: 400");
+            return SonicTheHedgehogPlugin.instance.Config.Bind<int>("Chaos Emeralds", "Cost", 50, "How much it costs to buy a Chaos Emerald. Host's config takes priority. Default is 50.\nFor reference:\nChest: 25\nLarge Chest: 50\nAltar of Gold: 200\nLegendary Chest: 400");
         }
 
         public static ConfigEntry<bool> ConsumeEmeraldsOnUse()
         {
             return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Chaos Emeralds", "Consume Emeralds On Use", true, "Determines whether the Chaos Emeralds will be consumed when transforming into Super Sonic. If not, the emeralds will stay but won't be able to be used until the next stage. Host's config takes priority. Default is true.");
+        }
+
+        public static ConfigEntry<FormItemSharing> NeededItemSharing() // How do you get configs into their own separate category in RiskOfOptions, like separate from the Sonic mod. I've seen Aerolt and StageAesthetics do it but idk how
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<FormItemSharing>("Chaos Emeralds", "Item Sharing", FormItemSharing.All, "Handles how Chaos Emeralds are shared between teammates and determines who has permission to transform based on the items they have. The restrictions only apply to the first person to transform and don't apply to anyone who transforms in the 10 second window afterwards. Host's config takes priority. Default is All.\n\nAssuming all items have been collected across the team...\nAll: Anyone, whether they HAVE ANY ITEMS OR NOT, can transform.\nContributor: Players that have AT LEAST ONE of the needed items can transform\nMajorityRule: The player(s) with the MAJORITY number of the needed items can transform\nNone: Only the player with ALL items can transform\n\nWARNING: A mod that lets you drop items to your teammates is reccommended if you are changing this setting. Otherwise, transforming may be impossible if items are split between players in certain ways.");
+        }
+
+        public static ConfigEntry<bool> AnnounceSuperTransformation()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Chaos Emeralds", "Announce Super Transformation", false, "If true, a message will be sent in chat when someone transforms. The message will include the name of the player who transformed. The message won't be sent for anyone who transforms in the 10 second window after someone else transforms. Host's config takes priority. Default is false.");
         }
     }
 }

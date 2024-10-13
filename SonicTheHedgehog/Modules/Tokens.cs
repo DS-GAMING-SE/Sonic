@@ -80,6 +80,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", "Super");
 
+            LanguageAPI.Add(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT", superSonicColor+"<size=110%>{0} has transformed into their {1} form!</color></size>");
+            LanguageAPI.Add(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT_2P", superSonicColor + "<size=110%>You transformed into your {1} form!</color></size>");
             #endregion
 
             #region Primary
@@ -220,8 +222,11 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #region Emeralds
-            
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_NAME", "Chaos Emerald");
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_CONTEXT", "Receive Emerald");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_INSPECT", "When activated by a survivor the Chaos Emerald will be dropped. Once all seven are collected, survivors can transform into their Super form.");
+            LanguageAPI.Add(prefix + "EMERALD_TEMPLE_TITLE", "Chaos Emerald");
+
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_YELLOW", "Chaos Emerald: Yellow");
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_BLUE", "Chaos Emerald: Blue");
             LanguageAPI.Add(prefix + "EMERALD_TEMPLE_RED", "Chaos Emerald: Red");

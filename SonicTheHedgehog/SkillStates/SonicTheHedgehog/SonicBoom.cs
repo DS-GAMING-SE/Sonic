@@ -125,6 +125,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 SetNextState();
                 base.skillLocator.secondary.DeductStock(1);
+                base.characterBody.OnSkillActivated(skillLocator.secondary);
                 return;
             }
             if (base.isAuthority && base.inputBank.skill3.justPressed && base.skillLocator.utility.IsReady())
