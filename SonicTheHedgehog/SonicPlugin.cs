@@ -30,6 +30,7 @@ using HarmonyLib;
 using LookingGlass.LookingGlassLanguage;
 using LookingGlass.BuffDescriptions;
 using LookingGlass.ItemStatsNameSpace;
+using LoadingScreenFix;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -55,6 +56,7 @@ namespace SonicTheHedgehog
     [BepInDependency(LookingGlass.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("Nebby1999.LoadingScreenFix", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
 
@@ -65,7 +67,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "3.0.2";
+        public const string MODVERSION = "3.0.3";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -76,6 +78,7 @@ namespace SonicTheHedgehog
         public static bool lookingGlassLoaded = false;
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
+        public static bool loadingScreenFixLoaded = false;
 
 
         private void Awake()
@@ -99,7 +102,14 @@ namespace SonicTheHedgehog
             ancientScepterLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.DestroyedClone.AncientScepter");
             Log.Message("Ancient Scepter exists? " + ancientScepterLoaded);
 
+            loadingScreenFixLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("Nebby1999.LoadingScreenFix");
+            Log.Message("Loading Screen Fix exists? " + loadingScreenFixLoaded);
+
             Modules.Assets.Initialize(); // load assets and read config
+            if (loadingScreenFixLoaded)
+            {
+                SonicLoadingScreenSprite();
+            }
             Modules.Config.ReadConfig();
             Modules.States.RegisterStates(); // register states for networking
             Modules.Buffs.RegisterBuffs(); // add and register custom buffs/debuffs
@@ -184,6 +194,15 @@ namespace SonicTheHedgehog
                     }
                 }
             };
+        }
+
+        private static void SonicLoadingScreenSprite()
+        {
+            Sprite[] sprites = Modules.Assets.mainAssetBundle.LoadAssetWithSubAssets<Sprite>("SonicLoadingScreen"); // SonicLoadingScreen is a single png sprite sheet that is split into the 4 frames in Unity
+            int[] durations = { 1, 1, 1, 1 };
+            SimpleSpriteAnimation spriteAnimation = LoadingScreenFix.SimpleSpriteAnimationGenerator.CreateSpriteAnimation(sprites, durations, 8f);
+            LoadingScreenFix.LoadingScreenFix.AddSpriteAnimation(spriteAnimation);
+            Log.Message("Added Sonic loading screen sprite");
         }
 
         /*private static void BetterUISetup()
@@ -440,7 +459,7 @@ namespace SonicTheHedgehog
                 }
             }
         }
-
+        // This is so jank and doesn't even work consistently anymore because of skins but idk what else to do to stop jitter bones from being on Sonic
         private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
         {
             if (self.skinnedMeshRenderer && self.skinnedMeshRenderer.name == "SonicMesh")
@@ -492,10 +511,10 @@ namespace SonicTheHedgehog
                 {
                     if (superSonic.activeForm)
                     {
-                        if (superSonic.activeForm.transformationNameToken != "")
+                        if (!Language.IsTokenInvalid(superSonic.activeForm.name + "_PREFIX"))
                         {
                             string text = orig(bodyObject);
-                            text = Language.GetStringFormatted(superSonic.activeForm.transformationNameToken, new object[]
+                            text = Language.GetStringFormatted(superSonic.activeForm.name + "_PREFIX", new object[]
                             {
                             text
                             });

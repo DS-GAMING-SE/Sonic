@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6206965451605073620
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1155585094976883250, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1155585094976883250, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1155585094976883250, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1155585094976883250, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676147490794642489, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.078431375
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676147490794642489, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676147490794642489, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5809702789127079027, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_Name
+      value: SonicScepterSuperBoostAura
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010348425224188490, guid: 13f3d2cad8a222f4085dc8ecbae427ba,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b61c3ecdf83186040bc9b8e0a7a3c74a, type: 2}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 13f3d2cad8a222f4085dc8ecbae427ba, type: 3}

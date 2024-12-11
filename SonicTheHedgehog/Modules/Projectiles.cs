@@ -79,6 +79,8 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.timerAfterImpact = false;
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
+            sonicBoomPrefab.GetComponent<ProjectileDamage>().damageType.damageSource = DamageSource.Secondary;
+
             ProjectileController bombController = sonicBoomPrefab.GetComponent<ProjectileController>();
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
@@ -102,6 +104,8 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.timerAfterImpact = false;
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
+            superSonicBoomPrefab.GetComponent<ProjectileDamage>().damageType.damageSource = DamageSource.Secondary;
+
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
             bombController.canImpactOnTrigger = false;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("CrossSlashGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("CrossSlashGhost");
@@ -118,6 +122,7 @@ namespace SonicTheHedgehog.Modules
             ProjectileOverlapAttack overlap = superMeleePunchProjectilePrefab.GetComponent<ProjectileOverlapAttack>();
 
             damage.damage = 1;
+            damage.damageType.damageSource = DamageSource.Primary;
 
             simple.lifetime = 0.5f;
             simple.enableVelocityOverLifetime = true;
@@ -183,6 +188,7 @@ namespace SonicTheHedgehog.Modules
             Log.Message("Afterimage Rain damage");
             ProjectileDamage damage = superSonicAfterimageRainPrefab.AddComponent<ProjectileDamage>();
             damage.damage = StaticValues.superGrandSlamDOTDamage;
+            damage.damageType.damageSource = DamageSource.Special;
 
             ProjectileDotZone dot = superSonicAfterimageRainPrefab.AddComponent<ProjectileDotZone>();
             dot.damageCoefficient = 1;

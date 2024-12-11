@@ -14,6 +14,7 @@ using HarmonyLib;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using static RoR2.Projectile.ProjectileImpactExplosion;
 
 namespace SonicTheHedgehog.Components
 {
@@ -31,7 +32,7 @@ namespace SonicTheHedgehog.Components
         public Material defaultMaterial;
 
         public Mesh formMesh;
-        public Mesh defaultModel;
+        public Mesh defaultMesh;
 
         public CharacterBody body;
         private CharacterModel model;
@@ -78,18 +79,6 @@ namespace SonicTheHedgehog.Components
             if (body.hasAuthority && body.isPlayerControlled) // Adding isPlayerControlled I guess fixed super transforming all Sonics
             {
                 DecideTargetForm();
-                if (targetedForm != null && activeForm != targetedForm)
-                {
-                    if (Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject))
-                    {
-                        FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-                        if (handler.CanTransform(this))
-                        {
-                            Log.Message("Attempt Transform");
-                            Transform();
-                        }
-                    }
-                }
             }
         }
 
@@ -101,7 +90,16 @@ namespace SonicTheHedgehog.Components
                 if (form.keybind.Value.IsDown())
                 {
                     targetedForm = form;
-                    break;
+                    
+                    if (targetedForm != activeForm && Forms.formToHandler.TryGetValue(targetedForm, out FormHandler handler))
+                    {
+                        if (handler.CanTransform(this))
+                        {
+                            Log.Message("Attempt Transform");
+                            Transform();
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -110,11 +108,22 @@ namespace SonicTheHedgehog.Components
         {
             EntityStateMachine bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
             if (!bodyState) { return; }
-            if (!Forms.formToHandlerObject.TryGetValue(targetedForm, out GameObject handlerObject)) { return; }
-            FormHandler handler = handlerObject.GetComponent(typeof(FormHandler)) as FormHandler;
-            TransformationBase transformState = (TransformationBase)EntityStateCatalog.InstantiateState(targetedForm.transformState.stateType);
-            transformState.fromTeamSuper = handler.teamSuper;
-            if (bodyState.SetInterruptState(transformState, InterruptPriority.Frozen))
+            if (!Forms.formToHandler.TryGetValue(targetedForm, out FormHandler handler)) { return; }
+            bool transformSuccess;
+            if (targetedForm.transformState.stateType != null)
+            {
+                TransformationBase transformState = (TransformationBase)EntityStateCatalog.InstantiateState(targetedForm.transformState.stateType);
+                transformState.fromTeamSuper = handler.teamSuper;
+
+                transformSuccess = bodyState.SetInterruptState(transformState, InterruptPriority.Frozen);
+            }
+            else
+            {
+                transformSuccess = true;
+                SetNextForm(targetedForm);
+            }
+
+            if (transformSuccess)
             {
                 if (NetworkServer.active)
                 {
@@ -188,7 +197,7 @@ namespace SonicTheHedgehog.Components
 
             if (formMesh) // Model
             {
-                defaultModel = model.mainSkinnedMeshRenderer.sharedMesh;
+                defaultMesh = model.mainSkinnedMeshRenderer.sharedMesh;
                 model.mainSkinnedMeshRenderer.sharedMesh = formMesh;
             }
 
@@ -206,7 +215,7 @@ namespace SonicTheHedgehog.Components
 
             if (formMesh) // Model
             {
-                model.mainSkinnedMeshRenderer.sharedMesh = defaultModel;
+                model.mainSkinnedMeshRenderer.sharedMesh = defaultMesh;
             }
 
             model.materialsDirty = true;
@@ -214,6 +223,19 @@ namespace SonicTheHedgehog.Components
 
         public virtual void GetSuperModel(string skinName)
         {
+            if (activeForm.renderDictionary == null) 
+            {
+                if (defaultMesh)
+                {
+                    formMesh = defaultMesh;
+                }
+                if (defaultMaterial)
+                {
+                    formMaterial = defaultMaterial;
+                }
+                return; 
+            }
+
             if (activeForm.renderDictionary.TryGetValue(skinName, out RenderReplacements replacements))
             {
                 formMesh = replacements.mesh;
@@ -221,9 +243,9 @@ namespace SonicTheHedgehog.Components
             }
             else
             {
-                if (defaultModel)
+                if (defaultMesh)
                 {
-                    formMesh = defaultModel;
+                    formMesh = defaultMesh;
                 }
                 if (defaultMaterial)
                 {
@@ -270,15 +292,12 @@ namespace SonicTheHedgehog.Components
         // HOW DO I GET THE INVENTORY?!?!?
         private void Start()
         {
-            if (Forms.formToHandlerObject.TryGetValue(form, out GameObject formObject))
+            if (Forms.formToHandler.TryGetValue(form, out FormHandler handler))
             {
-                if (formObject.TryGetComponent(out FormHandler handler))
+                formHandler = handler;
+                if (typeof(SyncedItemTracker).IsAssignableFrom(handler.itemTracker.GetType()))
                 {
-                    formHandler = handler;
-                    if (typeof(SyncedItemTracker).IsAssignableFrom(handler.itemTracker.GetType()))
-                    {
-                        syncedItemTracker = handler.itemTracker as SyncedItemTracker;
-                    }
+                    syncedItemTracker = handler.itemTracker as SyncedItemTracker;
                 }
             }
         }

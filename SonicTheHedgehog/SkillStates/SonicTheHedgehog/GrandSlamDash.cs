@@ -232,6 +232,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
+            this.attack.damageType.damageSource = DamageSource.Special;
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();

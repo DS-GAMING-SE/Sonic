@@ -10,6 +10,7 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.UIElements.Experimental;
 
+// This shit is spaghetti. I'm sorry if you have to read through it
 namespace SonicTheHedgehog.SkillStates
 {
     public class Boost : GenericCharacterMain
@@ -53,6 +54,8 @@ namespace SonicTheHedgehog.SkillStates
 
         private bool checkBoostEffects = false;
         private bool boostChangedEffect = false;
+
+        protected GameObject aura;
 
         protected virtual bool drainBoostMeter
         {
@@ -305,7 +308,7 @@ namespace SonicTheHedgehog.SkillStates
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-1f * screenShake, 1f * screenShake, -0.5f * screenShake, 0.5f * screenShake);
-                        EffectManager.SimpleMuzzleFlash(GetEffectPrefab(true), base.gameObject, "BallHitbox", true);
+                        EffectManager.SimpleMuzzleFlash(GetFlashPrefab(true), base.gameObject, "BallHitbox", true);
                     }
                     CreateTemporaryOverlay();
                 }
@@ -315,10 +318,18 @@ namespace SonicTheHedgehog.SkillStates
                     if (base.isAuthority)
                     {
                         base.AddRecoil(-0.5f * screenShake, 0.5f * screenShake, -0.25f * screenShake, 0.25f * screenShake);
-                        EffectManager.SimpleMuzzleFlash(GetEffectPrefab(false), base.gameObject, "BallHitbox", true);
+                        EffectManager.SimpleMuzzleFlash(GetFlashPrefab(false), base.gameObject, "BallHitbox", true);
                     }
 
                     RemoveTemporaryOverlay();
+                }
+                if (aura)
+                {
+                    Destroy(aura);
+                }
+                if (GetAuraPrefab(powerBoosting))
+                {
+                    aura = GameObject.Instantiate<GameObject>(GetAuraPrefab(powerBoosting), base.FindModelChild("MainHurtbox"));
                 }
             }
             else
@@ -328,12 +339,17 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     RemoveTemporaryOverlay();
                 }
+                if (aura)
+                {
+                    Destroy(aura);
+                }
             }
             boostChangedEffect = false;
         }
 
         private void CreateTemporaryOverlay()
         {
+            if (!GetOverlayMaterial()) { return; }
             if (temporaryOverlay != null && temporaryOverlay.ValidateOverlay()) { return; }
             Transform modelTransform = base.GetModelTransform();
             if (!modelTransform) { return; }
@@ -405,6 +421,11 @@ namespace SonicTheHedgehog.SkillStates
 
             RemoveTemporaryOverlay();
 
+            if (aura)
+            {
+                Destroy(aura);
+            }
+
             base.characterBody.skillLocator.utility.onSkillChanged -= OnSkillChanged;
             base.OnExit();
         }
@@ -434,7 +455,7 @@ namespace SonicTheHedgehog.SkillStates
             return "Play_boost";
         }
 
-        public virtual GameObject GetEffectPrefab(bool power)
+        public virtual GameObject GetFlashPrefab(bool power)
         {
             if (power)
             {
@@ -443,6 +464,17 @@ namespace SonicTheHedgehog.SkillStates
             else
             {
                 return Modules.Assets.boostFlashEffect;
+            }
+        }
+        public virtual GameObject GetAuraPrefab(bool power)
+        {
+            if (power)
+            {
+                return Modules.Assets.powerBoostAuraEffect;
+            }
+            else
+            {
+                return null;
             }
         }
 

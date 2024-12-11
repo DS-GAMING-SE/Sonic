@@ -28,15 +28,17 @@ namespace SonicTheHedgehog.Modules.Forms
 
         public static Dictionary<FormDef, GameObject> formToHandlerObject = new Dictionary<FormDef, GameObject>();
 
+        public static Dictionary<FormDef, FormHandler> formToHandler = new Dictionary<FormDef, FormHandler>();
+
         public static void Initialize()
         {
             Dictionary<string, RenderReplacements> superRenderDictionary = new Dictionary<string, RenderReplacements>
             {
-                { SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME", new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperSonic"), mesh = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh } },
+                { SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME", new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperSonic"), mesh = Assets.superSonicMesh } },
                 { SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME", new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperMetalSonic"), mesh = null } }
             };
             superSonicDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, true, Config.ConsumeEmeraldsOnUse().Value,
-                1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), superRenderDictionary, SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PREFIX",
+                1, true, true, true, new SerializableEntityStateType(typeof(SkillStates.SuperSonic)), new SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)), superRenderDictionary,
                 typeof(SuperSonicHandler), new AllowedBodyList { whitelist = false, bodyNames = Array.Empty<string>() }, KeyCode.V);
 
             /*testFormDef = CreateFormDef(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_TEST_FORM", Buffs.superSonicBuff, StaticValues.superSonicDuration, true, false, false,
@@ -60,7 +62,7 @@ namespace SonicTheHedgehog.Modules.Forms
 
         // Look at the tooltips in the FormDef class for more information on what all of these parameters mean
         public static FormDef CreateFormDef(string name, BuffDef buff, float duration, bool requiresItems, bool shareItems, bool consumeItems, int maxTransforms, bool invincible, bool flight, bool superAnimations, SerializableEntityStateType formState, SerializableEntityStateType transformState,
-            Dictionary<string, RenderReplacements> renderDictionary, string transformationNameToken, Type handlerComponent, AllowedBodyList allowedBodyList, KeyCode defaultKeyBind)
+            Dictionary<string, RenderReplacements> renderDictionary, Type handlerComponent, AllowedBodyList allowedBodyList, KeyCode defaultKeyBind)
         {
             FormDef form = ScriptableObject.CreateInstance<FormDef>();
             form.name = name;
@@ -76,7 +78,6 @@ namespace SonicTheHedgehog.Modules.Forms
             form.formState = formState;
             form.transformState = transformState;
             form.renderDictionary = renderDictionary;
-            form.transformationNameToken = transformationNameToken;
             if (!typeof(FormHandler).IsAssignableFrom(handlerComponent))
             {
                 Log.Warning("handlerComponent of type "+handlerComponent.Name+" is not assignable from FormHandler.");
@@ -202,18 +203,14 @@ namespace SonicTheHedgehog.Modules.Forms
         [Tooltip("If you will use Super Sonic's animations or stay with default animations.\nSuper Sonic's animations include hovering in his idles, hovering when moving on the ground, replacing his \"falling\" animations with flying, and some animations made under the assumption that his quills are pointed up.")]
         public bool superAnimations;
 
-        //EntityStateCatalog.InstantiateState()
         [Tooltip("The entity state used by the \"SonicForms\" entity state machine while transformed. Should be a subclass of SonicFormBase")]
         public SerializableEntityStateType formState;
 
-        [Tooltip("The entity state used by the \"Body\" entity state machine for the transformation animation that will transition you into the form. Should be a subclass of TransformationBase")]
+        [Tooltip("The entity state used by the \"Body\" entity state machine for the transformation animation that will transition you into the form. Should be a subclass of TransformationBase. If the EntityState is null, the transformation will be instant")]
         public SerializableEntityStateType transformState;
 
         [Tooltip("Stores the material and mesh changes that will be applied when transforming based on what skin you're using.\nKey is the string token of the skin. RenderReplacements is a struct containing a material and mesh.\nPutting null for material or mesh will make them not change when transforming.")]
         public Dictionary<string, RenderReplacements> renderDictionary;
-
-        [Tooltip("The name prefix/suffix that will be added when transformed, similar to the names of elites. {0} will be replaced with whatever the character's normal name is.\nIf the string is left empty, like \"\", there will be no name change.\nEg. \"Super {0}\" would be Super Sonic")]
-        public string transformationNameToken;
 
         [Tooltip("The component that will track information about your form, such as whether all necessary items have been collected. This component will be put on a gameObject that will be created at the beginning of every stage and will stay for the duration of the stage.\nIf you're unsure what to put here, use typeof(FormHandler).\nYou can create a subclass of FormHandler and put it here if you want to add code, such as an extra requirement for transforming.")]
         public Type handlerComponent;
@@ -221,7 +218,7 @@ namespace SonicTheHedgehog.Modules.Forms
         [Tooltip("Contains information on what characters are allowed to transform.\nIf whitelist, any body name listed under bodyNames will be allowed. If not whitelist, any body name not listed under bodyNames will be allowed.\nBody name refers to the name that survivors and enemies use internally. If you're unsure about what body name means, look into RoR2 BodyCatalog related stuff")]
         public AllowedBodyList allowedBodyList;
 
-        [Tooltip("The default keybind players press to transform into the form. Don't get too attached to this, it's likely these keybinds will need to be changed if forms happen to overlap. If two forms overlap the same key and can be transformed into, the first form alphabetically by name token will be selected. If set to Keybind.None, one of the number keys 1234567890 will automatically be selected.")]
+        [Tooltip("The default keybind players press to transform into the form. Don't get too attached to this, it's likely these keybinds will need to be changed if forms happen to overlap. If two forms overlap the same key and both can be transformed into, the first form alphabetically by name token will be selected. \nIf set to Keybind.None, one of the number keys 1234567890 will automatically be selected.")]
         public KeyCode defaultKeyBind;
 
         public FormIndex formIndex 

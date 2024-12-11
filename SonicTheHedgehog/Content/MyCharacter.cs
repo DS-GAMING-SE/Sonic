@@ -383,6 +383,8 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
+            SonicSkillDefs.Initialize(primarySkillDef, sonicBoomSkillDef, parrySkillDef, boostSkillDef, grandSlamSkillDef);
+
             #region Super Transformation
 
             superSonicSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
@@ -691,6 +693,27 @@ namespace SonicTheHedgehog.Modules.Survivors
             #endregion
 
             skinController.skins = skins.ToArray();
+        }
+    }
+
+    public class SonicSkillDefs
+    {
+        public static SkillDef primarySkillDef;
+
+        public static SkillDef sonicBoomSkillDef;
+        public static SkillDef parrySkillDef;
+
+        public static SkillDef boostSkillDef;
+
+        public static SkillDef grandSlamSkillDef;
+
+        public static void Initialize(SkillDef primary, SkillDef sonicBoom, SkillDef parry, SkillDef boost, SkillDef grandSlam)
+        {
+            primarySkillDef = primary;
+            sonicBoomSkillDef = sonicBoom;
+            parrySkillDef = parry;
+            boostSkillDef = boost;
+            grandSlamSkillDef = grandSlam;
         }
     }
 }

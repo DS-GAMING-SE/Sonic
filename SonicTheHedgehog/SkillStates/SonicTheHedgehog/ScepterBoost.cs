@@ -95,6 +95,8 @@ namespace SonicTheHedgehog.SkillStates
             Vector3 pushOutForce = Vector3.Normalize(base.characterMotor.velocity) * pushOutForceMagnitude * (this.damage/2f);
             Vector3 pushUpForce = Vector3.up * pushUpForceMagnitude * (this.damage / 2f);
             //Chat.AddMessage(pushOutForce + " " + pushUpForce);
+            DamageTypeCombo damageType = DamageType.Generic;
+            damageType.damageSource = DamageSource.Utility;
             this.damageInfo = new DamageInfo
             {
                 attacker = base.characterBody.gameObject,
@@ -103,7 +105,7 @@ namespace SonicTheHedgehog.SkillStates
                 damage = this.damage * base.characterBody.damage,
                 position = hurtBox.transform.position,
                 force = pushOutForce + pushUpForce,
-                damageType = DamageType.Generic,
+                damageType = damageType,
                 damageColorIndex = DamageColorIndex.Default,
                 procCoefficient = StaticValues.scepterBoostProcCoefficient
             };
@@ -122,7 +124,7 @@ namespace SonicTheHedgehog.SkillStates
             return "Play_scepter_boost";
         }
 
-        public override GameObject GetEffectPrefab(bool power)
+        public override GameObject GetFlashPrefab(bool power)
         {
             if (power)
             {
@@ -131,6 +133,17 @@ namespace SonicTheHedgehog.SkillStates
             else
             {
                 return Modules.Assets.scepterBoostFlashEffect;
+            }
+        }
+        public override GameObject GetAuraPrefab(bool power)
+        {
+            if (power)
+            {
+                return Modules.Assets.scepterPowerBoostAuraEffect;
+            }
+            else
+            {
+                return null;
             }
         }
     }

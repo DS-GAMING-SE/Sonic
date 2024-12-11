@@ -3,8 +3,6 @@ using RoR2.Achievements;
 
 namespace SonicTheHedgehog.Modules.Achievements
 {
-    // HOW IS A MASTERY THIS DIFFICULT
-    
     //automatically creates language tokens "ACHIEVMENT_{identifier.ToUpper()}_NAME" and "ACHIEVMENT_{identifier.ToUpper()}_DESCRIPTION" 
     [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", "Skins.Sonic.Alt1", null, 10)]
     public class SonicMasteryAchievement : BaseMasteryUnlockable

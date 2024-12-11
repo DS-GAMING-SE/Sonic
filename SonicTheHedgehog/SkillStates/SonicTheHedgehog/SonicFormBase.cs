@@ -126,6 +126,26 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+        protected void ApplyOverlay(ref TemporaryOverlayInstance temporaryOverlay, Material material)
+        {
+            if (characterModel)
+            {
+                temporaryOverlay = TemporaryOverlayManager.AddOverlay(characterModel.gameObject);
+                temporaryOverlay.originalMaterial = material;
+                temporaryOverlay.destroyComponentOnEnd = false;
+                temporaryOverlay.inspectorCharacterModel = characterModel;
+                temporaryOverlay.Start(); // Apparently Start() isn't run if the overlay doesn't have animateShaderAlpha on so I gotta do this myself
+            }
+        }
+
+        protected void RemoveOverlay(ref TemporaryOverlayInstance temporaryOverlay)
+        {
+            if (temporaryOverlay != null)
+            {
+                temporaryOverlay.Destroy();
+            }
+        }
+
         protected bool SkillHelper(GenericSkill slot, SkillDef original, SkillDef upgrade, bool set)
         {
             if (slot)

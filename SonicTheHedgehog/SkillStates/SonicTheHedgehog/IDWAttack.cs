@@ -197,6 +197,7 @@ namespace SonicTheHedgehog.SkillStates
                 blastAttack.baseDamage = base.characterBody.damage * damageCoefficient;
                 blastAttack.falloffModel = BlastAttack.FalloffModel.None;
                 blastAttack.damageType = damageType;
+                blastAttack.damageType.damageSource = DamageSource.Secondary;
                 blastAttack.baseForce = -pushForce;
                 blastAttack.teamIndex = base.teamComponent.teamIndex;
                 blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;

@@ -343,7 +343,7 @@ namespace SonicTheHedgehog.SkillStates
 
         }
         public void PrepareOverlapAttack()
-        {
+        {    
             HitBoxGroup hitBoxGroup = null;
             Transform modelTransform = base.GetModelTransform();
 
@@ -354,6 +354,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
+            this.attack.damageType.damageSource = DamageSource.Primary;
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();

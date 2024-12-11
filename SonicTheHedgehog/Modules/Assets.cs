@@ -10,12 +10,18 @@ using System;
 using SonicTheHedgehog.Components;
 using RoR2.Audio;
 using UnityEngine.AddressableAssets;
+using SonicTheHedgehog.SkillStates;
 
 namespace SonicTheHedgehog.Modules
 {
-    internal static class Assets
+    public static class Assets
     {
         #region Sonic's stuff
+        // meshes
+        public static Mesh sonicMesh;
+        public static Mesh superSonicMesh;
+        public static Mesh metalSonicMesh;
+
         // particle effects
         internal static GameObject sonicBoomKickEffect;
         internal static GameObject homingAttackTrailEffect;
@@ -45,6 +51,11 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject scepterBoostFlashEffect;
         internal static GameObject superBoostFlashEffect;
         internal static GameObject scepterSuperBoostFlashEffect;
+
+        internal static GameObject powerBoostAuraEffect;
+        internal static GameObject superBoostAuraEffect;
+        internal static GameObject scepterPowerBoostAuraEffect;
+        internal static GameObject scepterSuperBoostAuraEffect;
 
         internal static GameObject grandSlamHitEffect;
 
@@ -125,10 +136,14 @@ namespace SonicTheHedgehog.Modules
 
             // feel free to delete everything in here and load in your own assets instead
             // it should work fine even if left as is- even if the assets aren't in the bundle
-            
+
             //swordHitSoundEvent = CreateNetworkSoundEventDef("HenrySwordHit");
 
             //bombExplosionEffect = LoadEffect("BombExplosionEffect", "HenryBombExplosion");
+
+            sonicMesh = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            superSonicMesh = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            metalSonicMesh = Assets.mainAssetBundle.LoadAsset<GameObject>("MetalSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
             sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick", true);
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
@@ -164,6 +179,7 @@ namespace SonicTheHedgehog.Modules
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
             powerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
+            powerBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicPowerBoostAura");
 
             scepterPowerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterPowerBoostFlashEffect)
@@ -181,6 +197,8 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
+            scepterPowerBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicScepterPowerBoostAura");
+
             scepterBoostFlashEffect = Assets.LoadEffect("SonicScepterBoostFlash", true);
             if (scepterBoostFlashEffect)
             {
@@ -213,10 +231,13 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
+            scepterSuperBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicScepterSuperBoostAura");
 
 
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
             superBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
+            superBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicSuperBoostAura");
+
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 
             meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit");
@@ -252,6 +273,62 @@ namespace SonicTheHedgehog.Modules
             superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);      
+        }
+        // Use this to create a new boost flash prefab to be used when activating a custom boost skill
+        // name: An internal name for the prefab. Doesn't really matter what this is as long as it's not the same as anything else
+        // size: The size of the effect. Power Boost defaults to 1. Super Boost defaults to ---
+        // alpha: How visible the effect will be. Power Boost defaults to 1.3. Super Boost defaults to 1.6
+        // color1: The innermost color of the effect
+        // color2: The color between the innermost color and the edge color
+        // color3: The color of the edge of the boost effect
+        // lightColor: The color of the light emitted
+        public static GameObject CreateNewBoostFlash(string name, float size, float alpha, Color color1, Color color2, Color color3, Color lightColor)
+        {
+            GameObject newFlash = PrefabAPI.InstantiateClone(powerBoostFlashEffect, name);
+            AddNewEffectDef(newFlash);
+
+            ParticleSystem.MainModule main = newFlash.transform.Find("BlueCone").GetComponent<ParticleSystem>().main;
+            main.startSize = new ParticleSystem.MinMaxCurve(main.startSize.constant * size);
+
+            ParticleSystem.MainModule main2 = newFlash.transform.Find("BlueCone/BlueCone2").GetComponent<ParticleSystem>().main;
+            main2.startSize = new ParticleSystem.MinMaxCurve(main2.startSize.constant * size);
+
+            ParticleSystemRenderer renderer = newFlash.transform.Find("BlueCone").GetComponent<ParticleSystemRenderer>();
+            renderer.material = CreateNewBoostMaterial(alpha, color1, color2, color3);
+
+            ParticleSystemRenderer renderer2 = newFlash.transform.Find("BlueCone/BlueCone2").GetComponent<ParticleSystemRenderer>();
+            renderer2.material = CreateNewBoostMaterial(alpha, color1, color2, color3);
+
+            newFlash.transform.Find("BlueCone/StartFlash/Point Light").GetComponent<Light>().color = lightColor;
+
+            return newFlash;
+        }
+        // Use this to create a new boost aura prefab to be used constantly while using a custom boost skill
+        // name: An internal name for the prefab. Doesn't really matter what this is as long as it's not the same as anything else
+        // size: The size of the effect. Power Boost defaults to 1. Super Boost defaults to 1.3
+        // alpha: How visible/strong the effect will be. Power Boost defaults to 0.65. Super Boost defaults to 0.8
+        // color1: The innermost color of the effect
+        // color2: The color between the innermost color and the edge color
+        // color3: The color of the edge of the boost effect
+        // lightColor: The color of the light emitted
+        public static GameObject CreateNewBoostAura(string name, float size, float alpha, Color color1, Color color2, Color color3, Color lightColor)
+        {
+            GameObject newAura = PrefabAPI.InstantiateClone(powerBoostAuraEffect, name);
+            newAura.transform.Find("Aura").localScale *= size;
+            newAura.transform.Find("Aura").GetComponent<MeshRenderer>().material = CreateNewBoostMaterial(alpha, color1, color2, color3);
+            newAura.transform.Find("Point Light").GetComponent<Light>().color = lightColor;
+            return newAura;
+        }
+
+        private static Material CreateNewBoostMaterial(float alpha, Color color1, Color color2, Color color3)
+        {
+            Material newMaterial = new Material(Assets.mainAssetBundle.LoadAsset<Material>("matPowerBoost"));
+            newMaterial.SetFloat("_AlphaBoost", alpha);
+            newMaterial.SetColor("_Color1", color1);
+            newMaterial.SetColor("_Color2", color2);
+            newMaterial.SetColor("_Color3", color3);
+
+            return newMaterial;
         }
 
         public static GameObject MaterialSwap(GameObject prefab, string assetPath, string pathToParticle = "")

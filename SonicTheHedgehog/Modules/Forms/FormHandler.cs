@@ -42,6 +42,10 @@ namespace SonicTheHedgehog.Modules
             {
                 itemTracker = GetComponent<INeededItemTracker>();
                 Forms.Forms.formToHandlerObject.Add(form, gameObject);
+                if (!Forms.Forms.formToHandler.ContainsKey(form))
+                {
+                    Forms.Forms.formToHandler.Add(form, this);
+                }
                 Log.Message("FormHandler for form " + form.ToString() + " created");
                 return;
             }
@@ -54,6 +58,10 @@ namespace SonicTheHedgehog.Modules
             {
                 Forms.Forms.formToHandlerObject.Remove(form);
                 SetEvents(false);
+            }
+            if (Forms.Forms.formToHandler.GetValueSafe(form) == this)
+            {
+                Forms.Forms.formToHandler.Remove(form);
             }
         }
 
@@ -108,7 +116,7 @@ namespace SonicTheHedgehog.Modules
                     {
                         Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
                         {
-                            baseToken = form.name + "_ANNOUNCE_TEXT",
+                            baseToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT",
                             subjectAsNetworkUser = super.body.master.playerCharacterMasterController.networkUser,
                             paramTokens = new string[] { Language.GetString(form.name) }
                         });
@@ -117,7 +125,7 @@ namespace SonicTheHedgehog.Modules
                     {
                         Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
                         {
-                            baseToken = form.name + "_ANNOUNCE_TEXT",
+                            baseToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT",
                             subjectAsCharacterBody = super.body,
                             paramTokens = new string[] { Language.GetString(form.name) }
                         });

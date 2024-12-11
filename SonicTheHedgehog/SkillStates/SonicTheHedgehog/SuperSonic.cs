@@ -67,7 +67,7 @@ namespace SonicTheHedgehog.SkillStates
                 boostLogic.alwaysMaxBoost = true;
             }
 
-            ApplyOutline();
+            ApplyOverlay(ref temporaryOverlay, Modules.Assets.superSonicOverlay);
 
             superLoop = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, Modules.Assets.superLoopSoundDef);
 
@@ -101,7 +101,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             LoopSoundManager.StopSoundLoopLocal(superLoop);
 
-            RemoveOutline();
+            RemoveOverlay(ref temporaryOverlay);
 
             if (boostLogic)
             {
@@ -175,26 +175,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.skillLocator.secondary.UnsetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);
             base.skillLocator.secondary.SetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
-        }
-
-        private void ApplyOutline()
-        {
-            if (characterModel)
-            {
-                temporaryOverlay = TemporaryOverlayManager.AddOverlay(characterModel.gameObject);
-                temporaryOverlay.originalMaterial = Modules.Assets.superSonicOverlay;
-                temporaryOverlay.destroyComponentOnEnd = false;
-                temporaryOverlay.inspectorCharacterModel = characterModel;
-                temporaryOverlay.Start(); // Apparently Start() isn't run if the overlay doesn't have animateShaderAlpha on so I gotta do this myself
-            }
-        }
-
-        private void RemoveOutline()
-        {
-            if (temporaryOverlay != null)
-            {
-                temporaryOverlay.Destroy();
-            }
         }
 
         private void FireBlastAttack()

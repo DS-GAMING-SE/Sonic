@@ -4839,7 +4839,7 @@ GameObject:
   m_Component:
   - component: {fileID: 814601655711591465}
   m_Layer: 0
-  m_Name: SonicScepterPowerBoostFlash
+  m_Name: SonicScepterPowerBoostFlashOld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
