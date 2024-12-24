@@ -23,43 +23,41 @@ namespace SonicTheHedgehog.Modules
         public static Mesh metalSonicMesh;
 
         // particle effects
-        internal static GameObject sonicBoomKickEffect;
-        internal static GameObject homingAttackTrailEffect;
-        internal static GameObject sonicBoomImpactEffect;
-        internal static GameObject crossSlashImpactEffect;
+        public static GameObject sonicBoomKickEffect;
+        public static GameObject homingAttackTrailEffect;
+        public static GameObject sonicBoomImpactEffect;
+        public static GameObject crossSlashImpactEffect;
 
-        internal static GameObject superSonicTransformationEffect;
-        internal static GameObject transformationEmeraldSwirl;
+        public static GameObject superSonicTransformationEffect;
+        public static GameObject transformationEmeraldSwirl;
 
-        internal static GameObject superSonicAura;
-        internal static GameObject superSonicWarning;
+        public static GameObject superSonicAura;
+        public static GameObject superSonicWarning;
 
-        internal static GameObject meleeHitEffect;
-        internal static GameObject meleeImpactEffect;
-        internal static GameObject homingAttackLaunchEffect;
-        internal static GameObject homingAttackHitEffect;
+        public static GameObject meleeHitEffect;
+        public static GameObject meleeImpactEffect;
+        public static GameObject homingAttackLaunchEffect;
+        public static GameObject homingAttackHitEffect;
 
-        internal static GameObject parryEffect;
-        internal static GameObject parryActivateEffect;
-        internal static GameObject idwAttackEffect;
+        public static GameObject parryEffect;
+        public static GameObject parryActivateEffect;
+        public static GameObject idwAttackEffect;
 
-        internal static GameObject superSonicBlurEffect;
+        public static GameObject superSonicBlurEffect;
 
-        internal static GameObject powerBoostFlashEffect;
-        internal static GameObject scepterPowerBoostFlashEffect;
-        internal static GameObject boostFlashEffect;
-        internal static GameObject scepterBoostFlashEffect;
-        internal static GameObject superBoostFlashEffect;
-        internal static GameObject scepterSuperBoostFlashEffect;
+        public static GameObject powerBoostFlashEffect;
+        public static GameObject scepterPowerBoostFlashEffect;
+        public static GameObject boostFlashEffect;
+        public static GameObject scepterBoostFlashEffect;
+        public static GameObject superBoostFlashEffect;
+        public static GameObject scepterSuperBoostFlashEffect;
 
-        internal static GameObject powerBoostAuraEffect;
-        internal static GameObject superBoostAuraEffect;
-        internal static GameObject scepterPowerBoostAuraEffect;
-        internal static GameObject scepterSuperBoostAuraEffect;
+        public static GameObject powerBoostAuraEffect;
+        public static GameObject superBoostAuraEffect;
+        public static GameObject scepterPowerBoostAuraEffect;
+        public static GameObject scepterSuperBoostAuraEffect;
 
-        internal static GameObject grandSlamHitEffect;
-
-        internal static GameObject bombExplosionEffect;
+        public static GameObject grandSlamHitEffect;
 
         // materials
 
@@ -77,7 +75,7 @@ namespace SonicTheHedgehog.Modules
         #endregion
 
         // the assetbundle to load assets from
-        internal static AssetBundle mainAssetBundle;
+        public static AssetBundle mainAssetBundle;
 
         // CHANGE THIS
         private const string assetbundleName = "sonicthehedgehogassetbundle";
@@ -162,8 +160,9 @@ namespace SonicTheHedgehog.Modules
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
             transformationEmeraldSwirl = Assets.LoadEffect("SonicChaosEmeraldSwirl");
 
-            superSonicAura = Assets.LoadEffect("SonicSuperAura", true);
-            superSonicAura.GetComponent<DestroyOnTimer>().enabled = false;
+            superSonicAura = Assets.LoadAsyncedEffect("SonicSuperAura");
+
+
             superSonicWarning = Assets.LoadEffect("SonicSuperWarning", true);
             superSonicWarning.GetComponent<DestroyOnTimer>().enabled = false;
 
@@ -179,7 +178,7 @@ namespace SonicTheHedgehog.Modules
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
             powerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
-            powerBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicPowerBoostAura");
+            powerBoostAuraEffect = Assets.LoadAsyncedEffect("SonicPowerBoostAura");
 
             scepterPowerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterPowerBoostFlashEffect)
@@ -197,7 +196,7 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterPowerBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicScepterPowerBoostAura");
+            scepterPowerBoostAuraEffect = Assets.LoadAsyncedEffect("SonicScepterPowerBoostAura");
 
             scepterBoostFlashEffect = Assets.LoadEffect("SonicScepterBoostFlash", true);
             if (scepterBoostFlashEffect)
@@ -231,12 +230,12 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterSuperBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicScepterSuperBoostAura");
+            scepterSuperBoostAuraEffect = Assets.LoadAsyncedEffect("SonicScepterSuperBoostAura");
 
 
             boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
             superBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
-            superBoostAuraEffect = Assets.mainAssetBundle.LoadAsset<GameObject>("SonicSuperBoostAura");
+            superBoostAuraEffect = Assets.LoadAsyncedEffect("SonicSuperBoostAura");
 
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 
@@ -299,7 +298,14 @@ namespace SonicTheHedgehog.Modules
             ParticleSystemRenderer renderer2 = newFlash.transform.Find("BlueCone/BlueCone2").GetComponent<ParticleSystemRenderer>();
             renderer2.material = CreateNewBoostMaterial(alpha, color1, color2, color3);
 
-            newFlash.transform.Find("BlueCone/StartFlash/Point Light").GetComponent<Light>().color = lightColor;
+            if (lightColor == Color.black)
+            {
+                newFlash.transform.Find("BlueCone/StartFlash/Point Light").GetComponent<Light>().enabled = false;
+            }
+            else
+            {
+                newFlash.transform.Find("BlueCone/StartFlash/Point Light").GetComponent<Light>().color = lightColor;
+            }
 
             return newFlash;
         }
@@ -316,7 +322,14 @@ namespace SonicTheHedgehog.Modules
             GameObject newAura = PrefabAPI.InstantiateClone(powerBoostAuraEffect, name);
             newAura.transform.Find("Aura").localScale *= size;
             newAura.transform.Find("Aura").GetComponent<MeshRenderer>().material = CreateNewBoostMaterial(alpha, color1, color2, color3);
-            newAura.transform.Find("Point Light").GetComponent<Light>().color = lightColor;
+            if (lightColor == Color.black)
+            {
+                newAura.transform.Find("Point Light").GetComponent<Light>().enabled = false;
+            }
+            else
+            {
+                newAura.transform.Find("Point Light").GetComponent<Light>().color = lightColor;
+            }
             return newAura;
         }
 
@@ -438,6 +451,15 @@ namespace SonicTheHedgehog.Modules
         private static GameObject LoadEffect(string resourceName, bool parentToTransform)
         {
             return LoadEffect(resourceName, "", parentToTransform);
+        }
+
+        private static GameObject LoadAsyncedEffect(string resourceName)
+        {
+            GameObject newEffect = mainAssetBundle.LoadAsset<GameObject>(resourceName);
+
+            newEffect.AddComponent<NetworkIdentity>();
+
+            return newEffect;
         }
 
         private static GameObject LoadEffect(string resourceName, string soundName, bool parentToTransform)

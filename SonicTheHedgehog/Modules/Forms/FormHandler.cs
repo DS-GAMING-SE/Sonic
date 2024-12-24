@@ -110,25 +110,52 @@ namespace SonicTheHedgehog.Modules
                 {
                     itemTracker.RemoveItems(super);
                 }
-                if (Config.AnnounceSuperTransformation().Value)
+                AnnounceTransformation(super);
+            }
+            TransformEngiTurrets(super);
+        }
+
+        public virtual void AnnounceTransformation(SuperSonicComponent super)
+        {
+            if (Config.AnnounceSuperTransformation().Value)
+            {
+                if (super.body.master && super.body.master.playerCharacterMasterController && super.body.master.playerCharacterMasterController.networkUser)
                 {
-                    if (super.body.master && super.body.master.playerCharacterMasterController && super.body.master.playerCharacterMasterController.networkUser)
+                    Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
                     {
-                        Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
-                        {
-                            baseToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT",
-                            subjectAsNetworkUser = super.body.master.playerCharacterMasterController.networkUser,
-                            paramTokens = new string[] { Language.GetString(form.name) }
-                        });
-                    }
-                    else
+                        baseToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT",
+                        subjectAsNetworkUser = super.body.master.playerCharacterMasterController.networkUser,
+                        paramTokens = new string[] { Language.GetString(form.name) }
+                    });
+                }
+                else
+                {
+                    Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
                     {
-                        Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                        baseToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT",
+                        subjectAsCharacterBody = super.body,
+                        paramTokens = new string[] { Language.GetString(form.name) }
+                    });
+                }
+            }
+        }
+
+        public virtual void TransformEngiTurrets(SuperSonicComponent super)
+        {
+            if (super.body.master)
+            {
+                if (super.body.master.deployablesList != null)
+                {
+                    foreach (DeployableInfo deployable in super.body.master.deployablesList)
+                    {
+                        if (deployable.slot == DeployableSlot.EngiTurret)
                         {
-                            baseToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SUPER_FORM_ANNOUNCE_TEXT",
-                            subjectAsCharacterBody = super.body,
-                            paramTokens = new string[] { Language.GetString(form.name) }
-                        });
+                            if (deployable.deployable.TryGetComponent<CharacterMaster>(out CharacterMaster turretMaster) && turretMaster.GetBodyObject() && turretMaster.GetBodyObject().TryGetComponent<SuperSonicComponent>(out SuperSonicComponent turretSuper))
+                            {
+                                turretSuper.targetedForm = form;
+                                turretSuper.Transform();
+                            }
+                        }
                     }
                 }
             }

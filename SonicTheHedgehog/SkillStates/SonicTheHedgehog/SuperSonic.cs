@@ -121,8 +121,11 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority && base.skillLocator)
             {
                 SkillOverrides(false);
-                base.skillLocator.secondary.UnsetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);
-                base.skillLocator.secondary.UnsetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+                if (base.skillLocator.secondary)
+                {
+                    base.skillLocator.secondary.UnsetSkillOverride(this, idwAttack, GenericSkill.SkillOverridePriority.Contextual);
+                    base.skillLocator.secondary.UnsetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+                }
             }
 
             if (viend && NetworkServer.active)

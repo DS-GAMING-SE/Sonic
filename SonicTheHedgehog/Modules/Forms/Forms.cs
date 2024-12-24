@@ -143,7 +143,7 @@ namespace SonicTheHedgehog.Modules.Forms
             {
                 foreach (FormDef form in FormCatalog.formsCatalog)
                 {
-                    if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(body)) && body.GetComponent<CharacterBody>() && EntityStateMachine.FindByCustomName(body, "Body"))
+                    if (form.allowedBodyList.BodyIsAllowed(BodyCatalog.FindBodyIndex(body)) && body.TryGetComponent<CharacterBody>(out CharacterBody characterBody) && EntityStateMachine.FindByCustomName(body, "Body"))
                     {
                         body.AddComponent<SuperSonicComponent>();
 

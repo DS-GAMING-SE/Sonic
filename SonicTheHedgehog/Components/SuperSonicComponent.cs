@@ -43,7 +43,7 @@ namespace SonicTheHedgehog.Components
         private void Start()
         {
             body = base.GetComponent<CharacterBody>();
-            if (!body.isPlayerControlled)
+            if (!body.isPlayerControlled && !(BodyCatalog.GetBodyName(body.bodyIndex).Contains("Turret")))
             {
                 Destroy(this);
                 return;
@@ -107,10 +107,9 @@ namespace SonicTheHedgehog.Components
         public void Transform()
         {
             EntityStateMachine bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
-            if (!bodyState) { return; }
             if (!Forms.formToHandler.TryGetValue(targetedForm, out FormHandler handler)) { return; }
             bool transformSuccess;
-            if (targetedForm.transformState.stateType != null)
+            if (targetedForm.transformState.stateType != null && bodyState)
             {
                 TransformationBase transformState = (TransformationBase)EntityStateCatalog.InstantiateState(targetedForm.transformState.stateType);
                 transformState.fromTeamSuper = handler.teamSuper;
