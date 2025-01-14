@@ -29,7 +29,7 @@ namespace SonicTheHedgehog.SkillStates
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
 
         private Vector3 forwardDirection;
-        public BoostLogic boostLogic;
+        public PowerBoostLogic boostLogic;
 
         private TemporaryOverlayInstance temporaryOverlay;
         //private GameObject trailObject;
@@ -77,7 +77,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterMotor.onHitGroundAuthority += OnHitGround;
             }
-            boostLogic = GetComponent<BoostLogic>();
+            boostLogic = GetComponent<PowerBoostLogic>();
             if (ShouldPowerBoost())
             {
                 powerBoosting = true;

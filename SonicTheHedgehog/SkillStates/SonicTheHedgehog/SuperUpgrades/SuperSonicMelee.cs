@@ -13,6 +13,11 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             get { return typeof(SuperSonicMeleeEnter); }
         }
 
+        protected override float launchPushForce
+        {
+            get { return 1000f; }
+        }
+
         protected override void OnFireAuthority()
         {
             FireSuperProjectile();

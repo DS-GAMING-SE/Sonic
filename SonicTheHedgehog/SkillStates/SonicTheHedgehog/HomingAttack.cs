@@ -20,8 +20,10 @@ namespace SonicTheHedgehog.SkillStates
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient;
         protected float procCoefficient;
-        protected float pushForce = 50f;
-        protected Vector3 bonusForce = Vector3.zero;
+        protected virtual float launchPushForce
+        {
+            get { return 250f; }
+        }
         protected float attackStartTime;
         protected float attackEndTime;
         protected float hitStopDuration;
@@ -266,6 +268,7 @@ namespace SonicTheHedgehog.SkillStates
                         }
                         if (fixedAge>this.estimatedHomingAttackTime/2.5f)
                         {
+                            this.attack.forceVector = targetDirection.normalized * launchPushForce;
                             this.FireAttack();
                         }
                     }
@@ -309,14 +312,13 @@ namespace SonicTheHedgehog.SkillStates
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
             this.attack.damageType.damageSource = DamageSource.Primary;
+            this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launchOnKill);
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();
             this.attack.damage = this.damageCoefficient * this.damageStat;
             this.attack.procCoefficient = this.procCoefficient;
             this.attack.hitEffectPrefab = this.hitEffectPrefab;
-            this.attack.forceVector = this.bonusForce;
-            this.attack.pushAwayForce = this.pushForce;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;

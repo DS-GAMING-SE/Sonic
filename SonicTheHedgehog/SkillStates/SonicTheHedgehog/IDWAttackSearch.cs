@@ -1,10 +1,11 @@
 ﻿using EntityStates;
+using HedgehogUtils.Forms.SuperForm;
+using HedgehogUtils.Forms;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
-using SonicTheHedgehog.Modules.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.stopwatch += Time.fixedDeltaTime;
 
-            if (!Forms.GetIsInForm(base.characterBody, Forms.superSonicDef))
+            if (!Forms.GetIsInForm(base.characterBody, SuperFormDef.superFormDef))
             {
                 this.outer.SetNextStateToMain();
                 return;
@@ -110,10 +111,10 @@ namespace SonicTheHedgehog.SkillStates
                 EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
                 if (superStateMachine)
                 {
-                    if (superStateMachine.state.GetType() == typeof(SuperSonic))
+                    /*if (superStateMachine.state.GetType() == typeof(SuperSonic))
                     {
                         ((SuperSonic)superStateMachine.state).IDWAttackActivated();
-                    }
+                    }*/
                 }
             }
         }

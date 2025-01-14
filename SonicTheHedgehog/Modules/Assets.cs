@@ -81,7 +81,8 @@ namespace SonicTheHedgehog.Modules
         private const string assetbundleName = "sonicthehedgehogassetbundle";
         //change this to your project's name if/when you've renamed it
         private const string csProjName = "SonicTheHedgehog";
-        
+        private const string dllName = "SonicTheHedgehog.dll";
+
         internal static void Initialize()
         {
             if (assetbundleName == "myassetbundle")
@@ -95,7 +96,7 @@ namespace SonicTheHedgehog.Modules
             PopulateAssets();
         }
 
-        internal static void LoadAssetBundle()
+        /*internal static void LoadAssetBundle() For embedded resources
         {
             try
             {
@@ -105,6 +106,21 @@ namespace SonicTheHedgehog.Modules
                     {
                         mainAssetBundle = AssetBundle.LoadFromStream(assetStream);
                     }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Failed to load assetbundle. Make sure your assetbundle name is setup correctly\n" + e);
+                return;
+            }
+        }*/
+        internal static void LoadAssetBundle()
+        {
+            try
+            {
+                if (mainAssetBundle == null)
+                {
+                    mainAssetBundle = AssetBundle.LoadFromFile(Assembly.GetExecutingAssembly().Location.Replace(dllName, assetbundleName));
                 }
             }
             catch (Exception e)

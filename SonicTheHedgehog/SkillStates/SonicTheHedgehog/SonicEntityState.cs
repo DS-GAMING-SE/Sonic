@@ -12,8 +12,6 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class SonicEntityState : GenericCharacterMain
     {
-        private SuperSonicComponent superSonicComponent;
-
         private float idleExtraTimer;
         private int idleExtraCount;
 
@@ -27,7 +25,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            superSonicComponent = base.GetComponent<SuperSonicComponent>();
             idleExtraTimer = idleExtraDefault;
             idleExtraCount = 0;
             if (base.modelAnimator.isInitialized)

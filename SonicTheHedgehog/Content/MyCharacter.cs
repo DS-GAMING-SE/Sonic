@@ -16,6 +16,7 @@ using AncientScepter;
 using SonicTheHedgehog.Modules.Achievements;
 using System.Linq;
 using static RoR2.TeleporterInteraction;
+using HedgehogUtils;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
@@ -202,6 +203,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static SkillDef parrySkillDef;
 
         public static SkillDef boostSkillDef;
+        public static SkillDef newBoostSkillDef;
 
         public static SkillDef grandSlamSkillDef;
 
@@ -215,9 +217,11 @@ namespace SonicTheHedgehog.Modules.Survivors
             Modules.Skills.CreateSkillFamilies(bodyPrefab);
             string prefix = SonicTheHedgehogPlugin.DEVELOPER_PREFIX;
 
-            bodyPrefab.AddComponent<Components.BoostLogic>();
+            //bodyPrefab.AddComponent<Components.PowerBoostLogic>();
+            bodyPrefab.AddComponent<PowerBoostLogic>();
             bodyPrefab.AddComponent<Components.MomentumPassive>();
             bodyPrefab.AddComponent<Components.HomingTracker>();
+            bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.StayOnGround>();
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 
@@ -229,7 +233,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
-                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
+                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD", HedgehogUtilsPlugin.Prefix+"LAUNCH_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMeleeEnter)),
                 activationStateMachineName = "Body",
@@ -350,6 +354,36 @@ namespace SonicTheHedgehog.Modules.Survivors
             Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
 
             #endregion
+            #region New Utility
+
+            SkillDefInfo newBoost = new SkillDefInfo
+            {
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_DESCRIPTION",
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BoostEnter)),
+                activationStateMachineName = "Body",
+                baseMaxStock = 1,
+                baseRechargeInterval = 0f,
+                beginSkillCooldownOnSkillEnd = true,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = false,
+                mustKeyPress = true,
+                cancelSprintingOnActivation = false,
+                rechargeStock = 0,
+                requiredStock = 1,
+                stockToConsume = 0
+            };
+            newBoostSkillDef = Modules.Skills.CreateSkillDef(newBoost);
+
+            Modules.Skills.AddUtilitySkills(bodyPrefab, newBoostSkillDef);
+
+            #endregion
 
             #region Special
 
@@ -358,7 +392,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_DESCRIPTION",
-                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
+                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD", HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGrandSlamIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.GrandSlamDash)),
                 activationStateMachineName = "Body",
@@ -384,38 +418,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             #endregion
 
             SonicSkillDefs.Initialize(primarySkillDef, sonicBoomSkillDef, parrySkillDef, boostSkillDef, grandSlamSkillDef);
-
-            #region Super Transformation
-
-            superSonicSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
-                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_NAME",
-                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_SUPER_TRANSFORMATION_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBazookaOutIcon"),
-                activationState =
-                    new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperSonicTransformation)),
-                activationStateMachineName = "Body",
-                baseMaxStock = 1,
-                baseRechargeInterval = 0f,
-                beginSkillCooldownOnSkillEnd = true,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = false,
-                interruptPriority = EntityStates.InterruptPriority.Frozen,
-                resetCooldownTimerOnUse = false,
-                isCombatSkill = false,
-                mustKeyPress = true,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 0,
-                requiredStock = 1,
-                stockToConsume = 1
-            });
-
-            //Modules.Skills.AddSpecialSkills(bodyPrefab, superSonicSkillDef);
-
-            #endregion
-
 
             // PASSIVES
 
@@ -449,7 +451,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
-            MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam);
+            //MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam);
 
             if (SonicTheHedgehogPlugin.ancientScepterLoaded)
             {
@@ -457,7 +459,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             }
         }
 
-        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry,
+        /*private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry,
             SkillDefInfo boost, SkillDefInfo grandSlam)
         {
             //EntityStateMachine superSonicState = bodyPrefab.AddComponent<EntityStateMachine>();
@@ -540,7 +542,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //NetworkStateMachine network = bodyPrefab.GetComponent<NetworkStateMachine>();
             //Helpers.Append(ref network.stateMachines, new List<EntityStateMachine> { superSonicState });
-        }
+        }*/
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void ScepterSkill(SkillDefInfo boost)
@@ -557,7 +559,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
                           boostSkillDef)).ToString());
 
-            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
+            /*boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION";
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperScepterBoost));
@@ -565,7 +567,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             skillDef = Skills.CreateSkillDef(boost);
             Log.Message("Super Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
-                          SuperSonic.boost)).ToString());
+                          SuperSonic.boost)).ToString());*/
 
             /*if (SonicTheHedgehogPlugin.betterUILoaded)
             {

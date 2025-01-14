@@ -25,11 +25,16 @@ namespace SonicTheHedgehog.SkillStates
             get { return typeof(SonicMeleeEnter); }
         }
 
+        protected virtual float launchPushForce
+        {
+            get { return 250f; }
+        }
+
         protected DamageType damageType = DamageType.Generic;
         protected float damageCoefficient;
         protected float procCoefficient;
-        protected float pushForce = 50f;
-        protected Vector3 bonusForce = Vector3.zero;
+        protected float pushForce;
+        protected Vector3 bonusForce;
         protected float attackStartTime;
         protected float attackEndTime;
         protected float hitStopDuration;
@@ -85,6 +90,8 @@ namespace SonicTheHedgehog.SkillStates
             this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of duration
             this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of duration
             this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
+            this.pushForce = swingIndex == 4 ? 0f : 50f;
+            this.bonusForce = swingIndex == 4 ? (Vector3.Normalize(Vector3.up + base.characterDirection.forward) * launchPushForce)  : Vector3.zero;
             this.hitHopVelocity = Flying() ? 0 : 3 + (3 / this.attackSpeedStat);
             StartAimMode();
             PlayAttackAnimation();
@@ -355,6 +362,10 @@ namespace SonicTheHedgehog.SkillStates
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
             this.attack.damageType.damageSource = DamageSource.Primary;
+            if (swingIndex == 4)
+            {
+                this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launchOnKill);
+            }
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();

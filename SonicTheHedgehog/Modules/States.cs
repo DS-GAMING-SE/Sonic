@@ -9,15 +9,9 @@ namespace SonicTheHedgehog.Modules
     {
         internal static void RegisterStates()
         {
-            Modules.Content.AddEntityState(typeof(InteractablePurchased));
-
             Modules.Content.AddEntityState(typeof(SonicEntityState));
 
             Modules.Content.AddEntityState(typeof(Death));
-
-            Modules.Content.AddEntityState(typeof(SuperSonic));
-            Modules.Content.AddEntityState(typeof(SonicFormBase));
-            Modules.Content.AddEntityState(typeof(BaseSonic));
 
             Modules.Content.AddEntityState(typeof(SonicMeleeEnter));
             Modules.Content.AddEntityState(typeof(SonicMelee));
@@ -39,6 +33,10 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(IDWAttackSearch));
             Modules.Content.AddEntityState(typeof(IDWAttack));
 
+            Modules.Content.AddEntityState(typeof(NewBoost));
+            Modules.Content.AddEntityState(typeof(BoostEnter));
+            Modules.Content.AddEntityState(typeof(BoostIdle));
+
             Modules.Content.AddEntityState(typeof(Boost));
             Modules.Content.AddEntityState(typeof(ScepterBoost));
 
@@ -52,8 +50,6 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperGrandSlamDash));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamSpin));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamFinal));
-
-            Modules.Content.AddEntityState(typeof(SuperSonicTransformation));
         }
     }
 }

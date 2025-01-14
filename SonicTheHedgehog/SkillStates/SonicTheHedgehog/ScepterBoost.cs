@@ -73,7 +73,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 //Debug.Log("Scepter Boost hurtbox check");
                 HealthComponent healthComponent = hitList[i].healthComponent;
-                if (healthComponent && healthComponent!=base.characterBody.healthComponent && !boostLogic.recentlyHitHealthComponents.Contains(healthComponent))
+                //if (healthComponent && healthComponent!=base.characterBody.healthComponent && !boostLogic.recentlyHitHealthComponents.Contains(healthComponent))
                 {
                     CalculateDamage(hitList[i]);
                     if (NetworkServer.active)
@@ -84,7 +84,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         new ScepterBoostDamage(hitList[i], this.damageInfo).Send(NetworkDestination.Server);
                     }
-                    boostLogic.AddTracker(healthComponent);
+                    //boostLogic.AddTracker(healthComponent);
                 }
             }
         }

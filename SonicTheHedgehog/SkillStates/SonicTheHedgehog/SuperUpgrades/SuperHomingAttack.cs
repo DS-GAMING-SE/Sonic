@@ -12,6 +12,11 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {
     public class SuperHomingAttack : HomingAttack
     {
+
+        protected override float launchPushForce
+        {
+            get { return 1000f; }
+        }
         protected override float baseHomingAttackEndLag
         {
             get { return 0.1f; }

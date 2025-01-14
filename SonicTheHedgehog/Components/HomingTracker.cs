@@ -64,7 +64,7 @@ namespace SonicTheHedgehog.Components
             {
                 this.trackerUpdateStopwatch = 0;
                 System.Type stateType = this.bodyState.state.GetType();
-                bool notTargetingState = typeof(Boost).IsAssignableFrom(stateType) || stateType == typeof(Death) || typeof(Parry).IsAssignableFrom(stateType) || typeof(GrandSlamSpin).IsAssignableFrom(stateType) || typeof(GrandSlamFinal).IsAssignableFrom(stateType) || typeof(TransformationBase).IsAssignableFrom(stateType);
+                bool notTargetingState = typeof(Boost).IsAssignableFrom(stateType) || stateType == typeof(Death) || typeof(Parry).IsAssignableFrom(stateType) || typeof(GrandSlamSpin).IsAssignableFrom(stateType) || typeof(GrandSlamFinal).IsAssignableFrom(stateType) || typeof(HedgehogUtils.Forms.EntityStates.TransformationBase).IsAssignableFrom(stateType);
                 if (notTargetingState)
                 {
                     this.indicator.targetTransform = null;

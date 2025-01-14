@@ -66,7 +66,7 @@ namespace SonicTheHedgehog.SkillStates
             base.skillLocator.primary.RunRecharge(StaticValues.parryCooldownReduction);
             if (typeof(Boost).IsAssignableFrom(base.skillLocator.utility.activationState.stateType) && NetworkServer.active)
             {
-                BoostLogic boost = base.characterBody.GetComponent<BoostLogic>();
+                PowerBoostLogic boost = base.characterBody.GetComponent<PowerBoostLogic>();
                 if (boost)
                 {
                     boost.AddBoost(StaticValues.parryBoostRecharge);

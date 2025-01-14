@@ -15,7 +15,7 @@ namespace SonicTheHedgehog.Components
     public class BoostHUD : MonoBehaviour
     {
         //thanks red mist
-        private BoostLogic boostLogic;
+        private PowerBoostLogic boostLogic;
 
         public GameObject boostMeter;
 
@@ -63,7 +63,7 @@ namespace SonicTheHedgehog.Components
             {
                 return;
             }
-            boostLogic = this.hud.targetBodyObject.GetComponent<BoostLogic>();
+            boostLogic = this.hud.targetBodyObject.GetComponent<PowerBoostLogic>();
             if (boostLogic && boostLogic.boostExists)
             {
                 if (this.hud.targetMaster)

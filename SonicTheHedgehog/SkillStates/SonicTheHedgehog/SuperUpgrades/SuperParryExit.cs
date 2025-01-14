@@ -21,10 +21,10 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
                 EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
                 if (superStateMachine)
                 {
-                    if (superStateMachine.state.GetType() == typeof(SuperSonic))
+                    /*if (superStateMachine.state.GetType() == typeof(SuperSonic))
                     {
                         ((SuperSonic)superStateMachine.state).ParryActivated();
-                    }
+                    }*/
                 }
             }
         }

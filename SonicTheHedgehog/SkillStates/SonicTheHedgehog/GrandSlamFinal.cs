@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using IL.RoR2.ConVar;
+using R2API;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
@@ -20,7 +21,7 @@ namespace SonicTheHedgehog.SkillStates
         protected float procCoefficient = StaticValues.grandSlamFinalProcCoefficient;
         protected virtual float basePushForce
         {
-            get { return 3000f; }
+            get { return 1000f; }
         }
         protected Vector3 bonusForce = Vector3.down;
         protected float attackRecoil = 11f;
@@ -230,6 +231,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
             this.attack.damageType.damageSource = DamageSource.Special;
+            this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();
