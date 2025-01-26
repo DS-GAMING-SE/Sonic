@@ -78,9 +78,8 @@ namespace SonicTheHedgehog.SkillStates
             this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             this.hasFired = false;
 
-            //this.hitSoundString = swingIndex == 4 ? "Play_melee_hit_final" : "Play_melee_hit";
             this.impactSound = swingIndex == 4 ? Modules.Assets.meleeFinalHitSoundEvent.index : Modules.Assets.meleeHitSoundEvent.index;
-            this.swingSoundString = swingIndex == 4 ? "Play_swing_low" : "Play_swing";
+            this.swingSoundString = swingIndex == 4 ? "Play_sonicthehedgehog_swing_strong" : "Play_sonicthehedgehog_swing";
             this.hitboxName = "Sword";
             this.procCoefficient = StaticValues.meleeProcCoefficient;
             this.damageCoefficient = swingIndex == 4 ? Modules.StaticValues.finalMeleeDamageCoefficient : Modules.StaticValues.meleeDamageCoefficient;

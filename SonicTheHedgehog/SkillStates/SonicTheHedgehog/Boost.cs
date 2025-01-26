@@ -23,9 +23,9 @@ namespace SonicTheHedgehog.SkillStates
         public static float airBoostY = 8;
         public static float screenShake = 3.5f;
 
-        private string jumpSoundString = "Play_jump";
-        public static string boostSoundString = "Play_boost";
-        public static string boostChangeSoundString = "Play_boost_change";
+        private string jumpSoundString = "Play_sonicthehedgehog_jump";
+        public static string boostSoundString = "Play_hedgehogutils_boost";
+        public static string boostChangeSoundString = "Play_sonicthehedgehog_boost_change";
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
 
         private Vector3 forwardDirection;
@@ -452,7 +452,7 @@ namespace SonicTheHedgehog.SkillStates
 
         public virtual string GetSoundString()
         {
-            return "Play_boost";
+            return "Play_hedgehogutils_boost";
         }
 
         public virtual GameObject GetFlashPrefab(bool power)

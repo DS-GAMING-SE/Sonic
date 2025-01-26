@@ -47,7 +47,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected string swingSoundString = "";
         protected string hitSoundString = "";
-        protected string homingAttackSoundString = "Play_homing_attack";
+        protected string homingAttackSoundString = "Play_sonicthehedgehog_homing_attack";
         protected string muzzleString;
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;

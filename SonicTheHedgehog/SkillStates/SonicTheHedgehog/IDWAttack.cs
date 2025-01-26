@@ -66,7 +66,7 @@ namespace SonicTheHedgehog.SkillStates
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
             base.characterMotor.disableAirControlUntilCollision = false;
-            Util.PlaySound("Play_idw", base.gameObject);
+            Util.PlaySound("Play_sonicthehedgehog_idw", base.gameObject);
             idwAttackEffect = UnityEngine.GameObject.Instantiate<GameObject>(Modules.Assets.idwAttackEffect);
 
             EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicBlurEffect, base.gameObject, "BlurForward", true);
@@ -146,7 +146,7 @@ namespace SonicTheHedgehog.SkillStates
                     }
                     */
                     idwAttackEffect.transform.position = this.targetPosition;
-                    Util.PlaySound("Play_idw_hit", base.gameObject);
+                    Util.PlaySound("Play_sonicthehedgehog_idw_hit", base.gameObject);
                     FireBlastAttack();
                     return;
                 }
@@ -167,7 +167,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
                     }
-                    Util.PlaySound("Play_idw_end", base.gameObject);
+                    Util.PlaySound("Play_sonicthehedgehog_idw_end", base.gameObject);
                     this.endLag = baseEndLag / base.characterBody.attackSpeed;
                     base.PlayAnimation("FullBody, Override", "IDWEnd", "Slash.playbackRate", this.endLag);
                     base.characterDirection.forward = base.characterDirection.forward * -1;

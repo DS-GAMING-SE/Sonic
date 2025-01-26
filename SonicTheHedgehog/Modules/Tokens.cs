@@ -112,9 +112,16 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
             string parryOnHitDescription =
-                $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give <style=cIsDamage>+{StaticValues.parryAttackSpeedBuff * 100}% attack speed</style>, give <style=cIsUtility>+{StaticValues.parryMovementSpeedBuff * 100}% movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
+                $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give +{StaticValues.parryAttackSpeedBuff * 100}% <style=cIsDamage>attack speed</style> and <style=cIsUtility>movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION",
-                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription}");
+                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription} It will also temporarily <style=cIsUtility>replace this skill</style> with \"<style=cIsUtility>Follow Up</style>\" which deals damage to nearby enemies");
+
+            #endregion
+
+            #region Follow Up
+            LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_NAME", "Follow Up");
+            LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> hit enemies.");
 
             #endregion
 
@@ -122,7 +129,7 @@ namespace SonicTheHedgehog.Modules
             string idwAttackName = $"IDW Attack";
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Perfect Parry</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} \n{superSonicColor}Reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}% and armor by {StaticValues.superParryArmorDebuff}. \nReplace this skill with \"{idwAttackName}\". \n\nThis can only be triggered once.</color>");
+                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}It will also reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.</color>");
 
             #endregion
 
@@ -147,7 +154,7 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_NAME", $"Thundering Boost");
             string scepterBoostDescription = Helpers.ScepterDescription(
-                $"Run into enemies to deal {StaticValues.scepterBoostDamageCoefficient * 100f}% damage. Damage increases based on your movement speed.");
+                $"Run into enemies to deal {StaticValues.scepterBoostDamageCoefficient * 100f}% damage and launch them. Damage increases based on your movement speed.");
             LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_DESCRIPTION", boostDescription + scepterBoostDescription);
 
             #endregion
@@ -212,25 +219,6 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #endregion
-        }
-
-        internal static string FileNotFoundEmeraldLogHelper(StringBuilder sb, int index)
-        {
-            sb.Clear();
-            int count = 0;
-            while (count < 7)
-            {
-                if (count == index)
-                {
-                    sb.Append(" [ ]");
-                }
-                else
-                {
-                    sb.Append(" [X]");
-                }
-                count++;
-            }
-            return sb.ToString();
         }
     }
 }

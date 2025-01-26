@@ -16,7 +16,7 @@ namespace SonicTheHedgehog.Components
 
         private CharacterBody body;
         private EntityStateMachine bodyStateMachine;
-        private GenericSkill passiveSkill;
+        
         private ICharacterFlightParameterProvider flight;
 
         public bool momentumEquipped=false;
@@ -39,16 +39,27 @@ namespace SonicTheHedgehog.Components
         private static float fastDecay = 0.8f;
         private static float slowDecay = 1.35f;
 
+        protected bool requiresPassiveSkill = true; // Change this in Start() before base.Start() if you don't want to have a passive slot for it
+        protected string passiveSkillFamilyName = "SonicTheHedgehogMiscFamily";
+        private GenericSkill passiveSkill;
+
         private void Start()
         {
             this.body = GetComponent<CharacterBody>();
             this.bodyStateMachine = EntityStateMachine.FindByCustomName(body.gameObject, "Body");
-            this.passiveSkill = body.skillLocator.FindSkillByFamilyName("SonicTheHedgehogMiscFamily");
             this.flight = body.GetComponent<ICharacterFlightParameterProvider>();
-            if (this.passiveSkill)
+            if (requiresPassiveSkill)
             {
-                MomentumEquipped();
-                this.passiveSkill.onSkillChanged += OnSkillChanged;
+                this.passiveSkill = body.skillLocator.FindSkillByFamilyName(passiveSkillFamilyName);
+                if (this.passiveSkill)
+                {
+                    MomentumEquipped();
+                    this.passiveSkill.onSkillChanged += OnSkillChanged;
+                }
+                else
+                {
+                    Log.Error($"Passive skill family \"{passiveSkillFamilyName}\" not found");
+                }
             }
         }
 
@@ -75,7 +86,7 @@ namespace SonicTheHedgehog.Components
             // Flying (Thank you Starstorm 2 Back Thrusters for inspiration)
             if (flight!=null && flight.isFlying)
             {
-                if (body.characterMotor.velocity != Vector3.zero && (bodyStateMachine.state.GetType() == typeof(SonicEntityState) || typeof(Boost).IsAssignableFrom(bodyStateMachine.state.GetType())))
+                if (body.characterMotor.velocity != Vector3.zero && (typeof(GenericCharacterMain).IsAssignableFrom(bodyStateMachine.state.GetType())))
                 {
                     this.calced = false;
                     Vector3 velocity = Vector3.Normalize(body.characterMotor.velocity);
@@ -115,7 +126,7 @@ namespace SonicTheHedgehog.Components
 
 
             // Not Flying
-            if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (bodyStateMachine.state.GetType()==typeof(SonicEntityState) || typeof(Boost).IsAssignableFrom(bodyStateMachine.state.GetType())))
+            if (body.characterMotor.velocity != Vector3.zero && body.characterMotor.isGrounded && (typeof(GenericCharacterMain).IsAssignableFrom(bodyStateMachine.state.GetType())))
             {
                 calced = false;
                 Vector3 forward = VelocityOnGround(body.characterMotor.velocity); //body.characterMotor.moveDirection.normalized;

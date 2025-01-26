@@ -121,6 +121,9 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             hitboxTransform = childLocator.FindChild("StompHitbox");
             Modules.Prefabs.SetupHitbox(prefabCharacterModel.gameObject, hitboxTransform, "Stomp");
+
+            hitboxTransform = childLocator.FindChild("ParryFollowUpHitbox");
+            Modules.Prefabs.SetupHitbox(prefabCharacterModel.gameObject, hitboxTransform, "FollowUp");
         }
 
         public static void UnlockParryConfig(object orig, EventArgs self)
@@ -201,6 +204,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         public static SkillDef sonicBoomSkillDef;
         public static SkillDef parrySkillDef;
+        public static SkillDef followUpSkillDef;
 
         public static SkillDef boostSkillDef;
         public static SkillDef newBoostSkillDef;
@@ -222,6 +226,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<Components.MomentumPassive>();
             bodyPrefab.AddComponent<Components.HomingTracker>();
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.StayOnGround>();
+            bodyPrefab.AddComponent<ParryFollowUpTracker>();
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 
@@ -259,6 +264,8 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
+            #region Secondary Sonic Boom
+
             SkillDefInfo sonicBoom = new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME",
@@ -283,13 +290,13 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1,
             };
 
-            #region Secondary
-
             sonicBoomSkillDef = Modules.Skills.CreateSkillDef(sonicBoom);
 
             Modules.Skills.AddSecondarySkills(bodyPrefab, sonicBoomSkillDef);
 
             #endregion
+
+            #region Secondary Parry
 
             SkillDefInfo parry = new SkillDefInfo
             {
@@ -304,7 +311,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
-                fullRestockOnAssign = true,
+                fullRestockOnAssign = false,
                 interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
                 resetCooldownTimerOnUse = false,
                 isCombatSkill = false,
@@ -315,8 +322,6 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1,
             };
 
-            #region Secondary
-
             parrySkillDef = Modules.Skills.CreateSkillDef(parry);
 
             Skills.AddSkillToFamily(bodyPrefab.GetComponent<SkillLocator>().secondary.skillFamily, parrySkillDef,
@@ -324,7 +329,39 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
-            #region Utility
+            #region Secondary Parry Follow Up
+
+            SkillDefInfo followUp = new SkillDefInfo
+            {
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_PARRY_FOLLOW_UP_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_PARRY_FOLLOW_UP_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texFollowUpIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.FollowUp)),
+                activationStateMachineName = "Body",
+                baseMaxStock = 1,
+                baseRechargeInterval = 3f,
+                beginSkillCooldownOnSkillEnd = true,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = true,
+                mustKeyPress = true,
+                cancelSprintingOnActivation = true,
+                rechargeStock = 1,
+                requiredStock = 1,
+                stockToConsume = 1,
+            };
+
+            followUpSkillDef = Modules.Skills.CreateSkillDef(followUp);
+
+            ParryExit.followUpSkillDef = followUpSkillDef;
+
+            #endregion
+
+            /*#region Utility
 
             SkillDefInfo boost = new SkillDefInfo
             {
@@ -353,10 +390,10 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
 
-            #endregion
+            #endregion*/
             #region New Utility
 
-            SkillDefInfo newBoost = new SkillDefInfo
+            SkillDefInfo boost = new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
@@ -379,9 +416,9 @@ namespace SonicTheHedgehog.Modules.Survivors
                 requiredStock = 1,
                 stockToConsume = 0
             };
-            newBoostSkillDef = Modules.Skills.CreateSkillDef(newBoost);
+            boostSkillDef = Modules.Skills.CreateSkillDef(boost);
 
-            Modules.Skills.AddUtilitySkills(bodyPrefab, newBoostSkillDef);
+            Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
 
             #endregion
 
@@ -522,7 +559,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1,
             };
 
-            SuperSonic.idwAttack = Skills.CreateSkillDef(idwAttack);
+            SuperParryExit.idwAttackSkillDef = Skills.CreateSkillDef(idwAttack);
 
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperBoost));
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
@@ -551,7 +588,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
             boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_DESCRIPTION";
-            boost.activationState = new EntityStates.SerializableEntityStateType(typeof(ScepterBoost));
+            boost.activationState = new EntityStates.SerializableEntityStateType(typeof(ScepterBoostEnter));
             boost.skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texScepterBoostIcon");
             SkillDef skillDef = Skills.CreateSkillDef(boost);
             Content.AddEntityState(typeof(ScepterBoost));

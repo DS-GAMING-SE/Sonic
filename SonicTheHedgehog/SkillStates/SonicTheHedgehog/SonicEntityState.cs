@@ -19,7 +19,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private const float idleExtraDefault = 8;
 
-        private string jumpSoundString = "Play_jump";
+        private string jumpSoundString = "Play_sonicthehedgehog_jump";
 
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()

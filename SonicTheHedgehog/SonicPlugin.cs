@@ -310,8 +310,9 @@ namespace SonicTheHedgehog
             {
                 if (self.HasBuff(Buffs.boostBuff))
                 {
-                    stats.baseMoveSpeedAdd += PowerBoostLogic.ShouldPowerBoost(self) ? StaticValues.powerBoostSpeedFlatCoefficient : StaticValues.boostSpeedFlatCoefficient;
-                    stats.moveSpeedMultAdd += PowerBoostLogic.ShouldPowerBoost(self) ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
+                    //stats.baseMoveSpeedAdd += PowerBoostLogic.ShouldPowerBoost(self) ? StaticValues.powerBoostSpeedFlatCoefficient : StaticValues.boostSpeedFlatCoefficient;
+                    //stats.moveSpeedMultAdd += PowerBoostLogic.ShouldPowerBoost(self) ? StaticValues.powerBoostSpeedCoefficient : StaticValues.boostSpeedCoefficient;
+                    HedgehogUtils.Boost.BoostLogic.BoostStats(self, stats, PowerBoostLogic.ShouldPowerBoost(self) ? StaticValues.powerBoostListedSpeedCoefficient : StaticValues.boostListedSpeedCoefficient);
                     stats.armorAdd += StaticValues.boostArmor;
                 }
 

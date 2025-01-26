@@ -41,6 +41,7 @@ namespace SonicTheHedgehog.Modules
 
         public static GameObject parryEffect;
         public static GameObject parryActivateEffect;
+        public static GameObject followUpKickEffect;
         public static GameObject idwAttackEffect;
 
         public static GameObject superSonicBlurEffect;
@@ -69,7 +70,6 @@ namespace SonicTheHedgehog.Modules
         internal static NetworkSoundEventDef homingHitSoundEvent;
         internal static NetworkSoundEventDef grandSlamHitSoundEvent;
 
-        internal static LoopSoundDef superLoopSoundDef;
         internal static LoopSoundDef superGrandSlamLoopSoundDef;
 
         #endregion
@@ -165,12 +165,12 @@ namespace SonicTheHedgehog.Modules
             sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
             if (sonicBoomImpactEffect)
             {
-                sonicBoomImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonic_boom_explode";
+                sonicBoomImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonicthehedgehog_sonic_boom_explode";
             }
             crossSlashImpactEffect = Assets.LoadEffect("SonicCrossSlashImpact");
             if (crossSlashImpactEffect)
             {
-                crossSlashImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonic_boom_explode";
+                crossSlashImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonicthehedgehog_sonic_boom_explode";
             }
 
             superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
@@ -189,6 +189,7 @@ namespace SonicTheHedgehog.Modules
 
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
+            followUpKickEffect = Assets.LoadEffect("SonicFollowUpKick", true);
             idwAttackEffect = MaterialSwap(Assets.LoadEffect("SonicIDWAttack", true), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/Distortion");
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
@@ -255,18 +256,14 @@ namespace SonicTheHedgehog.Modules
 
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 
-            meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit");
-            meleeFinalHitSoundEvent = CreateNetworkSoundEventDef("Play_melee_hit_final");
-            homingHitSoundEvent = CreateNetworkSoundEventDef("Play_homing_impact");
-            grandSlamHitSoundEvent = CreateNetworkSoundEventDef("Play_strong_impact");
-
-            superLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
-            superLoopSoundDef.startSoundName = "Play_super_loop";
-            superLoopSoundDef.stopSoundName = "Stop_super_loop";
+            meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_sonicthehedgehog_melee_hit");
+            meleeFinalHitSoundEvent = CreateNetworkSoundEventDef("Play_sonicthehedgehog_melee_hit_final");
+            homingHitSoundEvent = CreateNetworkSoundEventDef("Play_sonicthehedgehog_homing_impact");
+            grandSlamHitSoundEvent = CreateNetworkSoundEventDef("Play_sonicthehedgehog_strong_impact");
 
             superGrandSlamLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
-            superGrandSlamLoopSoundDef.startSoundName = "Play_super_grand_slam_loop";
-            superGrandSlamLoopSoundDef.stopSoundName = "Stop_super_grand_slam_loop";
+            superGrandSlamLoopSoundDef.startSoundName = "Play_sonicthehedgehog_super_grand_slam_loop";
+            superGrandSlamLoopSoundDef.stopSoundName = "Stop_sonicthehedgehog_super_grand_slam_loop";
 
             if (superSonicTransformationEffect)
             {

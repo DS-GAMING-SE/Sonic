@@ -13,7 +13,7 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class NewBoost : HedgehogUtils.Boost.EntityStates.Boost
     {
-        private string jumpSoundString = "Play_jump";
+        private string jumpSoundString = "Play_sonicthehedgehog_jump";
 
         private const float boostChangeCooldown = 0.4f;
 
@@ -21,14 +21,22 @@ namespace SonicTheHedgehog.SkillStates
 
         private bool boostChangeEffect;
 
+        protected override BuffDef buff
+        {
+            get { return Buffs.boostBuff; }
+        }
+
         public override void OnEnter()
         {
             base.characterMotor.onHitGroundAuthority += OnHitGround;
-            buff = Buffs.boostBuff;
             base.OnEnter();
             if (base.modelLocator)
             {
                 modelLocator.normalizeToFloor = true;
+            }
+            if (airBoosting)
+            {
+                base.characterMotor.disableAirControlUntilCollision = false;
             }
         }
 
@@ -111,12 +119,19 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (boostChangeEffect)
             {
-                return "Play_boost_change";
+                return "Play_sonicthehedgehog_boost_change";
             }
             else
             {
-                return "Play_boost";
+                return "Play_hedgehogutils_boost";
             }
+        }
+
+        protected override void SetBrakeState(Vector3 endDirection)
+        {
+            SonicBrake brake = new SonicBrake();
+            brake.endDirection = endDirection;
+            outer.SetNextState(brake);
         }
     }
 }

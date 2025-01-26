@@ -15,12 +15,16 @@ namespace SonicTheHedgehog.SkillStates
     {
         public override void OnEnter()
         {
-            boostEntityStateType = typeof(NewBoost);
             base.OnEnter();
             if (base.modelLocator)
             {
                 modelLocator.normalizeToFloor = true;
             }
+        }
+
+        public override void EnterBoost()
+        {
+            outer.SetNextState(EntityStateCatalog.InstantiateState(typeof(NewBoost)));
         }
 
         public override void OnExit()

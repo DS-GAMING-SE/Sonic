@@ -27,6 +27,7 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(Parry));
             Modules.Content.AddEntityState(typeof(ParryExit));
+            Modules.Content.AddEntityState(typeof(FollowUp));
 
             Modules.Content.AddEntityState(typeof(SuperParry));
             Modules.Content.AddEntityState(typeof(SuperParryExit));
@@ -36,6 +37,10 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(NewBoost));
             Modules.Content.AddEntityState(typeof(BoostEnter));
             Modules.Content.AddEntityState(typeof(BoostIdle));
+
+            Modules.Content.AddEntityState(typeof(NewScepterBoost));
+            Modules.Content.AddEntityState(typeof(ScepterBoostEnter));
+            Modules.Content.AddEntityState(typeof(ScepterBoostIdle));
 
             Modules.Content.AddEntityState(typeof(Boost));
             Modules.Content.AddEntityState(typeof(ScepterBoost));

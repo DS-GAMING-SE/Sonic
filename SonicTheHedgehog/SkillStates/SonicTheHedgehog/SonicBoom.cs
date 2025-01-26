@@ -21,7 +21,7 @@ namespace SonicTheHedgehog.SkillStates
         public static float range = 100f;
         public virtual float baseMovementReduction
         {
-            get { return 0.3f; }
+            get { return 0.45f; }
         }
         protected static float offset = 0.4f;
 
@@ -52,7 +52,7 @@ namespace SonicTheHedgehog.SkillStates
         protected virtual void Fire()
         {
             this.firedCounter++;
-            Util.PlaySound("Play_sonic_boom_fire", base.gameObject);
+            Util.PlaySound("Play_sonicthehedgehog_sonic_boom_fire", base.gameObject);
             if (base.isAuthority)
             {
                 StartAimMode();
@@ -133,7 +133,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.skillLocator.utility.OnExecute();
                 return;
             }
-            if (base.fixedAge >= (Modules.StaticValues.sonicBoomFireTime * (Modules.StaticValues.sonicBoomCount)) && !exitAnimPlayed)
+            if (base.fixedAge >= (this.fireTime * (Modules.StaticValues.sonicBoomCount)) && !exitAnimPlayed)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
                 base.PlayAnimation("Body", "SonicBoomEnd");

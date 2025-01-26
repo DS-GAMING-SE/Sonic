@@ -13,7 +13,7 @@ namespace SonicTheHedgehog.Components
         
         private void PlaySound()
         {
-            this.playID = Util.PlaySound("Play_brake", base.gameObject);
+            this.playID = Util.PlaySound("Play_sonicthehedgehog_menu_brake", base.gameObject);
         }
 
         private void OnDestroy()

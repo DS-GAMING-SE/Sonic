@@ -35,9 +35,9 @@ namespace SonicTheHedgehog.SkillStates
         protected HurtBox target = null;
         private Vector3 targetDirection;
 
-        protected string chargeSoundString = "Play_spindash_charge";
-        protected string launchSoundString = "Play_spindash_release";
-        protected string hitSoundString = "Play_homing_impact";
+        protected string chargeSoundString = "Play_sonicthehedgehog_spindash_charge";
+        protected string launchSoundString = "Play_sonicthehedgehog_spindash_release";
+        protected string hitSoundString = "Play_sonicthehedgehog_homing_impact";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;

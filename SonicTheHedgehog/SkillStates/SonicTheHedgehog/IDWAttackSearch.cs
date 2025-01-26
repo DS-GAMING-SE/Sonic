@@ -23,9 +23,9 @@ namespace SonicTheHedgehog.SkillStates
         protected bool targetLocked = false;
         protected Vector3 targetPosition = Vector3.zero;
 
-        protected string chargeSoundString = "Play_spindash_charge";
-        protected string launchSoundString = "Play_spindash_release";
-        protected string hitSoundString = "Play_homing_impact";
+        protected string chargeSoundString = "Play_sonicthehedgehog_spindash_charge";
+        protected string launchSoundString = "Play_sonicthehedgehog_spindash_release";
+        protected string hitSoundString = "Play_sonicthehedgehog_homing_impact";
         protected string muzzleString = "SwingCenter";
 
         public float duration;
@@ -53,7 +53,7 @@ namespace SonicTheHedgehog.SkillStates
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
             base.characterMotor.disableAirControlUntilCollision = false;
-            Util.PlaySound("Play_swing", base.gameObject);
+            Util.PlaySound("Play_sonicthehedgehog_swing", base.gameObject);
             base.StartAimMode(this.searchTime, false);
         }
 

@@ -11,7 +11,7 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class Death : GenericCharacterDeath
     {
-        protected string soundString = "Play_death";
+        protected string soundString = "Play_sonicthehedgehog_death";
         private const float destroyTime=1.6f;
         public override void OnEnter()
         {

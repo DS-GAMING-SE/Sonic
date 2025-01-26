@@ -23,7 +23,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             get { return 1000f; }
         }
-        protected Vector3 bonusForce = Vector3.down;
         protected float attackRecoil = 11f;
         protected float startUpTime = 0.5f;
         private float baseMaxAttackTime = 1f;
@@ -36,7 +35,7 @@ namespace SonicTheHedgehog.SkillStates
         protected Vector3 targetDirection;
 
         protected string swingSoundString = "";
-        protected string hitSoundString = "Play_strong_impact";
+        protected string hitSoundString = "Play_sonicthehedgehog_strong_impact";
         protected string muzzleString = "SwingBottom";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;
@@ -74,7 +73,7 @@ namespace SonicTheHedgehog.SkillStates
             this.hasHit = false;
             this.hitboxName = "Stomp";
             base.PlayAnimation("FullBody, Override", "GrandSlam", "Roll.playbackRate", this.startUpTime*1.15f);
-            Util.PlaySound("Play_swing_low", base.gameObject);
+            Util.PlaySound("Play_sonicthehedgehog_swing_low", base.gameObject);
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
@@ -238,8 +237,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.damage = this.damageCoefficient * this.damageStat;
             this.attack.procCoefficient = this.procCoefficient;
             this.attack.hitEffectPrefab = this.hitEffectPrefab;
-            this.attack.forceVector = this.bonusForce;
-            this.attack.pushAwayForce = basePushForce;
+            this.attack.forceVector = basePushForce * Vector3.down;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;

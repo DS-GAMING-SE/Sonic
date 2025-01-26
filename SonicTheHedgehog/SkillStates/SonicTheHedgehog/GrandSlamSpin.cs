@@ -29,7 +29,7 @@ namespace SonicTheHedgehog.SkillStates
         public HurtBox target;
 
         protected string swingSoundString = "";
-        protected string hitSoundString = "Play_melee_hit";
+        protected string hitSoundString = "Play_sonicthehedgehog_melee_hit";
         protected string muzzleString = "SwingCenter";
         protected GameObject swingEffectPrefab;
         protected GameObject hitEffectPrefab = Modules.Assets.meleeImpactEffect;

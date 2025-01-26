@@ -72,7 +72,10 @@ namespace SonicTheHedgehog.Modules.Achievements
             {
                 this.count += 1;
                 this.hitEnemies.Add(hurtBox.healthComponent);
-                this.pityTimer = 0;
+                if (count == 1)
+                {
+                    this.pityTimer = 0;
+                }
                 Log.Message("Homing attack achievement progress: "+this.count.ToString());
                 if (this.count >= countRequired)
                 {

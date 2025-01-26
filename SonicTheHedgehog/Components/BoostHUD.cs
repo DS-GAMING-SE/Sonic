@@ -82,7 +82,7 @@ namespace SonicTheHedgehog.Components
                         fadeTimer += Time.fixedDeltaTime;
                         Color fill = Color.Lerp(fillDefaultColor, fillFadeColor, fadeTimer);
                         Color background = Color.Lerp(backgroundDefaultColor, new Color(0, 0, 0, 0), fadeTimer);
-                        if (boostLogic.boostRegen < Boost.boostMeterDrain)
+                        if (boostLogic.boostRegen < boostLogic.boostMeterDrain)
                         {
                             meterBackground.gameObject.SetActive(true);
                             meterFill.color = fill;
@@ -105,7 +105,7 @@ namespace SonicTheHedgehog.Components
                     else
                     {
                         fadeTimer = 0;
-                        if (boostLogic.boostRegen < Boost.boostMeterDrain)
+                        if (boostLogic.boostRegen < boostLogic.boostMeterDrain)
                         {
                             meterBackground.gameObject.SetActive(true);
                             meterFill.color = boostLogic.boostAvailable ? fillDefaultColor : fillUnavailableColor;
@@ -187,11 +187,6 @@ namespace SonicTheHedgehog.Components
                 powerBoostParticle.Stop();
                 powerBoostParticlePlaying = false;
             }
-        }
-
-        private void Reposition()
-        {
-
         }
     }
 }

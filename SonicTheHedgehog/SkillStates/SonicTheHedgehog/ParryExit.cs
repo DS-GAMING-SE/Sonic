@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using RoR2;
+using RoR2.Skills;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
 using UnityEngine;
@@ -22,9 +23,13 @@ namespace SonicTheHedgehog.SkillStates
         private string muzzleString= "BallHitbox";
         private Vector3 targetVelocity;
 
+        protected ParryFollowUpTracker followUp;
+        public static SkillDef followUpSkillDef;
+
         public override void OnEnter()
         {
             base.OnEnter();
+            this.followUp = base.GetComponent<ParryFollowUpTracker>();
             this.endLag = parrySuccess ? baseEndLag / base.characterBody.attackSpeed : baseEndLagFail / base.characterBody.attackSpeed;
             base.characterMotor.disableAirControlUntilCollision = false;
             base.modelLocator.normalizeToFloor = true;
@@ -33,7 +38,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.parryEffect, base.gameObject, this.muzzleString, true);
             }
-            Util.PlaySound("Play_swing_low", base.gameObject);
+            Util.PlaySound("Play_sonicthehedgehog_swing_low", base.gameObject);
             if (parrySuccess)
             {
                 OnSuccessfulParry();
@@ -64,10 +69,10 @@ namespace SonicTheHedgehog.SkillStates
         private void RechargeCooldowns()
         {
             base.skillLocator.primary.RunRecharge(StaticValues.parryCooldownReduction);
-            if (typeof(Boost).IsAssignableFrom(base.skillLocator.utility.activationState.stateType) && NetworkServer.active)
+            if (NetworkServer.active)
             {
-                PowerBoostLogic boost = base.characterBody.GetComponent<PowerBoostLogic>();
-                if (boost)
+                HedgehogUtils.Boost.BoostLogic boost = base.characterBody.GetComponent<HedgehogUtils.Boost.BoostLogic>();
+                if (boost && boost.boostExists)
                 {
                     boost.AddBoost(StaticValues.parryBoostRecharge);
                 }
@@ -91,7 +96,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.parryActivateEffect, base.gameObject, this.muzzleString, true);
             }
-            Util.PlaySound("Play_parry", base.gameObject);
+            Util.PlaySound("Play_sonicthehedgehog_parry", base.gameObject);
         }
 
         protected virtual void OnSuccessfulParry()
@@ -102,6 +107,15 @@ namespace SonicTheHedgehog.SkillStates
             }
             OnParryVFX();
             RechargeCooldowns();
+            if (followUp && base.isAuthority)
+            {
+                FollowUpAttack();
+            }
+        }
+
+        protected virtual void FollowUpAttack()
+        {
+            followUp.ReadyFollowUpAttack(skillLocator.secondary.skillDef, followUpSkillDef, StaticValues.parryBuffDuration);
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
