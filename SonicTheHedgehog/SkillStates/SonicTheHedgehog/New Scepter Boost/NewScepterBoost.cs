@@ -13,7 +13,17 @@ namespace SonicTheHedgehog.SkillStates
     {
         protected OverlapAttack attack;
         protected float attackTimer;
-        protected static float attacksPerSecond = 6f;
+        protected static float attacksPerSecond = 10f;
+
+        protected virtual string hitBoxName
+        {
+            get { return "Ball"; }
+        }
+
+        protected virtual float launchForce
+        {
+            get { return 250f; }
+        }
 
         public override void OnEnter()
         {
@@ -30,7 +40,7 @@ namespace SonicTheHedgehog.SkillStates
                 if (attackTimer > 1 / attacksPerSecond)
                 {
                     attackTimer %= (1 / attacksPerSecond);
-                    attack.forceVector = base.characterDirection.forward * 200f;
+                    attack.forceVector = base.characterDirection.forward * (launchForce * 0.8f);
                     attack.isCrit = RollCrit();
                     attack.Fire();
                 }
@@ -66,14 +76,14 @@ namespace SonicTheHedgehog.SkillStates
 
             if (modelTransform)
             {
-                hitBoxGroup = Array.Find<HitBoxGroup>(modelTransform.GetComponents<HitBoxGroup>(), (HitBoxGroup element) => element.groupName == "Ball");
+                hitBoxGroup = Array.Find<HitBoxGroup>(modelTransform.GetComponents<HitBoxGroup>(), (HitBoxGroup element) => element.groupName == hitBoxName);
             }
 
             this.attack = new OverlapAttack();
             this.attack.damageType = DamageType.Generic;
             this.attack.damageType.damageSource = DamageSource.Utility;
             this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
-            this.attack.pushAwayForce = 75f;
+            this.attack.pushAwayForce = launchForce * 0.3f;
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();

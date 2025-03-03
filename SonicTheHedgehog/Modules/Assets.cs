@@ -196,6 +196,7 @@ namespace SonicTheHedgehog.Modules
 
             powerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             powerBoostAuraEffect = Assets.LoadAsyncedEffect("SonicPowerBoostAura");
+            // ScepterBoostElectricEffect ScepterSuperBoostElectricEffect
 
             scepterPowerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterPowerBoostFlashEffect)

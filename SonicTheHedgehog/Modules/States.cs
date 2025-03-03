@@ -42,11 +42,13 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(ScepterBoostEnter));
             Modules.Content.AddEntityState(typeof(ScepterBoostIdle));
 
-            Modules.Content.AddEntityState(typeof(Boost));
-            Modules.Content.AddEntityState(typeof(ScepterBoost));
+            Modules.Content.AddEntityState(typeof(NewSuperBoost));
+            Modules.Content.AddEntityState(typeof(SuperBoostEnter));
+            Modules.Content.AddEntityState(typeof(SuperBoostIdle));
 
-            Modules.Content.AddEntityState(typeof(SuperBoost));
-            Modules.Content.AddEntityState(typeof(SuperScepterBoost));
+            Modules.Content.AddEntityState(typeof(NewScepterSuperBoost));
+            Modules.Content.AddEntityState(typeof(ScepterSuperBoostEnter));
+            Modules.Content.AddEntityState(typeof(ScepterSuperBoostIdle));
 
             Modules.Content.AddEntityState(typeof(GrandSlamDash));
             Modules.Content.AddEntityState(typeof(GrandSlamSpin));

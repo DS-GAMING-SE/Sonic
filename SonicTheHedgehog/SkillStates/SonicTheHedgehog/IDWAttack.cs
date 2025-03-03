@@ -81,6 +81,8 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.AddBuff(RoR2Content.Buffs.Intangible);
             }
+
+            base.skillLocator.secondary.onSkillChanged += OnSkillChanged;
         }
 
         public override void OnExit()
@@ -104,6 +106,8 @@ namespace SonicTheHedgehog.SkillStates
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
+
+            base.skillLocator.secondary.onSkillChanged -= OnSkillChanged;
         }
 
         public override void FixedUpdate()
@@ -111,13 +115,6 @@ namespace SonicTheHedgehog.SkillStates
             base.FixedUpdate();
 
             this.stopwatch += Time.fixedDeltaTime;
-
-            if (!Forms.GetIsInForm(base.characterBody, SuperFormDef.superFormDef))
-            {
-                this.outer.SetNextStateToMain();
-                return;
-            }
-
 
             if (this.fixedAge <= attackDuration) // attack
             {
@@ -203,6 +200,13 @@ namespace SonicTheHedgehog.SkillStates
                 blastAttack.teamIndex = base.teamComponent.teamIndex;
                 blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
                 this.hit = blastAttack.Fire().hitPoints;
+            }
+        }
+        public virtual void OnSkillChanged(GenericSkill skill)
+        {
+            if (!typeof(IDWAttackSearch).IsAssignableFrom(skill.activationState.stateType) && skill.skillDef != SuperSkillReplacer.emptyParry)
+            {
+                outer.SetNextStateToMain();
             }
         }
 

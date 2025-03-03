@@ -23,7 +23,7 @@ namespace SonicTheHedgehog.SkillStates
         }
         public override void EnterAirBoost()
         {
-            NewBoost airBoost = (NewBoost)EntityStateCatalog.InstantiateState(typeof(NewScepterBoost));
+            NewScepterBoost airBoost = (NewScepterBoost)EntityStateCatalog.InstantiateState(typeof(NewScepterBoost));
             airBoost.airBoosting = true;
             outer.SetNextState(airBoost);
         }

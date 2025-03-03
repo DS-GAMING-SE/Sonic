@@ -34,13 +34,11 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
 
         private HomingTracker homingTracker;
-        private SuperSonicComponent superSonicComponent;
 
         public override void OnEnter()
         {
             base.OnEnter();
             this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
-            this.superSonicComponent = base.characterBody.GetComponent<SuperSonicComponent>();
             this.searchTime = baseSearchTime / base.characterBody.attackSpeed;
             SearchForTarget();
             if (base.isAuthority)
@@ -87,7 +85,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
-                if (this.targetLocked)
+                if (this.targetLocked && base.skillLocator.secondary.activationState.stateType == this.GetType())
                 {
                     this.outer.SetNextState(new IDWAttack { target = target });
                 }
@@ -108,14 +106,19 @@ namespace SonicTheHedgehog.SkillStates
             this.targetLocked = true;
             if (base.isAuthority)
             {
-                EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
+                if (base.gameObject.TryGetComponent<SuperSkillReplacer>(out SuperSkillReplacer skill))
+                {
+                    skill.IDWAttackActivated();
+                }
+                
+                /*EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "HedgehogUtilsForms");
                 if (superStateMachine)
                 {
                     /*if (superStateMachine.state.GetType() == typeof(SuperSonic))
                     {
                         ((SuperSonic)superStateMachine.state).IDWAttackActivated();
-                    }*/
-                }
+                    }
+                }*/
             }
         }
 

@@ -78,7 +78,7 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
             string meleeDescription =
-                $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>. The 5th melee hit and the Homing Attack can <style=cIsUtility>launch</style> killed enemies.";
+                $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>. This move can <style=cIsUtility>launch</style> lightweight enemies.";
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription);
 
             #endregion

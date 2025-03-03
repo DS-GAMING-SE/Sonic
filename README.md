@@ -14,7 +14,7 @@ Sonic's the name and speed is his game! Sonic is a survivor who's all about quic
 | Scepter Utility - **Thundering Boost** | <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/texScepterBoostIcon.png?raw=true" width="128"> | **Spend boost meter** to move 35% faster than normal. If **health is near full**, move 65% faster instead. If **airborne**, do a short **mid-air dash**. **SCEPTER:** Run into enemies to deal **900% damage**. Damage increases based on your **movement speed**. <details>Functions the same as normal boost aside from the extra damage. The damage deals 900% assuming default movement speed Sonic with power boost.</details> |
 | Special - **Grand Slam** | <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/texGrandSlamIcon.png?raw=true" width="128"> | **Homing**. Dash forward into an enemy to attack with 140% damage **repeatedly** before unleashing a powerful attack from above dealing 2200% damage.<details>This attack will home in on the enemy closest to the crosshair, similar to the homing attack. The amount of repeated weak hits you will do is 5 by default, but increases with attack speed. After landing the initial dash attack, you will have invincibility for the rest of the move's duration. 12 second cooldown.</details> |
 
-# <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/Emeralds/texGreenEmeraldIcon.png?raw=true" width="64"> Super Sonic
+# <img src="https://github.com/DS-GAMING-SE/HedgehogUtils/blob/master/UnityProject/HedgehogUtils/Assets/AssetBundle/Emeralds/Icons/texGreenEmeraldIcon.png?raw=true" width="64"> Super Sonic
 
 ## Chaos Emeralds
 If anyone is playing as Sonic and Artifact of Metamorphosis is **off**, Chaos Emeralds will spawn scattered around every normal stage. The emeralds must be purchased similarly to a large chest. Three Chaos Emeralds will spawn per stage, except if you're playing Simulacrum, where there will be five. You don't need one person to collect all Chaos Emeralds, as long as the players cumulatively have all seven, everyone will be able to transform.
@@ -31,7 +31,7 @@ Once all seven Chaos Emeralds have been collected, anyone playing as Sonic can t
 # Special Thanks
 - Presti (Lots of help with Super Sonic code)
 - FORCED_REASSEMBLY (Rigging the mastery skin)
-- Shader Forge (A tool that let me make the custom Chaos Emerald shaders without losing my mind https://github.com/CuteWaterBeary/ShaderForge)
+- Shader Forge (A tool that let me make the custom Chaos Emerald shaders pre-SOTS without losing my mind https://github.com/CuteWaterBeary/ShaderForge)
 - Sandwich (Writing the Sonic logbook)
 
 # For unfinished builds

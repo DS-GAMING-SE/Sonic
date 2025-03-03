@@ -4,6 +4,11 @@ using System.Text;
 using HedgehogUtils.Forms.SuperForm;
 using HedgehogUtils.Forms;
 using SonicTheHedgehog.Modules.Survivors;
+using MonoMod.RuntimeDetour;
+using EntityStates.AffixVoid;
+using HedgehogUtils.Forms.SuperForm.EntityStates;
+using SonicTheHedgehog.SkillStates;
+using System.Reflection;
 
 namespace SonicTheHedgehog.Modules
 {

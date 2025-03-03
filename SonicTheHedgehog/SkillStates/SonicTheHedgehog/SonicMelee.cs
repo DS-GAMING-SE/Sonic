@@ -89,8 +89,6 @@ namespace SonicTheHedgehog.SkillStates
             this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of duration
             this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of duration
             this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
-            this.pushForce = swingIndex == 4 ? 0f : 50f;
-            this.bonusForce = swingIndex == 4 ? (Vector3.Normalize(Vector3.up + base.characterDirection.forward) * launchPushForce)  : Vector3.zero;
             this.hitHopVelocity = Flying() ? 0 : 3 + (3 / this.attackSpeedStat);
             StartAimMode();
             PlayAttackAnimation();
@@ -173,6 +171,10 @@ namespace SonicTheHedgehog.SkillStates
                     OnFireAuthority();
                 }
             }
+            Vector3 aim = base.inputBank.aimDirection;
+            aim.y = 0;
+            aim = aim.normalized;
+            this.attack.forceVector = swingIndex == 4 ? (Vector3.Normalize(Vector3.up + aim) * launchPushForce) : aim * launchPushForce;
 
             if (base.isAuthority)
             {
@@ -363,6 +365,10 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.damageType.damageSource = DamageSource.Primary;
             if (swingIndex == 4)
             {
+                this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
+            }
+            else
+            {
                 this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launchOnKill);
             }
             this.attack.attacker = base.gameObject;
@@ -371,8 +377,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.damage = this.damageCoefficient * this.damageStat;
             this.attack.procCoefficient = this.procCoefficient;
             this.attack.hitEffectPrefab = this.hitEffectPrefab;
-            this.attack.forceVector = this.bonusForce;
-            this.attack.pushAwayForce = this.pushForce;
+            this.attack.pushAwayForce = 0;
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;
