@@ -64,7 +64,6 @@ namespace SonicTheHedgehog.SkillStates
 
         public void OnTakeDamage(DamageInfo damage)
         {
-            Log.Message("Hit while parrying");
             if (!parrySuccess && canParry && damage.damage>0 && !damage.damageType.damageType.HasFlag(DamageType.DoT)
                 && !damage.damageType.damageType.HasFlag(DamageType.VoidDeath)
                 && !damage.damageType.damageType.HasFlag(DamageType.BypassArmor)
@@ -74,8 +73,10 @@ namespace SonicTheHedgehog.SkillStates
             {
                 parrySuccess = true;
                 canParry = false;
-                Log.Message("Parry");
-                SetNextState(true);
+                if (base.isAuthority)
+                {
+                    SetNextState(true);
+                }
             }    
         }
 

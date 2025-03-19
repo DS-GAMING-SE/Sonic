@@ -126,12 +126,5 @@ namespace SonicTheHedgehog.SkillStates
                 return "Play_hedgehogutils_boost";
             }
         }
-
-        protected override void SetBrakeState(Vector3 endDirection)
-        {
-            SonicBrake brake = new SonicBrake();
-            brake.endDirection = endDirection;
-            outer.SetNextState(brake);
-        }
     }
 }

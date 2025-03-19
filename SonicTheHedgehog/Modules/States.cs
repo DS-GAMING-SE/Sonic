@@ -13,11 +13,9 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(Death));
 
-            Modules.Content.AddEntityState(typeof(SonicMeleeEnter));
             Modules.Content.AddEntityState(typeof(SonicMelee));
             Modules.Content.AddEntityState(typeof(HomingAttack));
 
-            Modules.Content.AddEntityState(typeof(SuperSonicMeleeEnter));
             Modules.Content.AddEntityState(typeof(SuperSonicMelee));
             Modules.Content.AddEntityState(typeof(SuperHomingAttack));
 
@@ -35,20 +33,13 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(IDWAttack));
 
             Modules.Content.AddEntityState(typeof(NewBoost));
-            Modules.Content.AddEntityState(typeof(BoostEnter));
             Modules.Content.AddEntityState(typeof(BoostIdle));
 
             Modules.Content.AddEntityState(typeof(NewScepterBoost));
-            Modules.Content.AddEntityState(typeof(ScepterBoostEnter));
-            Modules.Content.AddEntityState(typeof(ScepterBoostIdle));
 
             Modules.Content.AddEntityState(typeof(NewSuperBoost));
-            Modules.Content.AddEntityState(typeof(SuperBoostEnter));
-            Modules.Content.AddEntityState(typeof(SuperBoostIdle));
 
             Modules.Content.AddEntityState(typeof(NewScepterSuperBoost));
-            Modules.Content.AddEntityState(typeof(ScepterSuperBoostEnter));
-            Modules.Content.AddEntityState(typeof(ScepterSuperBoostIdle));
 
             Modules.Content.AddEntityState(typeof(GrandSlamDash));
             Modules.Content.AddEntityState(typeof(GrandSlamSpin));

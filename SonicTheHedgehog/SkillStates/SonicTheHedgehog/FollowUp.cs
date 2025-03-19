@@ -20,7 +20,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual float launchPushForce
         {
-            get { return 350f; }
+            get { return 400f; }
         }
 
         protected DamageType damageType = DamageType.Generic;

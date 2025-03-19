@@ -22,11 +22,6 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        public override void EnterBoost()
-        {
-            outer.SetNextState(EntityStateCatalog.InstantiateState(typeof(NewBoost)));
-        }
-
         public override void OnExit()
         {
             if (base.modelLocator)

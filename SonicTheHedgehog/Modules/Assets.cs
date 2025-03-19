@@ -178,9 +178,7 @@ namespace SonicTheHedgehog.Modules
 
             superSonicAura = Assets.LoadAsyncedEffect("SonicSuperAura");
 
-
-            superSonicWarning = Assets.LoadEffect("SonicSuperWarning", true);
-            superSonicWarning.GetComponent<DestroyOnTimer>().enabled = false;
+            superSonicWarning = Assets.LoadAsyncedEffect("SonicSuperWarning");
 
             meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", true);
             meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
@@ -190,15 +188,26 @@ namespace SonicTheHedgehog.Modules
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
             followUpKickEffect = Assets.LoadEffect("SonicFollowUpKick", true);
-            idwAttackEffect = MaterialSwap(Assets.LoadEffect("SonicIDWAttack", true), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/Distortion");
+            idwAttackEffect = MaterialSwap(Assets.LoadAsyncedEffect("SonicIDWAttack"), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/Distortion");
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
-            powerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
-            powerBoostAuraEffect = Assets.LoadAsyncedEffect("SonicPowerBoostAura");
+            powerBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicPowerBoostFlash", 1, 1.3f,
+                new Color(1, 1, 1), new Color(0.1098039f, 0.772549f, 1), new Color(0.05098039f, 0.4469049f, 1), new Color(0.1098039f, 0.772549f, 1));
+                
+                //MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
+
+
+            powerBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicPowerBoostAura", 1, 0.65f,
+                new Color(1, 1, 1), new Color(0.1098039f, 0.772549f, 1), new Color(0.05098039f, 0.4469049f, 1), new Color(0.1098039f, 0.772549f, 1));
             // ScepterBoostElectricEffect ScepterSuperBoostElectricEffect
 
-            scepterPowerBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
+            scepterPowerBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicScepterPowerBoostFlash", 1, 1.3f,
+                new Color(1, 1, 1), new Color(0.1933962f, 0.6118863f, 1), new Color(0.3363763f, 0.240566f, 1), new Color(0.1933962f, 0.6118863f, 1));
+
+            GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), scepterPowerBoostFlashEffect.transform.Find("BlueCone"));
+
+            //MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterPowerBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -214,7 +223,8 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterPowerBoostAuraEffect = Assets.LoadAsyncedEffect("SonicScepterPowerBoostAura");
+            scepterPowerBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicScepterPowerBoostAura", 1, 0.65f,
+                new Color(1, 1, 1), new Color(0.1933962f, 0.6118863f, 1), new Color(0.3363763f, 0.240566f, 1), new Color(0.1933962f, 0.6118863f, 1));
 
             scepterBoostFlashEffect = Assets.LoadEffect("SonicScepterBoostFlash", true);
             if (scepterBoostFlashEffect)
@@ -232,7 +242,19 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterSuperBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicScepterSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
+
+
+            boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
+
+            superBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicSuperBoostFlash", 1.3f, 1.6f,
+                new Color(1, 1, 1), new Color(1, 0.9702323f, 0.08f), new Color(1f, 0.6267163f, 0), new Color(1, 0.9702323f, 0.08f));
+            superBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicSuperBoostAura", 1.3f, 0.8f,
+                new Color(1, 1, 1), new Color(1, 0.9702323f, 0.08f), new Color(1f, 0.6267163f, 0), new Color(1, 0.9702323f, 0.08f));
+
+            scepterSuperBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicScepterSuperBoostFlash", 1.3f, 1.6f,
+                new Color(1, 1, 1), new Color(1, 0.9843137f, 0.3160377f), new Color(1f, 0.4103774f, 0.6793281f), new Color(1, 0.9843137f, 0.3160377f));
+
+            GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), scepterPowerBoostFlashEffect.transform.Find("BlueCone"));
             if (scepterSuperBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -248,12 +270,8 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterSuperBoostAuraEffect = Assets.LoadAsyncedEffect("SonicScepterSuperBoostAura");
-
-
-            boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
-            superBoostFlashEffect = MaterialSwap(Assets.LoadEffect("SonicSuperBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
-            superBoostAuraEffect = Assets.LoadAsyncedEffect("SonicSuperBoostAura");
+            scepterSuperBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicScepterSuperBoostAura", 1.3f, 0.8f,
+                new Color(1, 1, 1), new Color(1, 0.9843137f, 0.3160377f), new Color(1f, 0.4103774f, 0.6793281f), new Color(1, 0.9843137f, 0.3160377f));
 
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 

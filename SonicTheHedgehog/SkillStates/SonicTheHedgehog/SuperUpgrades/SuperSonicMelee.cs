@@ -8,11 +8,6 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {
     public class SuperSonicMelee : SonicMelee
     {
-        protected override Type enterStateType
-        {
-            get { return typeof(SuperSonicMeleeEnter); }
-        }
-
         protected override float launchPushForce
         {
             get { return 1000f; }

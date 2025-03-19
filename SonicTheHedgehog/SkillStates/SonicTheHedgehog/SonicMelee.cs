@@ -9,6 +9,7 @@ using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
 using System;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,11 +20,6 @@ namespace SonicTheHedgehog.SkillStates
         public int swingIndex=0;
 
         protected string hitboxName;
-
-        protected virtual Type enterStateType
-        {
-            get { return typeof(SonicMeleeEnter); }
-        }
 
         protected virtual float launchPushForce
         {
@@ -63,13 +59,13 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
-        private bool animationEnded=false;
         private ICharacterFlightParameterProvider flight;
         private HomingTracker homingTracker;
         private bool effectPlayed = false;
         private bool swingSoundPlayed = false;
         private bool bufferedHomingAttack = false;
-        private bool bufferedSprint = false;
+
+        public SkillDefs.IMeleeSkill meleeSkillDef;
 
         public override void OnEnter()
         {
@@ -77,6 +73,8 @@ namespace SonicTheHedgehog.SkillStates
             this.flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             this.hasFired = false;
+
+            meleeSkillDef = base.skillLocator.primary.skillDef as SkillDefs.IMeleeSkill;
 
             this.impactSound = swingIndex == 4 ? Modules.Assets.meleeFinalHitSoundEvent.index : Modules.Assets.meleeHitSoundEvent.index;
             this.swingSoundString = swingIndex == 4 ? "Play_sonicthehedgehog_swing_strong" : "Play_sonicthehedgehog_swing";
@@ -199,26 +197,40 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (bufferedHomingAttack)
                 {
-                    SonicMeleeEnter meleeEnterType = (SonicMeleeEnter)EntityStateCatalog.InstantiateState(enterStateType);
-                    meleeEnterType.swingIndex = index;
-                    this.outer.SetNextState(meleeEnterType);
-                    base.characterBody.OnSkillActivated(skillLocator.primary);
+                    if (SetNextStateToMeleeSelect(index))
+                    {
+                        return;
+                    }
                 }
                 else
                 {
-                    SonicMelee meleeType = (SonicMelee)EntityStateCatalog.InstantiateState(this.GetType());
+                    SonicMelee meleeType = (SonicMelee)EntityStateCatalog.InstantiateState(base.skillLocator.primary.skillDef.activationState.stateType);
                     meleeType.swingIndex = index;
                     this.outer.SetNextState(meleeType);
                     base.characterBody.OnSkillActivated(skillLocator.primary);
+                    return;
                 }
             }
             else
             {
-                SonicMeleeEnter meleeEnterType = (SonicMeleeEnter)EntityStateCatalog.InstantiateState(enterStateType);
-                meleeEnterType.swingIndex = index;
-                this.outer.SetNextState(meleeEnterType);
-                base.characterBody.OnSkillActivated(skillLocator.primary);
+                if (SetNextStateToMeleeSelect(index))
+                {
+                    return;
+                }
             }
+            this.outer.SetNextStateToMain();
+        }
+
+        protected bool SetNextStateToMeleeSelect(int index)
+        {
+            if (meleeSkillDef != null)
+            {
+                EntityState meleeState = SkillDefs.MeleeSkillDef.DecideNextState(base.skillLocator.primary, homingTracker, index);
+                this.outer.SetNextState(meleeState);
+                base.characterBody.OnSkillActivated(skillLocator.primary);
+                return true;
+            }
+            return false;
         }
 
         private void FiringDisplacement()
@@ -329,10 +341,9 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (bufferedHomingAttack && homingTracker.CanHomingAttack())
                 {
-                    this.outer.SetNextState(new HomingAttack
-                    {
-                        target = homingTracker.GetTrackingTarget()
-                    });
+                    HomingAttack homingAttack = EntityStateCatalog.InstantiateState(((SkillDefs.IMeleeSkill)base.skillLocator.primary.skillDef).homingAttackState.stateType) as HomingAttack;
+                    homingAttack.target = homingTracker.GetTrackingTarget();
+                    this.outer.SetNextState(homingAttack);
                     base.characterBody.OnSkillActivated(skillLocator.primary);
                     return;
                 }

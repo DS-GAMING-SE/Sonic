@@ -85,9 +85,9 @@ namespace SonicTheHedgehog.SkillStates
             }
             else
             {
-                if (this.targetLocked && base.skillLocator.secondary.activationState.stateType == this.GetType())
+                if (this.targetLocked && HasValidSkill())
                 {
-                    this.outer.SetNextState(new IDWAttack { target = target });
+                    this.outer.SetNextState(new IDWAttack { target = this.target });
                 }
                 else
                 {
@@ -99,6 +99,11 @@ namespace SonicTheHedgehog.SkillStates
                     }
                 }
             }
+        }
+
+        protected virtual bool HasValidSkill()
+        {
+            return (base.skillLocator.secondary.activationState.stateType == this.GetType() || base.skillLocator.secondary.skillDef == SuperSkillReplacer.emptyParry);
         }
 
         private void TargetLocked()

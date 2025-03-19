@@ -148,8 +148,6 @@ namespace SonicTheHedgehog
             // run hooks here, disabling one is as simple as commenting out the line
             On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
 
-            On.RoR2.GenericSkill.CanApplyAmmoPack += CanApplyAmmoPackToBoost;
-            On.RoR2.GenericSkill.ApplyAmmoPack += ApplyAmmoPackToBoost;
             //On.RoR2.GenericSkill.RunRecharge += RunRechargeBoost;
 
             On.RoR2.JitterBones.Start += IHateJitterBones;
@@ -197,7 +195,7 @@ namespace SonicTheHedgehog
             LoadingScreenFix.LoadingScreenFix.AddSpriteAnimation(spriteAnimation);
             Log.Message("Added Sonic loading screen sprite");
         }
-
+        #region BetterUI
         /*private static void BetterUISetup()
         {
             ProcCoefficientInfo melee = new ProcCoefficientInfo
@@ -263,7 +261,7 @@ namespace SonicTheHedgehog
             RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff*100}% Attack speed. +{StaticValues.parryMovementSpeedBuff*100}% Movement speed.");
             RegisterBuffInfo(Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"-{StaticValues.superParryArmorDebuff * 100} Armor. -{(1/StaticValues.superParryAttackSpeedDebuff) * 100}% Attack speed. -{(1 / StaticValues.superParryMovementSpeedDebuff) * 100}% Movement speed.");
         }*/
-
+        #endregion
         public static void LookingGlassSetup()
         {
             if (Language.languagesByName.TryGetValue("en", out Language language))
@@ -370,30 +368,6 @@ namespace SonicTheHedgehog
             }
         }
 
-        private bool CanApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_CanApplyAmmoPack orig, GenericSkill self)
-        {
-            if (typeof(Boost).IsAssignableFrom(self.activationState.stateType))
-            {
-                PowerBoostLogic boost = self.characterBody.GetComponent<PowerBoostLogic>();
-                if (boost)
-                {
-                    return boost.boostMeter < boost.maxBoostMeter;
-                } 
-            }
-            return orig(self);
-        }
-        private void ApplyAmmoPackToBoost(On.RoR2.GenericSkill.orig_ApplyAmmoPack orig, GenericSkill self)
-        {
-            orig(self);
-            if (typeof(Boost).IsAssignableFrom(self.activationState.stateType))
-            {
-                PowerBoostLogic boost = self.characterBody.GetComponent<PowerBoostLogic>();
-                if (boost)
-                {
-                    boost.AddBoost(PowerBoostLogic.boostRegenPerBandolier);
-                }
-            }
-        }
         // This is so jank and doesn't even work consistently anymore because of skins but idk what else to do to stop jitter bones from being on Sonic
         private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
         {

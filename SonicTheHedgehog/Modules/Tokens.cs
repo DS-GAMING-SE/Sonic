@@ -121,7 +121,7 @@ namespace SonicTheHedgehog.Modules
             #region Follow Up
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_NAME", "Follow Up");
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
-                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> hit enemies.");
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> mediumweight hit enemies.");
 
             #endregion
 

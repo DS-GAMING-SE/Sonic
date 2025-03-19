@@ -90,7 +90,9 @@ namespace SonicTheHedgehog.Components
             this.search.maxAngleFilter = 12;
             this.search.RefreshCandidates();
             this.search.FilterOutGameObject(base.gameObject);
-            this.trackingTarget = this.search.GetResults().FirstOrDefault<HurtBox>();
+            this.trackingTarget = this.search.GetResults().
+                Where(hurt => hurt && hurt.healthComponent && hurt.healthComponent.body && hurt.healthComponent.alive && !hurt.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff))
+                .FirstOrDefault();
             if (this.trackingTarget != null)
             {
                 this.isTrackingTargetClose = 8 >= Mathf.Abs(Vector3.Magnitude(characterBody.transform.position - this.trackingTarget.transform.position));
