@@ -78,8 +78,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
             string meleeDescription =
-                $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>. This move can <style=cIsUtility>launch</style> lightweight enemies.";
-            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription);
+                $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
+            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription + "This move can <style=cIsUtility>launch</style> lightweight enemies.");
 
             #endregion
 
@@ -88,7 +88,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", $"{superSonicColor}Super Melee</color>");
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION",
                 meleeDescription +
-                $"\n{superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
+                $"This move can <style=cIsUtility>launch</style> {superSonicColor}mediumweight</color> enemies.\n{superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
 
             #endregion
 

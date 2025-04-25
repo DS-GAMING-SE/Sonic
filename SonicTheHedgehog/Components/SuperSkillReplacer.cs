@@ -15,16 +15,16 @@ namespace SonicTheHedgehog.Components
         private FormComponent formComponent;
         private CharacterBody body;
 
-        public static SkillDef melee;
+        public static Modules.SkillDefs.RequiresFormMeleeSkillDef melee;
 
-        public static SkillDef sonicBoom;
+        public static SkillDefs.RequiresFormSkillDef sonicBoom;
 
-        public static SkillDef parry;
-        public static SkillDef emptyParry;
+        public static SkillDefs.RequiresFormSkillDef parry;
+        public static SkillDefs.RequiresFormSkillDef emptyParry;
 
-        public static SkillDef boost;
+        public static HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef boost;
 
-        public static SkillDef grandSlam;
+        public static SkillDefs.RequiresFormSkillDef grandSlam;
 
         public void Start()
         {

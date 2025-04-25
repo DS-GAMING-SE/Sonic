@@ -87,5 +87,20 @@ namespace SonicTheHedgehog.Modules
                 return MeleeSkillDef.DecideNextState(skillSlot, homingTracker, 0);
             }
         }
+
+        public static T CopyMeleeSkillDef<T>(MeleeSkillDef originDef) where T : SkillDef, IMeleeSkill
+        {
+            SerializableEntityStateType homing = originDef.homingAttackState;
+            T meleeDef = HedgehogUtils.Helpers.CopySkillDef<T>(originDef);
+            meleeDef.homingAttackState = homing;
+            return meleeDef;
+        }
+        public static T CopyMeleeSkillDef<T>(RequiresFormMeleeSkillDef originDef) where T : SkillDef, IMeleeSkill
+        {
+            SerializableEntityStateType homing = originDef.homingAttackState;
+            T meleeDef = HedgehogUtils.Helpers.CopySkillDef<T>(originDef);
+            meleeDef.homingAttackState = homing;
+            return meleeDef;
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float sonicBoomFireTime = 0.19f;
         
-        internal const float sonicBoomDamageCoefficient = 1.6f;
+        internal const float sonicBoomDamageCoefficient = 1.8f;
 
         internal const float sonicBoomProcCoefficient = 0.5f;
 

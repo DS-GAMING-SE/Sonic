@@ -1,13 +1,97 @@
 # Changelog
 
-### 2.0.0
+### 4.0.0
 
- - (Super Sonic) Added Super Sonic and collectable Chaos Emeralds
+ - (HedgehogUtils) Introducing my new mod called HedgehogUtils. A lot of mechanics I designed for Sonic were things I felt could be used for a lot of other things besides Sonic. Mechanics, such as Sonic's Super form, boost skill, and launch mechanic (more on that below), have been moved into this new mod. Everything in this mod is designed to be usable for other people's mods. **Do you want to make your own Super forms? Do you want to make your own Sonic survivors?** This mod is meant to help do some of the work for you. All my code is open source and there is documentation explaining everything you need to know to implement HedgehogUtils into your own mod.
+
+ - (Assets) Many animations have been improved, some completely redone.
+
+ - (+) Added the new "Launch" mechanic and applied it to most of Sonic's skills. Under certain conditions, your attacks can launch enemies, turning them into a projectile that flies in the direction hit and damages other enemies they run into.
+
+ - (+) Parry is receiving a small rework in the form of a new follow-up attack that can be performed after a successful parry. Now the parry skill is able to do damage, so no longer are you only able to do damage with two skills on Sonic. This should also make it easier for new players to understand how the Super upgrade of parry already has a follow-up attack.
+ 
+ - (=) Parry's buff has been adjusted to account for the new follow up attack. The buff isn't as strong, but lasts longer so you have time to use the follow-up attack and Grand Slam before the buff ends.
+     - Parry's attack speed buff has been reduced (40% -> 25%)
+	 - Parry's movement speed buff has been reduced (30% -> 25%)
+	 - Parry's buff duration has been increased (3s -> 5s)
+ 
+ - (=) Boost has been recoded from the ground up. It should feel a bit closer to how it does in actual Sonic games. Overall the boost has been made easier to use for exploration but a bit harder to use in combat. Here are some of the noticeable changes.
+     - A portion of the boost meter is immediately taken away when you start boosting, which makes using its I-frames require paying some attention to the boost meter.
+	 - Boost drains much slower when boosting continuously, making it better for map exploration.
+	 - Boost recharges faster.
+	 - It takes less cooldown reduction to reach infinite boost.
+	 - You can't take turns as tightly as normal while boosting.
+	 - There's a new braking animation for attempting to take turns too tightly
+
+### Known Issues
+ - The NoAllyAttackBlock mod conflicts with Sonic's very lazy CustomEmotesAPI integration. If you have NoAllyAttackBlock and don't have CustomEmotesAPI, blacklist SonicTheHedgehog in the NoAllyAttackBlock config
+ - Boost meter is kinda shaky as clients in multiplayer
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
+
+<details>
+<summary>v3.0.3</summary>
+
+ - (Assets) Added a loading screen sprite of Sonic if LoadingScreenFix is installed
+ 
+ - (Assets) Redone boost VFX
+ 
+ - (Bug Fix) Fixed for SOTS Phase 1
+</details>
+ 
+<details>
+<summary>v3.0.2</summary>
+
+ - (Assets) Added an inspect description to the Chaos Emeralds
+
+ - (Bug Fix) Removed obnoxious TestState spam in the logs
+ - (Bug Fix) Holding Sonic Boom now properly stacks Luminous Shot
+
+ - (Optimization) Optimized some stuff with item pickups. You should see less log statements about items needed for transforming if you use stuff like Aerolt
+
+ - (Config) Added a new config option that handles how Chaos Emeralds are shared between players, letting you be more restrictive with who gets to activate the Super form when emeralds are split between players
+ - (Config) Added a new config option to announce in chat when someone transforms into their Super form
+ </details>
+ 
+<details>
+<summary>v3.0.1</summary>
+
+ - (Dependency) Forgot R2API_Items... oops
+</details>
+
+<details>
+<summary>v3.0.0</summary>
+ SOTS update came at a bit of an awkward time. At this point i'm like 90% done with the complete rewrite of Super forms but not quite at the point I want to be. Still, I don't want to keep people waiting without a Sonic mod so custom super form mod compatibility will come next update.
+ Almost everything related to Super Sonic has been rewritten. For most players, the difference won't be too noticeable, but this will soon allow other modders to make their own Super forms for Sonic or for any other survivor. ~~Next update~~ Next major update will include this and will likely be the final update I make to the Sonic mod.
+
+ - (Assets) Added a new sound for when Chaos Emeralds are purchased
+ - (Assets) Reworded Chaos Emerald descriptions, mostly for parity with base game descriptions
+
+ - (+) ALL survivors are now able to turn Super with the Chaos Emeralds
+
+ - (Bug Fix) Fixed mastery achievement often not being unlocked when it should have
+ - (Bug Fix) Fixed errors causing broken run history to be generated
+ - (Bug Fix) Fixed yellow glow staying when losing Super form while boosting
+
+ - (Compatibility) Added LookingGlass compatibility with buff descriptions and Chaos Emerald information
+
+ - (Config) Added new config options for controlling the number of Chaos Emeralds that can spawn each stage
+ - (Config) Added a new config option for allowing Chaos Emeralds to spawn even if no one is playing Sonic
+ - (Config) Added a new config option for changing the price of Chaos Emeralds
+ - (Config) Added a new config option for allowing the Chaos Emeralds to not be consumed after being used
+ 
+ - (Dependency) Removed dependency on R2API, instead using the separate R2API modules
+ - (Dependency) Added LoopingSoundFix as a dependency. I noticed some issues with Super Grand Slam rain projectile looping its sound for the entire stage so it's here just in case. If you don't want it, it can be removed
+</details>
+
+<details>
+<summary>v2.0.0</summary>
+
+ - (New Form) Added Super Sonic and collectable Chaos Emeralds
  
  - (New Skin) Added a new mastery skin. Thanks to FORCED_REASSEMBLY for the help with making it (Can also be unlocked through the config)
  
  - (Assets) Adjustments to most animations
- - (Assets) Boost VFX now has a distortion effect
+ - (Assets) Adjustments to many VFX
  - (Assets) Added custom buff icons to Sonic's armor when homing attacking
  
  - (Logbook) Added logbook entries for Sonic. Chaos Emerald logs coming soon
@@ -19,10 +103,7 @@
  - (Bug Fix) Fixed strange movement involving melee and extreme attack speed
  
  - (Read Me) Completely redecorated it with tables and images
-
-### Known Issues
- - Boost meter is kinda shaky as clients in multiplayer
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
+ </details>
 
 <details>
 <summary>v1.2.1</summary>

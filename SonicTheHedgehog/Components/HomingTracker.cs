@@ -113,7 +113,7 @@ namespace SonicTheHedgehog.Components
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));
             this.nearbyTarget = sphereSearch.GetHurtBoxes().FirstOrDefault<HurtBox>();
             this.enemiesNearby = nearbyTarget;
-            if (nearbyTarget && Vector3.Dot((this.nearbyTarget.transform.position - characterBody.transform.position).normalized, inputBank.GetAimRay().direction) < 0.2f)
+            if (nearbyTarget && Vector3.Dot((this.nearbyTarget.transform.position - characterBody.transform.position).normalized, inputBank.GetAimRay().direction) < -0.2f)
             {
                 this.nearbyTarget = null;
             }

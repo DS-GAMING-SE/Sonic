@@ -10,7 +10,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {
     public class SuperParryExit : ParryExit
     {
-        public static SkillDef idwAttackSkillDef;
+        public static HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef idwAttackSkillDef;
         
         protected override void OnSuccessfulParry()
         {

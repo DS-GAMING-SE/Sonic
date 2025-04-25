@@ -34,6 +34,7 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(NewBoost));
             Modules.Content.AddEntityState(typeof(BoostIdle));
+            Modules.Content.AddEntityState(typeof(SonicBrake));
 
             Modules.Content.AddEntityState(typeof(NewScepterBoost));
 

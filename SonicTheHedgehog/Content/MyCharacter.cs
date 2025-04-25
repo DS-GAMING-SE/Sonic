@@ -208,8 +208,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static SkillDef parrySkillDef;
         public static SkillDef followUpSkillDef;
 
-        public static SkillDef boostSkillDef;
-        public static SkillDef newBoostSkillDef;
+        public static HedgehogUtils.Boost.SkillDefs.BoostSkillDef boostSkillDef;
 
         public static SkillDef grandSlamSkillDef;
         public static SkillDef tomPunchSkillDef;
@@ -422,8 +421,9 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 0
             };
             boostSkillDef = Modules.Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.BoostSkillDef>(boost);
-            ((HedgehogUtils.Boost.SkillDefs.IBoostSkill)boostSkillDef).boostIdleState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BoostIdle));
-            ((HedgehogUtils.Boost.SkillDefs.IBoostSkill)boostSkillDef).brakeState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicBrake));
+            boostSkillDef.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BoostIdle));
+            boostSkillDef.brakeState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicBrake));
+            boostSkillDef.boostHUDColor = new Color(0, 0.9f, 1, 1);
             Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
 
             #endregion
@@ -461,7 +461,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             #endregion
 
             #region Tom Joke
-            if (true)
+            if (false)
             {
                 SkillDefInfo tomPunchJoke = new SkillDefInfo
                 {
@@ -554,8 +554,8 @@ namespace SonicTheHedgehog.Modules.Survivors
             primary.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperMeleeIcon");
 
             SuperSkillReplacer.melee = Modules.Skills.CreateSkillDef<SkillDefs.RequiresFormMeleeSkillDef>(primary);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperSkillReplacer.melee).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
-            ((SkillDefs.IMeleeSkill)SuperSkillReplacer.melee).homingAttackState = new EntityStates.SerializableEntityStateType(typeof(SuperHomingAttack));
+            SuperSkillReplacer.melee.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperSkillReplacer.melee.homingAttackState = new EntityStates.SerializableEntityStateType(typeof(SuperHomingAttack));
 
             sonicBoom.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperSonicBoom));
             sonicBoom.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME";
@@ -564,7 +564,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             sonicBoom.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texCrossSlashIcon");
 
             SuperSkillReplacer.sonicBoom = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(sonicBoom);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperSkillReplacer.sonicBoom).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperSkillReplacer.sonicBoom.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
             parry.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperParry));
             parry.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_NAME";
@@ -573,13 +573,13 @@ namespace SonicTheHedgehog.Modules.Survivors
             parry.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperParryIcon");
             parry.fullRestockOnAssign = true;
             SuperSkillReplacer.parry = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(parry);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperSkillReplacer.parry).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperSkillReplacer.parry.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
             parry.requiredStock = 9999999;
             parry.rechargeStock = 0;
             parry.fullRestockOnAssign = false;
             SuperSkillReplacer.emptyParry = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(parry);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperSkillReplacer.emptyParry).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperSkillReplacer.emptyParry.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
             SkillDefInfo idwAttack = new SkillDefInfo
             {
@@ -608,7 +608,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             };
 
             SuperParryExit.idwAttackSkillDef = Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(idwAttack);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperParryExit.idwAttackSkillDef).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperParryExit.idwAttackSkillDef.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.NewSuperBoost));
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
@@ -617,9 +617,10 @@ namespace SonicTheHedgehog.Modules.Survivors
             boost.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperBoostIcon");
 
             SuperSkillReplacer.boost = Modules.Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef>(boost);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperSkillReplacer.boost).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
-            ((HedgehogUtils.Boost.SkillDefs.IBoostSkill)SuperSkillReplacer.boost).boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
-            ((HedgehogUtils.Boost.SkillDefs.IBoostSkill)SuperSkillReplacer.boost).brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
+            SuperSkillReplacer.boost.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperSkillReplacer.boost.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
+            SuperSkillReplacer.boost.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
+            SuperSkillReplacer.boost.boostHUDColor = new Color(1f, 0.9f, 0, 1);
 
             grandSlam.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperGrandSlamDash));
             grandSlam.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME";
@@ -627,7 +628,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             grandSlam.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION";
             grandSlam.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperGrandSlamIcon");
             SuperSkillReplacer.grandSlam = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(grandSlam);
-            ((HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef)SuperSkillReplacer.grandSlam).requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            SuperSkillReplacer.grandSlam.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
             Log.Message("Making Super Sonic: All Skills");
 
@@ -661,8 +662,9 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef superSkillDef = Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef>(boost);
             superSkillDef.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
-            ((HedgehogUtils.Boost.SkillDefs.IBoostSkill)superSkillDef).boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
-            ((HedgehogUtils.Boost.SkillDefs.IBoostSkill)superSkillDef).brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
+            superSkillDef.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
+            superSkillDef.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
+            superSkillDef.boostHUDColor = new Color(1f, 0.9f, 0, 1);
 
             Log.Message("Super Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(superSkillDef, "SonicTheHedgehog",
@@ -696,34 +698,9 @@ namespace SonicTheHedgehog.Modules.Survivors
         internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
         {
             orig.Invoke(self);
-            BoostHUD boostHud = self.gameObject.AddComponent<BoostHUD>();
-            GameObject boostUI = UnityEngine.Object.Instantiate<GameObject>(
-                Assets.mainAssetBundle.LoadAsset<GameObject>("BoostMeter2"),
-                self.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas"));
-            RectTransform rectTransform = boostUI.GetComponent<RectTransform>();
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.localScale = new Vector3(1f, 1f, 1f);
-            rectTransform.localPosition = Vector3.zero;
-
-            rectTransform.anchoredPosition = new Vector2(Modules.Config.BoostMeterLocationX().Value,
-                Modules.Config.BoostMeterLocationY().Value);
-
-            boostHud.boostMeter = boostUI;
-            boostHud.meterBackground = boostUI.transform.Find("Background").gameObject.GetComponent<Image>();
-            boostHud.meterFill = boostUI.transform.Find("Background/Fill").gameObject.GetComponent<Image>();
-            boostHud.meterBackgroundOuter = boostUI.transform.Find("BackgroundOuter").gameObject.GetComponent<Image>();
-            boostHud.meterFillOuter =
-                boostUI.transform.Find("BackgroundOuter/FillOuter").gameObject.GetComponent<Image>();
-            boostHud.meterBackgroundBackup =
-                boostUI.transform.Find("BackgroundBackup").gameObject.GetComponent<RawImage>();
-            boostHud.meterFillBackup = boostUI.transform.Find("BackgroundBackup/FillBackup").gameObject
-                .GetComponent<RawImage>();
-            boostHud.powerBoostParticle =
-                boostUI.transform.Find("PowerParticles").gameObject.GetComponent<ParticleSystem>();
-            boostHud.infiniteBackground = boostUI.transform.Find("InfiniteBackground").gameObject.GetComponent<Image>();
-            boostHud.infiniteFill = boostUI.transform.Find("InfiniteBackground/InfiniteFill").gameObject
-                .GetComponent<Image>();
+            PowerBoostHUD boostHud = self.gameObject.AddComponent<PowerBoostHUD>();
+            GameObject powerBoostHUDObject = GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles"));
+            boostHud.powerBoostParticle = powerBoostHUDObject.GetComponent<ParticleSystem>();
         }
 
         public override void InitializeSkins()
@@ -804,11 +781,11 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static SkillDef sonicBoomSkillDef;
         public static SkillDef parrySkillDef;
 
-        public static SkillDef boostSkillDef;
+        public static HedgehogUtils.Boost.SkillDefs.BoostSkillDef boostSkillDef;
 
         public static SkillDef grandSlamSkillDef;
 
-        public static void Initialize(SkillDef primary, SkillDef sonicBoom, SkillDef parry, SkillDef boost, SkillDef grandSlam)
+        public static void Initialize(SkillDef primary, SkillDef sonicBoom, SkillDef parry, HedgehogUtils.Boost.SkillDefs.BoostSkillDef boost, SkillDef grandSlam)
         {
             primarySkillDef = primary;
             sonicBoomSkillDef = sonicBoom;
