@@ -10,7 +10,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
     {
         protected override float launchPushForce
         {
-            get { return 1000f; }
+            get { return 400f; }
         }
 
         protected override void OnFireAuthority()

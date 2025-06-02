@@ -230,6 +230,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.StayOnGround>();
             bodyPrefab.AddComponent<ParryFollowUpTracker>();
             bodyPrefab.AddComponent<SuperSkillReplacer>();
+            bodyPrefab.AddComponent<JitterBoneBlacklist>();
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 

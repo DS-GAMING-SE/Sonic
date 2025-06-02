@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.UIElements.Experimental;
 
-// This shit is spaghetti. I'm sorry if you have to read through it
+// This shit is spaghetti. It is also DEPRECATED. See the New Boost folder for the up to date and significantly less spaghetti versions of the Boost entity states 
 namespace SonicTheHedgehog.SkillStates
 {
     public class Boost : GenericCharacterMain

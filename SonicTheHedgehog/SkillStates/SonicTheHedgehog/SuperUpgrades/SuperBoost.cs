@@ -8,6 +8,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
+// OUTDATED. See New Super Boost folder for updated ones
 namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {
     public class SuperBoost : Boost

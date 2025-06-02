@@ -20,9 +20,13 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             get { return Buffs.superBoostBuff; }
         }
 
-        protected override bool drainBoostMeter
+        protected override float boostMeterDrain
         {
-            get { return false; }
+            get { return 0; }
+        }
+        protected override float boostStartMeterDrain
+        {
+            get { return 0; }
         }
 
         public override void OnEnter()

@@ -22,6 +22,7 @@ namespace SonicTheHedgehog.Components
         public ParticleSystem powerBoostParticle;
         private bool powerBoostParticlePlaying;
         private HUD hud;
+        private GameObject lastBodyObject;
 
         private bool reparentedToBoostHUD;
 
@@ -31,7 +32,11 @@ namespace SonicTheHedgehog.Components
         }
         public void Update()
         {
-            if (!this.hud.targetBodyObject)
+            if (!powerBoostParticle)
+            {
+                return;
+            }
+            if (!this.hud || !this.hud.targetBodyObject)
             {
                 powerBoostParticle.gameObject.SetActive(false);
                 return;
@@ -47,23 +52,28 @@ namespace SonicTheHedgehog.Components
                     rectTransform.localScale = new Vector3(1, 1, 1);
                     rectTransform.localPosition = Vector3.zero;
                 }
-            }
-            if (!boostLogic && this.hud.targetBodyObject.TryGetComponent<BoostLogic>(out BoostLogic logic) && logic is PowerBoostLogic)
-            {
-                powerBoostParticle.gameObject.SetActive(true);
-                boostLogic = logic as PowerBoostLogic;
-                if (boostLogic.boostExists)
+                else
                 {
-                    UpdatePowerParticles();
+                    powerBoostParticle.gameObject.SetActive(false);
+                    return;
                 }
             }
-            else
+            if (this.hud.targetBodyObject != lastBodyObject)
             {
-                if (boostLogic.boostExists)
+                if (!boostLogic && this.hud.targetBodyObject.TryGetComponent<BoostLogic>(out BoostLogic logic))
                 {
-                    UpdatePowerParticles();
+                    if (typeof(PowerBoostLogic).IsAssignableFrom(logic.GetType()))
+                    {
+                        powerBoostParticle.gameObject.SetActive(true);
+                        boostLogic = logic as PowerBoostLogic;
+                    }
                 }
             }
+            if (boostLogic && boostLogic.boostExists)
+            {
+                UpdatePowerParticles();
+            }
+            lastBodyObject = this.hud.targetBodyObject;
         }
 
         private void UpdatePowerParticles()

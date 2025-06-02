@@ -146,11 +146,7 @@ namespace SonicTheHedgehog
         private void Hook()
         {
             // run hooks here, disabling one is as simple as commenting out the line
-            On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
-
-            //On.RoR2.GenericSkill.RunRecharge += RunRechargeBoost;
-
-            On.RoR2.JitterBones.Start += IHateJitterBones;
+            //On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
 
             On.RoR2.HealthComponent.TakeDamage += TakeDamage;
 
@@ -358,7 +354,7 @@ namespace SonicTheHedgehog
                 }
             }
         }
-        private void WhereIsRecalcStatAPIAcceleration(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        /*private void WhereIsRecalcStatAPIAcceleration(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
 
@@ -366,17 +362,18 @@ namespace SonicTheHedgehog
             {
                 self.acceleration *= 6f;
             }
-        }
+        }*/
 
+        // GEARBOX THANK YOU! SOTS 3 added JitterBoneBlacklist component which fixes this problem for me
         // This is so jank and doesn't even work consistently anymore because of skins but idk what else to do to stop jitter bones from being on Sonic
-        private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
+        /*private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
         {
             if (self.skinnedMeshRenderer && self.skinnedMeshRenderer.name == "SonicMesh")
             {
                 UnityEngine.Object.Destroy(self);
             }
             orig(self);
-        }
+        }*/
 
         private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
         {
