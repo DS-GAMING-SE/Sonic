@@ -21,7 +21,7 @@ namespace SonicTheHedgehog.SkillStates
         public static float range = 100f;
         public virtual float baseMovementReduction
         {
-            get { return 0.45f; }
+            get { return 0.7f; }
         }
         protected static float offset = 0.4f;
 

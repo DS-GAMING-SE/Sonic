@@ -1,27 +1,50 @@
 # Changelog
 
 ### 4.0.0
+This sure took longer than I expected...
 
  - (HedgehogUtils) Introducing my new mod called HedgehogUtils. A lot of mechanics I designed for Sonic were things I felt could be used for a lot of other things besides Sonic. Mechanics, such as Sonic's Super form, boost skill, and launch mechanic (more on that below), have been moved into this new mod. Everything in this mod is designed to be usable for other people's mods. **Do you want to make your own Super forms? Do you want to make your own Sonic survivors?** This mod is meant to help do some of the work for you. All my code is open source and there is documentation explaining everything you need to know to implement HedgehogUtils into your own mod.
 
+ - (Chaos Emeralds) Chaos Emeralds spawning is now tied to an artifact. This artifact will enable or disable the spawning of the Chaos Emeralds regardless of what survivors are selected. I didn't like making people dig around in the config to have Chaos Emeralds spawn every game.
+
+ - (Chaos Emeralds) The colors of the Chaos Emeralds that spawn in the world are now random rather than following a set order
+
  - (Assets) Many animations have been improved, some completely redone.
+ 
+ - (HUD) The Boost Meter will now remain visible when using Super Boost.
+     - The boost meter will be shown as being infinite.
+	 - The boost meter will now become yellow to match the Super form
 
- - (+) Added the new "Launch" mechanic and applied it to most of Sonic's skills. Under certain conditions, your attacks can launch enemies, turning them into a projectile that flies in the direction hit and damages other enemies they run into.
+ - (Logbook) Added logbook entries for the Chaos Emeralds. I am never trying to write a logbook entry again. I am not a writer but I did my best
 
- - (+) Parry is receiving a small rework in the form of a new follow-up attack that can be performed after a successful parry. Now the parry skill is able to do damage, so no longer are you only able to do damage with two skills on Sonic. This should also make it easier for new players to understand how the Super upgrade of parry already has a follow-up attack.
+ - (+) Added the new "Launch" mechanic and applied it to most of Sonic's skills. Under certain conditions, Sonic's attacks can launch enemies, turning them into a projectile that flies in the direction hit and damages other enemies they run into.
+
+ - (+) To go with the new Launch mechanic, Grand Slam's spin attack now holds enemies in place mid-air, opening up some potential for air combos. Launch an enemy up into the air and use Grand Slam to bring them back down. 
+
+ - (+) Melee and Sonic Boom don't reduce your movement speed as much (Melee speed roughly doubled, Sonic Boom 55% -> 30%, Cross Slash 15% -> 10%)
+ 
+ - (+) Parry is receiving a rework in the form of a new follow-up attack that can be performed after a successful parry. Now the parry skill is able to do damage, so you are no longer limited to having only two damaging moves on Sonic. This should also make it easier for new players to understand how the Super upgrade of parry already has a follow-up attack.
+
+ - (+) Sonic Boom has been given a small damage buff ~~to make up for how much cooler Parry is~~ (Sonic Boom 160% -> 180%, Cross Slash 320% -> 360%)
  
  - (=) Parry's buff has been adjusted to account for the new follow up attack. The buff isn't as strong, but lasts longer so you have time to use the follow-up attack and Grand Slam before the buff ends.
      - Parry's attack speed buff has been reduced (40% -> 25%)
 	 - Parry's movement speed buff has been reduced (30% -> 25%)
 	 - Parry's buff duration has been increased (3s -> 5s)
- 
+	 
  - (=) Boost has been recoded from the ground up. It should feel a bit closer to how it does in actual Sonic games. Overall the boost has been made easier to use for exploration but a bit harder to use in combat. Here are some of the noticeable changes.
-     - A portion of the boost meter is immediately taken away when you start boosting, which makes using its I-frames require paying some attention to the boost meter.
+     - A portion of the boost meter is immediately consumed when you start boosting, which makes using its I-frames require paying some attention to the boost meter.
 	 - Boost drains much slower when boosting continuously, making it better for map exploration.
 	 - Boost recharges faster.
-	 - It takes less cooldown reduction to reach infinite boost.
-	 - You can't take turns as tightly as normal while boosting.
-	 - There's a new braking animation for attempting to take turns too tightly
+	 - It takes less cooldown reduction items to reach infinite boost.
+	 - You can't take turns as tightly as normal while boosting. There's a new braking animation for attempting to take turns too tightly
+
+ - (Bug Fix) Fixed for SOTS Phase 3
+ - (Bug Fix) Fixed Scepter Boost damage not correctly matching movement speed
+	 
+ - (Config) Configs related to the Chaos Emeralds, Super form, and Boost meter location have been moved to the new HedgehogUtils mod. Any config changes you set previously will need to be redone
+
+ - (Config) Added a config option that disables logs. Logs are now disabled by default
 
 ### Known Issues
  - The NoAllyAttackBlock mod conflicts with Sonic's very lazy CustomEmotesAPI integration. If you have NoAllyAttackBlock and don't have CustomEmotesAPI, blacklist SonicTheHedgehog in the NoAllyAttackBlock config

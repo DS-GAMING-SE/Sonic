@@ -14,7 +14,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 
         public override float baseMovementReduction
         {
-            get { return 0.85f; }
+            get { return 0.9f; }
         }
 
         protected override void FireProjectile()

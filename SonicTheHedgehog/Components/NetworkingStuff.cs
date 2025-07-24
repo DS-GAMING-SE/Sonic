@@ -71,7 +71,7 @@ namespace SonicTheHedgehog.Components
         {
             if (!NetworkServer.active) return;
             Log.Message("Scepter Boost Damage Received Server");
-            ScepterBoost.DealDamage(this.hurtbox, this.damageInfo);
+            OldScepterBoost.DealDamage(this.hurtbox, this.damageInfo);
         }
 
         public void Serialize(NetworkWriter writer)

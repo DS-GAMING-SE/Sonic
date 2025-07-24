@@ -13,7 +13,7 @@ namespace SonicTheHedgehog.SkillStates
     {
         protected OverlapAttack attack;
         protected float attackTimer;
-        protected static float attacksPerSecond = 10f;
+        protected static float attacksPerSecond = 15f;
 
         protected virtual string hitBoxName
         {
@@ -42,6 +42,7 @@ namespace SonicTheHedgehog.SkillStates
                     attackTimer %= (1 / attacksPerSecond);
                     attack.forceVector = base.characterDirection.forward * (launchForce * 0.8f);
                     attack.isCrit = RollCrit();
+                    attack.damage = ((StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed) * base.characterBody.damage;
                     attack.Fire();
                 }
             }
@@ -87,7 +88,6 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;
             this.attack.teamIndex = base.GetTeam();
-            this.attack.damage = ((StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed) * base.characterBody.damage;
             this.attack.procCoefficient = StaticValues.scepterBoostProcCoefficient;
             this.attack.hitEffectPrefab = Modules.Assets.meleeHitEffect;
             this.attack.hitBoxGroup = hitBoxGroup;

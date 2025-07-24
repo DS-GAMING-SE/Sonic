@@ -22,7 +22,6 @@ namespace SonicTheHedgehog.Modules
             Forms.AddSkinForForm(SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
                 new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperMetalSonic"), mesh = null },
                 ref SuperFormDef.superFormDef);
-            SuperFormDef.AddChaosEmeraldSpawningCharacter(new List<string> { "SonicTheHedgehog" });
         }
     }
 }

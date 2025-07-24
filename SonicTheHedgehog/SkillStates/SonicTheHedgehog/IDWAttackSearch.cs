@@ -131,7 +131,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (homingTracker)
             {
-                this.target = homingTracker.GetTrackingTarget();
+                this.target = homingTracker.GetTrackingTarget(true);
                 if (this.target != null)
                 {
                     TargetLocked();

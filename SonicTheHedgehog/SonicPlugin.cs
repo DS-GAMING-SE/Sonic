@@ -118,9 +118,10 @@ namespace SonicTheHedgehog
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
             Modules.SuperFormSupport.Initialize();
+            Modules.DamageTypes.Initialize();
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();
-            NetworkingAPI.RegisterMessageType<ScepterBoostDamage>();
+            //NetworkingAPI.RegisterMessageType<ScepterBoostDamage>();
 
             // survivor initialization
             new SonicTheHedgehogCharacter().Initialize();
@@ -333,24 +334,15 @@ namespace SonicTheHedgehog
                     boost.CalculateBoostVariables();
                 }
 
-                MomentumPassive momentum = self.GetComponent<MomentumPassive>();
-                if (momentum && momentum.momentumEquipped)
-                {
-                    if (momentum.momentum >= 0)
-                    {
-                        stats.moveSpeedMultAdd += (momentum.momentum * MomentumPassive.speedMultiplier);
-                    }
-                    else
-                    {
-                        stats.moveSpeedReductionMultAdd += Mathf.Abs(momentum.momentum) * (MomentumPassive.speedMultiplier/3);
-                    }
-                }
-
                 if (self.HasBuff(Buffs.superParryDebuff))
                 {
                     stats.baseMoveSpeedAdd -= self.baseMoveSpeed / StaticValues.superParryMovementSpeedDebuff;
                     stats.armorAdd -= StaticValues.superParryArmorDebuff;
                     stats.baseAttackSpeedAdd -= self.baseAttackSpeed / StaticValues.superParryAttackSpeedDebuff;
+                }
+                if (self.HasBuff(Buffs.grandSlamJuggleDebuff))
+                {
+                    stats.moveSpeedReductionMultAdd += StaticValues.grandSlamJuggleSpeedReductionMult;
                 }
             }
         }
@@ -393,6 +385,18 @@ namespace SonicTheHedgehog
                 }
             }
             orig(self, damage);
+            if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle) 
+                && self
+                && self.body
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockback))
+            {
+                self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 1, 1);
+                GrandSlamJuggleFloat juggleFloat = self.GetComponent<GrandSlamJuggleFloat>();
+                if (!juggleFloat)
+                {
+                    self.gameObject.AddComponent<GrandSlamJuggleFloat>();
+                }
+            }
         }
 
 

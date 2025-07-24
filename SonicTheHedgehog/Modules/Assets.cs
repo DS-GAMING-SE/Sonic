@@ -205,7 +205,7 @@ namespace SonicTheHedgehog.Modules
             scepterPowerBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicScepterPowerBoostFlash", 1, 1.3f,
                 new Color(1, 1, 1), new Color(0.1933962f, 0.6118863f, 1), new Color(0.3363763f, 0.240566f, 1), new Color(0.1933962f, 0.6118863f, 1));
 
-            GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), scepterPowerBoostFlashEffect.transform.Find("BlueCone"));
+            AddScepterToBoostFlash(scepterPowerBoostFlashEffect);
 
             //MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
             if (scepterPowerBoostFlashEffect)
@@ -254,7 +254,8 @@ namespace SonicTheHedgehog.Modules
             scepterSuperBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicScepterSuperBoostFlash", 1.3f, 1.6f,
                 new Color(1, 1, 1), new Color(1, 0.9843137f, 0.3160377f), new Color(1f, 0.4103774f, 0.6793281f), new Color(1, 0.9843137f, 0.3160377f));
 
-            GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), scepterPowerBoostFlashEffect.transform.Find("BlueCone"));
+            AddScepterToBoostFlash(scepterSuperBoostFlashEffect);
+
             if (scepterSuperBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -305,75 +306,10 @@ namespace SonicTheHedgehog.Modules
             superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);
         }
-        // Use this to create a new boost flash prefab to be used when activating a custom boost skill
-        // name: An internal name for the prefab. Doesn't really matter what this is as long as it's not the same as anything else
-        // size: The size of the effect. Power Boost defaults to 1. Super Boost defaults to ---
-        // alpha: How visible the effect will be. Power Boost defaults to 1.3. Super Boost defaults to 1.6
-        // color1: The innermost color of the effect
-        // color2: The color between the innermost color and the edge color
-        // color3: The color of the edge of the boost effect
-        // lightColor: The color of the light emitted
-        public static GameObject CreateNewBoostFlash(string name, float size, float alpha, Color color1, Color color2, Color color3, Color lightColor)
+
+        public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)
         {
-            GameObject newFlash = PrefabAPI.InstantiateClone(powerBoostFlashEffect, name);
-            AddNewEffectDef(newFlash);
-
-            ParticleSystem.MainModule main = newFlash.transform.Find("BlueCone").GetComponent<ParticleSystem>().main;
-            main.startSize = new ParticleSystem.MinMaxCurve(main.startSize.constant * size);
-
-            ParticleSystem.MainModule main2 = newFlash.transform.Find("BlueCone/BlueCone2").GetComponent<ParticleSystem>().main;
-            main2.startSize = new ParticleSystem.MinMaxCurve(main2.startSize.constant * size);
-
-            ParticleSystemRenderer renderer = newFlash.transform.Find("BlueCone").GetComponent<ParticleSystemRenderer>();
-            renderer.material = CreateNewBoostMaterial(alpha, color1, color2, color3);
-
-            ParticleSystemRenderer renderer2 = newFlash.transform.Find("BlueCone/BlueCone2").GetComponent<ParticleSystemRenderer>();
-            renderer2.material = CreateNewBoostMaterial(alpha, color1, color2, color3);
-
-            if (lightColor == Color.black)
-            {
-                newFlash.transform.Find("BlueCone/StartFlash/Point Light").GetComponent<Light>().enabled = false;
-            }
-            else
-            {
-                newFlash.transform.Find("BlueCone/StartFlash/Point Light").GetComponent<Light>().color = lightColor;
-            }
-
-            return newFlash;
-        }
-        // Use this to create a new boost aura prefab to be used constantly while using a custom boost skill
-        // name: An internal name for the prefab. Doesn't really matter what this is as long as it's not the same as anything else
-        // size: The size of the effect. Power Boost defaults to 1. Super Boost defaults to 1.3
-        // alpha: How visible/strong the effect will be. Power Boost defaults to 0.65. Super Boost defaults to 0.8
-        // color1: The innermost color of the effect
-        // color2: The color between the innermost color and the edge color
-        // color3: The color of the edge of the boost effect
-        // lightColor: The color of the light emitted
-        public static GameObject CreateNewBoostAura(string name, float size, float alpha, Color color1, Color color2, Color color3, Color lightColor)
-        {
-            GameObject newAura = PrefabAPI.InstantiateClone(powerBoostAuraEffect, name);
-            newAura.transform.Find("Aura").localScale *= size;
-            newAura.transform.Find("Aura").GetComponent<MeshRenderer>().material = CreateNewBoostMaterial(alpha, color1, color2, color3);
-            if (lightColor == Color.black)
-            {
-                newAura.transform.Find("Point Light").GetComponent<Light>().enabled = false;
-            }
-            else
-            {
-                newAura.transform.Find("Point Light").GetComponent<Light>().color = lightColor;
-            }
-            return newAura;
-        }
-
-        private static Material CreateNewBoostMaterial(float alpha, Color color1, Color color2, Color color3)
-        {
-            Material newMaterial = new Material(Assets.mainAssetBundle.LoadAsset<Material>("matPowerBoost"));
-            newMaterial.SetFloat("_AlphaBoost", alpha);
-            newMaterial.SetColor("_Color1", color1);
-            newMaterial.SetColor("_Color2", color2);
-            newMaterial.SetColor("_Color3", color3);
-
-            return newMaterial;
+            GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), boostFlashPrefab.transform.Find("BlueCone"));
         }
 
         public static GameObject MaterialSwap(GameObject prefab, string assetPath, string pathToParticle = "")

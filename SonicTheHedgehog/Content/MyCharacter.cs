@@ -202,7 +202,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             }
         }
 
-        public static SkillDef primarySkillDef;
+        public static SkillDefs.MeleeSkillDef primarySkillDef;
 
         public static SkillDef sonicBoomSkillDef;
         public static SkillDef parrySkillDef;
@@ -225,12 +225,12 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //bodyPrefab.AddComponent<Components.PowerBoostLogic>();
             bodyPrefab.AddComponent<PowerBoostLogic>();
-            bodyPrefab.AddComponent<Components.MomentumPassive>();
             bodyPrefab.AddComponent<Components.HomingTracker>();
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.StayOnGround>();
             bodyPrefab.AddComponent<ParryFollowUpTracker>();
             bodyPrefab.AddComponent<SuperSkillReplacer>();
             bodyPrefab.AddComponent<JitterBoneBlacklist>();
+            bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.MomentumPassive>();
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 
@@ -650,6 +650,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             HedgehogUtils.Boost.SkillDefs.BoostSkillDef skillDef = Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.BoostSkillDef>(boost);
             skillDef.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
             skillDef.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
+            skillDef.boostHUDColor = new Color(0, 0.9f, 1, 1);
 
             Log.Message("Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
@@ -707,6 +708,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override void InitializeSkins()
         {
             ModelSkinController skinController = prefabCharacterModel.gameObject.AddComponent<ModelSkinController>();
+            ModelSkinController skinController2 = displayPrefab.gameObject.AddComponent<ModelSkinController>();
             ChildLocator childLocator = prefabCharacterModel.GetComponent<ChildLocator>();
 
             CharacterModel.RendererInfo[] defaultRendererinfos = prefabCharacterModel.baseRendererInfos;
@@ -772,12 +774,13 @@ namespace SonicTheHedgehog.Modules.Survivors
             #endregion
 
             skinController.skins = skins.ToArray();
+            skinController2.skins = skins.ToArray();
         }
     }
 
     public class SonicSkillDefs
     {
-        public static SkillDef primarySkillDef;
+        public static SkillDefs.MeleeSkillDef primarySkillDef;
 
         public static SkillDef sonicBoomSkillDef;
         public static SkillDef parrySkillDef;
@@ -786,7 +789,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         public static SkillDef grandSlamSkillDef;
 
-        public static void Initialize(SkillDef primary, SkillDef sonicBoom, SkillDef parry, HedgehogUtils.Boost.SkillDefs.BoostSkillDef boost, SkillDef grandSlam)
+        public static void Initialize(SkillDefs.MeleeSkillDef primary, SkillDef sonicBoom, SkillDef parry, HedgehogUtils.Boost.SkillDefs.BoostSkillDef boost, SkillDef grandSlam)
         {
             primarySkillDef = primary;
             sonicBoomSkillDef = sonicBoom;

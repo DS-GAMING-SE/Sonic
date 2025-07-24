@@ -37,8 +37,8 @@ namespace SonicTheHedgehog.SkillStates
         protected float attackRecoil;
         protected float hitHopVelocity;
         protected bool cancelled = false;
-        protected float meleeFiringDisplacement = 0.3f;
-        protected float meleeDisplacement = 0.005f;
+        protected float meleeFiringDisplacement = 0.25f;
+        protected float meleeDisplacement = 0.011f;
         protected float displacementDIMultiplier = 1.5f;
 
         protected string swingSoundString = "";

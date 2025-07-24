@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using R2API;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
@@ -28,7 +29,6 @@ namespace SonicTheHedgehog.SkillStates
         protected bool cancelled = false;
         protected float noTargetDistancePercentage = 0.7f;
 
-        protected float maxDashRange;
         protected float dashSpeed;
         protected float estimatedDashTime;
         protected float dashOvershoot;
@@ -63,15 +63,19 @@ namespace SonicTheHedgehog.SkillStates
             this.dashSpeed = homingTracker.Speed();
             this.hasFired = false;
             this.attackStartTime = baseAttackStartTime / base.characterBody.attackSpeed;
-            this.dashOvershoot = 1.5f;
+            this.dashOvershoot = 1.75f;
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             if (homingTracker)
             {
-                this.target = homingTracker.GetTrackingTarget();
+                this.target = homingTracker.GetTrackingTarget(true);
             }
             this.targetDirection = base.GetAimRay().direction.normalized * homingTracker.MaxRange() * this.noTargetDistancePercentage;
             if (this.target!=null)
             {
+                if (target.healthComponent && target.healthComponent.body && target.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff))
+                {
+                    this.dashOvershoot *= 2.5f;
+                }
                 this.targetDirection = (this.target.transform.position - base.transform.position);
             }
             if (dashSpeed > 0)
@@ -232,6 +236,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
+            this.attack.damageType.AddModdedDamageType(DamageTypes.grandSlamJuggle);
             this.attack.damageType.damageSource = DamageSource.Special;
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;

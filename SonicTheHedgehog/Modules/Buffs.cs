@@ -12,6 +12,7 @@ namespace SonicTheHedgehog.Modules
         internal static BuffDef ballBuff;
         internal static BuffDef parryBuff;
         internal static BuffDef superParryDebuff;
+        internal static BuffDef grandSlamJuggleDebuff;
 
         internal static void RegisterBuffs()
         {
@@ -41,10 +42,20 @@ namespace SonicTheHedgehog.Modules
                 new Color(0, 0.2f, 0.6f),
                 false,
                 true);
+            grandSlamJuggleDebuff = AddNewBuff("bdSonicSuperParryDebuff",
+                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/Weak").iconSprite,
+                new Color(0, 0.2f, 0.6f),
+                false,
+                true,
+                true);
         }
 
         // simple helper method
         internal static BuffDef AddNewBuff(string buffName, Sprite buffIcon, Color buffColor, bool canStack, bool isDebuff)
+        {
+            return AddNewBuff(buffName, buffIcon, buffColor, canStack, isDebuff, false);
+        }
+        internal static BuffDef AddNewBuff(string buffName, Sprite buffIcon, Color buffColor, bool canStack, bool isDebuff, bool isHidden)
         {
             BuffDef buffDef = ScriptableObject.CreateInstance<BuffDef>();
             buffDef.name = buffName;
@@ -53,6 +64,7 @@ namespace SonicTheHedgehog.Modules
             buffDef.isDebuff = isDebuff;
             buffDef.eliteDef = null;
             buffDef.iconSprite = buffIcon;
+            buffDef.isHidden = isHidden;
 
             Modules.Content.AddBuffDef(buffDef);
 

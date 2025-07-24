@@ -21,6 +21,7 @@ namespace SonicTheHedgehog.Components
         private EntityStateMachine bodyState;
 
         private HurtBox trackingTarget;
+        private HurtBox trackingTargetLaunched;
         private HurtBox nearbyTarget;
         public bool isTrackingTargetClose;
         public bool enemiesNearby;
@@ -48,6 +49,15 @@ namespace SonicTheHedgehog.Components
             return this.trackingTarget;
         }
 
+        public HurtBox GetTrackingTarget(bool allowTargetingLaunched)
+        {
+            if (allowTargetingLaunched && trackingTargetLaunched)
+            {
+                return this.trackingTargetLaunched;
+            }
+            return this.trackingTarget;
+        }
+
         private void OnEnable()
         {
             this.indicator.active = true;
@@ -64,7 +74,7 @@ namespace SonicTheHedgehog.Components
             {
                 this.trackerUpdateStopwatch = 0;
                 System.Type stateType = this.bodyState.state.GetType();
-                bool notTargetingState = typeof(Boost).IsAssignableFrom(stateType) || stateType == typeof(Death) || typeof(Parry).IsAssignableFrom(stateType) || typeof(GrandSlamSpin).IsAssignableFrom(stateType) || typeof(GrandSlamFinal).IsAssignableFrom(stateType) || typeof(HedgehogUtils.Forms.EntityStates.TransformationBase).IsAssignableFrom(stateType);
+                bool notTargetingState = typeof(HedgehogUtils.Boost.EntityStates.Boost).IsAssignableFrom(stateType) || stateType == typeof(Death) || typeof(Parry).IsAssignableFrom(stateType) || typeof(GrandSlamSpin).IsAssignableFrom(stateType) || typeof(GrandSlamFinal).IsAssignableFrom(stateType) || typeof(HedgehogUtils.Forms.EntityStates.TransformationBase).IsAssignableFrom(stateType);
                 if (notTargetingState)
                 {
                     this.indicator.targetTransform = null;
@@ -90,9 +100,26 @@ namespace SonicTheHedgehog.Components
             this.search.maxAngleFilter = 12;
             this.search.RefreshCandidates();
             this.search.FilterOutGameObject(base.gameObject);
-            this.trackingTarget = this.search.GetResults().
-                Where(hurt => hurt && hurt.healthComponent && hurt.healthComponent.body && hurt.healthComponent.alive && !hurt.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff))
-                .FirstOrDefault();
+            trackingTarget = null;
+            trackingTargetLaunched = null;
+            this.search.GetResults().ToList().ForEach(hurt => 
+            {
+                if (hurt && hurt.healthComponent && hurt.healthComponent.body && hurt.healthComponent.alive)
+                {
+                    if (hurt.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff) && !trackingTargetLaunched)
+                    {
+                        trackingTargetLaunched = hurt;
+                    }
+                    else if (!trackingTarget)
+                    {
+                        trackingTarget = hurt;
+                    }
+                }
+                if (trackingTarget && trackingTargetLaunched)
+                {
+                    return;
+                }
+            });
             if (this.trackingTarget != null)
             {
                 this.isTrackingTargetClose = 8 >= Mathf.Abs(Vector3.Magnitude(characterBody.transform.position - this.trackingTarget.transform.position));
@@ -107,7 +134,7 @@ namespace SonicTheHedgehog.Components
         public void EnemiesNearby()
         {
             this.sphereSearch.origin = characterBody.transform.position + this.inputBank.aimDirection;
-            this.sphereSearch.radius = 3;
+            this.sphereSearch.radius = 5;
             this.sphereSearch.mask = LayerIndex.entityPrecise.mask;
             this.sphereSearch.RefreshCandidates();
             this.sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamComponent.teamIndex));

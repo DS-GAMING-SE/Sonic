@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using R2API;
 using R2API.Networking.Interfaces;
 using Rewired;
 using RoR2;
@@ -146,6 +147,7 @@ namespace SonicTheHedgehog.SkillStates
 
             this.attack = new OverlapAttack();
             this.attack.damageType = this.damageType;
+            this.attack.damageType.AddModdedDamageType(DamageTypes.grandSlamJuggle);
             this.attack.damageType.damageSource = DamageSource.Special;
             this.attack.attacker = base.gameObject;
             this.attack.inflictor = base.gameObject;

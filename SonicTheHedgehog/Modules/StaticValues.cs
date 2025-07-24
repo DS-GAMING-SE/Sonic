@@ -105,6 +105,8 @@ namespace SonicTheHedgehog.Modules
 
         internal const float grandSlamFinalProcCoefficient = 1.5f;
 
+        internal const float grandSlamJuggleSpeedReductionMult = 0.7f;
+
         // Chaos Emeralds --------------------------
 
         internal const int chaosEmeraldCost = 50;

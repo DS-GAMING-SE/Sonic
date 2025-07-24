@@ -70,7 +70,7 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_NAME", "Momentum");
             LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION",
-                $"<style=cIsUtility>Build up speed</style> by <style=cIsUtility>running down hill</style> to move up to <style=cIsUtility>{MomentumPassive.speedMultiplier * 100}% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to {Mathf.Floor((MomentumPassive.speedMultiplier * 100) / 3)}% slower.</style>\nIf <style=cIsUtility>flying</style>, <style=cIsUtility>build up speed</style> by <style=cIsUtility>moving in a straight line.</style>");
+                $"<style=cIsUtility>Build up speed</style> by <style=cIsUtility>running down hill</style> to move up to <style=cIsUtility>100% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to 33% slower.</style>\nIf <style=cIsUtility>flying</style>, <style=cIsUtility>build up speed</style> by <style=cIsUtility>moving in a straight line.</style>");
 
             #endregion
 
