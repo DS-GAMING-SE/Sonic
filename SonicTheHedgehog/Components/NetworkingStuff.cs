@@ -51,7 +51,7 @@ namespace SonicTheHedgehog.Components
         }
     }
 
-    public class ScepterBoostDamage : INetMessage
+    /*public class ScepterBoostDamage : INetMessage
     {
         HurtBox hurtbox;
         DamageInfo damageInfo;
@@ -85,6 +85,6 @@ namespace SonicTheHedgehog.Components
             hurtbox = reader.ReadHurtBoxReference().ResolveHurtBox();
             damageInfo = reader.ReadDamageInfo();
         }
-    }
+    }*/
 
 }

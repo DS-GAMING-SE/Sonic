@@ -13,6 +13,8 @@ namespace SonicTheHedgehog.Modules
         internal static BuffDef parryBuff;
         internal static BuffDef superParryDebuff;
         internal static BuffDef grandSlamJuggleDebuff;
+        internal static BuffDef sonicBoomDebuff;
+        internal static BuffDef crossSlashDebuff;
 
         internal static void RegisterBuffs()
         {
@@ -33,19 +35,29 @@ namespace SonicTheHedgehog.Modules
                 false,
                 false);
             parryBuff = AddNewBuff("bdSonicParry",
-                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/WarCryBuff").iconSprite,
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texParryBuffIcon"),
                 new Color(0, 0.7f, 1),
                 false,
                 false);
             superParryDebuff = AddNewBuff("bdSonicSuperParryDebuff",
-                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/Weak").iconSprite,
-                new Color(0, 0.2f, 0.6f),
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperParryDebuffIcon"),
+                new Color(1f, 0.9f, 0.2f),
                 false,
                 true);
-            grandSlamJuggleDebuff = AddNewBuff("bdSonicSuperParryDebuff",
+            grandSlamJuggleDebuff = AddNewBuff("bdSonicGrandSlamJuggleDebuff",
                 LegacyResourcesAPI.Load<BuffDef>("BuffDefs/Weak").iconSprite,
                 new Color(0, 0.2f, 0.6f),
                 false,
+                true,
+                true);
+            sonicBoomDebuff = AddNewBuff("bdSonicSonicBoomDebuff",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicBoomDebuffIcon"),
+                new Color(1f, 1f, 1f),
+                true,
+                true);
+            crossSlashDebuff = AddNewBuff("bdSonicCrossSlashDebuff",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texCrossSlashDebuffIcon"),
+                new Color(1f, 1f, 1f),
                 true,
                 true);
         }

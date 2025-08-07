@@ -267,7 +267,9 @@ namespace SonicTheHedgehog
                 RegisterLookingGlassBuff(language, Buffs.superBoostBuff, "Super Sonic Boost", $"Gain <style=cIsUtility>+{StaticValues.superBoostListedSpeedCoefficient * 100}% movement speed</style>.");
                 RegisterLookingGlassBuff(language, Buffs.ballBuff, "Sonic Ball", $"Gain <style=cIsUtility>+{StaticValues.ballArmor} armor</style>.");
                 RegisterLookingGlassBuff(language, Buffs.parryBuff, "Sonic Parry", $"Gain <style=cIsUtility>+{StaticValues.parryAttackSpeedBuff * 100}% attack speed</style> and <style=cIsUtility>+{StaticValues.parryMovementSpeedBuff * 100}% movement speed</style>.");
-                RegisterLookingGlassBuff(language, Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superParryArmorDebuff * 100}, reduces <style=cIsUtility>attack speed and movement speed</style> by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%.");
+                RegisterLookingGlassBuff(language, Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superParryArmorDebuff}, reduces <style=cIsUtility>attack speed and movement speed</style> by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%.");
+                RegisterLookingGlassBuff(language, Buffs.sonicBoomDebuff, "Sonic Boom Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.sonicBoomDebuffArmorReduction}.");
+                RegisterLookingGlassBuff(language, Buffs.crossSlashDebuff, "Sonic Cross Slash Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superSonicBoomDebuffArmorReduction}.");
             }
         }
 
@@ -343,6 +345,15 @@ namespace SonicTheHedgehog
                 if (self.HasBuff(Buffs.grandSlamJuggleDebuff))
                 {
                     stats.moveSpeedReductionMultAdd += StaticValues.grandSlamJuggleSpeedReductionMult;
+                }
+
+                if (self.HasBuff(Buffs.sonicBoomDebuff))
+                {
+                    stats.armorAdd -= StaticValues.sonicBoomDebuffArmorReduction * self.GetBuffCount(Buffs.sonicBoomDebuff);
+                }
+                if (self.HasBuff(Buffs.crossSlashDebuff))
+                {
+                    stats.armorAdd -= StaticValues.superSonicBoomDebuffArmorReduction * self.GetBuffCount(Buffs.crossSlashDebuff);
                 }
             }
         }

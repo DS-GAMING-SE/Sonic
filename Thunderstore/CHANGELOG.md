@@ -25,7 +25,7 @@ This sure took longer than I expected...
  
  - (+) Parry is receiving a rework in the form of a new follow-up attack that can be performed after a successful parry. Now the parry skill is able to do damage, so you are no longer limited to having only two damaging moves on Sonic. This should also make it easier for new players to understand how the Super upgrade of parry already has a follow-up attack.
 
- - (+) Sonic Boom has been given a small damage buff ~~to make up for how much cooler Parry is~~ (Sonic Boom 160% -> 180%, Cross Slash 320% -> 360%)
+ - (+) Sonic Boom now applies an armor reducing debuff on hit ~~to make up for how much cooler Parry is~~
  
  - (=) Parry's buff has been adjusted to account for the new follow up attack. The buff isn't as strong, but lasts longer so you have time to use the follow-up attack and Grand Slam before the buff ends.
      - Parry's attack speed buff has been reduced (40% -> 25%)
@@ -43,7 +43,8 @@ This sure took longer than I expected...
  - (Bug Fix) Fixed Scepter Boost damage not correctly matching movement speed
 	 
  - (Config) Configs related to the Chaos Emeralds, Super form, and Boost meter location have been moved to the new HedgehogUtils mod. Any config changes you set previously will need to be redone
-
+ - (Config) Added a config option that changes the duration of the Super form
+ - (Config) Added a config option that disables the Super form's invincibility, instead granting 200 armor
  - (Config) Added a config option that disables logs. Logs are now disabled by default
 
 ### Known Issues

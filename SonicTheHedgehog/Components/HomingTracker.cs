@@ -29,8 +29,8 @@ namespace SonicTheHedgehog.Components
         private float trackerUpdateStopwatch;
         private float trackerUpdateFrequency = 10f;
 
-        private readonly BullseyeSearch search = new BullseyeSearch();
-        private readonly SphereSearch sphereSearch = new SphereSearch();
+        private BullseyeSearch search;
+        private SphereSearch sphereSearch;
 
         private void Awake()
         {
@@ -42,6 +42,8 @@ namespace SonicTheHedgehog.Components
             this.inputBank = base.GetComponent<InputBankTest>();
             this.teamComponent = base.GetComponent<TeamComponent>();
             this.bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
+            search = new BullseyeSearch();
+            sphereSearch = new SphereSearch();
         }
 
         public HurtBox GetTrackingTarget()
@@ -100,9 +102,9 @@ namespace SonicTheHedgehog.Components
             this.search.maxAngleFilter = 12;
             this.search.RefreshCandidates();
             this.search.FilterOutGameObject(base.gameObject);
-            trackingTarget = null;
-            trackingTargetLaunched = null;
-            this.search.GetResults().ToList().ForEach(hurt => 
+            this.trackingTargetLaunched = this.search.GetResults().FirstOrDefault(hurt => hurt && hurt.healthComponent && hurt.healthComponent.body && hurt.healthComponent.alive && hurt.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff));
+            this.trackingTarget = this.search.GetResults().FirstOrDefault(hurt => hurt && hurt.healthComponent && hurt.healthComponent.body && hurt.healthComponent.alive);
+            /*this.search.GetResults().ToList().ForEach(hurt => 
             {
                 if (hurt && hurt.healthComponent && hurt.healthComponent.body && hurt.healthComponent.alive)
                 {
@@ -119,7 +121,7 @@ namespace SonicTheHedgehog.Components
                 {
                     return;
                 }
-            });
+            });*/
             if (this.trackingTarget != null)
             {
                 this.isTrackingTargetClose = 8 >= Mathf.Abs(Vector3.Magnitude(characterBody.transform.position - this.trackingTarget.transform.position));

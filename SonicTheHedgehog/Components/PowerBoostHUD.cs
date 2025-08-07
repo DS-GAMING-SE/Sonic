@@ -60,12 +60,17 @@ namespace SonicTheHedgehog.Components
             }
             if (this.hud.targetBodyObject != lastBodyObject)
             {
-                if (!boostLogic && this.hud.targetBodyObject.TryGetComponent<BoostLogic>(out BoostLogic logic))
+                if (this.hud.targetBodyObject.TryGetComponent<BoostLogic>(out BoostLogic logic))
                 {
                     if (typeof(PowerBoostLogic).IsAssignableFrom(logic.GetType()))
                     {
                         powerBoostParticle.gameObject.SetActive(true);
                         boostLogic = logic as PowerBoostLogic;
+                    }
+                    else
+                    {
+                        powerBoostParticle.gameObject.SetActive(false);
+                        return;
                     }
                 }
             }

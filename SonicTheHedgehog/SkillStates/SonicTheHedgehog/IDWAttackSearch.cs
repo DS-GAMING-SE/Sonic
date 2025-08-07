@@ -103,7 +103,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual bool HasValidSkill()
         {
-            return (base.skillLocator.secondary.activationState.stateType == this.GetType() || base.skillLocator.secondary.skillDef == SuperSkillReplacer.emptyParry);
+            return (base.skillLocator.secondary.activationState.stateType == this.GetType() || base.skillLocator.secondary.skillDef == SuperSkillReplacer.afterIDWAttack);
         }
 
         private void TargetLocked()

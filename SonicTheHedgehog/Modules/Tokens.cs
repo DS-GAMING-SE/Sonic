@@ -79,7 +79,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
             string meleeDescription =
                 $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
-            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription + "This move can <style=cIsUtility>launch</style> lightweight enemies.");
+            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription + " This move can <style=cIsUtility>launch</style> lightweight enemies.");
 
             #endregion
 
@@ -88,7 +88,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", $"{superSonicColor}Super Melee</color>");
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION",
                 meleeDescription +
-                $"This move can <style=cIsUtility>launch</style> {superSonicColor}mediumweight</color> enemies.\n{superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
+                $" This move can <style=cIsUtility>launch</style> {superSonicColor}mediumweight</color> enemies.\n{superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
 
             #endregion
 
@@ -96,7 +96,7 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SECONDARY_SONIC_BOOM_NAME", "Sonic Boom");
             LanguageAPI.Add(prefix + "SECONDARY_SONIC_BOOM_DESCRIPTION",
-                $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x{100f * StaticValues.sonicBoomDamageCoefficient}% damage</style>.");
+                $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x{100f * StaticValues.sonicBoomDamageCoefficient}% damage</style> and reducing <style=cIsDamage>armor</style> by <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x{StaticValues.sonicBoomDebuffArmorReduction}</style>.");
 
             #endregion
 
@@ -104,7 +104,7 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_NAME", $"{superSonicColor}Cross Slash</color>");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION",
-                $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{superSonicColor}{100f * StaticValues.superSonicBoomDamageCoefficient}</color><style=cIsDamage>% damage</style>.");
+                $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{superSonicColor}{100f * StaticValues.superSonicBoomDamageCoefficient}</color><style=cIsDamage>% damage</style> and reducing <style=cIsDamage>armor</style> by <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{superSonicColor}{StaticValues.superSonicBoomDebuffArmorReduction}</color>.");
 
             #endregion
 
@@ -114,7 +114,7 @@ namespace SonicTheHedgehog.Modules
             string parryOnHitDescription =
                 $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give +{StaticValues.parryAttackSpeedBuff * 100}% <style=cIsDamage>attack speed</style> and <style=cIsUtility>movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION",
-                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription} It will also temporarily <style=cIsUtility>replace this skill</style> with \"<style=cIsUtility>Follow Up</style>\" which deals damage to nearby enemies");
+                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription} It will also temporarily <style=cIsUtility>replace this skill</style> with \"<style=cIsUtility>Follow Up</style>\", a wide <style=cIsUtility>launching</style> kick attack.");
 
             #endregion
 
@@ -122,6 +122,13 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_NAME", "Follow Up");
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
                 $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> mediumweight hit enemies.");
+
+            #endregion
+
+            #region Super Follow Up
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME", $"{superSonicColor}Super Follow Up</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> {superSonicColor}heavyweight</color> hit enemies.");
 
             #endregion
 
@@ -152,7 +159,7 @@ namespace SonicTheHedgehog.Modules
 
             #region Scepter Boost
 
-            LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_NAME", $"Thundering Boost");
+            LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_NAME", $"Thunderous Boost");
             string scepterBoostDescription = Helpers.ScepterDescription(
                 $"Run into enemies to deal {StaticValues.scepterBoostDamageCoefficient * 100f}% damage and launch them. Damage increases based on your movement speed.");
             LanguageAPI.Add(prefix + "SCEPTER_UTILITY_BOOST_DESCRIPTION", boostDescription + scepterBoostDescription);
@@ -171,7 +178,7 @@ namespace SonicTheHedgehog.Modules
             #region Super Scepter Boost
 
             LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_NAME",
-                $"{superSonicColor}Super Thundering Boost</color>");
+                $"{superSonicColor}Super Thunderous Boost</color>");
             LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION",
                 superBoostDescription + scepterBoostDescription);
 

@@ -20,7 +20,7 @@ namespace SonicTheHedgehog.Components
         public static SkillDefs.RequiresFormSkillDef sonicBoom;
 
         public static SkillDefs.RequiresFormSkillDef parry;
-        public static SkillDefs.RequiresFormSkillDef emptyParry;
+        public static SkillDefs.RequiresFormSkillDef afterIDWAttack;
 
         public static HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef boost;
 
@@ -52,7 +52,7 @@ namespace SonicTheHedgehog.Components
             {
                 SkillOverrides();
             }
-            // Removal of Super Upgrade skills is done using the HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef type of SkillDef that all the super upgrades are
+            // Removal of Super Upgrade skills is built into the HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef type of SkillDef that all the super upgrades are, so it doesn't need to be done manually
 
             /*else if (previous == HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef)
             {
@@ -75,7 +75,7 @@ namespace SonicTheHedgehog.Components
 
         public void IDWAttackActivated()
         {
-            body.skillLocator.secondary.SetSkillOverride(this, emptyParry, GenericSkill.SkillOverridePriority.Contextual);
+            body.skillLocator.secondary.SetSkillOverride(this, afterIDWAttack, GenericSkill.SkillOverridePriority.Contextual);
         }
 
 

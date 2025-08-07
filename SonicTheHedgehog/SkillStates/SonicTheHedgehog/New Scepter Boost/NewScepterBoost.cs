@@ -22,7 +22,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual float launchForce
         {
-            get { return 250f; }
+            get { return 400f; }
         }
 
         public override void OnEnter()

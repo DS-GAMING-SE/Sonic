@@ -81,6 +81,10 @@ namespace SonicTheHedgehog.Modules
 
             sonicBoomPrefab.GetComponent<ProjectileDamage>().damageType.damageSource = DamageSource.Secondary;
 
+            ProjectileInflictTimedBuff debuff = sonicBoomPrefab.AddComponent<ProjectileInflictTimedBuff>();
+            debuff.buffDef = Buffs.sonicBoomDebuff;
+            debuff.duration = StaticValues.sonicBoomDebuffDuration;
+
             ProjectileController bombController = sonicBoomPrefab.GetComponent<ProjectileController>();
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
@@ -105,6 +109,10 @@ namespace SonicTheHedgehog.Modules
             bombImpactExplosion.lifetimeAfterImpact = 0f;
 
             superSonicBoomPrefab.GetComponent<ProjectileDamage>().damageType.damageSource = DamageSource.Secondary;
+
+            ProjectileInflictTimedBuff debuff = superSonicBoomPrefab.AddComponent<ProjectileInflictTimedBuff>();
+            debuff.buffDef = Buffs.crossSlashDebuff;
+            debuff.duration = StaticValues.sonicBoomDebuffDuration;
 
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
             bombController.canImpactOnTrigger = false;

@@ -204,7 +204,7 @@ namespace SonicTheHedgehog.SkillStates
         }
         public virtual void OnSkillChanged(GenericSkill skill)
         {
-            if (!typeof(IDWAttackSearch).IsAssignableFrom(skill.activationState.stateType) && skill.skillDef != SuperSkillReplacer.emptyParry)
+            if (!typeof(IDWAttackSearch).IsAssignableFrom(skill.activationState.stateType) && skill.skillDef != SuperSkillReplacer.afterIDWAttack)
             {
                 outer.SetNextStateToMain();
             }

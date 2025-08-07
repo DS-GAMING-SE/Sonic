@@ -82,7 +82,7 @@ namespace SonicTheHedgehog.SkillStates
                     }
                     else
                     {
-                        new ScepterBoostDamage(hitList[i], this.damageInfo).Send(NetworkDestination.Server);
+                        //new ScepterBoostDamage(hitList[i], this.damageInfo).Send(NetworkDestination.Server);
                     }
                     //boostLogic.AddTracker(healthComponent);
                 }

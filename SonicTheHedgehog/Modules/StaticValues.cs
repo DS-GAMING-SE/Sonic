@@ -33,9 +33,13 @@ namespace SonicTheHedgehog.Modules
 
         internal const float sonicBoomFireTime = 0.19f;
         
-        internal const float sonicBoomDamageCoefficient = 1.8f;
+        internal const float sonicBoomDamageCoefficient = 1.6f;
 
         internal const float sonicBoomProcCoefficient = 0.5f;
+
+        internal const float sonicBoomDebuffDuration = 5;
+
+        internal const float sonicBoomDebuffArmorReduction = 5;
 
         // Parry
 
@@ -105,7 +109,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float grandSlamFinalProcCoefficient = 1.5f;
 
-        internal const float grandSlamJuggleSpeedReductionMult = 0.7f;
+        internal const float grandSlamJuggleSpeedReductionMult = 1f;
 
         // Chaos Emeralds --------------------------
 
@@ -138,6 +142,8 @@ namespace SonicTheHedgehog.Modules
         // Super Sonic Boom
 
         internal const float superSonicBoomDamageCoefficient = sonicBoomDamageCoefficient * 2;
+
+        internal const float superSonicBoomDebuffArmorReduction = sonicBoomDebuffArmorReduction * 2;
 
         // Super Parry
 

@@ -31,6 +31,7 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperParryExit));
             Modules.Content.AddEntityState(typeof(IDWAttackSearch));
             Modules.Content.AddEntityState(typeof(IDWAttack));
+            Modules.Content.AddEntityState(typeof(SuperFollowUp));
 
             Modules.Content.AddEntityState(typeof(NewBoost));
             Modules.Content.AddEntityState(typeof(BoostIdle));

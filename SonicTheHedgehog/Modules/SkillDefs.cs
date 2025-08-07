@@ -18,24 +18,23 @@ namespace SonicTheHedgehog.Modules
     {
         public interface IMeleeSkill
         {
-            HomingTracker homingTracker { get; set; }
             SerializableEntityStateType homingAttackState { get; set; }
         }
         public class MeleeSkillDef : SkillDef, IMeleeSkill
         {
-            public HomingTracker homingTracker { get; set; }
-
             public SerializableEntityStateType homingAttackState { get; set; }
 
             public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
             {
-                homingTracker = skillSlot.GetComponent<HomingTracker>();
-                return null;
+                return new MeleeSkillDef.InstanceData
+                {
+                    homingTracker = skillSlot.GetComponent<HomingTracker>()
+                };
             }
 
             public override EntityState InstantiateNextState([NotNull] GenericSkill skillSlot)
             {
-                return DecideNextState(skillSlot, homingTracker, 0);
+                return DecideNextState(skillSlot, ((MeleeSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker, 0);
             }
             public static EntityState DecideNextState(GenericSkill skillSlot, HomingTracker homingTracker, int swingIndex)
             {
@@ -68,23 +67,35 @@ namespace SonicTheHedgehog.Modules
                     return entityState;
                 }
             }
+
+            protected class InstanceData : BaseSkillInstanceData
+            {
+                public HomingTracker homingTracker;
+            }
         }
 
         public class RequiresFormMeleeSkillDef : RequiresFormSkillDef, IMeleeSkill
         {
-            public HomingTracker homingTracker { get; set; }
-
             public SerializableEntityStateType homingAttackState { get; set; }
 
             public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
             {
-                homingTracker = skillSlot.GetComponent<HomingTracker>();
-                return base.OnAssigned(skillSlot);
+                MeleeInstanceData instanceData = new MeleeInstanceData
+                {
+                    homingTracker = skillSlot.GetComponent<HomingTracker>()
+                };
+                instanceData.formComponent = ((InstanceData)base.OnAssigned(skillSlot)).formComponent;
+                return instanceData;
             }
 
             public override EntityState InstantiateNextState([NotNull] GenericSkill skillSlot)
             {
-                return MeleeSkillDef.DecideNextState(skillSlot, homingTracker, 0);
+                return MeleeSkillDef.DecideNextState(skillSlot, ((MeleeInstanceData)skillSlot.skillInstanceData).homingTracker, 0);
+            }
+
+            protected class MeleeInstanceData : RequiresFormSkillDef.InstanceData
+            {
+                public HomingTracker homingTracker;
             }
         }
 

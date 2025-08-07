@@ -309,6 +309,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_PARRY_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_PARRY_DESCRIPTION",
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon"),
+                keywordTokens = new string[] { HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD" },
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Parry)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
@@ -345,7 +346,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.FollowUp)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
-                baseRechargeInterval = 3f,
+                baseRechargeInterval = 5f,
                 beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
@@ -576,11 +577,13 @@ namespace SonicTheHedgehog.Modules.Survivors
             SuperSkillReplacer.parry = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(parry);
             SuperSkillReplacer.parry.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
-            parry.requiredStock = 9999999;
-            parry.rechargeStock = 0;
-            parry.fullRestockOnAssign = false;
-            SuperSkillReplacer.emptyParry = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(parry);
-            SuperSkillReplacer.emptyParry.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef superFollowUp = HedgehogUtils.Helpers.CopySkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(followUpSkillDef);
+            superFollowUp.activationState = new EntityStates.SerializableEntityStateType(typeof(SuperFollowUp));
+            superFollowUp.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+            superFollowUp.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION";
+            superFollowUp.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME";
+            superFollowUp.icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperFollowUpIcon");
+            SuperSkillReplacer.afterIDWAttack = superFollowUp;
 
             SkillDefInfo idwAttack = new SkillDefInfo
             {
