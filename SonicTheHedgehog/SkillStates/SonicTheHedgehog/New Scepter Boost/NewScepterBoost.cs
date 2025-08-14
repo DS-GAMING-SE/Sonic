@@ -70,7 +70,7 @@ namespace SonicTheHedgehog.SkillStates
             return "Play_hedgehogutils_strong_boost";
         }
 
-        public void PrepareOverlapAttack()
+        public virtual void PrepareOverlapAttack()
         {
             HitBoxGroup hitBoxGroup = null;
             Transform modelTransform = base.GetModelTransform();

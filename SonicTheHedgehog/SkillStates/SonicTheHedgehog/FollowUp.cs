@@ -39,27 +39,21 @@ namespace SonicTheHedgehog.SkillStates
         private float hitPauseTimer;
         private OverlapAttack attack;
         protected bool inHitPause;
-        private bool hasHopped;
         protected float stopwatch;
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
-        private bool animationEnded=false;
         private ICharacterFlightParameterProvider flight;
         private bool effectPlayed = false;
-        private bool swingSoundPlayed = false;
 
-        private ParryFollowUpTracker followUp;
+        protected ParryFollowUpTracker followUp;
 
         public override void OnEnter()
         {
             base.OnEnter();
             this.flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             this.followUp = base.GetComponent<ParryFollowUpTracker>();
-            if (followUp)
-            {
-                followUp.RemoveFollowUpAttack();
-            }
+            RemoveFollowUpAttack();
             this.hasFired = false;
             this.swingSoundString = "Play_sonicthehedgehog_swing_strong";
             this.hitStopDuration = 0.2f;
@@ -193,10 +187,18 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+        protected virtual void RemoveFollowUpAttack()
+        {
+            if (followUp)
+            {
+                followUp.RemoveFollowUpAttack();
+            }
+        }
+
         protected virtual void OnFireAuthority()
         {
         }
-        public void PrepareOverlapAttack()
+        public virtual void PrepareOverlapAttack()
         {    
             HitBoxGroup hitBoxGroup = null;
             Transform modelTransform = base.GetModelTransform();

@@ -134,7 +134,7 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        public void PrepareOverlapAttack()
+        public virtual void PrepareOverlapAttack()
         {
             effectFired = false;
             HitBoxGroup hitBoxGroup = null;

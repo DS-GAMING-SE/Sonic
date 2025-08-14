@@ -13,8 +13,6 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {
     public class NewSuperBoost : HedgehogUtils.Boost.EntityStates.Boost
     {
-        private string jumpSoundString = "Play_sonicthehedgehog_jump";
-
         protected override BuffDef buff
         {
             get { return Buffs.superBoostBuff; }

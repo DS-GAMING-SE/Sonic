@@ -299,7 +299,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             return flight != null && flight.isFlying;
         }
-        public void PrepareOverlapAttack()
+        public virtual void PrepareOverlapAttack()
         {
             HitBoxGroup hitBoxGroup = null;
             Transform modelTransform = base.GetModelTransform();

@@ -151,6 +151,8 @@ namespace SonicTheHedgehog
 
             On.RoR2.HealthComponent.TakeDamage += TakeDamage;
 
+            On.RoR2.CharacterBody.OnBuffFirstStackGained += AddGrandSlamJuggleFloat;
+
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
 
             On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
@@ -402,10 +404,20 @@ namespace SonicTheHedgehog
                 && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockback))
             {
                 self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 1, 1);
-                GrandSlamJuggleFloat juggleFloat = self.GetComponent<GrandSlamJuggleFloat>();
-                if (!juggleFloat)
+            }
+        }
+
+        private void AddGrandSlamJuggleFloat(On.RoR2.CharacterBody.orig_OnBuffFirstStackGained orig, CharacterBody self, BuffDef buff)
+        {
+            if (self)
+            {
+                if (buff && buff == Buffs.grandSlamJuggleDebuff)
                 {
-                    self.gameObject.AddComponent<GrandSlamJuggleFloat>();
+                    GrandSlamJuggleFloat juggleFloat = self.GetComponent<GrandSlamJuggleFloat>();
+                    if (!juggleFloat)
+                    {
+                        self.gameObject.AddComponent<GrandSlamJuggleFloat>();
+                    }
                 }
             }
         }

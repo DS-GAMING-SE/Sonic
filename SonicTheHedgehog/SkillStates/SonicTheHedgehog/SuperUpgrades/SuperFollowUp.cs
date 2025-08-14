@@ -17,5 +17,9 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         {
             get { return 1000f; }
         }
+        protected override void RemoveFollowUpAttack()
+        {
+
+        }
     }
 }

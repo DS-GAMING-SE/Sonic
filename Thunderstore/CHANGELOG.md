@@ -17,22 +17,22 @@ This sure took longer than I expected...
 
  - (Logbook) Added logbook entries for the Chaos Emeralds. I am never trying to write a logbook entry again. I am not a writer but I did my best
 
- - (+) Added the new "Launch" mechanic and applied it to most of Sonic's skills. Under certain conditions, Sonic's attacks can launch enemies, turning them into a projectile that flies in the direction hit and damages other enemies they run into.
+ - (+ Buff) Added the new "Launch" mechanic and applied it to most of Sonic's skills. Under certain conditions, Sonic's attacks can launch enemies, turning them into a projectile that flies in the direction hit and damages other enemies they run into.
 
- - (+) To go with the new Launch mechanic, Grand Slam's spin attack now holds enemies in place mid-air, opening up some potential for air combos. Launch an enemy up into the air and use Grand Slam to bring them back down. 
+ - (+ Buff) To go with the new Launch mechanic, Grand Slam's spin attack now holds enemies in place mid-air, opening up some potential for air combos. Launch an enemy up into the air and use Grand Slam to bring them back down. 
 
- - (+) Melee and Sonic Boom don't reduce your movement speed as much (Melee speed roughly doubled, Sonic Boom 55% -> 30%, Cross Slash 15% -> 10%)
+ - (+ Buff) Melee and Sonic Boom don't reduce your movement speed as much (Melee speed roughly doubled, Sonic Boom 55% -> 30%, Cross Slash 15% -> 10%)
  
- - (+) Parry is receiving a rework in the form of a new follow-up attack that can be performed after a successful parry. Now the parry skill is able to do damage, so you are no longer limited to having only two damaging moves on Sonic. This should also make it easier for new players to understand how the Super upgrade of parry already has a follow-up attack.
+ - (+ Buff) Parry is receiving a rework in the form of a new follow-up attack that can be performed after a successful parry. Now the parry skill is able to do damage, so you are no longer limited to having only two damaging moves on Sonic. This should also make it easier for new players to understand how the Super upgrade of parry already has a follow-up attack.
 
- - (+) Sonic Boom now applies an armor reducing debuff on hit ~~to make up for how much cooler Parry is~~
+ - (+ Buff) Sonic Boom now applies an armor reducing debuff on hit ~~to make up for how much cooler Parry is~~
  
- - (=) Parry's buff has been adjusted to account for the new follow up attack. The buff isn't as strong, but lasts longer so you have time to use the follow-up attack and Grand Slam before the buff ends.
+ - (= Changes) Parry's buff has been adjusted to account for the new follow up attack. The buff isn't as strong, but lasts longer so you have time to use the follow-up attack and Grand Slam before the buff ends.
      - Parry's attack speed buff has been reduced (40% -> 25%)
 	 - Parry's movement speed buff has been reduced (30% -> 25%)
 	 - Parry's buff duration has been increased (3s -> 5s)
 	 
- - (=) Boost has been recoded from the ground up. It should feel a bit closer to how it does in actual Sonic games. Overall the boost has been made easier to use for exploration but a bit harder to use in combat. Here are some of the noticeable changes.
+ - (= Changes) Boost has been recoded from the ground up. It should feel a bit closer to how it does in actual Sonic games. Overall the boost has been made easier to use for exploration but a bit harder to use in combat. Here are some of the noticeable changes.
      - A portion of the boost meter is immediately consumed when you start boosting, which makes using its I-frames require paying some attention to the boost meter.
 	 - Boost drains much slower when boosting continuously, making it better for map exploration.
 	 - Boost recharges faster.
@@ -48,7 +48,6 @@ This sure took longer than I expected...
  - (Config) Added a config option that disables logs. Logs are now disabled by default
 
 ### Known Issues
- - The NoAllyAttackBlock mod conflicts with Sonic's very lazy CustomEmotesAPI integration. If you have NoAllyAttackBlock and don't have CustomEmotesAPI, blacklist SonicTheHedgehog in the NoAllyAttackBlock config
  - Boost meter is kinda shaky as clients in multiplayer
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
 

@@ -45,6 +45,7 @@ namespace SonicTheHedgehog.SkillStates
 
         private GameObject idwAttackEffect;
 
+        protected BlastAttack blastAttack;
         private BlastAttack.HitPoint[] hit;
 
         public override void OnEnter()
@@ -144,7 +145,12 @@ namespace SonicTheHedgehog.SkillStates
                     */
                     idwAttackEffect.transform.position = this.targetPosition;
                     Util.PlaySound("Play_sonicthehedgehog_idw_hit", base.gameObject);
-                    FireBlastAttack();
+                    if (base.isAuthority)
+                    {
+                        PrepareBlastAttack();
+                        FireBlastAttack();
+                    }
+                    attackCount++;
                     return;
                 }
             }
@@ -181,26 +187,26 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
-        private void FireBlastAttack()
+        public virtual void PrepareBlastAttack()
         {
-            this.attackCount++;
-            if (base.isAuthority)
-            {
-                BlastAttack blastAttack = new BlastAttack();
-                blastAttack.radius = range;
-                blastAttack.procCoefficient = procCoefficient;
-                blastAttack.position = targetPosition;
-                blastAttack.attacker = base.gameObject;
-                blastAttack.crit = Util.CheckRoll(base.characterBody.crit, base.characterBody.master);
-                blastAttack.baseDamage = base.characterBody.damage * damageCoefficient;
-                blastAttack.falloffModel = BlastAttack.FalloffModel.None;
-                blastAttack.damageType = damageType;
-                blastAttack.damageType.damageSource = DamageSource.Secondary;
-                blastAttack.baseForce = -pushForce;
-                blastAttack.teamIndex = base.teamComponent.teamIndex;
-                blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
-                this.hit = blastAttack.Fire().hitPoints;
-            }
+            blastAttack = new BlastAttack();
+            blastAttack.radius = range;
+            blastAttack.procCoefficient = procCoefficient;
+            blastAttack.position = targetPosition;
+            blastAttack.attacker = base.gameObject;
+            blastAttack.crit = Util.CheckRoll(base.characterBody.crit, base.characterBody.master);
+            blastAttack.baseDamage = base.characterBody.damage * damageCoefficient;
+            blastAttack.falloffModel = BlastAttack.FalloffModel.None;
+            blastAttack.damageType = damageType;
+            blastAttack.damageType.damageSource = DamageSource.Secondary;
+            blastAttack.baseForce = -pushForce;
+            blastAttack.teamIndex = base.teamComponent.teamIndex;
+            blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
+        }
+
+        protected virtual void FireBlastAttack()
+        {
+            this.hit = blastAttack.Fire().hitPoints;
         }
         public virtual void OnSkillChanged(GenericSkill skill)
         {

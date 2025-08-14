@@ -217,7 +217,7 @@ namespace SonicTheHedgehog.SkillStates
             return Vector3.up * (Mathf.Lerp(startUpVelocityMax, startUpVelocityMin, fixedAge / this.startUpTime));
         }
 
-        public void PrepareOverlapAttack()
+        public virtual void PrepareOverlapAttack()
         {
             HitBoxGroup hitBoxGroup = null;
             Transform modelTransform = base.GetModelTransform();

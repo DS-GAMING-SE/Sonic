@@ -54,7 +54,10 @@ namespace SonicTheHedgehog.Components
 
         public void RemoveFollowUpAttack()
         {
-            skillLocator.secondary.UnsetSkillOverride(this, setSkillOverride, GenericSkill.SkillOverridePriority.Contextual);
+            if (setSkillOverride)
+            {
+                skillLocator.secondary.UnsetSkillOverride(this, setSkillOverride, GenericSkill.SkillOverridePriority.Contextual);
+            }
             skillLocator.secondary.stock = stockCountBeforeOverride;
             setSkillOverride = null;
             stockCountBeforeOverride = 0;
