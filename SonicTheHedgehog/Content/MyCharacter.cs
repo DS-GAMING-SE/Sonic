@@ -496,7 +496,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
-            SonicSkillDefs.Initialize(primarySkillDef, sonicBoomSkillDef, parrySkillDef, boostSkillDef, grandSlamSkillDef);
+            SonicSkillDefs.Initialize(primarySkillDef, sonicBoomSkillDef, parrySkillDef, followUpSkillDef, boostSkillDef, grandSlamSkillDef);
 
             // PASSIVES
 
@@ -613,6 +613,8 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             SuperParryExit.idwAttackSkillDef = Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(idwAttack);
             SuperParryExit.idwAttackSkillDef.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+
+            SonicSkillDefs.idwAttackSkillDef = SuperParryExit.idwAttackSkillDef;
 
             boost.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.NewSuperBoost));
             boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
@@ -787,16 +789,20 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         public static SkillDef sonicBoomSkillDef;
         public static SkillDef parrySkillDef;
+        public static SkillDef followUpSkillDef;
 
         public static HedgehogUtils.Boost.SkillDefs.BoostSkillDef boostSkillDef;
 
         public static SkillDef grandSlamSkillDef;
 
-        public static void Initialize(SkillDefs.MeleeSkillDef primary, SkillDef sonicBoom, SkillDef parry, HedgehogUtils.Boost.SkillDefs.BoostSkillDef boost, SkillDef grandSlam)
+        public static SkillDef idwAttackSkillDef;
+
+        public static void Initialize(SkillDefs.MeleeSkillDef primary, SkillDef sonicBoom, SkillDef parry, SkillDef followUp, HedgehogUtils.Boost.SkillDefs.BoostSkillDef boost, SkillDef grandSlam)
         {
             primarySkillDef = primary;
             sonicBoomSkillDef = sonicBoom;
             parrySkillDef = parry;
+            followUpSkillDef = followUp;
             boostSkillDef = boost;
             grandSlamSkillDef = grandSlam;
         }
