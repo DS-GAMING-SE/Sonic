@@ -11,7 +11,7 @@ using HedgehogUtils.Boost;
 
 namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 {
-    public class NewScepterSuperBoost : NewScepterBoost
+    public class NewScepterSuperBoost : ScepterBoostBase
     {
         protected override BuffDef buff
         {
@@ -34,29 +34,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
 
         protected override float launchForce
         {
-            get { return 400f; }
-        }
-
-        public override void OnEnter()
-        {
-            base.OnEnter();
-            if (base.modelLocator)
-            {
-                modelLocator.normalizeToFloor = true;
-            }
-            if (airBoosting)
-            {
-                base.characterMotor.disableAirControlUntilCollision = false;
-            }
-        }
-
-        public override void OnExit()
-        {
-            if (base.modelLocator)
-            {
-                modelLocator.normalizeToFloor = false;
-            }
-            base.OnExit();
+            get { return 1000f; }
         }
 
         public override Material GetOverlayMaterial()
@@ -70,13 +48,6 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         public override GameObject GetFlashPrefab()
         {
             return Modules.Assets.scepterSuperBoostFlashEffect;
-        }
-
-        protected override void SetBrakeState(Vector3 endDirection)
-        {
-            SonicBrake brake = new SonicBrake();
-            brake.endDirection = endDirection;
-            outer.SetNextState(brake);
         }
     }
 }

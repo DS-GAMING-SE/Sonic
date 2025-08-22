@@ -62,6 +62,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 modelLocator.normalizeToFloor = false;
             }
+            base.characterMotor.onHitGroundAuthority -= OnHitGround;
             base.OnExit();
         }
 

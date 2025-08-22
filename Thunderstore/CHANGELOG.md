@@ -1,6 +1,26 @@
 # Changelog
 
-### 4.0.0
+## v4.0.1
+
+ - (+ Buff) Super Scepter Boost can now launch heavier enemies than normal Scepter Boost
+
+ - (Bug Fix) Power Boost's effect will no longer attempt to activate/deactivate when using Super Scepter Boost
+ - (Internal) All Scepter Boost skills now inherit from the new ScepterBoostBase. ScepterBoostBase is boost with the Scepter damaging effect and NewScepterBoost adds the Power Boost effect to it. Use ScepterBoostBase as the base for any Boost skill that you don't want to have Power Boost. If you want Power Boost, start from NewScepterBoost.
+ 
+ - (Read Me) Briefly mentioned where people should look for resources related to modding Sonic/HedgehogUtils
+ 
+ - (Dependency) Removed dependency on R2API_TempVisualEffects because I'm pretty sure I was never using it
+ 
+### HedgehogUtils v1.0.1
+
+ - (Bug Fix) Blacklisted [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Delta Construct from being launched to prevent framerate killing error spam on death
+
+### Known Issues
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
+ - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
+ - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
+ 
+## v4.0.0
 This sure took longer than I expected...
 
  - (HedgehogUtils) Introducing my new mod called HedgehogUtils. A lot of mechanics I designed for Sonic were things I felt could be used for a lot of other things besides Sonic. Mechanics, such as Sonic's Super form, boost skill, and launch mechanic (more on that below), have been moved into this new mod. Everything in this mod is designed to be usable for other people's mods. **Do you want to make your own Super forms? Do you want to make your own Sonic survivors?** This mod is meant to help do some of the work for you. All my code is open source and there is documentation explaining everything you need to know to implement HedgehogUtils into your own mod.
@@ -46,10 +66,6 @@ This sure took longer than I expected...
  - (Config) Added a config option that changes the duration of the Super form
  - (Config) Added a config option that disables the Super form's invincibility, instead granting 200 armor
  - (Config) Added a config option that disables logs. Logs are now disabled by default
-
-### Known Issues
- - Boost meter is kinda shaky as clients in multiplayer
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
 
 <details>
 <summary>v3.0.3</summary>

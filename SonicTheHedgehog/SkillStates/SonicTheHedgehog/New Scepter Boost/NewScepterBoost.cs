@@ -9,45 +9,51 @@ using UnityEngine;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class NewScepterBoost : NewBoost
+    public class NewScepterBoost : ScepterBoostBase
     {
-        protected OverlapAttack attack;
-        protected float attackTimer;
-        protected static float attacksPerSecond = 15f;
+        private const float boostChangeCooldown = 0.4f;
 
-        protected virtual string hitBoxName
-        {
-            get { return "Ball"; }
-        }
+        private float boostChangeCooldownTimer;
 
-        protected virtual float launchForce
-        {
-            get { return 400f; }
-        }
+        private bool boostChangeEffect;
 
-        public override void OnEnter()
+        protected override BuffDef buff
         {
-            base.OnEnter();
-            PrepareOverlapAttack();
+            get { return Buffs.boostBuff; }
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            if (base.isAuthority)
+            if (boostChangeCooldownTimer > 0)
             {
-                attackTimer += Time.fixedDeltaTime;
-                if (attackTimer > 1 / attacksPerSecond)
-                {
-                    attackTimer %= (1 / attacksPerSecond);
-                    attack.forceVector = base.characterDirection.forward * (launchForce * 0.8f);
-                    attack.isCrit = RollCrit();
-                    attack.damage = ((StaticValues.scepterBoostDamageCoefficient * base.characterBody.moveSpeed) / StaticValues.defaultPowerBoostSpeed) * base.characterBody.damage;
-                    attack.Fire();
-                }
+                boostChangeCooldownTimer -= Time.fixedDeltaTime;
+            }
+
+            if (boostChangeCooldownTimer <= 0 && (((PowerBoostLogic)boostLogic).powerBoosting ^ PowerBoostLogic.ShouldPowerBoost(healthComponent)))
+            {
+                RemoveBoostVFX();
+                boostChangeEffect = true;
+                CreateBoostVFX();
             }
         }
 
+        protected override void CreateBoostVFX()
+        {
+            ((PowerBoostLogic)boostLogic).UpdatePowerBoosting();
+            base.CreateBoostVFX();
+            boostChangeCooldownTimer = boostChangeCooldown;
+            boostChangeEffect = false;
+        }
+
+        public override Material GetOverlayMaterial()
+        {
+            if (((PowerBoostLogic)boostLogic).powerBoosting)
+            {
+                return base.GetOverlayMaterial();
+            }
+            return null;
+        }
         public override GameObject GetAuraPrefab()
         {
             if (((PowerBoostLogic)boostLogic).powerBoosting)
@@ -64,35 +70,16 @@ namespace SonicTheHedgehog.SkillStates
             }
             return Modules.Assets.scepterBoostFlashEffect;
         }
-
         public override string GetSoundString()
         {
-            return "Play_hedgehogutils_strong_boost";
-        }
-
-        public virtual void PrepareOverlapAttack()
-        {
-            HitBoxGroup hitBoxGroup = null;
-            Transform modelTransform = base.GetModelTransform();
-
-            if (modelTransform)
+            if (boostChangeEffect)
             {
-                hitBoxGroup = Array.Find<HitBoxGroup>(modelTransform.GetComponents<HitBoxGroup>(), (HitBoxGroup element) => element.groupName == hitBoxName);
+                return "Play_sonicthehedgehog_boost_change";
             }
-
-            this.attack = new OverlapAttack();
-            this.attack.damageType = DamageType.Generic;
-            this.attack.damageType.damageSource = DamageSource.Utility;
-            this.attack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
-            this.attack.pushAwayForce = launchForce * 0.3f;
-            this.attack.attacker = base.gameObject;
-            this.attack.inflictor = base.gameObject;
-            this.attack.teamIndex = base.GetTeam();
-            this.attack.procCoefficient = StaticValues.scepterBoostProcCoefficient;
-            this.attack.hitEffectPrefab = Modules.Assets.meleeHitEffect;
-            this.attack.hitBoxGroup = hitBoxGroup;
-            this.attack.impactSound = Modules.Assets.meleeFinalHitSoundEvent.index;
-            this.attack.retriggerTimeout = 0.8f;
+            else
+            {
+                return "Play_hedgehogutils_strong_boost";
+            }
         }
     }
 }

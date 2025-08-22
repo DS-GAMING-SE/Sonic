@@ -48,7 +48,6 @@ namespace SonicTheHedgehog
     [BepInDependency("com.bepis.r2api.skins", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.bepis.r2api.sound", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.bepis.r2api.director", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency("com.bepis.r2api.tempvisualeffect", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.bepis.r2api.damagetype", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(HedgehogUtils.HedgehogUtilsPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
@@ -68,7 +67,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "4.0.0";
+        public const string MODVERSION = "4.0.1";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";

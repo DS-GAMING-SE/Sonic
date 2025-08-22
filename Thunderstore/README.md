@@ -33,3 +33,6 @@ Once all seven Chaos Emeralds have been collected, anyone can transform into the
 - FORCED_REASSEMBLY (Rigging the mastery skin)
 - Shader Forge (A tool that let me make the custom Chaos Emerald shaders without losing my mind pre SOTS https://github.com/CuteWaterBeary/ShaderForge)
 - Sandwich (Writing the Sonic logbook)
+
+# For Modders
+There are lots of tools I've made specifically for other modders to expand the Sonic mod or use mechanics from the Sonic mod for their own projects. If you're interested, you can find the code for the Sonic mod [here.](https://github.com/DS-GAMING-SE/Sonic/wiki) The HedgehogUtils mod is what adds mechanics like the Chaos Emeralds, Super forms, Launching attacks, and the Boost skill. You can find the wiki/code for that [here](https://github.com/DS-GAMING-SE/HedgehogUtils)
