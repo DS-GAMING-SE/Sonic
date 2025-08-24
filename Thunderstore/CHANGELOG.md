@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.2
+
+ - (Bug Fix) Fixed elites and some other buffs not working properly when this mod is installed
+
 ## v4.0.1
 
  - (+ Buff) Super Scepter Boost can now launch heavier enemies than normal Scepter Boost
