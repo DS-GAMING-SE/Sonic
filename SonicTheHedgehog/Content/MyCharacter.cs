@@ -504,9 +504,9 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_NAME",
-                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_NAME",
-                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_MOMENTUM_PASSIVE_DESCRIPTION",
+                skillName = HedgehogUtils.Language.momentumPassiveNameToken,
+                skillNameToken = HedgehogUtils.Language.momentumPassiveNameToken,
+                skillDescriptionToken = HedgehogUtils.Language.momentumPassiveDescriptionToken,
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMomentumIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicEntityState)),
                 activationStateMachineName = "Body",

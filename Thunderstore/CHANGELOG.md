@@ -1,5 +1,22 @@
 # Changelog
 
+## v4.0.3
+
+ - (HedgehogUtils) Updated for newest version
+ 
+ - (+ Buff) Super Boost now gives an armor buff like normal Boost does
+ 
+ - (Internal) Super Boost's speed buff now uses the same calculation method as most other Boost skills. This is just for consistency has almost 0 impact on the actual amount of speed you get (at least when I tested it with no other speed items or buffs)
+ 
+### HedgehogUtils v1.1.2
+
+ - (+ Buff) Sliiiiightly reduced the speed the boost meter drains so 2 Alien Heads is enough to reach infinite boost
+ 
+### Known Issues
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
+ - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
+ - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
+ 
 ## v4.0.2
 
  - (Bug Fix) Fixed elites and some other buffs not working properly when this mod is installed
@@ -18,11 +35,6 @@
 ### HedgehogUtils v1.0.1
 
  - (Bug Fix) Blacklisted [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Delta Construct from being launched to prevent framerate killing error spam on death
-
-### Known Issues
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
- - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
- - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
  
 ## v4.0.0
 This sure took longer than I expected...

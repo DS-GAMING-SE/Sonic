@@ -64,15 +64,8 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "HOMING_KEYWORD",
                 "<style=CKeywordName>Homing</style><style=cSub>Targets the enemy closest to the crosshair, indicated by the blue reticle.");
 
+            // Use HedgehogUtils.Helpers.SuperFormText() for this
             string superSonicColor = "<color=#ffee00>";
-
-            #region Passives
-
-            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_NAME", "Momentum");
-            LanguageAPI.Add(prefix + "MOMENTUM_PASSIVE_DESCRIPTION",
-                $"<style=cIsUtility>Build up speed</style> by <style=cIsUtility>running down hill</style> to move up to <style=cIsUtility>100% faster</style>. <style=cIsHealth>Lose speed by running up hill to move up to 33% slower.</style>\nIf <style=cIsUtility>flying</style>, <style=cIsUtility>build up speed</style> by <style=cIsUtility>moving in a straight line.</style>");
-
-            #endregion
 
             #region Primary
 
