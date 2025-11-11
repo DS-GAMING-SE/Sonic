@@ -62,7 +62,7 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             LanguageAPI.Add(prefix + "HOMING_KEYWORD",
-                "<style=CKeywordName>Homing</style><style=cSub>Targets the enemy closest to the crosshair, indicated by the blue reticle.");
+                "<style=CKeywordName>Homing</style><style=cSub>Targets the enemy closest to the crosshair, indicated by the blue reticle.</style>");
 
             // Use HedgehogUtils.Helpers.SuperFormText() for this
             string superSonicColor = "<color=#ffee00>";

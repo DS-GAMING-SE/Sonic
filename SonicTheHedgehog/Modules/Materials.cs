@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -95,6 +96,20 @@ namespace SonicTheHedgehog.Modules
             mat.SetFloat("_Metallic", 1);
             mat.SetFloat("_Glossiness", 1);
 
+            return mat;
+        }
+
+        public static Material Specular(this Material mat, float strength)
+        {
+            mat.SetFloat("_SpecularStrength", strength);
+            return mat;
+        }
+
+        public static Material MetalMaterial(this Material mat)
+        {
+            mat.Specular(0.2f);
+            mat.SetTexture("_FresnelRamp", Addressables.LoadAssetAsync<Texture>("RoR2/DLC2/Common/texRampTritone3Reverse.png").WaitForCompletion());
+            mat.EnableKeyword("FRESNEL_EMISSION");
             return mat;
         }
         /// <summary>

@@ -58,7 +58,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             new CustomRendererInfo
             {
                 childName = "Model",
-                material = Materials.CreateHopooMaterial("matSonic"),
+                material = Materials.CreateHopooMaterial("matSonic").Specular(0.15f),
             }
         };
 
@@ -231,6 +231,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<SuperSkillReplacer>();
             bodyPrefab.AddComponent<JitterBoneBlacklist>();
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.MomentumPassive>();
+            bodyPrefab.AddComponent<MetalSonicAnimation>();
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 
@@ -734,6 +735,14 @@ namespace SonicTheHedgehog.Modules.Survivors
                 "SonicMesh");
             //    "meshHenryGun",
             //    "meshHenry");
+            /*defaultSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
+            {
+                new SkinDef.GameObjectActivation
+                {
+                    gameObject = childLocator.FindChildGameObject("MetalSonicLight"),
+                    shouldActivate = false,
+                }
+            };*/
 
             //add new skindef to our list of skindefs. this is what we'll be passing to the SkinController
             skins.Add(defaultSkin);
@@ -759,19 +768,23 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //masterySkin has a new set of RendererInfos (based on default rendererinfos)
             //you can simply access the RendererInfos defaultMaterials and set them to the new materials for your skin.
-            masterySkin.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic");
+            masterySkin.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic").MetalMaterial();
 
             //here's a barebones example of using gameobjectactivations that could probably be streamlined or rewritten entirely, truthfully, but it works
+            // DUMBASS GAMEOBJECTACTIVATIONS COSTING ME HOURS. I JUST WANT A LIGHT ON THE BACK OF METAL SONIC
+            // Gave up and just manually drew the light into the emission texture. More performant that way anyway
             /*masterySkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
             {
                 new SkinDef.GameObjectActivation
                 {
-                    gameObject = childLocator.FindChildGameObject("GunModel"),
-                    shouldActivate = false,
+                    gameObject = childLocator.FindChildGameObject("MetalSonicLight"),
+                    shouldActivate = true,
                 }
-            };
-            */
+            };*/
+
             //simply find an object on your child locator you want to activate/deactivate and set if you want to activate/deacitvate it with this skin
+
+            MetalSonicAnimation.AddSkin(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME");
 
             skins.Add(masterySkin);
             

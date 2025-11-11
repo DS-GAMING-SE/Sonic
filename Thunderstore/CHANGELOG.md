@@ -1,5 +1,26 @@
 # Changelog
 
+## v4.0.4
+ - (Assets - Mastery Skin)
+	 - Some animations are now different when using the mastery skin
+	 - Added specular and fresnel emission, making the skin react better to light and look as shiny as it should be
+	 - Made the back of the skin look like it's glowing by hand-drawing baked lighting. The model was sliiiightly adjusted to make this work better
+ 
+ - (Assets) Added specular to the default skin making it react better to light
+ 
+ - (Assets) Redone the skill icon for the Momentum passive
+ 
+ - (Bug Fix) Added missing </style> to Sonic's Homing keyword
+ 
+### HedgehogUtils v1.1.4
+ - (Assets) Added a post processing effect to super forms. This subtly tints the screen yellow when you're near someone in their super form. There is a config to turn this off
+ - (Bug Fix) Fixed the "Announce Super Transform" text not being formatted correctly. How long has this not been working?
+ 
+### Known Issues
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
+ - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
+ - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
+
 ## v4.0.3
 
  - (HedgehogUtils) Updated for newest version
@@ -11,11 +32,6 @@
 ### HedgehogUtils v1.1.2
 
  - (+ Buff) Sliiiiightly reduced the speed the boost meter drains so 2 Alien Heads is enough to reach infinite boost
- 
-### Known Issues
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
- - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
- - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
  
 ## v4.0.2
 
