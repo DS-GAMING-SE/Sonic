@@ -10,11 +10,15 @@
  
  - (Assets) Redone the skill icon for the Momentum passive
  
+ - (Bug Fix) Set the cooldown of Follow Up to 0 to avoid unintended interaction with [Starstorm 2's](https://thunderstore.io/package/TeamMoonstorm/Starstorm2) Universal Charger item. The cooldown of Super Follow Up is unchanged
+ 
  - (Bug Fix) Added missing </style> to Sonic's Homing keyword
  
 ### HedgehogUtils v1.1.4
+ - (Assets) Small improvements to Super form related VFX
  - (Assets) Added a post processing effect to super forms. This subtly tints the screen yellow when you're near someone in their super form. There is a config to turn this off
  - (Bug Fix) Fixed the "Announce Super Transform" text not being formatted correctly. How long has this not been working?
+ - (Bug Fix) Fixed an issue where having your utility skill changed (removed by False Son) while Boost Idling would softlock
  
 ### Known Issues
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)

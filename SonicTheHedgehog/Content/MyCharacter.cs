@@ -347,7 +347,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.FollowUp)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
-                baseRechargeInterval = 5f,
+                baseRechargeInterval = 0f,
                 beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
@@ -584,6 +584,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             superFollowUp.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION";
             superFollowUp.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME";
             superFollowUp.icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperFollowUpIcon");
+            superFollowUp.baseRechargeInterval = 5f;
             SuperSkillReplacer.afterIDWAttack = superFollowUp;
 
             SkillDefInfo idwAttack = new SkillDefInfo
