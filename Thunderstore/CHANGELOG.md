@@ -5,23 +5,28 @@
 	 - Some animations are now different when using the mastery skin
 	 - Added specular and fresnel emission, making the skin react better to light and look as shiny as it should be
 	 - Made the back of the skin look like it's glowing by hand-drawing baked lighting. The model was sliiiightly adjusted to make this work better
- 
  - (Assets) Added specular to the default skin making it react better to light
- 
  - (Assets) Redone the skill icon for the Momentum passive
  
- - (Bug Fix) Set the cooldown of Follow Up to 0 to avoid unintended interaction with [Starstorm 2's](https://thunderstore.io/package/TeamMoonstorm/Starstorm2) Universal Charger item. The cooldown of Super Follow Up is unchanged
- 
- - (Bug Fix) Added missing </style> to Sonic's Homing keyword
+ - (Bug Fix) Fixed for Alloyed Collective
+ - (Bug Fix) Internally set the cooldown of Follow Up to 0 to avoid an unintended interaction with [Starstorm 2](https://thunderstore.io/package/TeamMoonstorm/Starstorm2)'s Universal Charger item. The cooldown of Super Follow Up is unchanged
+ - (Bug Fix) Fixed subtle miscoloring in Sonic's keywords (Added missing </style> to Sonic's Homing keyword)
  
 ### HedgehogUtils v1.1.4
- - (Assets) Small improvements to Super form related VFX
- - (Assets) Added a post processing effect to super forms. This subtly tints the screen yellow when you're near someone in their super form. There is a config to turn this off
+ - (+ Buff) Launched enemies now apply the same enemy-specific on-hit effects as enemies thrown by Drifter
+ 
+ - (Assets) Small improvements to Super form related VFX, mainly the rainbow effects
+ - (Assets) Added a post processing effect to super forms. This subtly tints the screen yellow when you're near someone in their super form. Don't worry, it's far from as strong as Magma Worm's screen yellowing. There is a config to turn this effect off
+ 
+ - (Bug Fix) Fixed for Alloyed Collective. Forms should work with temporary items now too, but I haven't tested it.
  - (Bug Fix) Fixed the "Announce Super Transform" text not being formatted correctly. How long has this not been working?
- - (Bug Fix) Fixed an issue where having your utility skill changed (removed by False Son) while Boost Idling would softlock
+ - (Bug Fix) Fixed an issue where having your utility skill changed to an invalid skill (such as False Son's skill disabling) while Boost Idling would softlock
+ 
+ - (Compatibility) I notice those Chaos Emeralds aren't bolted to the ground...
  
 ### Known Issues
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
+ - (HedgehogUtils) Clients in multiplayer may be able to "damage" corpses (I'm assuming only corpses killed by launching attacks)
  - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
  - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
 

@@ -20,7 +20,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 modelLocator.normalizeToFloor = true;
             }
-            if (base.GetModelAnimator().GetFloat("isSuperFloat") == 0)
+            if (base.GetModelAnimator().GetFloat("isSuperFloat") == 0 && base.GetModelAnimator().GetFloat("isMetalSonic") == 0)
             {
                 Util.PlaySound("Play_sonicthehedgehog_brake", base.gameObject);
             }

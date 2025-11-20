@@ -221,6 +221,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;
+            this.attack.maximumOverlapTargets = 2;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

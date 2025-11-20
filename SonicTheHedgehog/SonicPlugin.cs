@@ -375,8 +375,7 @@ namespace SonicTheHedgehog
 
         private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
         {
-            if (!NetworkServer.active) { return; }
-            if (self)
+            if (self && NetworkServer.active)
             {
                 EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.gameObject, "Body");
                 if (stateMachine)
@@ -391,10 +390,10 @@ namespace SonicTheHedgehog
                 }
             }
             orig(self, damage);
-            if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle) 
+            if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle) && NetworkServer.active
                 && self
                 && self.body
-                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockback))
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup))
             {
                 self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 1, 1);
             }

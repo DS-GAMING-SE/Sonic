@@ -23,7 +23,7 @@
 		</PackageReference>
 		<PackageReference Include="BepInEx.BaseLib" Version="5.4.21" />
 		<PackageReference Include="BepInEx.Core" Version="5.4.21" />
-		<PackageReference Include="RiskOfRain2.GameLibs" Version="1.3.8-r.0" />
+		<PackageReference Include="RiskOfRain2.GameLibs" Version="1.4.0-r.0" />
 		<PackageReference Include="UnityEngine.Modules" Version="2021.3.33">
 		</PackageReference>
 	</ItemGroup>
@@ -102,7 +102,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if &quot;$(Username)&quot; == &quot;dylan&quot; (copy &quot;D:\Sonic ROR2 Mod\Sonic-master\SonicTheHedgehog\bin\Debug\netstandard2.1\SonicTheHedgehog.dll&quot; &quot;C:\Users\dylan\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Sonic SOTS\BepInEx\plugins\SonicTheHedgehog&quot;) else if &quot;$(Username)&quot; == &quot;Admin&quot; copy &quot;G:\Unity Projects\Sonic\SonicTheHedgehog\bin\Debug\netstandard2.1\SonicTheHedgehog.dll&quot; &quot;C:\Users\Admin\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Test Shit\BepInEx\plugins\ds_gaming-SonicTheHedgehog&quot;" />
+    <Exec Command="if &quot;$(Username)&quot; == &quot;dylan&quot; (copy &quot;D:\Sonic ROR2 Mod\Sonic-master\SonicTheHedgehog\bin\Debug\netstandard2.1\SonicTheHedgehog.dll&quot; &quot;C:\Users\dylan\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Sonic DEV\BepInEx\plugins\SonicTheHedgehog&quot;) else if &quot;$(Username)&quot; == &quot;Admin&quot; copy &quot;G:\Unity Projects\Sonic\SonicTheHedgehog\bin\Debug\netstandard2.1\SonicTheHedgehog.dll&quot; &quot;C:\Users\Admin\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Test Shit\BepInEx\plugins\ds_gaming-SonicTheHedgehog&quot;" />
   </Target>
 
 </Project>
