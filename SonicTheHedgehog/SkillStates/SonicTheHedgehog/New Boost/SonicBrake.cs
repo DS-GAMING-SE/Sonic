@@ -22,7 +22,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (base.GetModelAnimator().GetFloat("isSuperFloat") == 0 && base.GetModelAnimator().GetFloat("isMetalSonic") == 0)
             {
-                Util.PlaySound("Play_sonicthehedgehog_brake", base.gameObject);
+                Util.PlaySound("Play_hedgehogutils_brake", base.gameObject);
             }
             else
             {

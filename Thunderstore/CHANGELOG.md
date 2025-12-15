@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.0.5
+ - (HedgehogUtils) Updated for newest version
+ 
+ - (Bug Fix) Maybe fixed a multiplayer desync issue involving CustomEmotesAPI
+ 
+ - (Internal) The sounds for Sonic's brake, jump, and death have been moved to HedgehogUtils and the sound ids have changed
+### HedgehogUtils v1.1.5
+ - (Bug Fix) Fixed corpses being able to be hit by players after being launched in multiplayer
+ 
+### Known Issues
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! But AC has added a way to sync them... but now I don't wanna)
+ - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
+ - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
+ 
 ## v4.0.4
  - (Assets - Mastery Skin)
 	 - Some animations are now different when using the mastery skin
@@ -23,12 +37,6 @@
  - (Bug Fix) Fixed an issue where having your utility skill changed to an invalid skill (such as False Son's skill disabling) while Boost Idling would softlock
  
  - (Compatibility) I notice those Chaos Emeralds aren't bolted to the ground...
- 
-### Known Issues
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?!)
- - (HedgehogUtils) Clients in multiplayer may be able to "damage" corpses (I'm assuming only corpses killed by launching attacks)
- - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
- - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
 
 ## v4.0.3
 

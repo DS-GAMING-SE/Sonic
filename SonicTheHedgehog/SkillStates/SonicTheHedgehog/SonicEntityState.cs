@@ -15,11 +15,9 @@ namespace SonicTheHedgehog.SkillStates
         private float idleExtraTimer;
         private int idleExtraCount;
 
-        private bool emoting = false;
-
         private const float idleExtraDefault = 8;
 
-        private string jumpSoundString = "Play_sonicthehedgehog_jump";
+        private const string jumpSoundString = "Play_hedgehogutils_jump_ball";
 
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
@@ -59,11 +57,6 @@ namespace SonicTheHedgehog.SkillStates
                 base.modelLocator.normalizeToFloor = true;
             }
 
-            if (SonicTheHedgehogPlugin.emoteAPILoaded)
-            {
-                EmoteAPI(true);
-            }
-
             if (base.characterMotor)
             {
                 base.characterMotor.onHitGroundAuthority += OnHitGround;
@@ -91,10 +84,6 @@ namespace SonicTheHedgehog.SkillStates
             if (base.modelAnimator)
             {
                 base.modelAnimator.SetBool("isBall", false);
-            }
-            if (SonicTheHedgehogPlugin.emoteAPILoaded)
-            {
-                EmoteAPI(false);
             }
 
             if (base.characterMotor)
@@ -138,7 +127,7 @@ namespace SonicTheHedgehog.SkillStates
         private void IdleExtraAnimation()
         {
             if (base.characterBody.inputBank.moveVector != Vector3.zero || !base.characterMotor.isGrounded ||
-                base.characterBody.inputBank.jump.down || emoting || base.modelAnimator.GetFloat("isSuperFloat") >= 1)
+                base.characterBody.inputBank.jump.down || base.modelAnimator.GetFloat("isSuperFloat") >= 1)
             {
                 idleExtraTimer = idleExtraDefault;
                 idleExtraCount = 0;
@@ -153,23 +142,6 @@ namespace SonicTheHedgehog.SkillStates
                     idleExtraTimer = idleExtraDefault * (idleExtraCount * 1.5f);
                 }
             }
-        }
-
-        private void EmoteAPI(bool subscribe)
-        {
-            if (subscribe)
-            {
-                CustomEmotesAPI.animChanged += Emoting;
-            }
-            else
-            {
-                CustomEmotesAPI.animChanged -= Emoting;
-            }
-        }
-
-        private void Emoting(String anim, BoneMapper bones)
-        {
-            emoting = !anim.Equals("none");
         }
     }
 }
