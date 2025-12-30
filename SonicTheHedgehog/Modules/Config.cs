@@ -20,15 +20,6 @@ namespace SonicTheHedgehog.Modules
                                                           enabledDefault,
                                                           description);
         }
-        public static ConfigEntry<float> BoostMeterLocationX()
-        {
-            return SonicTheHedgehogPlugin.instance.Config.Bind<float>("Boost Meter", "X Location", 90f, "X Coordinate of the boost meter's location relative to the crosshair. Default is 90.");
-        }
-
-        public static ConfigEntry<float> BoostMeterLocationY()
-        {
-            return SonicTheHedgehogPlugin.instance.Config.Bind<float>("Boost Meter", "Y Location", -50f, "Y Coordinate of the boost meter's location relative to the crosshair. Default is -50.");
-        }
 
         public static ConfigEntry<bool> KeyPressHomingAttack()
         {

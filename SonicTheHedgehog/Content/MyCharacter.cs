@@ -1,24 +1,25 @@
-﻿using BepInEx.Configuration;
-using SonicTheHedgehog.Modules.Characters;
-using RoR2;
-using RoR2.Skills;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using SonicTheHedgehog.SkillStates;
-using On.RoR2.UI;
-using RoR2.UI;
-using SonicTheHedgehog.Components;
-using System.Runtime.CompilerServices;
-using UnityEngine.UI;
-using static BetterUI.ProcCoefficientCatalog;
-using AncientScepter;
-using SonicTheHedgehog.Modules.Achievements;
-using System.Linq;
-using static RoR2.TeleporterInteraction;
+﻿using AncientScepter;
+using BepInEx.Configuration;
+using EmotesAPI;
 using HedgehogUtils;
 using HedgehogUtils.Forms;
+using On.RoR2.UI;
+using RoR2;
+using RoR2.Skills;
+using RoR2.UI;
+using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules.Achievements;
+using SonicTheHedgehog.Modules.Characters;
+using SonicTheHedgehog.SkillStates;
 using SonicTheHedgehog.SkillStates.SuperUpgrades;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEngine.UI;
+using static BetterUI.ProcCoefficientCatalog;
+using static RoR2.TeleporterInteraction;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
@@ -232,6 +233,11 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<JitterBoneBlacklist>();
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.MomentumPassive>();
             bodyPrefab.AddComponent<MetalSonicAnimation>();
+
+            if (SonicTheHedgehogPlugin.emoteAPILoaded)
+            {
+                EmoteSupport();
+            }
 
             On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
 
@@ -683,6 +689,12 @@ namespace SonicTheHedgehog.Modules.Survivors
             {
                 ScepterBetterUI();
             }*/
+        }
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private void EmoteSupport()
+        {
+            var skele = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicEmoteSupport.prefab");
+            CustomEmotesAPI.ImportArmature(bodyPrefab, skele);
         }
 
         /*[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]

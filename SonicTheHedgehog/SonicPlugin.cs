@@ -67,7 +67,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "4.0.5";
+        public const string MODVERSION = "4.0.6";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -155,34 +155,11 @@ namespace SonicTheHedgehog
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
 
             On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
-            if (emoteAPILoaded)
-            {
-                EmoteSkeleton();
-            }
 
             if (lookingGlassLoaded)
             {
                 RoR2Application.onLoad += LookingGlassSetup;
             }
-
-        }
-
-        private void EmoteSkeleton()
-        {
-            //CustomEmotesAPI.CreateNameTokenSpritePair(DEVELOPER_PREFIX+"_SONIC_THE_HEDGEHOG_BODY_NAME", Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicEmoteIcon"));
-            On.RoR2.SurvivorCatalog.Init += (orig) =>
-            {
-                orig();
-                foreach (var item in SurvivorCatalog.allSurvivorDefs)
-                {
-                    if (item.bodyPrefab.name == "SonicTheHedgehog")
-                    {
-                        var skele = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicEmoteSupport.prefab");
-                        CustomEmotesAPI.ImportArmature(item.bodyPrefab, skele);
-                        skele.GetComponentInChildren<BoneMapper>().scale = 1f;
-                    }
-                }
-            };
         }
 
         private static void SonicLoadingScreenSprite()
@@ -284,11 +261,6 @@ namespace SonicTheHedgehog
         {
             Sprite icon = (Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSonicIcon"));
             ModSettingsManager.SetModIcon(icon);
-            float minLocation = -500;
-            float maxLocation = 500;
-            ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationX(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
-            ModSettingsManager.AddOption(new SliderOption(Modules.Config.BoostMeterLocationY(), new RiskOfOptions.OptionConfigs.SliderConfig() { min = minLocation, max = maxLocation, formatString = "{0:0}" }));
-            
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.KeyPressHomingAttack()));
             
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockParry()));
