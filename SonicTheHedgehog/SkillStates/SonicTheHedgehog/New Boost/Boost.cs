@@ -13,8 +13,6 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class NewBoost : HedgehogUtils.Boost.EntityStates.Boost
     {
-        private string jumpSoundString = "Play_sonicthehedgehog_jump";
-
         private const float boostChangeCooldown = 0.4f;
 
         private float boostChangeCooldownTimer;
@@ -70,7 +68,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
-                Util.PlaySound(jumpSoundString, base.gameObject);
                 base.modelAnimator.SetBool("isBall", true);
             }
             base.ProcessJump();

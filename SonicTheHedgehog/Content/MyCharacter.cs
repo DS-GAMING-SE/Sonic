@@ -80,7 +80,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override void InitializeCharacter()
         {
             base.InitializeCharacter();
-            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(Death));
+            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(HedgehogUtils.Miscellaneous.Death)); //HedgehogUtils.Miscellaneous.Death
         }
 
         public override void InitializeUnlockables()
@@ -233,6 +233,9 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<JitterBoneBlacklist>();
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.MomentumPassive>();
             bodyPrefab.AddComponent<MetalSonicAnimation>();
+            var sfxComponent = bodyPrefab.GetComponent<SfxLocator>();
+            sfxComponent.deathSound = "Play_hedgehogutils_death";
+            sfxComponent.jumpSound = "Play_hedgehogutils_jump_ball";
 
             if (SonicTheHedgehogPlugin.emoteAPILoaded)
             {

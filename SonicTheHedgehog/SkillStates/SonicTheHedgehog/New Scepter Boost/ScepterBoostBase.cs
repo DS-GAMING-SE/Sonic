@@ -11,7 +11,6 @@ namespace SonicTheHedgehog.SkillStates
 {
     public class ScepterBoostBase : HedgehogUtils.Boost.EntityStates.Boost
     {
-        private string jumpSoundString = "Play_sonicthehedgehog_jump";
         protected OverlapAttack attack;
         protected float attackTimer;
         protected static float attacksPerSecond = 15f;
@@ -71,7 +70,6 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
-                Util.PlaySound(jumpSoundString, base.gameObject);
                 base.modelAnimator.SetBool("isBall", true);
             }
             base.ProcessJump();

@@ -17,8 +17,6 @@ namespace SonicTheHedgehog.SkillStates
 
         private const float idleExtraDefault = 8;
 
-        private const string jumpSoundString = "Play_hedgehogutils_jump_ball";
-
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
         {
@@ -68,7 +66,6 @@ namespace SonicTheHedgehog.SkillStates
             if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody &&
                 base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
             {
-                Util.PlaySound(jumpSoundString, base.gameObject);
                 base.GetModelAnimator().SetBool("isBall", true);
             }
 

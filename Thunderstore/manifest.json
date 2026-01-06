@@ -1,6 +1,6 @@
 {
     "name": "SonicTheHedgehog",
-    "version_number": "4.0.5",
+    "version_number": "4.0.6",
     "website_url": "https://github.com/DS-GAMING-SE/Sonic",
     "description": "Adds Sonic the Hedgehog as a playable survivor.",
     "dependencies": [
@@ -20,6 +20,6 @@
 	"RiskofThunder-R2API_Items-1.0.4",
 	"RiskofThunder-R2API_DamageType-1.1.4",
 	"Goorakh-LoopingSoundFix-1.1.1",
-	"ds_gaming-HedgehogUtils-1.1.5"
+	"ds_gaming-HedgehogUtils-1.1.6"
     ]
 }

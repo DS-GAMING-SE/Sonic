@@ -64,9 +64,6 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "HOMING_KEYWORD",
                 "<style=CKeywordName>Homing</style><style=cSub>Targets the enemy closest to the crosshair, indicated by the blue reticle.</style>");
 
-            // Use HedgehogUtils.Helpers.SuperFormText() for this
-            string superSonicColor = "<color=#ffee00>";
-
             #region Primary
 
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
@@ -78,10 +75,10 @@ namespace SonicTheHedgehog.Modules
 
             #region Super Primary
 
-            LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", $"{superSonicColor}Super Melee</color>");
+            LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", HedgehogUtils.Helpers.SuperFormText("Super Melee"));
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION",
                 meleeDescription +
-                $" This move can <style=cIsUtility>launch</style> {superSonicColor}mediumweight</color> enemies.\n{superSonicColor}Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.</color>");
+                $" This move can <style=cIsUtility>launch</style> {HedgehogUtils.Helpers.SuperFormText("mediumweight")} enemies.\n{HedgehogUtils.Helpers.SuperFormText($"Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.")}");
 
             #endregion
 
@@ -95,9 +92,9 @@ namespace SonicTheHedgehog.Modules
 
             #region Super Sonic Boom
 
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_NAME", $"{superSonicColor}Cross Slash</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_NAME", HedgehogUtils.Helpers.SuperFormText("Cross Slash"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_SONIC_BOOM_DESCRIPTION",
-                $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{superSonicColor}{100f * StaticValues.superSonicBoomDamageCoefficient}</color><style=cIsDamage>% damage</style> and reducing <style=cIsDamage>armor</style> by <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{superSonicColor}{StaticValues.superSonicBoomDebuffArmorReduction}</color>.");
+                $"Fire shockwaves dealing <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{HedgehogUtils.Helpers.SuperFormText((100f * StaticValues.superSonicBoomDamageCoefficient).ToString())}<style=cIsDamage>% damage</style> and reducing <style=cIsDamage>armor</style> by <style=cIsDamage>{Modules.StaticValues.sonicBoomCount}x</style>{HedgehogUtils.Helpers.SuperFormText(StaticValues.superSonicBoomDebuffArmorReduction.ToString())}.");
 
             #endregion
 
@@ -119,25 +116,24 @@ namespace SonicTheHedgehog.Modules
             #endregion
 
             #region Super Follow Up
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME", $"{superSonicColor}Super Follow Up</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Follow Up"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
-                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> {superSonicColor}heavyweight</color> hit enemies.");
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> {HedgehogUtils.Helpers.SuperFormText("heavyweight")} hit enemies.");
 
             #endregion
 
             #region Super Parry
             string idwAttackName = $"IDW Attack";
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", $"{superSonicColor}Perfect Parry</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", HedgehogUtils.Helpers.SuperFormText("Perfect Parry"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a {superSonicColor}very brief period of time</color>. {parryOnHitDescription} {superSonicColor}It will also reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.</color>");
+                $"Enter the <style=cIsUtility>parry stance</style> for a {HedgehogUtils.Helpers.SuperFormText("very brief period of time")}. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($"It will also reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
 
             #endregion
 
             #region IDW Attack
-            LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_NAME",
-                $"{superSonicColor}{idwAttackName}</color>");
+            LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_NAME", $"{HedgehogUtils.Helpers.SuperFormText(idwAttackName)}");
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_IDW_ATTACK_DESCRIPTION",
-                $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{StaticValues.idwAttackDamageCoefficient * 100f}% damage</style> in a large area around the targeted enemy. \n\n{superSonicColor}This can only be triggered once.</color>");
+                $"<style=cIsUtility>Homing</style>. With an incredible display of speed, repeatedly deal <style=cIsDamage>{StaticValues.idwAttackDamageCoefficient * 100f}% damage</style> in a large area around the targeted enemy. \n\n{HedgehogUtils.Helpers.SuperFormText("This can only be triggered once")}");
 
             #endregion
 
@@ -161,17 +157,16 @@ namespace SonicTheHedgehog.Modules
 
             #region Super Boost
 
-            LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_NAME", $"{superSonicColor}Super Boost</color>");
+            LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_NAME", HedgehogUtils.Helpers.SuperFormText("Super Boost"));
             string superBoostDescription =
-                $"<style=cIsUtility>Move {superSonicColor}{100f * StaticValues.superBoostListedSpeedCoefficient}%</color> faster</style> than normal.";
+                $"<style=cIsUtility>Move {HedgehogUtils.Helpers.SuperFormText((100f * StaticValues.superBoostListedSpeedCoefficient).ToString())}% faster</style> than normal.";
             LanguageAPI.Add(prefix + "SUPER_UTILITY_BOOST_DESCRIPTION", superBoostDescription);
 
             #endregion
 
             #region Super Scepter Boost
 
-            LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_NAME",
-                $"{superSonicColor}Super Thunderous Boost</color>");
+            LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_NAME", HedgehogUtils.Helpers.SuperFormText("Super Thunderous Boost"));
             LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION",
                 superBoostDescription + scepterBoostDescription);
 
@@ -188,19 +183,10 @@ namespace SonicTheHedgehog.Modules
 
             #region Super Special
 
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", $"{superSonicColor}Super Grand Slam</color>");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", HedgehogUtils.Helpers.SuperFormText("Super Grand Slam"));
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION",
                 grandSlamDescription +
-                $"\n{superSonicColor}Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.</color>");
-
-            #endregion
-
-            #region Special #2
-
-            LanguageAPI.Add(prefix + "SPECIAL_SUPER_TRANSFORMATION_NAME", $"{superSonicColor}Super Sonic</color>");
-            LanguageAPI.Add(prefix + "SPECIAL_SUPER_TRANSFORMATION_DESCRIPTION",
-                $"Transform into {superSonicColor}Super Sonic</color> for {Modules.StaticValues.superSonicDuration} seconds. {superSonicColor}Upgrades all of your skills</color>. Increases <style=cIsDamage>damage</style> by <style=cIsDamage>+{100f * StaticValues.superSonicBaseDamage}%</style>. Increases <style=cIsDamage>attack speed</style> by <style=cIsDamage>+{100f * StaticValues.superSonicAttackSpeed}%</style>. Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>+{100f * StaticValues.superSonicMovementSpeed}%</style>. Gain <style=cIsHealing>complete invincibility</style> and <style=cIsUtility>flight</style>." +
-                Environment.NewLine + Environment.NewLine + "This can only be used once per stage.");
+                $"\n{HedgehogUtils.Helpers.SuperFormText($"Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
 
             #endregion
 

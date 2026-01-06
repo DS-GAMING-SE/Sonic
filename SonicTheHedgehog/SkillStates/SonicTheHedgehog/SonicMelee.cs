@@ -59,7 +59,6 @@ namespace SonicTheHedgehog.SkillStates
         protected Animator animator;
         private BaseState.HitStopCachedState hitStopCachedState;
         private Vector3 storedVelocity;
-        private ICharacterFlightParameterProvider flight;
         private HomingTracker homingTracker;
         private bool effectPlayed = false;
         private bool swingSoundPlayed = false;
@@ -70,7 +69,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.flight = base.characterBody.GetComponent<ICharacterFlightParameterProvider>();
             this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             this.hasFired = false;
 
@@ -87,7 +85,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of duration
             this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of duration
             this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
-            this.hitHopVelocity = Flying() ? 0 : 3 + (3 / this.attackSpeedStat);
+            this.hitHopVelocity = base.characterMotor.isFlying ? 0 : 3 + (3 / this.attackSpeedStat);
             StartAimMode();
             PlayAttackAnimation();
 
@@ -246,7 +244,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             vector *= meleeFiringDisplacement;
             vector *= swingIndex == 4 ? 0.6f : 1;
-            if (Flying())
+            if (base.characterMotor.isFlying)
             {
                 vector *= 2;
             }
@@ -265,7 +263,7 @@ namespace SonicTheHedgehog.SkillStates
                 vector = base.characterBody.inputBank.moveVector * base.characterBody.moveSpeed;
                 vector *= meleeDisplacement;
                 vector *= swingIndex == 4 ? 0.9f : 1.3f;
-                if (Flying())
+                if (base.characterMotor.isFlying)
                 {
                     vector *= 1.5f;
                 }
@@ -350,11 +348,6 @@ namespace SonicTheHedgehog.SkillStates
                 this.outer.SetNextStateToMain();
                 return;
             }
-        }
-
-        private bool Flying()
-        {
-            return flight != null && flight.isFlying;
         }
 
         protected virtual void OnFireAuthority()

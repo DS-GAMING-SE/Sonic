@@ -1,5 +1,27 @@
 # Changelog
 
+## v4.0.6
+ - (HedgehogUtils) Updated for newest version
+ 
+ - (Visuals/Bug Fix) Rewrote the code for the death animation. The body now fades away at the end of the animation instead of disappearing at once. This should also fix any instances of the death animation getting cut off or bodies remaining forever after the animation ends. The entity state for this is in HedgehogUtils, so it can be reused for other characters easily.
+ 
+ - (Bug Fix) Fixed rare cases where some modded items would have an item display on Sonic
+ 
+ - (Internal) The sounds for Sonic's jumping and death animation are now handled by RoR2's SfxLocator instead of being hard-coded. Apparently the SfxLocator's jump sound isn't even networked. Syncing Sonic's jump in multiplayer has proven to be harder than I thought
+ 
+ - (Internal) Removed the old superSonicColor in all of Sonic's text and replaced it with HedgehogUtils.Helpers.SuperFormText() for consistency
+### HedgehogUtils v1.1.6
+ - (Bug Fix) Fixed harmless *"ItemDef 'ChaosEmerald' has an item index of 'None'. Attempting to fix..."* error that appeared in the logs when opening the game
+ 
+ - (Compatibility) Removed [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Delta Construct from the launch blacklist since the issue has been fixed on their end
+ 
+ - (Config) The Enable Logs config now has options for showing no logs, minimal logs, or all logs. Any previous changes to this config may need to be redone. This config is now set to minimal by default. *Why did I think it was a good idea to have logs be disabled by default before?*
+
+### Known Issues
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)
+ - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
+ - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
+ 
 ## v4.0.5
  - (HedgehogUtils) Updated for newest version
  
@@ -8,11 +30,6 @@
  - (Internal) The sounds for Sonic's brake, jump, and death have been moved to HedgehogUtils and the sound ids have changed
 ### HedgehogUtils v1.1.5
  - (Bug Fix) Fixed corpses being able to be hit by players after being launched in multiplayer
- 
-### Known Issues
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! But AC has added a way to sync them... but now I don't wanna)
- - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
- - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
  
 ## v4.0.4
  - (Assets - Mastery Skin)
