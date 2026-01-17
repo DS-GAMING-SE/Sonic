@@ -17,68 +17,33 @@ namespace SonicTheHedgehog.Components
     public class PowerBoostHUD : MonoBehaviour
     {
         //thanks red mist
-        private PowerBoostLogic boostLogic;
+        public PowerBoostLogic boostLogic;
 
-        public ParticleSystem powerBoostParticle;
+        private ParticleSystem powerBoostParticle;
         private bool powerBoostParticlePlaying;
-        private HUD hud;
-        private GameObject lastBodyObject;
 
-        private bool reparentedToBoostHUD;
-
-        private void Awake()
+        public void Awake()
         {
-            this.hud = base.GetComponent<HUD>();
+            powerBoostParticle = GetComponent<ParticleSystem>();
         }
         public void Update()
         {
-            if (!powerBoostParticle)
-            {
-                return;
-            }
-            if (!this.hud || !this.hud.targetBodyObject)
-            {
-                powerBoostParticle.gameObject.SetActive(false);
-                return;
-            }
-            if (!reparentedToBoostHUD)
-            {
-                Transform find = hud.transform.Find("MainContainer/MainUIArea/CrosshairCanvas/BoostMeter(Clone)");
-                if (find)
-                {
-                    powerBoostParticle.gameObject.transform.SetParent(find);
-                    reparentedToBoostHUD = true;
-                    RectTransform rectTransform = powerBoostParticle.GetComponent<RectTransform>();
-                    rectTransform.localScale = new Vector3(1, 1, 1);
-                    rectTransform.localPosition = Vector3.zero;
-                }
-                else
-                {
-                    powerBoostParticle.gameObject.SetActive(false);
-                    return;
-                }
-            }
-            if (this.hud.targetBodyObject != lastBodyObject)
-            {
-                if (this.hud.targetBodyObject.TryGetComponent<BoostLogic>(out BoostLogic logic))
-                {
-                    if (typeof(PowerBoostLogic).IsAssignableFrom(logic.GetType()))
-                    {
-                        powerBoostParticle.gameObject.SetActive(true);
-                        boostLogic = logic as PowerBoostLogic;
-                    }
-                    else
-                    {
-                        powerBoostParticle.gameObject.SetActive(false);
-                        return;
-                    }
-                }
-            }
             if (boostLogic && boostLogic.boostExists)
             {
                 UpdatePowerParticles();
             }
-            lastBodyObject = this.hud.targetBodyObject;
+            else
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
+        public void Reparent(Transform boostHUD)
+        {
+            transform.SetParent(boostHUD);
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            rectTransform.localScale = new Vector3(1, 1, 1);
+            rectTransform.localPosition = Vector3.zero;
         }
 
         private void UpdatePowerParticles()

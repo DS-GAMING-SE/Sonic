@@ -242,8 +242,6 @@ namespace SonicTheHedgehog.Modules.Survivors
                 EmoteSupport();
             }
 
-            On.RoR2.UI.HUD.Awake += CreateBoostMeterUI;
-
             #region Primary
 
             //Creates a skilldef for a typical primary
@@ -718,14 +716,6 @@ namespace SonicTheHedgehog.Modules.Survivors
                     procCoefficient = StaticValues.scepterBoostProcCoefficient
                 });
         }*/
-
-        internal static void CreateBoostMeterUI(On.RoR2.UI.HUD.orig_Awake orig, RoR2.UI.HUD self)
-        {
-            orig.Invoke(self);
-            PowerBoostHUD boostHud = self.gameObject.AddComponent<PowerBoostHUD>();
-            GameObject powerBoostHUDObject = GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles"));
-            boostHud.powerBoostParticle = powerBoostHUDObject.GetComponent<ParticleSystem>();
-        }
 
         public override void InitializeSkins()
         {

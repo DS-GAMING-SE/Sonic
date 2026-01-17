@@ -1,5 +1,14 @@
 # Changelog
 
+## v?
+
+### HedgehogUtils v?
+ - (Voicelines) Added a new system for handling voicelines
+ 
+ - (Visuals) The super form transformation now has a subtle glow around your character
+ 
+ - (Internal) Removed unnecessary On.RoR2.UI.HUD.Awake hook used for creating the boost meter. The boost meter hud is now handled through RoR2's Hud Overlay system. This change has also been applied to Sonic's power boost hud. Overall, the code for both of them is much simpler now
+
 ## v4.0.6
  - (HedgehogUtils) Updated for newest version
  
