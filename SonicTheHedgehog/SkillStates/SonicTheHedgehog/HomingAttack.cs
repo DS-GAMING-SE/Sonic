@@ -99,6 +99,8 @@ namespace SonicTheHedgehog.SkillStates
             Util.PlaySound(homingAttackSoundString, base.gameObject);
             if (base.isAuthority)
             {
+                homingTracker.visible = true;
+                homingTracker.locked = true;
                 base.characterMotor.Motor.ForceUnground();
                 if (targetDirection != Vector3.zero)
                 {
@@ -144,6 +146,11 @@ namespace SonicTheHedgehog.SkillStates
             {
                 Destroy(this.homingAttackEffect);
             }
+            if (base.isAuthority)
+            {
+                homingTracker.locked = false;
+                homingTracker.visible = false;
+            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -175,6 +182,9 @@ namespace SonicTheHedgehog.SkillStates
                     base.SmallHop(base.characterMotor, homingAttackHitHopVelocity);
                 }
             }
+
+            homingTracker.locked = false;
+            homingTracker.visible = false;
 
             if (NetworkServer.active)
             {
@@ -262,7 +272,7 @@ namespace SonicTheHedgehog.SkillStates
                         }
                         base.characterMotor.velocity = targetDirection.normalized * this.homingAttackSpeed;
                         base.characterDirection.forward = targetDirection.normalized;
-                        if (base.isAuthority && base.isGrounded)
+                        if (base.isGrounded)
                         {
                             base.characterMotor.Motor.ForceUnground();
                         }

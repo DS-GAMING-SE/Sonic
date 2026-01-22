@@ -17,10 +17,17 @@ namespace SonicTheHedgehog.SkillStates
 
         private const float idleExtraDefault = 8;
 
+        private HomingTracker homingTracker;
+
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
         {
             base.OnEnter();
+            if (base.isAuthority)
+            {
+                homingTracker = GetComponent<HomingTracker>();
+                homingTracker.visible = true;
+            }
             idleExtraTimer = idleExtraDefault;
             idleExtraCount = 0;
             if (base.modelAnimator.isInitialized)
@@ -74,6 +81,10 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void OnExit()
         {
+            if (base.isAuthority)
+            {
+                homingTracker.visible = false;
+            }
             if (base.modelLocator)
             {
                 base.modelLocator.normalizeToFloor = false;

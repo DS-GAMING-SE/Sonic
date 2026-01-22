@@ -55,41 +55,47 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             if (NetworkServer.active)
             {
                 base.characterBody.AddBuff(Modules.Buffs.ballBuff);
             }
-            this.dashSpeed = homingTracker.Speed();
             this.hasFired = false;
             this.attackStartTime = baseAttackStartTime / base.characterBody.attackSpeed;
             this.dashOvershoot = 1.75f;
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
-            if (homingTracker)
-            {
-                this.target = homingTracker.GetTrackingTarget(true);
-            }
-            this.targetDirection = base.GetAimRay().direction.normalized * homingTracker.MaxRange() * this.noTargetDistancePercentage;
-            if (this.target!=null)
-            {
-                if (target.healthComponent && target.healthComponent.body && target.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff))
-                {
-                    this.dashOvershoot *= 2.5f;
-                }
-                this.targetDirection = (this.target.transform.position - base.transform.position);
-            }
-            if (dashSpeed > 0)
-            {
-                this.estimatedDashTime = (targetDirection.magnitude / dashSpeed) * dashOvershoot;
-            }
-            else
-            {
-                attackStartTime *= 2;
-                this.estimatedDashTime = 0;
-            }
             if (base.isAuthority)
             {
-                base.characterMotor.Motor.ForceUnground();
+                this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
+                this.target = homingTracker.GetTrackingTarget(true);
+                if (this.homingTracker)
+                {
+                    this.target = homingTracker.GetTrackingTarget(true);
+                    homingTracker.visible = true;
+                    homingTracker.locked = true;
+                    this.dashSpeed = homingTracker.Speed();
+                    this.targetDirection = base.GetAimRay().direction.normalized * homingTracker.MaxRange() * this.noTargetDistancePercentage;
+                }
+                if (this.target != null)
+                {
+                    if (target.healthComponent && target.healthComponent.body && target.healthComponent.body.HasBuff(HedgehogUtils.Buffs.launchedBuff))
+                    {
+                        this.dashOvershoot *= 2.5f;
+                    }
+                    this.targetDirection = (this.target.transform.position - base.transform.position);
+                }
+                if (dashSpeed > 0)
+                {
+                    this.estimatedDashTime = (targetDirection.magnitude / dashSpeed) * dashOvershoot;
+                }
+                else
+                {
+                    attackStartTime *= 2;
+                    this.estimatedDashTime = 0;
+                }
+                if (base.isAuthority)
+                {
+                    base.characterMotor.Motor.ForceUnground();
+                }
             }
             if (this.attackStartTime >= 0.2f)
             {
@@ -115,6 +121,11 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.RemoveBuff(Modules.Buffs.ballBuff);
             }
+            if (base.isAuthority && homingTracker)
+            {
+                homingTracker.visible = false;
+                homingTracker.locked = false;
+            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -134,21 +145,20 @@ namespace SonicTheHedgehog.SkillStates
 
         private void FireAttack()
         {
-
-                if (base.isAuthority)
+            if (base.isAuthority)
+            {
+                List<HurtBox> hitList = new List<HurtBox>();
+                if (this.attack.Fire(hitList))
                 {
-                    List<HurtBox> hitList = new List<HurtBox>();
-                    if (this.attack.Fire(hitList))
+                    base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
+                    if (this.target==null)
                     {
-                        base.AddRecoil(-1f * this.attackRecoil, -2f * this.attackRecoil, -0.5f * this.attackRecoil, 0.5f * this.attackRecoil);
-                        if (this.target==null)
-                        {
-                            this.target = hitList.FirstOrDefault();
-                        }
-                        base.characterMotor.velocity=Vector3.zero;
-                        this.OnHitEnemyAuthority();
+                         this.target = hitList.FirstOrDefault();
                     }
+                    base.characterMotor.velocity=Vector3.zero;
+                    this.OnHitEnemyAuthority();
                 }
+            }
         }
 
         protected virtual void SetNextState()
@@ -166,13 +176,13 @@ namespace SonicTheHedgehog.SkillStates
             this.stopwatch += Time.fixedDeltaTime;
 
 
-            if (fixedAge < this.attackStartTime)
+            if (base.isAuthority && fixedAge < this.attackStartTime)
             {
                 base.characterMotor.velocity = Vector3.Lerp(base.characterMotor.velocity, Vector3.zero, fixedAge / (this.attackStartTime * 0.6f));
             }
             else if (fixedAge < this.estimatedDashTime + this.attackStartTime && fixedAge > this.attackStartTime)
             {
-                if (this.target != null)
+                if (base.isAuthority && this.target != null)
                 {
                     targetDirection = this.target.transform.position - base.transform.position;
                 }
@@ -186,18 +196,21 @@ namespace SonicTheHedgehog.SkillStates
                     }
                     OnLaunch();
                 }
-                base.characterDirection.forward = targetDirection.normalized;
-                if (fixedAge >= this.attackStartTime + (this.estimatedDashTime * 0.75f)) // Slow to stop at end
+                if (base.isAuthority)
                 {
-                    this.dashSpeed = Mathf.Lerp(homingTracker.Speed(), 0, (fixedAge - this.attackStartTime + (this.estimatedDashTime * 0.75f)) / (this.attackStartTime + this.estimatedDashTime));
+                    base.characterDirection.forward = targetDirection.normalized;
+                    if (fixedAge >= this.attackStartTime + (this.estimatedDashTime * 0.75f)) // Slow to stop at end
+                    {
+                        this.dashSpeed = Mathf.Lerp(homingTracker.Speed(), 0, (fixedAge - this.attackStartTime + (this.estimatedDashTime * 0.75f)) / (this.attackStartTime + this.estimatedDashTime));
+                    }
+                    if (this.dashSpeed * Time.fixedDeltaTime > targetDirection.magnitude * 3) // Slow when approaching enemy at high speed
+                    {
+                        this.dashSpeed = Mathf.Max(targetDirection.magnitude * 3, 15);
+                    }
+                    base.characterDirection.forward = targetDirection.normalized;
+                    base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
+                    this.FireAttack();
                 }
-                if (this.dashSpeed * Time.fixedDeltaTime > targetDirection.magnitude * 3) // Slow when approaching enemy at high speed
-                {
-                    this.dashSpeed = Mathf.Max(targetDirection.magnitude * 3, 15);
-                }
-                base.characterDirection.forward = targetDirection.normalized;
-                base.characterMotor.velocity = targetDirection.normalized * dashSpeed;
-                this.FireAttack();
             }
             if (fixedAge > this.estimatedDashTime + this.attackStartTime && base.isAuthority)
             {

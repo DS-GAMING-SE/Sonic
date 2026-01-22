@@ -38,11 +38,13 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
             this.searchTime = baseSearchTime / base.characterBody.attackSpeed;
-            SearchForTarget();
             if (base.isAuthority)
             {
+                this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
+                SearchForTarget();
+                homingTracker.visible = true;
+                homingTracker.locked = true;
                 base.characterMotor.Motor.ForceUnground();
             }
             base.PlayAnimation("FullBody, Override", "IDWStart", "Slash.playbackRate", searchTime);
@@ -58,6 +60,11 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.PlayAnimation("FullBody, Override", "BufferEmpty");
+            if (base.isAuthority)
+            {
+                homingTracker.visible = false;
+                homingTracker.locked = false;
+            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);

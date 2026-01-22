@@ -11,8 +11,6 @@ namespace SonicTheHedgehog.Modules
         {
             Modules.Content.AddEntityState(typeof(SonicEntityState));
 
-            Modules.Content.AddEntityState(typeof(Death));
-
             Modules.Content.AddEntityState(typeof(SonicMelee));
             Modules.Content.AddEntityState(typeof(HomingAttack));
 

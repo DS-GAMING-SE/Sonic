@@ -69,7 +69,11 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
+            if (base.isAuthority)
+            {
+                this.homingTracker = base.characterBody.GetComponent<HomingTracker>();
+                homingTracker.visible = true;
+            }
             this.hasFired = false;
 
             meleeSkillDef = base.skillLocator.primary.skillDef as SkillDefs.IMeleeSkill;
@@ -114,6 +118,10 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
             base.PlayAnimation("FullBody, Override", "BufferEmpty");
+            if (base.isAuthority)
+            {
+                homingTracker.visible = false;
+            }
             base.OnExit();
 
             this.animator.SetBool("attacking", false);

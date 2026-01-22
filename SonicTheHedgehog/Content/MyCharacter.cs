@@ -32,6 +32,11 @@ namespace SonicTheHedgehog.Modules.Survivors
         public const string SONIC_THE_HEDGEHOG_PREFIX =
             SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_";
 
+        public static Color sonicColor = new Color(0.29f, 0.34f, 1f);
+        public static Color sonicColor2 = new Color(0, 0.7f, 1);
+        public static Color superSonicColor = new Color(1f, 0.9f, 0);
+        public static Color superSonicColor2 = new Color(1f, 0.6f, 0.4f);
+
         //used when registering your survivor's language tokens
         public override string survivorTokenPrefix => SONIC_THE_HEDGEHOG_PREFIX;
 
@@ -42,7 +47,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             subtitleNameToken = SONIC_THE_HEDGEHOG_PREFIX + "SUBTITLE",
 
             characterPortrait = Assets.mainAssetBundle.LoadAsset<Texture>("texSonicIcon"),
-            bodyColor = new Color(0.29f, 0.34f, 1f),
+            bodyColor = sonicColor,
 
             crosshair = Modules.Assets.LoadCrosshair("Standard"),
             podPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/SurvivorPod"),
@@ -635,7 +640,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             SuperSkillReplacer.boost.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
             SuperSkillReplacer.boost.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
             SuperSkillReplacer.boost.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
-            SuperSkillReplacer.boost.boostHUDColor = new Color(1f, 0.9f, 0, 1);
+            SuperSkillReplacer.boost.boostHUDColor = superSonicColor;
 
             grandSlam.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperGrandSlamDash));
             grandSlam.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME";

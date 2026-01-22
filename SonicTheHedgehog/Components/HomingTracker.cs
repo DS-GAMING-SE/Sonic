@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using EntityStates;
+using HedgehogUtils.Miscellaneous;
 using RoR2;
 using RoR2.Audio;
+using SonicTheHedgehog.Modules.Survivors;
 using SonicTheHedgehog.SkillStates;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,12 +16,29 @@ namespace SonicTheHedgehog.Components
     public class HomingTracker : MonoBehaviour
     {
         private Indicator indicator;
+        private LockOnIndicator lockOnIndicator;
+        private bool lockOnIndicatorFound;
+        
+        public bool visible;
+        public bool locked
+        {
+            get { return _locked; }
+            set
+            {
+                _locked = value;
+                if (visible)
+                {
+                    IndicatorRetarget();
+                }
+            }
+        }
+        private bool _locked;
 
         private CharacterBody characterBody;
         private InputBankTest inputBank;
         private TeamComponent teamComponent;
-        private EntityStateMachine bodyState;
 
+        private Transform previousTarget;
         private HurtBox trackingTarget;
         private HurtBox trackingTargetLaunched;
         private HurtBox nearbyTarget;
@@ -34,14 +53,13 @@ namespace SonicTheHedgehog.Components
 
         private void Awake()
         {
-            this.indicator = new Indicator(base.gameObject, LegacyResourcesAPI.Load<GameObject>("Prefabs/HuntressTrackingIndicator"));
-        }
-        private void Start()
-        {
+            this.indicator = new Indicator(base.gameObject, HedgehogUtils.Assets.lockOnIndicator); //LegacyResourcesAPI.Load<GameObject>("Prefabs/HuntressTrackingIndicator")
             this.characterBody = base.GetComponent<CharacterBody>();
             this.inputBank = base.GetComponent<InputBankTest>();
             this.teamComponent = base.GetComponent<TeamComponent>();
-            this.bodyState = EntityStateMachine.FindByCustomName(base.gameObject, "Body");
+        }
+        private void Start()
+        {
             search = new BullseyeSearch();
             sphereSearch = new SphereSearch();
         }
@@ -63,6 +81,26 @@ namespace SonicTheHedgehog.Components
         private void OnEnable()
         {
             this.indicator.active = true;
+            if (this.indicator.hasVisualizer)
+            {
+                InitializeIndicator();
+            }
+        }
+        private void InitializeIndicator()
+        {
+            this.lockOnIndicator = this.indicator.visualizerInstance.GetComponent<LockOnIndicator>();
+            if (lockOnIndicator)
+            {
+                lockOnIndicatorFound = true;
+                lockOnIndicator.SetColors(SonicTheHedgehogCharacter.sonicColor2, SonicTheHedgehogCharacter.sonicColor);
+            }
+        }
+        public void SetColors(Color color, Color color2)
+        {
+            if (lockOnIndicator)
+            {
+                lockOnIndicator.SetColors(color, color2);
+            }
         }
         private void OnDisable()
         {
@@ -71,22 +109,35 @@ namespace SonicTheHedgehog.Components
 
         private void FixedUpdate()
         {
+            if (!Util.HasEffectiveAuthority(base.gameObject)) return;
+            if (!lockOnIndicatorFound && this.indicator.hasVisualizer) { InitializeIndicator(); }
             this.trackerUpdateStopwatch += Time.fixedDeltaTime;
             if (this.trackerUpdateStopwatch >= 1f / this.trackerUpdateFrequency)
             {
                 this.trackerUpdateStopwatch = 0;
-                System.Type stateType = this.bodyState.state.GetType();
-                bool notTargetingState = typeof(HedgehogUtils.Boost.EntityStates.Boost).IsAssignableFrom(stateType) || stateType == typeof(Death) || typeof(Parry).IsAssignableFrom(stateType) || typeof(GrandSlamSpin).IsAssignableFrom(stateType) || typeof(GrandSlamFinal).IsAssignableFrom(stateType) || typeof(HedgehogUtils.Forms.EntityStates.TransformationBase).IsAssignableFrom(stateType);
-                if (notTargetingState)
+                EnemiesNearby();
+                this.SearchForTarget(inputBank.GetAimRay());
+                if (visible)
                 {
-                    this.indicator.targetTransform = null;
+                    if (!locked)
+                    {
+                        IndicatorRetarget();
+                    }
                 }
                 else
                 {
-                    EnemiesNearby();
-                    this.SearchForTarget(inputBank.GetAimRay());
-                    this.indicator.targetTransform = CanHomingAttack() ? this.trackingTarget.transform : null;
+                    this.indicator.targetTransform = null;
                 }
+                previousTarget = this.indicator.targetTransform;
+            }
+        }
+        private void IndicatorRetarget()
+        {
+            this.indicator.targetTransform = CanHomingAttack() ? this.trackingTarget.transform : null;
+            if (this.lockOnIndicator && this.indicator.targetTransform && (!previousTarget || this.indicator.targetTransform != previousTarget))
+            {
+                this.lockOnIndicator.UpdateTarget();
+                Util.PlaySound("Play_hedgehogutils_lockon", base.gameObject);
             }
         }
 

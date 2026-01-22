@@ -1,4 +1,5 @@
 ﻿using RoR2;
+using SonicTheHedgehog.Modules.Survivors;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,8 +20,8 @@ namespace SonicTheHedgehog.Modules
         internal static void RegisterBuffs()
         {
             boostBuff = AddNewBuff("bdSonicBoost",
-                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/CloakSpeed").iconSprite, 
-                new Color(0, 0.7f, 1), 
+                LegacyResourcesAPI.Load<BuffDef>("BuffDefs/CloakSpeed").iconSprite,
+                SonicTheHedgehogCharacter.sonicColor2, 
                 false, 
                 false);
             superBoostBuff = AddNewBuff("bdSuperSonicBoost",
@@ -31,12 +32,12 @@ namespace SonicTheHedgehog.Modules
             ballBuff = AddNewBuff("bdSonicBallArmor",
                 //LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HiddenInvincibility").iconSprite,
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texBallBuffIcon"),
-                new Color(0, 0.35f, 1),
+                SonicTheHedgehogCharacter.sonicColor,
                 false,
                 false);
             parryBuff = AddNewBuff("bdSonicParry",
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texParryBuffIcon"),
-                new Color(0, 0.7f, 1),
+                SonicTheHedgehogCharacter.sonicColor2,
                 false,
                 false);
             superParryDebuff = AddNewBuff("bdSonicSuperParryDebuff",

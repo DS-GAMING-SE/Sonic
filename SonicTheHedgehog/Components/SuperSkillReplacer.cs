@@ -14,6 +14,7 @@ namespace SonicTheHedgehog.Components
     {
         private FormComponent formComponent;
         private CharacterBody body;
+        private HomingTracker homingTracker;
 
         public static Modules.SkillDefs.RequiresFormMeleeSkillDef melee;
 
@@ -32,6 +33,7 @@ namespace SonicTheHedgehog.Components
             if (formComponent)
             {
                 body = base.GetComponent<CharacterBody>();
+                homingTracker = base.GetComponent<HomingTracker>();
                 formComponent.OnFormChanged += FormChanged;
             }
             else
@@ -51,13 +53,14 @@ namespace SonicTheHedgehog.Components
             if (active == HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef)
             {
                 SkillOverrides();
+                homingTracker.SetColors(SonicTheHedgehogCharacter.superSonicColor, SonicTheHedgehogCharacter.superSonicColor2);
             }
             // Removal of Super Upgrade skills is built into the HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef type of SkillDef that all the super upgrades are, so it doesn't need to be done manually
 
-            /*else if (previous == HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef)
+            else if (previous == HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef)
             {
-                SkillOverrides(false);
-            }*/
+                homingTracker.SetColors(SonicTheHedgehogCharacter.sonicColor2, SonicTheHedgehogCharacter.sonicColor);
+            }
         }
 
         public void SkillOverrides()
