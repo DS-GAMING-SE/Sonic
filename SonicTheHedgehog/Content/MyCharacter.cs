@@ -776,6 +776,9 @@ namespace SonicTheHedgehog.Modules.Survivors
             //if you don't want to replace the mesh (for example, you only want to replace the material), pass in null so the order is preserved
             masterySkin.meshReplacements = Modules.Skins.GetMeshReplacementsFromObject(defaultRendererinfos,
                 "MetalSonicMesh");
+            masterySkin.projectileGhostReplacements = new[] { 
+                new SkinDef.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleePunchProjectilePrefab, projectileGhostReplacementPrefab = Projectiles.superMetalMeleePunchProjectileGhost },
+            new SkinDef.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab, projectileGhostReplacementPrefab = Projectiles.superMetalMeleeKickProjectileGhost }};
 
             //masterySkin has a new set of RendererInfos (based on default rendererinfos)
             //you can simply access the RendererInfos defaultMaterials and set them to the new materials for your skin.

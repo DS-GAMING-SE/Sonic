@@ -191,7 +191,7 @@ namespace SonicTheHedgehog.Modules
             parryEffect = Assets.LoadEffect("SonicParry", true);
             parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
             followUpKickEffect = Assets.LoadEffect("SonicFollowUpKick", true);
-            idwAttackEffect = MaterialSwap(Assets.LoadAsyncedEffect("SonicIDWAttack"), "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Blur/Distortion");
+            idwAttackEffect = MaterialSwap(Assets.LoadAsyncedEffect("SonicIDWAttack"), RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.matCrocoSlashDistortion_mat, "Blur/Distortion");
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
@@ -304,13 +304,37 @@ namespace SonicTheHedgehog.Modules
                 };
             }
 
-            superSonicOverlay = new Material(Addressables.LoadAssetAsync<Material>("RoR2/Base/LunarGolem/matLunarGolemShield.mat").WaitForCompletion());
+            superSonicOverlay = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LunarGolem.matLunarGolemShield_mat).WaitForCompletion());
             superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
             superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);
 
             powerBoostHud = Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles");
             powerBoostHud.AddComponent<PowerBoostHUD>();
+
+            /*
+             * New pod needs ------------------------------------------------
+             *  NetworkIdentity
+             *  EntityStateMachine Main
+             *      initialStateType = whatever new state handles this
+             *  NetworkEntityStateMachine
+             *      Add main state machine
+             *  SurvivorPodController
+             *      cameraBone on another object off to the side
+             *      camera following target is baked into the falling animation. Since the pod itself has no animator, probably automate the camera somehow?
+             *  VehicleSeat
+             *      passengerState = new SerializableEntityStateType(typeof(GenericCharacterPod));
+             *      seatPosition = transform;
+             *      handleExitTeleport = false
+             *      exitVelocityFraction = 0f
+             *      isSurvivorPod = true
+             *      exitVehicleContextString = "Get up" lang token or something
+             *      shouldProximityHighlight = false
+             *      Should delete itself after the player exits?
+             *  BuffPassengerWhileSeated 
+             *      RoR2Content.Buffs.HiddenInvincibility (Might have to load asset since it's done early?)
+             *  Permanent crater decal?
+             */
         }
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)

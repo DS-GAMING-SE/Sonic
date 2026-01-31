@@ -108,7 +108,7 @@ namespace SonicTheHedgehog.Modules
         public static Material MetalMaterial(this Material mat)
         {
             mat.Specular(0.2f);
-            mat.SetTexture("_FresnelRamp", Addressables.LoadAssetAsync<Texture>("RoR2/DLC2/Common/texRampTritone3Reverse.png").WaitForCompletion());
+            mat.SetTexture("_FresnelRamp", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Common.texRampTritone3Reverse_png).WaitForCompletion());
             mat.EnableKeyword("FRESNEL_EMISSION");
             return mat;
         }

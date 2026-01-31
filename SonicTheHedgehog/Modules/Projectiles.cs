@@ -15,8 +15,8 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject superSonicBoomPrefab;
         internal static GameObject superMeleePunchProjectilePrefab;
         internal static GameObject superMeleeKickProjectilePrefab;
-        internal static GameObject superMetalMeleePunchProjectilePrefab;
-        internal static GameObject superMetalMeleeKickProjectilePrefab;
+        internal static GameObject superMetalMeleePunchProjectileGhost;
+        internal static GameObject superMetalMeleeKickProjectileGhost;
         internal static GameObject superSonicAfterimageRainPrefab;
         internal static GameObject superMetalAfterimageRainPrefab;
 
@@ -34,8 +34,6 @@ namespace SonicTheHedgehog.Modules
 
             AddProjectile(superMeleePunchProjectilePrefab);
             AddProjectile(superMeleeKickProjectilePrefab);
-            AddProjectile(superMetalMeleePunchProjectilePrefab);
-            AddProjectile(superMetalMeleeKickProjectilePrefab);
 
             AddProjectile(superSonicAfterimageRainPrefab);
             AddProjectile(superMetalAfterimageRainPrefab);
@@ -148,8 +146,8 @@ namespace SonicTheHedgehog.Modules
             bombController.allowPrediction = true;
             //CreateOtherSuperMeleeProjectiles();
             superMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMeleeKickGhost", "SuperSonicMeleeKickProjectile");
-            superMetalMeleePunchProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMetalMeleePunchGhost", "SuperMetalMeleePunchProjectile");
-            superMetalMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMetalMeleeKickGhost", "SuperMetalMeleeKickProjectile");
+            superMetalMeleePunchProjectileGhost = CreateGhostPrefab("SuperMetalMeleePunchGhost", superProjectileMaterial);
+            superMetalMeleeKickProjectileGhost = CreateGhostPrefab("SuperMetalMeleeKickGhost", superProjectileMaterial);
         }
 
         //I don't think the prefabName actually matters for anything
@@ -190,7 +188,7 @@ namespace SonicTheHedgehog.Modules
             hitboxes.hitBoxes = new HitBox[] { hitBox, hitBox1 }; // make hitboxes on the projectile like the melees. Rex uses two boxes rotated 45 degrees to kinda get a cylinder. Rex size is about 10
 
             Log.Message("Afterimage Rain mat swap");
-            Assets.MaterialSwap(superSonicAfterimageRainPrefab, "RoR2/Base/Croco/matCrocoSlashDistortion.mat", "Effects/Blur");
+            Assets.MaterialSwap(superSonicAfterimageRainPrefab, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.matCrocoSlashDistortion_mat, "Effects/Blur");
             Assets.MaterialSwap(superSonicAfterimageRainPrefab, superProjectileMaterial, "Effects/Sonics");
 
             Log.Message("Afterimage Rain damage");

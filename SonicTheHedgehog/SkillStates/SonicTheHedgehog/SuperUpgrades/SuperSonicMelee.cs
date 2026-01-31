@@ -44,23 +44,11 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         {
             if (swingIndex%2 == 0 && swingIndex != 4)
             {
-                switch (skinName)
-                {
-                    default:
-                        return Projectiles.superMeleePunchProjectilePrefab;
-                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                        return Projectiles.superMetalMeleePunchProjectilePrefab;
-                }
+                return Projectiles.superMeleePunchProjectilePrefab;
             }
             else
             {
-                switch (skinName)
-                {
-                    default:
-                        return Projectiles.superMeleeKickProjectilePrefab;
-                    case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                        return Projectiles.superMetalMeleeKickProjectilePrefab;
-                }
+                return Projectiles.superMeleeKickProjectilePrefab;
             }
         }
     }
