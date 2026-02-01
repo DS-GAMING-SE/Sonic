@@ -1,6 +1,7 @@
 ﻿using AncientScepter;
 using BepInEx.Configuration;
 using EmotesAPI;
+using HarmonyLib;
 using HedgehogUtils;
 using HedgehogUtils.Forms;
 using On.RoR2.UI;
@@ -17,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using static BetterUI.ProcCoefficientCatalog;
 using static RoR2.TeleporterInteraction;
@@ -766,24 +768,38 @@ namespace SonicTheHedgehog.Modules.Survivors
 
 
             //creating a new skindef as we did before
-            SkinDef masterySkin = Modules.Skins.CreateSkinDef(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
+            /*SkinDef masterySkin = Modules.Skins.CreateSkinDef(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin"),
                 defaultRendererinfos,
                 prefabCharacterModel.gameObject
                 ,masterySkinUnlockableDef);
-                //);
+                //);*/
+            SkinDefParams masterySkinDefParams = ScriptableObject.CreateInstance<SkinDefParams>();
+            masterySkinDefParams.projectileGhostReplacements = new[] {
+                new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleePunchProjectilePrefab,
+                    ghostReplacementAddress = Projectiles.superMetalMeleePunchProjectileGhost },
+                new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab,
+                    ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost } };
+            masterySkinDefParams.rendererInfos = defaultRendererinfos;
+            masterySkinDefParams.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic").MetalMaterial();
+            masterySkinDefParams.meshReplacements = Modules.Skins.GetParamMeshReplacementsFromObject(defaultRendererinfos, "MetalSonicMesh");
+            R2API.SkinDefParamsInfo masterySkinParamsInfo = new R2API.SkinDefParamsInfo
+            {
+                Name = SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
+                NameToken = SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
+                Icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin"),
+                UnlockableDef = masterySkinUnlockableDef,
+                RootObject = prefabCharacterModel.gameObject,
+                BaseSkins = new[] { defaultSkin },
+                SkinDefParams = masterySkinDefParams
+            };
+            SkinDef masterySkin = R2API.Skins.CreateNewSkinDef(masterySkinParamsInfo);
+            //);
             //adding the mesh replacements as above.
             //if you don't want to replace the mesh (for example, you only want to replace the material), pass in null so the order is preserved
-            masterySkin.meshReplacements = Modules.Skins.GetMeshReplacementsFromObject(defaultRendererinfos,
-                "MetalSonicMesh");
-            masterySkin.projectileGhostReplacements = new[] { 
-                new SkinDef.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleePunchProjectilePrefab, projectileGhostReplacementPrefab = Projectiles.superMetalMeleePunchProjectileGhost },
-            new SkinDef.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab, projectileGhostReplacementPrefab = Projectiles.superMetalMeleeKickProjectileGhost }};
 
             //masterySkin has a new set of RendererInfos (based on default rendererinfos)
             //you can simply access the RendererInfos defaultMaterials and set them to the new materials for your skin.
-            masterySkin.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic").MetalMaterial();
-
             //here's a barebones example of using gameobjectactivations that could probably be streamlined or rewritten entirely, truthfully, but it works
             // DUMBASS GAMEOBJECTACTIVATIONS COSTING ME HOURS. I JUST WANT A LIGHT ON THE BACK OF METAL SONIC
             // Gave up and just manually drew the light into the emission texture. More performant that way anyway

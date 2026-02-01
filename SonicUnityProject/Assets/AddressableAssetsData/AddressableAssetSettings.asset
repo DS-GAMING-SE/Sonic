@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
+  m_Name: AddressableAssetSettings
+  m_EditorClassIdentifier: 
+  m_DefaultGroup: 01be91ed68bf44843a39e9f0dac85f4c
+  m_CachedHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_OptimizeCatalogSize: 0
+  m_BuildRemoteCatalog: 1
+  m_BundleLocalCatalog: 0
+  m_CatalogRequestsTimeout: 0
+  m_DisableCatalogUpdateOnStart: 0
+  m_IgnoreUnsupportedFilesInBuild: 0
+  m_UniqueBundleIds: 0
+  m_NonRecursiveBuilding: 1
+  m_maxConcurrentWebRequests: 500
+  m_ContiguousBundles: 1
+  m_StripUnityVersionFromBundleBuild: 0
+  m_DisableVisibleSubAssetRepresentations: 0
+  m_ShaderBundleNaming: 0
+  m_ShaderBundleCustomNaming: 
+  m_MonoScriptBundleNaming: 0
+  m_MonoScriptBundleCustomNaming: 
+  m_RemoteCatalogBuildPath:
+    m_Id: 41894715f66b22a49bbb1745135b167d
+  m_RemoteCatalogLoadPath:
+    m_Id: eac61a611ee57674e81e0cd81af3eac9
+  m_ContentStateBuildPath: 
+  m_overridePlayerVersion: 
+  m_GroupAssets:
+  - {fileID: 11400000, guid: bb46dc8e0bb1d4843a3e6a0caf30c869, type: 2}
+  - {fileID: 11400000, guid: 66f261dd5d88f284e83edb8b807da058, type: 2}
+  m_BuildSettings:
+    m_CompileScriptsInVirtualMode: 0
+    m_CleanupStreamingAssetsAfterBuilds: 1
+    m_LogResourceManagerExceptions: 1
+    m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
+  m_ProfileSettings:
+    m_Profiles:
+    - m_InheritedParent: 
+      m_Id: 881d1558bd72dbc49849936e704d73ba
+      m_ProfileName: Default
+      m_Values:
+      - m_Id: 41894715f66b22a49bbb1745135b167d
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: 6cf812d966ec4834396b018ebd97056f
+        m_Value: D:\Sonic ROR2 Mod\Sonic-master\Thunderstore\SonicTheHedgehogLatest
+      - m_Id: eac61a611ee57674e81e0cd81af3eac9
+        m_Value: '{SonicTheHedgehog.Modules.Assets.AddressablesDirectory}'
+      - m_Id: 2e0bdaff5fe65a6418a1d24afe29f674
+        m_Value: ServerData/[BuildTarget]
+      - m_Id: 25675f9b369e321449a97da6d0f646e8
+        m_Value: http://localhost/[BuildTarget]
+    m_ProfileEntryNames:
+    - m_Id: 41894715f66b22a49bbb1745135b167d
+      m_Name: BuildTarget
+      m_InlineUsage: 0
+    - m_Id: 6cf812d966ec4834396b018ebd97056f
+      m_Name: LocalBuildPath
+      m_InlineUsage: 0
+    - m_Id: eac61a611ee57674e81e0cd81af3eac9
+      m_Name: LocalLoadPath
+      m_InlineUsage: 0
+    - m_Id: 2e0bdaff5fe65a6418a1d24afe29f674
+      m_Name: RemoteBuildPath
+      m_InlineUsage: 0
+    - m_Id: 25675f9b369e321449a97da6d0f646e8
+      m_Name: RemoteLoadPath
+      m_InlineUsage: 0
+    m_ProfileVersion: 1
+  m_LabelTable:
+    m_LabelNames:
+    - default
+  m_SchemaTemplates: []
+  m_GroupTemplateObjects:
+  - {fileID: 11400000, guid: f969e4369c7813d4cbcb998688c01653, type: 2}
+  m_InitializationObjects: []
+  m_CertificateHandlerType:
+    m_AssemblyName: 
+    m_ClassName: 
+  m_ActivePlayerDataBuilderIndex: 3
+  m_DataBuilders:
+  - {fileID: 11400000, guid: 497deebe4eca61a4e95be98e295f525a, type: 2}
+  - {fileID: 11400000, guid: c5f705e2e5c38cb49a21a3a557a174aa, type: 2}
+  - {fileID: 11400000, guid: 97d2b901a5f80054aadee3fb11eed048, type: 2}
+  - {fileID: 11400000, guid: 812ea98faa7ddee4682490bea445f66a, type: 2}
+  m_ActiveProfileId: 881d1558bd72dbc49849936e704d73ba
+  m_HostingServicesManager:
+    m_HostingServiceInfos: []
+    m_Settings: {fileID: 11400000}
+    m_NextInstanceId: 0
+    m_RegisteredServiceTypeRefs: []

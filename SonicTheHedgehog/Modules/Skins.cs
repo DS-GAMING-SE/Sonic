@@ -139,5 +139,25 @@ namespace SonicTheHedgehog.Modules
 
             return meshReplacements.ToArray();
         }
+        internal static SkinDefParams.MeshReplacement[] GetParamMeshReplacementsFromObject(CharacterModel.RendererInfo[] defaultRendererInfos, params string[] meshes)
+        {
+
+            List<SkinDefParams.MeshReplacement> meshReplacements = new List<SkinDefParams.MeshReplacement>();
+
+            for (int i = 0; i < defaultRendererInfos.Length; i++)
+            {
+                if (string.IsNullOrEmpty(meshes[i]))
+                    continue;
+
+                meshReplacements.Add(
+                new SkinDefParams.MeshReplacement
+                {
+                    renderer = defaultRendererInfos[i].renderer,
+                    mesh = Assets.mainAssetBundle.LoadAsset<GameObject>(meshes[i]).GetComponent<SkinnedMeshRenderer>().sharedMesh
+                });
+            }
+
+            return meshReplacements.ToArray();
+        }
     }
 }

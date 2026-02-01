@@ -1,8 +1,9 @@
 # Changelog
 
-## v?
+## v5.0.0
 
-### HedgehogUtils v?
+ - (Optimization) This mod now uses addressables, meaning assets will only be loaded when needed. This should reduce memory usage by a lot
+### HedgehogUtils v2.0.0
  - (Voicelines) Added a new system for handling voicelines
  
  - (Visuals) The super form transformation now has a subtle glow around your character
