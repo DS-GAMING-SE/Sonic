@@ -1,9 +1,11 @@
 ﻿using R2API;
 using RoR2;
+using RoR2.ContentManagement;
 using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -15,8 +17,8 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject superSonicBoomPrefab;
         internal static GameObject superMeleePunchProjectilePrefab;
         internal static GameObject superMeleeKickProjectilePrefab;
-        internal static GameObject superMetalMeleePunchProjectileGhost;
-        internal static GameObject superMetalMeleeKickProjectileGhost;
+        internal static AssetReferenceT<GameObject> superMetalMeleePunchProjectileGhost;
+        internal static AssetReferenceT<GameObject> superMetalMeleeKickProjectileGhost;
         internal static GameObject superSonicAfterimageRainPrefab;
         internal static GameObject superMetalAfterimageRainPrefab;
 
@@ -34,6 +36,8 @@ namespace SonicTheHedgehog.Modules
 
             AddProjectile(superMeleePunchProjectilePrefab);
             AddProjectile(superMeleeKickProjectilePrefab);
+
+            CreateSuperSkinMeleeProjectiles();
 
             AddProjectile(superSonicAfterimageRainPrefab);
             AddProjectile(superMetalAfterimageRainPrefab);
@@ -146,8 +150,6 @@ namespace SonicTheHedgehog.Modules
             bombController.allowPrediction = true;
             //CreateOtherSuperMeleeProjectiles();
             superMeleeKickProjectilePrefab = CreateOtherSuperMeleeProjectile("SuperMeleeKickGhost", "SuperSonicMeleeKickProjectile");
-            superMetalMeleePunchProjectileGhost = CreateGhostPrefab("SuperMetalMeleePunchGhost", superProjectileMaterial);
-            superMetalMeleeKickProjectileGhost = CreateGhostPrefab("SuperMetalMeleeKickGhost", superProjectileMaterial);
         }
 
         //I don't think the prefabName actually matters for anything
@@ -157,6 +159,13 @@ namespace SonicTheHedgehog.Modules
             ProjectileController controller = prefab.GetComponent<ProjectileController>();
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>(ghostPrefabName) != null) controller.ghostPrefab = CreateGhostPrefab(ghostPrefabName, superProjectileMaterial);
             return prefab;
+        }
+        public static void CreateSuperSkinMeleeProjectiles()
+        {
+            superMetalMeleePunchProjectileGhost = new AssetReferenceT<GameObject>("b40ee4b6b2e1e7543a63e8cd55767e1c");
+            AssetAsyncReferenceManager<GameObject>.LoadAsset(superMetalMeleePunchProjectileGhost).Completed += (x) => CreateGhostPrefab(x.Result, superProjectileMaterial);
+            superMetalMeleeKickProjectileGhost = new AssetReferenceT<GameObject>("da412dfe504119e4f92125d057f34378");
+            AssetAsyncReferenceManager<GameObject>.LoadAsset(superMetalMeleeKickProjectileGhost).Completed += (x) => CreateGhostPrefab(x.Result, superProjectileMaterial);
         }
 
         private static void CreateSuperSonicAfterimageRain()
@@ -280,6 +289,15 @@ namespace SonicTheHedgehog.Modules
             ghostPrefab.AddComponent<VFXAttributes>().DoNotPool = true;
 
             Modules.Assets.ConvertAllRenderersToHopooShader(ghostPrefab);
+
+            return ghostPrefab;
+        }
+        private static GameObject CreateGhostPrefab(GameObject ghostPrefab, Material superGhostMaterial)
+        {
+            if (!ghostPrefab.GetComponent<NetworkIdentity>()) ghostPrefab.AddComponent<NetworkIdentity>();
+            if (!ghostPrefab.GetComponent<ProjectileGhostController>()) ghostPrefab.AddComponent<ProjectileGhostController>();
+
+            ghostPrefab.GetComponentInChildren<Renderer>().material = superGhostMaterial;
 
             return ghostPrefab;
         }

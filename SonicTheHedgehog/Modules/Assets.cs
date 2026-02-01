@@ -79,6 +79,7 @@ namespace SonicTheHedgehog.Modules
 
         // the assetbundle to load assets from
         public static AssetBundle mainAssetBundle;
+        public static string AddressablesDirectory { get; private set; }
 
         // CHANGE THIS
         private const string assetbundleName = "sonicthehedgehogassetbundle";
@@ -123,7 +124,10 @@ namespace SonicTheHedgehog.Modules
             {
                 if (mainAssetBundle == null)
                 {
+                    // This catalog shit is an enigma
                     mainAssetBundle = AssetBundle.LoadFromFile(Assembly.GetExecutingAssembly().Location.Replace(dllName, assetbundleName));
+                    AddressablesDirectory = System.IO.Path.GetDirectoryName(SonicTheHedgehogPlugin.instance.Info.Location);
+                    Addressables.LoadContentCatalogAsync(System.IO.Path.Combine(AddressablesDirectory, "catalog.json")).WaitForCompletion();
                 }
             }
             catch (Exception e)
