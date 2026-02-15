@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class GrandSlamFinal : BaseSkillState
+    public class GrandSlamFinal : BaseSkillState, ISkillState
     {
         protected string hitboxName = "Stomp";
 
@@ -67,6 +67,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(true);
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             this.maxAttackTime = this.baseMaxAttackTime;
             this.hasFired = false;
@@ -85,6 +86,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             if (!this.animationEnded)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
@@ -147,6 +149,7 @@ namespace SonicTheHedgehog.SkillStates
                 animationEnded = true;
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
                 base.PlayAnimation("Body", "Backflip");
+                if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             }
 
             if (!this.inHitPause)

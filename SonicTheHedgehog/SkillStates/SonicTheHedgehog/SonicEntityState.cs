@@ -4,19 +4,15 @@ using RoR2.Audio;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
-using EmotesAPI;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
+using HedgehogUtils.Emotes;
+using SonicTheHedgehog.SkillStates.Emotes;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class SonicEntityState : GenericCharacterMain
+    public class SonicEntityState : GenericMainWithIdleEmote
     {
-        private float idleExtraTimer;
-        private int idleExtraCount;
-
-        private const float idleExtraDefault = 8;
-
         private HomingTracker homingTracker;
 
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
@@ -28,8 +24,6 @@ namespace SonicTheHedgehog.SkillStates
                 homingTracker = GetComponent<HomingTracker>();
                 homingTracker.visible = true;
             }
-            idleExtraTimer = idleExtraDefault;
-            idleExtraCount = 0;
             if (base.modelAnimator.isInitialized)
             {
                 if (base.isGrounded && base.characterBody.isSprinting && base.inputBank.moveVector != Vector3.zero)
@@ -68,6 +62,11 @@ namespace SonicTheHedgehog.SkillStates
             }
         }
 
+        public override void SetNextStateToIdleExtra()
+        {
+            this.outer.SetNextState(new IdleEmote());
+        }
+
         public override void ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
         {
             if (base.isAuthority && this.hasCharacterMotor && this.jumpInputReceived && base.characterBody &&
@@ -102,53 +101,11 @@ namespace SonicTheHedgehog.SkillStates
             base.OnExit();
         }
 
-        /*public override void Update()
-        {
-            base.Update();
-            if (base.isAuthority && superSonicComponent && base.characterBody.isPlayerControlled && !base.characterBody.HasBuff(Buffs.superSonicBuff)) // Adding isPlayerControlled I guess fixed super transforming all Sonics
-            {
-                if (Config.SuperTransformKey().Value.IsPressed())
-                {
-                    if (FormHandler.instance.CanTransform())
-                    {
-                        Debug.Log("Attempt Super Transform");
-                        superSonicComponent.Transform(this.outer);
-                    }
-                }
-            }
-        }*/
-
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-            IdleExtraAnimation();
-        }
-
         private void OnHitGround(ref CharacterMotor.HitGroundInfo hitGroundInfo)
         {
             if (base.modelAnimator.GetBool("isBall"))
             {
                 base.modelAnimator.SetBool("isBall", false);
-            }
-        }
-
-        private void IdleExtraAnimation()
-        {
-            if (base.characterBody.inputBank.moveVector != Vector3.zero || !base.characterMotor.isGrounded ||
-                base.characterBody.inputBank.jump.down || base.modelAnimator.GetFloat("isSuperFloat") >= 1)
-            {
-                idleExtraTimer = idleExtraDefault;
-                idleExtraCount = 0;
-            }
-            else
-            {
-                idleExtraTimer -= Time.fixedDeltaTime;
-                if (idleExtraTimer <= 0)
-                {
-                    base.PlayAnimation("Body", "IdleExtra");
-                    idleExtraCount += 1;
-                    idleExtraTimer = idleExtraDefault * (idleExtraCount * 1.5f);
-                }
             }
         }
     }

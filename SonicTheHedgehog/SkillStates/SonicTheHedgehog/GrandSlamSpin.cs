@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class GrandSlamSpin : BaseSkillState
+    public class GrandSlamSpin : BaseSkillState, ISkillState
     {
         protected string hitboxName = "Ball";
 
@@ -57,6 +57,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(true);
             this.maxAttackCount = (int) Math.Ceiling(base.characterBody.attackSpeed*baseAttackCount);
             this.hitboxName = "LargeBall";
             //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.attackDuration);
@@ -70,6 +71,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.OnExit();
             this.animator.SetBool("attacking", false);
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
@@ -106,7 +108,8 @@ namespace SonicTheHedgehog.SkillStates
         {
             this.outer.SetNextState(new GrandSlamFinal
             {
-                target = this.target
+                target = this.target,
+                activatorSkillSlot = this.activatorSkillSlot
             });
         }
 

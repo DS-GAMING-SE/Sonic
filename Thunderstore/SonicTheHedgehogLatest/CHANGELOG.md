@@ -2,7 +2,11 @@
 
 ## v5.0.0
 
+ - (- Nerf) You must now successfully trigger a parry for it to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
+ - (- Nerf) Grand Slam's cooldown no longer starts until the *entire* move has finished
+ 
  - (Optimization) This mod now uses addressables, meaning assets will only be loaded when needed. This should reduce memory usage by a lot
+ 
 ### HedgehogUtils v2.0.0
  - (Voicelines) Added a new system for handling voicelines
  

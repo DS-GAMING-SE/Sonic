@@ -16,11 +16,7 @@ namespace SonicTheHedgehog.Modules
 {
     public class SkillDefs
     {
-        public interface IMeleeSkill
-        {
-            SerializableEntityStateType homingAttackState { get; set; }
-        }
-        public class MeleeSkillDef : SkillDef, IMeleeSkill
+        public class MeleeSkillDef : SkillDef
         {
             public SerializableEntityStateType homingAttackState { get; set; }
 
@@ -40,13 +36,13 @@ namespace SonicTheHedgehog.Modules
             {
                 if (homingTracker && homingTracker.CanHomingAttack())
                 {
-                    EntityState entityState = EntityStateCatalog.InstantiateState(((IMeleeSkill)skillSlot.skillDef).homingAttackState.stateType);
+                    EntityState entityState = EntityStateCatalog.InstantiateState(((MeleeSkillDef)skillSlot.skillDef).homingAttackState.stateType);
                     ISkillState skillState = entityState as ISkillState;
                     if (skillState != null)
                     {
                         skillState.activatorSkillSlot = skillSlot;
                     }
-                    if (typeof(HomingAttack).IsAssignableFrom(((IMeleeSkill)skillSlot.skillDef).homingAttackState.stateType))
+                    if (typeof(HomingAttack).IsAssignableFrom(((MeleeSkillDef)skillSlot.skillDef).homingAttackState.stateType))
                     {
                         ((HomingAttack)entityState).target = homingTracker.GetTrackingTarget();
                     }
@@ -55,8 +51,7 @@ namespace SonicTheHedgehog.Modules
                 else
                 {
                     EntityState entityState = EntityStateCatalog.InstantiateState(skillSlot.activationState.stateType);
-                    ISkillState skillState = entityState as ISkillState;
-                    if (skillState != null)
+                    if (entityState is ISkillState skillState)
                     {
                         skillState.activatorSkillSlot = skillSlot;
                     }
@@ -74,44 +69,9 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public class RequiresFormMeleeSkillDef : RequiresFormSkillDef, IMeleeSkill
+        public class RequiresFormMeleeSkillDef : MeleeSkillDef, IRequiresFormSkillDef
         {
-            public SerializableEntityStateType homingAttackState { get; set; }
-
-            public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
-            {
-                MeleeInstanceData instanceData = new MeleeInstanceData
-                {
-                    homingTracker = skillSlot.GetComponent<HomingTracker>()
-                };
-                instanceData.formComponent = ((InstanceData)base.OnAssigned(skillSlot)).formComponent;
-                return instanceData;
-            }
-
-            public override EntityState InstantiateNextState([NotNull] GenericSkill skillSlot)
-            {
-                return MeleeSkillDef.DecideNextState(skillSlot, ((MeleeInstanceData)skillSlot.skillInstanceData).homingTracker, 0);
-            }
-
-            protected class MeleeInstanceData : RequiresFormSkillDef.InstanceData
-            {
-                public HomingTracker homingTracker;
-            }
-        }
-
-        public static T CopyMeleeSkillDef<T>(MeleeSkillDef originDef) where T : SkillDef, IMeleeSkill
-        {
-            SerializableEntityStateType homing = originDef.homingAttackState;
-            T meleeDef = HedgehogUtils.Helpers.CopySkillDef<T>(originDef);
-            meleeDef.homingAttackState = homing;
-            return meleeDef;
-        }
-        public static T CopyMeleeSkillDef<T>(RequiresFormMeleeSkillDef originDef) where T : SkillDef, IMeleeSkill
-        {
-            SerializableEntityStateType homing = originDef.homingAttackState;
-            T meleeDef = HedgehogUtils.Helpers.CopySkillDef<T>(originDef);
-            meleeDef.homingAttackState = homing;
-            return meleeDef;
+            public FormDef requiredForm { get; set; }
         }
     }
 }

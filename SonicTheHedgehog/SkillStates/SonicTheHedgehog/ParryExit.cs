@@ -104,6 +104,10 @@ namespace SonicTheHedgehog.SkillStates
             if (NetworkServer.active)
             {
                 GiveBuffs();
+                if (base.characterBody && base.characterBody.inventory && base.characterBody.inventory.GetItemCountEffective(DLC2Content.Items.IncreasePrimaryDamage) > 0)
+                {
+                    base.characterBody.AddIncreasePrimaryDamageStack();
+                }
             }
             OnParryVFX();
             RechargeCooldowns();
