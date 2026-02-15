@@ -1,5 +1,6 @@
 ﻿using SonicTheHedgehog.SkillStates;
 using SonicTheHedgehog.SkillStates.SuperUpgrades;
+using SonicTheHedgehog.SkillStates.Emotes;
 using System.Collections.Generic;
 using System;
 
@@ -10,6 +11,8 @@ namespace SonicTheHedgehog.Modules
         internal static void RegisterStates()
         {
             Modules.Content.AddEntityState(typeof(SonicEntityState));
+
+            Modules.Content.AddEntityState(typeof(IdleEmote));
 
             Modules.Content.AddEntityState(typeof(SonicMelee));
             Modules.Content.AddEntityState(typeof(HomingAttack));

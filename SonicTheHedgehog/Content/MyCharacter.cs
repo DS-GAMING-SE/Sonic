@@ -22,6 +22,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using static BetterUI.ProcCoefficientCatalog;
 using static RoR2.TeleporterInteraction;
+using static SonicTheHedgehog.Modules.SkillDefs;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
@@ -59,6 +60,8 @@ namespace SonicTheHedgehog.Modules.Survivors
             armor = 0f,
 
             jumpCount = 2,
+
+            sortPosition = 137
         };
 
         public override CustomRendererInfo[] customRendererInfos { get; set; } = new CustomRendererInfo[]
@@ -87,7 +90,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override void InitializeCharacter()
         {
             base.InitializeCharacter();
-            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(HedgehogUtils.Miscellaneous.Death)); //HedgehogUtils.Miscellaneous.Death
+            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(HedgehogUtils.Miscellaneous.Death));
         }
 
         public override void InitializeUnlockables()
@@ -224,8 +227,6 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         public static SkillDef superSonicSkillDef;
 
-        public static SkillDef momentumPassiveDef;
-
         public override void InitializeSkills()
         {
             Modules.Skills.CreateSkillFamilies(bodyPrefab);
@@ -278,7 +279,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             };
             primarySkillDef = Modules.Skills.CreateSkillDef<SkillDefs.MeleeSkillDef>(primary);
 
-            ((SkillDefs.IMeleeSkill)primarySkillDef).homingAttackState = new EntityStates.SerializableEntityStateType(typeof(HomingAttack));
+            primarySkillDef.homingAttackState = new EntityStates.SerializableEntityStateType(typeof(HomingAttack));
 
             Modules.Skills.AddPrimarySkills(bodyPrefab, primarySkillDef);
 
@@ -344,6 +345,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             };
 
             parrySkillDef = Modules.Skills.CreateSkillDef(parry);
+            parrySkillDef.autoHandleLuminousShot = false;
 
             Skills.AddSkillToFamily(bodyPrefab.GetComponent<SkillLocator>().secondary.skillFamily, parrySkillDef,
                 parryUnlockableDef);
@@ -382,36 +384,6 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
-            /*#region Utility
-
-            SkillDefInfo boost = new SkillDefInfo
-            {
-                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
-                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
-                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Boost)),
-                activationStateMachineName = "Body",
-                baseMaxStock = 1,
-                baseRechargeInterval = 0f,
-                beginSkillCooldownOnSkillEnd = true,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
-                resetCooldownTimerOnUse = false,
-                isCombatSkill = false,
-                mustKeyPress = true,
-                cancelSprintingOnActivation = false,
-                rechargeStock = 0,
-                requiredStock = 1,
-                stockToConsume = 0
-            };
-            boostSkillDef = Modules.Skills.CreateSkillDef(boost);
-
-            Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
-
-            #endregion*/
             #region New Utility
 
             SkillDefInfo boost = new SkillDefInfo
@@ -472,42 +444,9 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1
             };
             grandSlamSkillDef = Modules.Skills.CreateSkillDef(grandSlam);
+            grandSlamSkillDef.isCooldownBlockedUntilManuallyReset = true;
 
             Modules.Skills.AddSpecialSkills(bodyPrefab, grandSlamSkillDef);
-
-            #endregion
-
-            #region Tom Joke
-            if (false)
-            {
-                SkillDefInfo tomPunchJoke = new SkillDefInfo
-                {
-                    skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
-                    skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
-                    skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
-                    keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD", HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD" },
-                    skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
-                    activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.TomPunchJoke)),
-                    activationStateMachineName = "Body",
-                    baseMaxStock = 1,
-                    baseRechargeInterval = 8f,
-                    beginSkillCooldownOnSkillEnd = true,
-                    canceledFromSprinting = false,
-                    forceSprintDuringState = false,
-                    fullRestockOnAssign = true,
-                    interruptPriority = EntityStates.InterruptPriority.Skill,
-                    resetCooldownTimerOnUse = false,
-                    isCombatSkill = true,
-                    mustKeyPress = true,
-                    cancelSprintingOnActivation = true,
-                    rechargeStock = 1,
-                    requiredStock = 1,
-                    stockToConsume = 1
-                };
-                tomPunchSkillDef = Modules.Skills.CreateSkillDef(tomPunchJoke);
-
-                Modules.Skills.AddSpecialSkills(bodyPrefab, tomPunchSkillDef);
-            }
 
             #endregion
 
@@ -516,8 +455,14 @@ namespace SonicTheHedgehog.Modules.Survivors
             // PASSIVES
 
             #region
-
-            momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            bodyPrefab.GetComponent<SkillLocator>().passiveSkill = new SkillLocator.PassiveSkill
+            {
+                enabled = true,
+                skillNameToken = HedgehogUtils.Language.momentumPassiveNameToken,
+                skillDescriptionToken = HedgehogUtils.Language.momentumPassiveDescriptionToken,
+                icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMomentumIcon"),
+            };
+            /*momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = HedgehogUtils.Language.momentumPassiveNameToken,
                 skillNameToken = HedgehogUtils.Language.momentumPassiveNameToken,
@@ -541,7 +486,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef);
+            Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef); */
 
             #endregion
 
