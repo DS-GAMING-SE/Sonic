@@ -1,6 +1,7 @@
 ﻿using SonicTheHedgehog.SkillStates;
 using SonicTheHedgehog.SkillStates.SuperUpgrades;
 using SonicTheHedgehog.SkillStates.Emotes;
+using SonicTheHedgehog.SkillStates.Pod;
 using System.Collections.Generic;
 using System;
 
@@ -11,6 +12,10 @@ namespace SonicTheHedgehog.Modules
         internal static void RegisterStates()
         {
             Modules.Content.AddEntityState(typeof(SonicEntityState));
+
+            Modules.Content.AddEntityState(typeof(Descent));
+            Modules.Content.AddEntityState(typeof(Landed));
+            Modules.Content.AddEntityState(typeof(Release));
 
             Modules.Content.AddEntityState(typeof(IdleEmote));
 

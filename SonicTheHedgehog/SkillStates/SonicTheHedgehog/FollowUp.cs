@@ -80,7 +80,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void PlayAttackAnimation()
         {
-            base.PlayAnimation("Body", "ParryFollowUp", "Slash.playbackRate", this.duration * 0.8f);
+            base.PlayAnimation("FullBody, Override", "ParryFollowUp", "Slash.playbackRate", this.duration * 0.8f);
         }
 
         public override void OnExit()

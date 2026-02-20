@@ -11,7 +11,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
     public class SuperParryExit : ParryExit
     {
         public static HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef idwAttackSkillDef;
-        
+        public static float superParryRange = 50;
         protected override void OnSuccessfulParry()
         {
             base.OnSuccessfulParry();
@@ -19,17 +19,6 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             {
                 SuperParryBlast();
             }
-            /*if (base.isAuthority)
-            {
-                EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "SonicForms");
-                if (superStateMachine)
-                {
-                    /*if (superStateMachine.state.GetType() == typeof(SuperSonic))
-                    {
-                        ((SuperSonic)superStateMachine.state).ParryActivated();
-                    }
-                }
-            }*/
         }
 
         protected override void FollowUpAttack()

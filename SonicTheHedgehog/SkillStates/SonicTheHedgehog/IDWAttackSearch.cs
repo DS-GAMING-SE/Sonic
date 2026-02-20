@@ -23,11 +23,6 @@ namespace SonicTheHedgehog.SkillStates
         protected bool targetLocked = false;
         protected Vector3 targetPosition = Vector3.zero;
 
-        protected string chargeSoundString = "Play_sonicthehedgehog_spindash_charge";
-        protected string launchSoundString = "Play_sonicthehedgehog_spindash_release";
-        protected string hitSoundString = "Play_sonicthehedgehog_homing_impact";
-        protected string muzzleString = "SwingCenter";
-
         public float duration;
         protected bool inHitPause;
         protected float stopwatch;
@@ -122,15 +117,6 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     skill.IDWAttackActivated();
                 }
-                
-                /*EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "HedgehogUtilsForms");
-                if (superStateMachine)
-                {
-                    /*if (superStateMachine.state.GetType() == typeof(SuperSonic))
-                    {
-                        ((SuperSonic)superStateMachine.state).IDWAttackActivated();
-                    }
-                }*/
             }
         }
 

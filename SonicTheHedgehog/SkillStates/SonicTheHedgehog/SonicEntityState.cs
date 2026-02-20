@@ -14,6 +14,7 @@ namespace SonicTheHedgehog.SkillStates
     public class SonicEntityState : GenericMainWithIdleEmote
     {
         private HomingTracker homingTracker;
+        protected EntityStateMachine weaponStateMachine;
 
         // WHY AREN'T JUMP ANIMATIONS NETWORKED AGUAHGUESHGUAGHIUSNHGJKSHS
         public override void OnEnter()
@@ -23,6 +24,8 @@ namespace SonicTheHedgehog.SkillStates
             {
                 homingTracker = GetComponent<HomingTracker>();
                 homingTracker.visible = true;
+
+                weaponStateMachine = EntityStateMachine.FindByCustomName(gameObject, "Weapon");
             }
             if (base.modelAnimator.isInitialized)
             {
@@ -64,7 +67,12 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void SetNextStateToIdleExtra()
         {
-            this.outer.SetNextState(new IdleEmote());
+            if (weaponStateMachine) weaponStateMachine.SetNextState(new IdleEmote());
+        }
+
+        public override bool ShouldInterrupt()
+        {
+            return HedgehogUtils.Helpers.IsDoingSomething(characterMotor, inputBank, true, modelAnimator.GetFloatString("isSuperFloat") == 1f, false, false) || !weaponStateMachine.IsInMainState();
         }
 
         public override void ProcessJump() // Why do I have to sync the jump animations myself how is this not a thing by default how has no one noticed they weren't networked
