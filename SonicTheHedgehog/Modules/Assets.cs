@@ -11,6 +11,7 @@ using SonicTheHedgehog.Components;
 using RoR2.Audio;
 using UnityEngine.AddressableAssets;
 using SonicTheHedgehog.SkillStates;
+using SonicTheHedgehog.Modules.Survivors;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -59,6 +60,9 @@ namespace SonicTheHedgehog.Modules
         public static GameObject scepterSuperBoostAuraEffect;
 
         public static GameObject grandSlamHitEffect;
+
+        // pod
+        public static GameObject faceplantPod;
 
         // hud
         public static GameObject powerBoostHud;
@@ -316,6 +320,13 @@ namespace SonicTheHedgehog.Modules
             powerBoostHud = Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles");
             powerBoostHud.AddComponent<PowerBoostHUD>();
 
+            CreatePod();
+        }
+        private static void CreatePod()
+        {
+            faceplantPod = PrefabAPI.InstantiateClone(HedgehogUtils.Assets.podlessPodPrefabBase, "SonicFaceplantPod");
+            faceplantPod.GetComponent<EntityStateMachine>().initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Pod.Descent));
+            faceplantPod.GetComponent<VehicleSeat>().exitVehicleContextString = SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "POD_EXIT";
             /*
              * New pod needs ------------------------------------------------
              *  NetworkIdentity

@@ -12,7 +12,6 @@ namespace SonicTheHedgehog.SkillStates
     {
         public static float baseEndLag = Modules.StaticValues.parryEndLag;
         public static float baseEndLagFail = Modules.StaticValues.parryFailEndLag;
-        public static float superParryRange = 50;
 
         public static float endAnimationPercent = 0.5f;
 
@@ -47,7 +46,6 @@ namespace SonicTheHedgehog.SkillStates
 
         public override void OnExit()
         {
-            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             base.modelLocator.normalizeToFloor = false;
             base.OnExit();
         }

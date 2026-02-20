@@ -135,8 +135,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             if (base.fixedAge >= (this.fireTime * (Modules.StaticValues.sonicBoomCount)) && !exitAnimPlayed)
             {
-                base.PlayAnimation("FullBody, Override", "BufferEmpty");
-                base.PlayAnimation("Body", "SonicBoomEnd");
+                base.PlayAnimation("FullBody, Override", "SonicBoomEnd");
                 exitAnimPlayed = true;
             }
             if (base.fixedAge >= this.duration && base.isAuthority)

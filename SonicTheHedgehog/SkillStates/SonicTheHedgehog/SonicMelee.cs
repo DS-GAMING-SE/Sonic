@@ -87,8 +87,8 @@ namespace SonicTheHedgehog.SkillStates
             this.attackRecoil = swingIndex == 4 ? 2.5f : 0.6f;
             this.duration = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed / this.attackSpeedStat;
             this.earlyExitTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.1f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.1f / this.attackSpeedStat;
-            this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of duration
-            this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of duration
+            this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of startup
+            this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of startup
             this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
             this.hitHopVelocity = base.characterMotor.isFlying ? 0 : 3 + (3 / this.attackSpeedStat);
             StartAimMode();
@@ -118,7 +118,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
-            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             if (base.isAuthority)
             {
                 homingTracker.visible = false;

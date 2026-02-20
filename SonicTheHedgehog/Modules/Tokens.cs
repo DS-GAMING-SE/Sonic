@@ -54,6 +54,8 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "OUTRO_FLAVOR", outro);
             LanguageAPI.Add(prefix + "OUTRO_FAILURE", outroFailure);
 
+            LanguageAPI.Add(prefix + "POD_EXIT", "Get up");
+
             #region Skins
 
             LanguageAPI.Add(prefix + "DEFAULT_SKIN_NAME", "Default");
@@ -68,8 +70,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
             string meleeDescription =
-                $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
-            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription + " This move can <style=cIsUtility>launch</style> lightweight enemies.");
+                $". Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
+            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", "<style=cIsUtility>Launching</style>"+meleeDescription);
 
             #endregion
 
@@ -77,8 +79,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", HedgehogUtils.Helpers.SuperFormText("Super Melee"));
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION",
-                meleeDescription +
-                $" This move can <style=cIsUtility>launch</style> {HedgehogUtils.Helpers.SuperFormText("mediumweight")} enemies.\n{HedgehogUtils.Helpers.SuperFormText($"Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.")}");
+                $"{HedgehogUtils.Helpers.SuperFormText("Launching")}"+meleeDescription +
+                $"\n{HedgehogUtils.Helpers.SuperFormText($"Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.")}");
 
             #endregion
 
@@ -102,16 +104,16 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
             string parryOnHitDescription =
-                $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give +{StaticValues.parryAttackSpeedBuff * 100}% <style=cIsDamage>attack speed</style> and <style=cIsUtility>movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
+                $"Getting hit in this stance will <style=cIsHealing>nullify incoming damage</style>, give +{StaticValues.parryAttackSpeedBuff * 100}% <style=cIsDamage>attack speed</style> and <style=cIsUtility>movement speed</style>, <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s</style>,";
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION",
-                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription} It will also temporarily <style=cIsUtility>replace this skill</style> with \"<style=cIsUtility>Follow Up</style>\", a wide <style=cIsUtility>launching</style> kick attack.");
+                $"Press or hold to briefly enter the <style=cIsUtility>parry stance</style>. {parryOnHitDescription} and temporarily <style=cIsUtility>replace this skill</style> with a wide <style=cIsUtility>Launching kick attack</style>.");
 
             #endregion
 
             #region Follow Up
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_NAME", "Follow Up");
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
-                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> mediumweight hit enemies.");
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>Launching</style> heavier enemies.");
 
             #endregion
 
@@ -126,7 +128,7 @@ namespace SonicTheHedgehog.Modules
             string idwAttackName = $"IDW Attack";
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", HedgehogUtils.Helpers.SuperFormText("Perfect Parry"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a {HedgehogUtils.Helpers.SuperFormText("very brief period of time")}. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($"It will also reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
+                $"{HedgehogUtils.Helpers.SuperFormText("Very briefly")} enter the <style=cIsUtility>parry stance</style>. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($" reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
 
             #endregion
 
@@ -176,8 +178,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_NAME", "Grand Slam");
             string grandSlamDescription =
-                $"<style=cIsUtility>Homing</style>. Dash forward into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style> and <style=cIsUtility>launching</style> enemies.";
-            LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription);
+                $"<style=cIsUtility>Homing</style>. Dash forward into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style>";
+            LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription + " and <style=cIsUtility>Launching</style> enemies.");
 
             #endregion
 
@@ -186,7 +188,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", HedgehogUtils.Helpers.SuperFormText("Super Grand Slam"));
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION",
                 grandSlamDescription +
-                $"\n{HedgehogUtils.Helpers.SuperFormText($"Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
+                $"\n{HedgehogUtils.Helpers.SuperFormText($" and {HedgehogUtils.Helpers.SuperFormText("Launching")} enemies. Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
 
             #endregion
 

@@ -53,7 +53,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyColor = sonicColor,
 
             crosshair = Modules.Assets.LoadCrosshair("Standard"),
-            podPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/SurvivorPod"),
+            podPrefab = Assets.faceplantPod,//RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/SurvivorPod"),
 
             maxHealth = 110f,
             healthRegen = 1,
