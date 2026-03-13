@@ -1,6 +1,8 @@
 # Changelog
 
 ## v5.0.0
+*This update breaks all Sonic skin mods*
+ - (Visuals) Sonic's homing skills now use a new animated reticle
 
  - (- Nerf) You must now successfully trigger a parry for it to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
  - (- Nerf) Grand Slam's cooldown no longer starts until the *entire* move has finished
@@ -11,6 +13,8 @@
  - (Voicelines) Added a new system for handling voicelines
  
  - (Visuals) The super form transformation now has a subtle glow around your character
+ 
+ - (Bug Fix) Transformations can no longer be activated while in UI (such as typing in chat) or while you're not in your main body state (usually doing some action where you can't use other skills)
 
 ## v4.0.6
  - (HedgehogUtils) Updated for newest version

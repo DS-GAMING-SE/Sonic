@@ -326,10 +326,36 @@ namespace SonicTheHedgehog.Modules {
             mainHurtbox.hurtBoxGroup = hurtBoxGroup;
             mainHurtbox.indexInGroup = 0;
 
-            hurtBoxGroup.hurtBoxes = new HurtBox[]
+            HurtBox headHurtbox = null;
+            GameObject headHurtboxObject = childLocator.FindChildGameObject("HeadHurtbox");
+            if (headHurtboxObject)
             {
-                mainHurtbox
-            };
+                Log.Debug("HeadHurtboxFound. Setting up");
+                headHurtbox = headHurtboxObject.AddComponent<HurtBox>();
+                headHurtbox.gameObject.layer = LayerIndex.entityPrecise.intVal;
+                headHurtbox.healthComponent = prefab.GetComponent<HealthComponent>();
+                headHurtbox.isBullseye = false;
+                headHurtbox.isSniperTarget = true;
+                headHurtbox.damageModifier = HurtBox.DamageModifier.Normal;
+                headHurtbox.hurtBoxGroup = hurtBoxGroup;
+                headHurtbox.indexInGroup = 1;
+            }
+
+            if (headHurtbox)
+            {
+                hurtBoxGroup.hurtBoxes = new HurtBox[]
+                {
+                    mainHurtbox,
+                    headHurtbox
+                };
+            }
+            else
+            {
+                hurtBoxGroup.hurtBoxes = new HurtBox[]
+                {
+                    mainHurtbox,
+                };
+            }
 
             hurtBoxGroup.mainHurtBox = mainHurtbox;
             hurtBoxGroup.bullseyeCount = 1;

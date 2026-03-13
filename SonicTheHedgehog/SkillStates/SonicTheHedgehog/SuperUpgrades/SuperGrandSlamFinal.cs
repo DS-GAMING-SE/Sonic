@@ -46,15 +46,8 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             }
         }
 
-        public virtual GameObject GetProjectilePrefab(string skinName)
+        public virtual GameObject GetProjectilePrefab()
         {
-            switch (skinName)
-            {
-                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME":
-                    return Projectiles.superSonicAfterimageRainPrefab;
-                case SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME":
-                    return Projectiles.superMetalAfterimageRainPrefab;
-            }
             return Projectiles.superSonicAfterimageRainPrefab;
         }
 
@@ -64,7 +57,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             {
                 projectileFired = true;
                 superProjectilePosition = base.characterMotor.transform.position + new Vector3(0, 2.5f, 0);
-                GameObject prefab = GetProjectilePrefab(modelLocator.modelTransform.gameObject.GetComponentInChildren<ModelSkinController>().skins[base.characterBody.skinIndex].nameToken);
+                GameObject prefab = GetProjectilePrefab();
                 RoR2.Projectile.ProjectileManager.instance.FireProjectile(prefab, superProjectilePosition, Util.QuaternionSafeLookRotation(Vector3.down), base.characterBody.gameObject, StaticValues.superGrandSlamDOTDamage * this.damageStat, 0, base.RollCrit());
             }
         }
