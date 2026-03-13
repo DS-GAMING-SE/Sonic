@@ -120,7 +120,7 @@ namespace SonicTheHedgehog.Modules
             #region Super Follow Up
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Follow Up"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
-                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> {HedgehogUtils.Helpers.SuperFormText("heavyweight")} hit enemies.");
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and {HedgehogUtils.Helpers.SuperFormText("Launching")} heavier enemies.");
 
             #endregion
 
@@ -128,7 +128,7 @@ namespace SonicTheHedgehog.Modules
             string idwAttackName = $"IDW Attack";
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", HedgehogUtils.Helpers.SuperFormText("Perfect Parry"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"{HedgehogUtils.Helpers.SuperFormText("Very briefly")} enter the <style=cIsUtility>parry stance</style>. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($" reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
+                $"{HedgehogUtils.Helpers.SuperFormText("Very briefly")} enter the <style=cIsUtility>parry stance</style>. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($"reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
 
             #endregion
 
@@ -188,7 +188,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", HedgehogUtils.Helpers.SuperFormText("Super Grand Slam"));
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION",
                 grandSlamDescription +
-                $"\n{HedgehogUtils.Helpers.SuperFormText($" and {HedgehogUtils.Helpers.SuperFormText("Launching")} enemies. Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
+                $" and {HedgehogUtils.Helpers.SuperFormText("Launching")} enemies.\n{HedgehogUtils.Helpers.SuperFormText($"Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
 
             #endregion
 

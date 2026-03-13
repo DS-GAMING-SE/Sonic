@@ -29,12 +29,6 @@ namespace SonicTheHedgehog.Modules
         public static GameObject sonicBoomImpactEffect;
         public static GameObject crossSlashImpactEffect;
 
-        public static GameObject superSonicTransformationEffect;
-        public static GameObject transformationEmeraldSwirl;
-
-        public static GameObject superSonicAura;
-        public static GameObject superSonicWarning;
-
         public static GameObject meleeHitEffect;
         public static GameObject meleeImpactEffect;
         public static GameObject homingAttackLaunchEffect;
@@ -184,13 +178,6 @@ namespace SonicTheHedgehog.Modules
                 crossSlashImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonicthehedgehog_sonic_boom_explode";
             }
 
-            superSonicTransformationEffect = Assets.LoadEffect("SonicSuperTransformation");
-            transformationEmeraldSwirl = Assets.LoadEffect("SonicChaosEmeraldSwirl");
-
-            superSonicAura = Assets.LoadAsyncedEffect("SonicSuperAura");
-
-            superSonicWarning = Assets.LoadAsyncedEffect("SonicSuperWarning");
-
             meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", true);
             meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
             homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");
@@ -295,22 +282,6 @@ namespace SonicTheHedgehog.Modules
             superGrandSlamLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
             superGrandSlamLoopSoundDef.startSoundName = "Play_sonicthehedgehog_super_grand_slam_loop";
             superGrandSlamLoopSoundDef.stopSoundName = "Stop_sonicthehedgehog_super_grand_slam_loop";
-
-            if (superSonicTransformationEffect)
-            {
-                ShakeEmitter shakeEmitter = superSonicTransformationEffect.AddComponent<ShakeEmitter>();
-                shakeEmitter.amplitudeTimeDecay = true;
-                shakeEmitter.duration = 0.7f;
-                shakeEmitter.radius = 200f;
-                shakeEmitter.scaleShakeRadiusWithLocalScale = false;
-
-                shakeEmitter.wave = new Wave
-                {
-                    amplitude = 0.7f,
-                    frequency = 40f,
-                    cycleOffset = 0f
-                };
-            }
 
             superSonicOverlay = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LunarGolem.matLunarGolemShield_mat).WaitForCompletion());
             superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));

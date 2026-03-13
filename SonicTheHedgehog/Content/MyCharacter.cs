@@ -724,7 +724,10 @@ namespace SonicTheHedgehog.Modules.Survivors
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleePunchProjectilePrefab,
                     ghostReplacementAddress = Projectiles.superMetalMeleePunchProjectileGhost },
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab,
-                    ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost } };
+                    ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost },
+                new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superSonicAfterimageRainPrefab,
+                    projectileGhostReplacementPrefab = Projectiles.superMetalAfterimageRainGhost }};
+
             masterySkinDefParams.rendererInfos = defaultRendererinfos;
             masterySkinDefParams.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic").MetalMaterial();
             masterySkinDefParams.meshReplacements = Modules.Skins.GetParamMeshReplacementsFromObject(defaultRendererinfos, "MetalSonicMesh");
