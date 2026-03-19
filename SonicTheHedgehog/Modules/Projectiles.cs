@@ -19,9 +19,9 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject superMeleeKickProjectilePrefab;
         internal static AssetReferenceT<GameObject> superMetalMeleePunchProjectileGhost;
         internal static AssetReferenceT<GameObject> superMetalMeleeKickProjectileGhost;
+        internal static AssetReferenceT<GameObject> superMetalAfterimageRainGhost;
         internal static GameObject superSonicAfterimageRainPrefab;
         internal static GameObject superSonicAfterimageRainGhost;
-        internal static GameObject superMetalAfterimageRainGhost;
 
         internal static void RegisterProjectiles()
         {
@@ -216,25 +216,22 @@ namespace SonicTheHedgehog.Modules
 
             superSonicAfterimageRainGhost = CreateGhostPrefab("SonicSuperAfterimageRainGhost", false);
 
-            Assets.MaterialSwap(superSonicAfterimageRainGhost, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.matCrocoSlashDistortion_mat, "Effects/Blur");
-            Assets.MaterialSwap(superSonicAfterimageRainGhost, superProjectileMaterial, "Effects/Sonics");
+            ModifyAfterimageRainGhost(superSonicAfterimageRainGhost);
 
             controller.ghostPrefab = superSonicAfterimageRainGhost;
 
-            superMetalAfterimageRainGhost = CreateAfterimageRainGhost(Assets.mainAssetBundle.LoadAsset<GameObject>("MetalSonicAfterimageMesh").GetComponent<MeshFilter>().sharedMesh, "SuperMetalAfterimageRainProjectile");
+            AfterimageRainSkins();
         }
 
-        // This replaces the falling Sonics mesh with whatever mesh you want
-        // The mesh should not have an armature, it should just be a normal mesh in the pose. Apply the armature modifier in blender to get rid of the armature and have just the posed mesh
-        // Also please use and apply decimate modifier to keep the tri count low. These should be super low detail, they won't even have their materials. Mine are like 1/5 tris of normal
-        // If you have issues with the mesh not showing up at all, try checking Read/Write Enabled in your mesh import. It worked for me, though I'm not sure why
-        // I don't think prefab name actually matters
-        public static GameObject CreateAfterimageRainGhost(Mesh mesh, string prefabName)
+        private static void AfterimageRainSkins()
         {
-            GameObject prefab = PrefabAPI.InstantiateClone(superSonicAfterimageRainGhost, prefabName);
-
-            prefab.transform.Find("Effects/Sonics").gameObject.GetComponent<ParticleSystemRenderer>().mesh = mesh;
-
+            superMetalAfterimageRainGhost = new AssetReferenceT<GameObject>("2c66e0b7d5fa3b8459b7bacdb91213b9");
+            AssetAsyncReferenceManager<GameObject>.LoadAsset(superMetalAfterimageRainGhost).Completed += (x) => ModifyAfterimageRainGhost(CreateGhostPrefab(x.Result));
+        }
+        public static GameObject ModifyAfterimageRainGhost(GameObject prefab)
+        {
+            Assets.MaterialSwap(prefab, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.matCrocoSlashDistortion_mat, "Effects/Blur");
+            Assets.MaterialSwap(prefab, superProjectileMaterial, "Effects/Sonics");
             return prefab;
         }
 
@@ -270,6 +267,13 @@ namespace SonicTheHedgehog.Modules
             //ghostPrefab.AddComponent<VFXAttributes>().DoNotPool = true;
 
             if (convertShaders) Modules.Assets.ConvertAllRenderersToHopooShader(ghostPrefab);
+
+            return ghostPrefab;
+        }
+        private static GameObject CreateGhostPrefab(GameObject ghostPrefab)
+        {
+            if (!ghostPrefab.GetComponent<NetworkIdentity>()) ghostPrefab.AddComponent<NetworkIdentity>();
+            if (!ghostPrefab.GetComponent<ProjectileGhostController>()) ghostPrefab.AddComponent<ProjectileGhostController>();
 
             return ghostPrefab;
         }

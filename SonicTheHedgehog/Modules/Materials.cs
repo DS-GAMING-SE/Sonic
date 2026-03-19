@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using RoR2.ContentManagement;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -150,6 +152,34 @@ namespace SonicTheHedgehog.Modules
         {
             material.SetInt("_Cull", cull ? 1 : 0);
             return material;
+        }
+
+        public static Material CreatePhantomRiderScarf(float patternSmallness = 10f)
+        {
+            Material scarf = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Shaders.HGOpaqueCloudRemap_shader).WaitForCompletion());
+            scarf.EnableKeyword("EMISSIONFROMALBEDO");
+            /*scarf.EnableKeyword("DITHER");
+            scarf.EnableKeyword("USE_CLOUDS");
+            scarf.EnableKeyword("USE_UV1");
+            scarf.EnableKeyword("_EMISSION");*/
+            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Engi.texEngiShield_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_Cloud1Tex", x.Result);
+                scarf.SetTextureScale("_Cloud1Tex", new Vector2(patternSmallness, patternSmallness));
+            };
+            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Engi.texEngiShieldBlurred_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_Cloud2Tex", x.Result);
+                scarf.SetTextureScale("_Cloud2Tex", new Vector2(patternSmallness / 2f, patternSmallness / 2f));
+            };
+            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.texSpeedBoostPickupThornRamp_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_RemapTex", x.Result);
+            };
+            scarf.SetVector("_CutoffScroll", new Vector4(-4, 0, -10, 2));
+            scarf.SetFloat("_AlphaBoost", 1.5f);
+
+            return scarf;
         }
     }
 }

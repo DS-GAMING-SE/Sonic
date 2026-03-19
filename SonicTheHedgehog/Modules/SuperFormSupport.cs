@@ -9,6 +9,8 @@ using EntityStates.AffixVoid;
 using HedgehogUtils.Forms.SuperForm.EntityStates;
 using SonicTheHedgehog.SkillStates;
 using System.Reflection;
+using UnityEngine.AddressableAssets;
+using UnityEngine;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -19,9 +21,12 @@ namespace SonicTheHedgehog.Modules
             Forms.AddSkinForForm(SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME", 
                 new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperSonic"), mesh = Assets.superSonicMesh }, 
                 ref SuperFormDef.superFormDef);
-            Forms.AddSkinForForm(SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
-                new RenderReplacements { material = Materials.CreateHopooMaterial("matSuperMetalSonic"), mesh = null },
+            Addressables.LoadAssetAsync<Material>(SkinAddressables.superMetalMaterial).Completed += (x) =>
+            {
+                Forms.AddSkinForForm(SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
+                new RenderReplacements { material = x.Result, mesh = null },
                 ref SuperFormDef.superFormDef);
+            };
         }
     }
 }
