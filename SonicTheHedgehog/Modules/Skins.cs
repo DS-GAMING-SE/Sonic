@@ -3,9 +3,15 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.Modules
 {
+    internal static class SkinAddressables
+    {
+        internal static AssetReferenceT<Material> metalMaterial = new AssetReferenceT<Material>("0aec3cb6fc371554892b3463bedd454c");
+        internal static AssetReferenceT<Material> superMetalMaterial = new AssetReferenceT<Material>("21ba9e605dea3a04b995f75206c6a3b8");
+    }
     internal static class Skins
     {
         // If you're making a skin or something for Sonic, use 0.14 scale no convert units on the import settings. Don't ask why, I don't have an answer
@@ -64,58 +70,6 @@ namespace SonicTheHedgehog.Modules
             internal SkinDef.ProjectileGhostReplacement[] ProjectileGhostReplacements;
             internal SkinDef.MinionSkinReplacement[] MinionSkinReplacements;
             internal string Name;
-        }
-
-        private static CharacterModel.RendererInfo[] getRendererMaterials(CharacterModel.RendererInfo[] defaultRenderers, params Material[] materials)
-        {
-            CharacterModel.RendererInfo[] newRendererInfos = new CharacterModel.RendererInfo[defaultRenderers.Length];
-            defaultRenderers.CopyTo(newRendererInfos, 0);
-
-            for (int i = 0; i < newRendererInfos.Length; i++)
-            {
-                try
-                {
-                    newRendererInfos[i].defaultMaterial = materials[i];
-                }
-                catch
-                {
-                    Log.Error("error adding skin rendererinfo material. make sure you're not passing in too many");
-                }
-            }
-
-            return newRendererInfos;
-        }
-        /// <summary>
-        /// pass in strings for mesh assets in your bundle. pass the same amount and order based on your rendererinfos, filling with null as needed
-        /// <code>
-        /// myskindef.meshReplacements = Modules.Skins.getMeshReplacements(defaultRenderers,
-        ///    "meshHenrySword",
-        ///    null,
-        ///    "meshHenry");
-        /// </code>
-        /// </summary>
-        /// <param name="defaultRendererInfos">your skindef's rendererinfos to access the renderers</param>
-        /// <param name="meshes">name of the mesh assets in your project</param>
-        /// <returns></returns>
-        internal static SkinDef.MeshReplacement[] getMeshReplacements(CharacterModel.RendererInfo[] defaultRendererInfos, params string[] meshes)
-        {
-
-            List<SkinDef.MeshReplacement> meshReplacements = new List<SkinDef.MeshReplacement>();
-
-            for (int i = 0; i < defaultRendererInfos.Length; i++)
-            {
-                if (string.IsNullOrEmpty(meshes[i]))
-                    continue;
-
-                meshReplacements.Add(
-                new SkinDef.MeshReplacement
-                {
-                    renderer = defaultRendererInfos[i].renderer,
-                    mesh = Assets.mainAssetBundle.LoadAsset<Mesh>(meshes[i])
-                });
-            }
-
-            return meshReplacements.ToArray();
         }
 
         // I don't know how to import JUST meshes I keep importing fbx and don't know how to separate the mesh

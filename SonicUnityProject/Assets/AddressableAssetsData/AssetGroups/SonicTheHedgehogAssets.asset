@@ -25,6 +25,18 @@ MonoBehaviour:
     m_Address: Assets/SonicAssets/Skins/Metal/SuperMetalMeleeKickGhost.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 21ba9e605dea3a04b995f75206c6a3b8
+    m_Address: Assets/SonicAddressables/Skins/Metal/matSuperMetalSonic.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0aec3cb6fc371554892b3463bedd454c
+    m_Address: Assets/SonicAddressables/Skins/Metal/matMetalSonic.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2c66e0b7d5fa3b8459b7bacdb91213b9
+    m_Address: Assets/SonicAddressables/Skins/Metal/SonicSuperMetalAfterimageRainGhost.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 99dbb72ba21eaa641a3a9b42fd6e972a, type: 2}
   m_SchemaSet:

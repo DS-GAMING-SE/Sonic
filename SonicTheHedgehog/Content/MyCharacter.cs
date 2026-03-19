@@ -4,8 +4,10 @@ using EmotesAPI;
 using HarmonyLib;
 using HedgehogUtils;
 using HedgehogUtils.Forms;
+using HG;
 using On.RoR2.UI;
 using RoR2;
+using RoR2.ContentManagement;
 using RoR2.Skills;
 using RoR2.UI;
 using SonicTheHedgehog.Components;
@@ -710,15 +712,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             //uncomment this when you have a mastery skin
 
             #region MasterySkin
-
-
-            //creating a new skindef as we did before
-            /*SkinDef masterySkin = Modules.Skins.CreateSkinDef(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin"),
-                defaultRendererinfos,
-                prefabCharacterModel.gameObject
-                ,masterySkinUnlockableDef);
-                //);*/
             SkinDefParams masterySkinDefParams = ScriptableObject.CreateInstance<SkinDefParams>();
             masterySkinDefParams.projectileGhostReplacements = new[] {
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleePunchProjectilePrefab,
@@ -726,11 +719,17 @@ namespace SonicTheHedgehog.Modules.Survivors
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab,
                     ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost },
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superSonicAfterimageRainPrefab,
-                    projectileGhostReplacementPrefab = Projectiles.superMetalAfterimageRainGhost }};
+                    ghostReplacementAddress = Projectiles.superMetalAfterimageRainGhost }};
+            AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.metalMaterial).Completed += (x) =>
+            { x.Result.SetHopooMaterial().MetalMaterial(); };
+            AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.superMetalMaterial).Completed += (x) =>
+            { x.Result.SetHopooMaterial().MetalMaterial(); };
 
-            masterySkinDefParams.rendererInfos = defaultRendererinfos;
-            masterySkinDefParams.rendererInfos[0].defaultMaterial = Modules.Materials.CreateHopooMaterial("matMetalSonic").MetalMaterial();
+            masterySkinDefParams.rendererInfos = ArrayUtils.Clone(defaultRendererinfos);
             masterySkinDefParams.meshReplacements = Modules.Skins.GetParamMeshReplacementsFromObject(defaultRendererinfos, "MetalSonicMesh");
+            // masterySkinDefParams.meshReplacements = new SkinDefParams.MeshReplacement[]
+            // { new SkinDefParams.MeshReplacement { meshAddress = SkinAddressables.metalMesh, renderer = defaultRendererinfos[0].renderer }};
+            masterySkinDefParams.rendererInfos[0].defaultMaterialAddress = SkinAddressables.metalMaterial;
             R2API.SkinDefParamsInfo masterySkinParamsInfo = new R2API.SkinDefParamsInfo
             {
                 Name = SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
@@ -742,31 +741,8 @@ namespace SonicTheHedgehog.Modules.Survivors
                 SkinDefParams = masterySkinDefParams
             };
             SkinDef masterySkin = R2API.Skins.CreateNewSkinDef(masterySkinParamsInfo);
-            //);
-            //adding the mesh replacements as above.
-            //if you don't want to replace the mesh (for example, you only want to replace the material), pass in null so the order is preserved
-
-            //masterySkin has a new set of RendererInfos (based on default rendererinfos)
-            //you can simply access the RendererInfos defaultMaterials and set them to the new materials for your skin.
-            //here's a barebones example of using gameobjectactivations that could probably be streamlined or rewritten entirely, truthfully, but it works
-            // DUMBASS GAMEOBJECTACTIVATIONS COSTING ME HOURS. I JUST WANT A LIGHT ON THE BACK OF METAL SONIC
-            // Gave up and just manually drew the light into the emission texture. More performant that way anyway
-            /*masterySkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = childLocator.FindChildGameObject("MetalSonicLight"),
-                    shouldActivate = true,
-                }
-            };*/
-
-            //simply find an object on your child locator you want to activate/deactivate and set if you want to activate/deacitvate it with this skin
-
             MetalSonicAnimation.AddSkin(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME");
-
             skins.Add(masterySkin);
-            
-
             #endregion
 
             skinController.skins = skins.ToArray();
