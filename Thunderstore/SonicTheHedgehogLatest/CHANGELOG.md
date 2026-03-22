@@ -14,9 +14,20 @@
  
  - (Visuals) The super form transformation now has a subtle glow around your character
  
+ - (Visuals) Redone the aura for the super form. There are now Assets.CreateFormAura methods for creating custom auras for modded super forms
+ 
  - (Bug Fix) Transformations can no longer be activated while in UI (such as typing in chat) or while you're not in your main body state (usually doing some action where you can't use other skills)
+ 
+ - (Bug Fix) Fixed the Chaos Emerald interactable breaking if you purchase it and pick it up with Drifter at the same time
 
-## v4.0.6
+### Known Issues
+ - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)
+ - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
+ - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
+
+<details>
+<summary>v4.0.6</summary>
+
  - (HedgehogUtils) Updated for newest version
  
  - (Visuals/Bug Fix) Rewrote the code for the death animation. The body now fades away at the end of the animation instead of disappearing at once. This should also fix any instances of the death animation getting cut off or bodies remaining forever after the animation ends. The entity state for this is in HedgehogUtils, so it can be reused for other characters easily.
@@ -32,13 +43,10 @@
  - (Compatibility) Removed [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Delta Construct from the launch blacklist since the issue has been fixed on their end
  
  - (Config) The Enable Logs config now has options for showing no logs, minimal logs, or all logs. Any previous changes to this config may need to be redone. This config is now set to minimal by default. *Why did I think it was a good idea to have logs be disabled by default before?*
+</details>
+<details>
+<summary>v4.0.5</summary>
 
-### Known Issues
- - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)
- - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
- - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
- 
-## v4.0.5
  - (HedgehogUtils) Updated for newest version
  
  - (Bug Fix) Maybe fixed a multiplayer desync issue involving CustomEmotesAPI
@@ -46,8 +54,10 @@
  - (Internal) The sounds for Sonic's brake, jump, and death have been moved to HedgehogUtils and the sound ids have changed
 ### HedgehogUtils v1.1.5
  - (Bug Fix) Fixed corpses being able to be hit by players after being launched in multiplayer
- 
-## v4.0.4
+</details>
+<details>
+<summary>v4.0.4</summary>
+
  - (Assets - Mastery Skin)
 	 - Some animations are now different when using the mastery skin
 	 - Added specular and fresnel emission, making the skin react better to light and look as shiny as it should be
@@ -70,8 +80,9 @@
  - (Bug Fix) Fixed an issue where having your utility skill changed to an invalid skill (such as False Son's skill disabling) while Boost Idling would softlock
  
  - (Compatibility) I notice those Chaos Emeralds aren't bolted to the ground...
-
-## v4.0.3
+</details>
+<details>
+<summary>v4.0.3</summary>
 
  - (HedgehogUtils) Updated for newest version
  
@@ -82,12 +93,14 @@
 ### HedgehogUtils v1.1.2
 
  - (+ Buff) Sliiiiightly reduced the speed the boost meter drains so 2 Alien Heads is enough to reach infinite boost
- 
-## v4.0.2
+</details>
+<details>
+<summary>v4.0.2</summary>
 
  - (Bug Fix) Fixed elites and some other buffs not working properly when this mod is installed
-
-## v4.0.1
+</details>
+<details>
+<summary>v4.0.1</summary>
 
  - (+ Buff) Super Scepter Boost can now launch heavier enemies than normal Scepter Boost
 
@@ -101,8 +114,10 @@
 ### HedgehogUtils v1.0.1
 
  - (Bug Fix) Blacklisted [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Delta Construct from being launched to prevent framerate killing error spam on death
- 
-## v4.0.0
+</details>
+<details>
+<summary>v4.0.0</summary>
+
 This sure took longer than I expected...
 
  - (HedgehogUtils) Introducing my new mod called HedgehogUtils. A lot of mechanics I designed for Sonic were things I felt could be used for a lot of other things besides Sonic. Mechanics, such as Sonic's Super form, boost skill, and launch mechanic (more on that below), have been moved into this new mod. Everything in this mod is designed to be usable for other people's mods. **Do you want to make your own Super forms? Do you want to make your own Sonic survivors?** This mod is meant to help do some of the work for you. All my code is open source and there is documentation explaining everything you need to know to implement HedgehogUtils into your own mod.
@@ -148,7 +163,7 @@ This sure took longer than I expected...
  - (Config) Added a config option that changes the duration of the Super form
  - (Config) Added a config option that disables the Super form's invincibility, instead granting 200 armor
  - (Config) Added a config option that disables logs. Logs are now disabled by default
-
+</details>
 <details>
 <summary>v3.0.3</summary>
 

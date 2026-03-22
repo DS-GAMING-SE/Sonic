@@ -14,6 +14,7 @@ using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules.Achievements;
 using SonicTheHedgehog.Modules.Characters;
 using SonicTheHedgehog.SkillStates;
+using SonicTheHedgehog.SkillStates.Initial;
 using SonicTheHedgehog.SkillStates.SuperUpgrades;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyColor = sonicColor,
 
             crosshair = Modules.Assets.LoadCrosshair("Standard"),
-            podPrefab = Assets.faceplantPod,//RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/SurvivorPod"),
+            podPrefab = null,
 
             maxHealth = 110f,
             healthRegen = 1,
@@ -93,6 +94,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         {
             base.InitializeCharacter();
             bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(HedgehogUtils.Miscellaneous.Death));
+            prefabCharacterBody.preferredInitialStateType = new EntityStates.SerializableEntityStateType(typeof(Descent));
         }
 
         public override void InitializeUnlockables()

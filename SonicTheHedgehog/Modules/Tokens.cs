@@ -54,8 +54,6 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "OUTRO_FLAVOR", outro);
             LanguageAPI.Add(prefix + "OUTRO_FAILURE", outroFailure);
 
-            LanguageAPI.Add(prefix + "POD_EXIT", "Get up");
-
             #region Skins
 
             LanguageAPI.Add(prefix + "DEFAULT_SKIN_NAME", "Default");
