@@ -1,7 +1,7 @@
 ﻿using SonicTheHedgehog.SkillStates;
 using SonicTheHedgehog.SkillStates.SuperUpgrades;
 using SonicTheHedgehog.SkillStates.Emotes;
-using SonicTheHedgehog.SkillStates.Pod;
+using SonicTheHedgehog.SkillStates.Initial;
 using System.Collections.Generic;
 using System;
 

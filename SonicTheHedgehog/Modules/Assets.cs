@@ -55,8 +55,8 @@ namespace SonicTheHedgehog.Modules
 
         public static GameObject grandSlamHitEffect;
 
-        // pod
-        public static GameObject faceplantPod;
+        // initial
+        public static GameObject faceplantEffect;
 
         // hud
         public static GameObject powerBoostHud;
@@ -290,37 +290,6 @@ namespace SonicTheHedgehog.Modules
 
             powerBoostHud = Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles");
             powerBoostHud.AddComponent<PowerBoostHUD>();
-
-            CreatePod();
-        }
-        private static void CreatePod()
-        {
-            faceplantPod = PrefabAPI.InstantiateClone(HedgehogUtils.Assets.podlessPodPrefabBase, "SonicFaceplantPod");
-            faceplantPod.GetComponent<EntityStateMachine>().initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Pod.Descent));
-            faceplantPod.GetComponent<VehicleSeat>().exitVehicleContextString = SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + "POD_EXIT";
-            /*
-             * New pod needs ------------------------------------------------
-             *  NetworkIdentity
-             *  EntityStateMachine Main
-             *      initialStateType = whatever new state handles this
-             *  NetworkEntityStateMachine
-             *      Add main state machine
-             *  SurvivorPodController
-             *      cameraBone on another object off to the side
-             *      camera following target is baked into the falling animation. Since the pod itself has no animator, probably automate the camera somehow?
-             *  VehicleSeat
-             *      passengerState = new SerializableEntityStateType(typeof(GenericCharacterPod));
-             *      seatPosition = transform;
-             *      handleExitTeleport = false
-             *      exitVelocityFraction = 0f
-             *      isSurvivorPod = true
-             *      exitVehicleContextString = "Get up" lang token or something
-             *      shouldProximityHighlight = false
-             *      Should delete itself after the player exits?
-             *  BuffPassengerWhileSeated 
-             *      RoR2Content.Buffs.HiddenInvincibility (Might have to load asset since it's done early?)
-             *  Permanent crater decal?
-             */
         }
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)
