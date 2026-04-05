@@ -12,6 +12,8 @@ using RoR2.Audio;
 using UnityEngine.AddressableAssets;
 using SonicTheHedgehog.SkillStates;
 using SonicTheHedgehog.Modules.Survivors;
+using ThreeEyedGames;
+using RoR2.ContentManagement;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -56,7 +58,7 @@ namespace SonicTheHedgehog.Modules
         public static GameObject grandSlamHitEffect;
 
         // initial
-        public static GameObject faceplantEffect;
+        public static GameObject faceplantDecal;
 
         // hud
         public static GameObject powerBoostHud;
@@ -290,6 +292,17 @@ namespace SonicTheHedgehog.Modules
 
             powerBoostHud = Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles");
             powerBoostHud.AddComponent<PowerBoostHUD>();
+
+            faceplantDecal = PrefabAPI.CreateEmptyPrefab("SonicFaceplantDecal", false);
+            faceplantDecal.transform.localScale = new Vector3(2.3f, 2.3f, 2.3f);
+            Decal faceplantDecalComponent = faceplantDecal.AddComponent<Decal>();
+            faceplantDecalComponent.Fade = 1f;
+            faceplantDecalComponent.DrawAlbedo = true;
+            faceplantDecalComponent.DrawNormalAndGloss = true;
+            AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleGroup.matBeetleGuardSlamDecal_mat)).Completed += (x) =>
+            {
+                faceplantDecalComponent.Material = x.Result;
+            };
         }
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)

@@ -43,6 +43,12 @@
     <Reference Include="CustomEmotesAPI">
       <HintPath>..\libs\CustomEmotesAPI.dll</HintPath>
     </Reference>
+    <Reference Include="Decalicious">
+      <HintPath>..\libs\Decalicious.dll</HintPath>
+    </Reference>
+    <Reference Include="EnemiesReturns">
+      <HintPath>..\libs\EnemiesReturns.dll</HintPath>
+    </Reference>
     <Reference Include="HedgehogUtils">
       <HintPath>..\libs\HedgehogUtils.dll</HintPath>
     </Reference>

@@ -4,6 +4,7 @@ using EmotesAPI;
 using HarmonyLib;
 using HedgehogUtils;
 using HedgehogUtils.Forms;
+using HedgehogUtils.Forms.SuperForm;
 using HG;
 using On.RoR2.UI;
 using RoR2;
@@ -72,7 +73,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             new CustomRendererInfo
             {
                 childName = "Model",
-                material = Materials.CreateHopooMaterial("matSonic").Specular(0.15f),
+                material = Materials.CreateHopooMaterial("matSonic").Specular(0.3f),
             }
         };
 
@@ -709,6 +710,20 @@ namespace SonicTheHedgehog.Modules.Survivors
             //add new skindef to our list of skindefs. this is what we'll be passing to the SkinController
             skins.Add(defaultSkin);
 
+            #region Super Form
+            CharacterModel.RendererInfo[] defaultSkinSuperRenderer = ArrayUtils.Clone(defaultRendererinfos);
+            defaultSkinSuperRenderer[0].defaultMaterial = Materials.CreateHopooMaterial("matSuperSonic").Specular(0.3f);
+            Mesh[] defaultSkinSuperMeshes = new Mesh[]{ Assets.superSonicMesh };
+            RenderReplacements defaultSkinSuper = new RenderReplacements
+            {
+                rendererInfo = defaultSkinSuperRenderer,
+                mesh = defaultSkinSuperMeshes
+            };
+            Forms.AddSkinForForm(defaultSkin.nameToken,
+                defaultSkinSuper,
+                ref SuperFormDef.superFormDef);
+            #endregion
+
             #endregion
 
             //uncomment this when you have a mastery skin
@@ -723,9 +738,9 @@ namespace SonicTheHedgehog.Modules.Survivors
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superSonicAfterimageRainPrefab,
                     ghostReplacementAddress = Projectiles.superMetalAfterimageRainGhost }};
             AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.metalMaterial).Completed += (x) =>
-            { x.Result.SetHopooMaterial().MetalMaterial(); };
+            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f); };
             AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.superMetalMaterial).Completed += (x) =>
-            { x.Result.SetHopooMaterial().MetalMaterial(); };
+            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f); };
 
             masterySkinDefParams.rendererInfos = ArrayUtils.Clone(defaultRendererinfos);
             masterySkinDefParams.meshReplacements = Modules.Skins.GetParamMeshReplacementsFromObject(defaultRendererinfos, "MetalSonicMesh");
@@ -745,10 +760,43 @@ namespace SonicTheHedgehog.Modules.Survivors
             SkinDef masterySkin = R2API.Skins.CreateNewSkinDef(masterySkinParamsInfo);
             MetalSonicAnimation.AddSkin(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME");
             skins.Add(masterySkin);
+
+            #region Super Form
+            Addressables.LoadAssetAsync<Material>(SkinAddressables.superMetalMaterial).Completed += (x) =>
+            {
+                x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f);
+            };
+            CharacterModel.RendererInfo[] masterySkinSuperRenderer = ArrayUtils.Clone(masterySkinDefParams.rendererInfos);
+            masterySkinSuperRenderer[0].defaultMaterialAddress = SkinAddressables.superMetalMaterial;
+            Mesh[] masterySkinSuperMeshes = new Mesh[] { masterySkinDefParams.meshReplacements[0].mesh };
+            RenderReplacements masterySkinSuper = new RenderReplacements
+            {
+                rendererInfo = masterySkinSuperRenderer,
+                mesh = masterySkinSuperMeshes
+            };
+            Forms.AddSkinForForm(masterySkin.nameToken,
+                masterySkinSuper,
+                ref SuperFormDef.superFormDef);
+            #endregion
             #endregion
 
+            #region AnointedSkin EnemiesReturns
+            if (SonicTheHedgehogPlugin.enemiesReturnsLoaded)
+            {
+                //skins.Add(AnointedSkinEnemiesReturns(masterySkin));
+            }
+            #endregion
             skinController.skins = skins.ToArray();
             skinController2.skins = skins.ToArray();
+        }
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static SkinDef AnointedSkinEnemiesReturns(SkinDef skinToCopy)
+        {
+            SkinDef anointedSkin = EnemiesReturns.Enemies.Judgement.AnointedSkins.CreateAnointedSkin("SonicTheHedgehog", skinToCopy, true);
+            //anointedSkin.icon = 
+            anointedSkin.name = SONIC_THE_HEDGEHOG_PREFIX + "ENEMIES_RETURNS_JUDGEMENT_SKIN";
+            anointedSkin.nameToken = "ENEMIES_RETURNS_JUDGEMENT_SKIN_ANOINTED_NAME";
+            return anointedSkin;
         }
     }
 
