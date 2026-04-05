@@ -57,6 +57,7 @@ namespace SonicTheHedgehog
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Nebby1999.LoadingScreenFix", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(EnemiesReturns.EnemiesReturnsPlugin.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
 
@@ -79,6 +80,7 @@ namespace SonicTheHedgehog
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
         public static bool loadingScreenFixLoaded = false;
+        public static bool enemiesReturnsLoaded = false;
 
 
         private void Awake()
@@ -105,6 +107,9 @@ namespace SonicTheHedgehog
             loadingScreenFixLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("Nebby1999.LoadingScreenFix");
             Log.Message("Loading Screen Fix exists? " + loadingScreenFixLoaded);
 
+            enemiesReturnsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(EnemiesReturns.EnemiesReturnsPlugin.GUID);
+            Log.Message("Enemies Returns exists? " + enemiesReturnsLoaded);
+
             Modules.Assets.Initialize(); // load assets and read config
             if (loadingScreenFixLoaded)
             {
@@ -116,7 +121,6 @@ namespace SonicTheHedgehog
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
-            Modules.SuperFormSupport.Initialize();
             Modules.DamageTypes.Initialize();
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();

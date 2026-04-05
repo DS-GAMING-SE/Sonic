@@ -12,6 +12,7 @@ namespace SonicTheHedgehog.SkillStates.Initial
         {
             base.OnEnter();
             EffectManager.SimpleEffect(HedgehogUtils.Assets.launchWallCollisionEffect, base.characterBody.footPosition, modelLocator.modelTransform.rotation, false);
+            GameObject.Instantiate(Modules.Assets.faceplantDecal, base.characterBody.footPosition, modelLocator.modelTransform.rotation);
             if (NetworkServer.active)
             {
                 base.characterBody.AddBuff(DLC3Content.Buffs.Untargetable);

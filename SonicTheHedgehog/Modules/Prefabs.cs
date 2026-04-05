@@ -330,7 +330,6 @@ namespace SonicTheHedgehog.Modules {
             GameObject headHurtboxObject = childLocator.FindChildGameObject("HeadHurtbox");
             if (headHurtboxObject)
             {
-                Log.Debug("HeadHurtboxFound. Setting up");
                 headHurtbox = headHurtboxObject.AddComponent<HurtBox>();
                 headHurtbox.gameObject.layer = LayerIndex.entityPrecise.intVal;
                 headHurtbox.healthComponent = prefab.GetComponent<HealthComponent>();

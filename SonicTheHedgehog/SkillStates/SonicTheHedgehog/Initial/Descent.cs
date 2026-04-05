@@ -13,6 +13,7 @@ namespace SonicTheHedgehog.SkillStates.Initial
             if (NetworkServer.active)
             {
                 base.characterBody.AddBuff(DLC3Content.Buffs.Untargetable);
+                base.characterBody.AddBuff(RoR2Content.Buffs.Intangible);
             }    
             if (base.modelLocator)
             {
@@ -32,6 +33,7 @@ namespace SonicTheHedgehog.SkillStates.Initial
             if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(DLC3Content.Buffs.Untargetable);
+                base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
             }
             if (base.modelLocator)
             {
