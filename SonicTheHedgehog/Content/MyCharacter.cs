@@ -90,6 +90,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         private static UnlockableDef masterySkinUnlockableDef;
 
         private static UnlockableDef parryUnlockableDef;
+        private static UnlockableDef dieUnlockableDef;
 
         public override void InitializeCharacter()
         {
@@ -103,7 +104,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             //Henry tutorial tells me to just uncomment something to get the mastery achievement but the uncommented stuff doesn't even compile
             //masterySkinUnlockableDef = Modules.Unlockables.AddUnlockable<Modules.Achievements.MasteryAchievement>();
             masterySkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
-            masterySkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin");
+            masterySkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon");
             masterySkinUnlockableDef.cachedName = "Skins.Sonic.Alt1";
             masterySkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(masterySkinUnlockableDef);
@@ -114,6 +115,12 @@ namespace SonicTheHedgehog.Modules.Survivors
             parryUnlockableDef.cachedName = "SonicSkills.Parry";
             parryUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(parryUnlockableDef);
+
+            dieUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            dieUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texDefaultSkinIcon");
+            dieUnlockableDef.cachedName = "Skins.Sonic.Sailor";
+            dieUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE_NAME";
+            Content.AddUnlockableDef(dieUnlockableDef);
 
             /*UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
             if (!user.HasUnlockable(parryUnlockableDef) && Config.ForceUnlockParry().Value)
@@ -243,7 +250,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.StayOnGround>();
             bodyPrefab.AddComponent<ParryFollowUpTracker>();
             bodyPrefab.AddComponent<SuperSkillReplacer>();
-            bodyPrefab.AddComponent<JitterBoneBlacklist>();
             bodyPrefab.AddComponent<HedgehogUtils.Miscellaneous.MomentumPassive>();
             bodyPrefab.AddComponent<MetalSonicAnimation>();
             var sfxComponent = bodyPrefab.GetComponent<SfxLocator>();
@@ -493,6 +499,26 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef); */
 
+            GenericSkill voicelinesGenericSkill = Skills.CreateGenericSkillWithSkillFamily(bodyPrefab, "Voicelines", true);
+            voicelinesGenericSkill.loadoutTitleToken = HedgehogUtils.Language.voicelinesTitleToken;
+            SkillDef voicelinesEnable = Skills.CreateSkillDef(new SkillDefInfo
+            {
+                skillName = "SonicVoicelinesEnable",
+                skillNameToken = HedgehogUtils.Language.voicelinesEnableToken,
+                skillDescriptionToken = SONIC_THE_HEDGEHOG_PREFIX + "VOICELINES_ENABLE_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texVoicelinesEnableIcon")
+
+            });
+            SkillDef voicelinesDisable = Skills.CreateSkillDef(new SkillDefInfo
+            {
+                skillName = "SonicVoicelinesDisable",
+                skillNameToken = HedgehogUtils.Language.voicelinesDisableToken,
+                skillDescriptionToken = "",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texVoicelinesDisableIcon")
+
+            });
+            Skills.AddSkillsToFamily(voicelinesGenericSkill.skillFamily, voicelinesEnable, voicelinesDisable);
+
             #endregion
 
             MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam);
@@ -688,7 +714,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             //this creates a SkinDef with all default fields
             SkinDef defaultSkin = Modules.Skins.CreateSkinDef(SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texMainSkin"),
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texDefaultSkinIcon"),
                 defaultRendererinfos,
                 prefabCharacterModel.gameObject);
 
@@ -738,9 +764,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superSonicAfterimageRainPrefab,
                     ghostReplacementAddress = Projectiles.superMetalAfterimageRainGhost }};
             AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.metalMaterial).Completed += (x) =>
-            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f); };
-            AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.superMetalMaterial).Completed += (x) =>
-            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f); };
+            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f, 4f); };
 
             masterySkinDefParams.rendererInfos = ArrayUtils.Clone(defaultRendererinfos);
             masterySkinDefParams.meshReplacements = Modules.Skins.GetParamMeshReplacementsFromObject(defaultRendererinfos, "MetalSonicMesh");
@@ -751,7 +775,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             {
                 Name = SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
                 NameToken = SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME",
-                Icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkin"),
+                Icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon"),
                 UnlockableDef = masterySkinUnlockableDef,
                 RootObject = prefabCharacterModel.gameObject,
                 BaseSkins = new[] { defaultSkin },
@@ -762,10 +786,8 @@ namespace SonicTheHedgehog.Modules.Survivors
             skins.Add(masterySkin);
 
             #region Super Form
-            Addressables.LoadAssetAsync<Material>(SkinAddressables.superMetalMaterial).Completed += (x) =>
-            {
-                x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f);
-            };
+            AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.superMetalMaterial).Completed += (x) =>
+            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f, 4f); };
             CharacterModel.RendererInfo[] masterySkinSuperRenderer = ArrayUtils.Clone(masterySkinDefParams.rendererInfos);
             masterySkinSuperRenderer[0].defaultMaterialAddress = SkinAddressables.superMetalMaterial;
             Mesh[] masterySkinSuperMeshes = new Mesh[] { masterySkinDefParams.meshReplacements[0].mesh };

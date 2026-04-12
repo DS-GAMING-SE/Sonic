@@ -101,17 +101,10 @@ namespace SonicTheHedgehog.Modules
             return mat;
         }
 
-        public static Material Specular(this Material mat, float strength)
+        public static Material Specular(this Material mat, float strength, float exponent = 1f)
         {
             mat.SetFloat("_SpecularStrength", strength);
-            return mat;
-        }
-
-        public static Material MetalMaterial(this Material mat)
-        {
-            mat.Specular(0.2f);
-            mat.SetTexture("_FresnelRamp", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Common.texRampTritone3Reverse_png).WaitForCompletion());
-            mat.EnableKeyword("FRESNEL_EMISSION");
+            mat.SetFloat("_SpecularExponent", exponent);
             return mat;
         }
         /// <summary>

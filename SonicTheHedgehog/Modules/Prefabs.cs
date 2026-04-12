@@ -194,6 +194,7 @@ namespace SonicTheHedgehog.Modules {
             characterModel.autoPopulateLightInfos = true;
             characterModel.invisibilityCount = 0;
             characterModel.temporaryOverlays = new List<TemporaryOverlayInstance>();
+            characterModel.ignoreJitterBones = true;
 
             ModelPanelParameters panel = characterModel.gameObject.AddComponent<ModelPanelParameters>();
 

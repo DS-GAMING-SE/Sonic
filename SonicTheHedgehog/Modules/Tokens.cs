@@ -190,6 +190,10 @@ namespace SonicTheHedgehog.Modules
 
             #endregion
 
+            #region Voicelines
+            LanguageAPI.Add(prefix + "VOICELINES_ENABLE_DESCRIPTION", $"Voicelines recorded by <style=cIsUtility>Jehtt</style>.");
+            #endregion
+
             #region Achievements
 
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME", 
@@ -201,6 +205,11 @@ namespace SonicTheHedgehog.Modules
                 "Sonic: Spinning Upside Down");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION",
                 $"As Sonic, hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE_NAME",
+                "Sonic: The Murder of...");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE_DESCRIPTION",
+                "As Sonic, be murdered.");
 
             #endregion
 
