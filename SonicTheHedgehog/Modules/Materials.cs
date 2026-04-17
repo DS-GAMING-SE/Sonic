@@ -146,31 +146,37 @@ namespace SonicTheHedgehog.Modules
             material.SetInt("_Cull", cull ? 1 : 0);
             return material;
         }
-
-        public static Material CreatePhantomRiderScarf(float patternSmallness = 10f)
+        private const float phantomRiderPatternSize = 5f;
+        public static Material CreatePhantomRiderScarf()
         {
-            Material scarf = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Shaders.HGOpaqueCloudRemap_shader).WaitForCompletion());
+            return CreatePhantomRiderScarf(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.texSpeedBoostPickupThornRamp_png));
+        }
+
+        public static Material CreatePhantomRiderScarf(AssetReferenceT<Texture> remapTex)
+        {
+            Material scarf = new Material(Addressables.LoadAssetAsync<Shader>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Shaders.HGOpaqueCloudRemap_shader).WaitForCompletion());
             scarf.EnableKeyword("EMISSIONFROMALBEDO");
-            /*scarf.EnableKeyword("DITHER");
+            scarf.EnableKeyword("DITHER");
             scarf.EnableKeyword("USE_CLOUDS");
             scarf.EnableKeyword("USE_UV1");
-            scarf.EnableKeyword("_EMISSION");*/
+            scarf.EnableKeyword("_EMISSION");
+            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.texVerticalGradientBlkWht_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_MainTex", x.Result);
+                scarf.SetTextureScale("_MainTex", new Vector2(1, 0.5f));
+                scarf.SetTextureOffset("_MainTex", new Vector2(0, 0.35f));
+            };
             AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Engi.texEngiShield_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
             {
                 scarf.SetTexture("_Cloud1Tex", x.Result);
-                scarf.SetTextureScale("_Cloud1Tex", new Vector2(patternSmallness, patternSmallness));
+                scarf.SetTextureScale("_Cloud1Tex", new Vector2(phantomRiderPatternSize, phantomRiderPatternSize));
             };
-            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Engi.texEngiShieldBlurred_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
-            {
-                scarf.SetTexture("_Cloud2Tex", x.Result);
-                scarf.SetTextureScale("_Cloud2Tex", new Vector2(patternSmallness / 2f, patternSmallness / 2f));
-            };
-            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.texSpeedBoostPickupThornRamp_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            AssetAsyncReferenceManager<Texture>.LoadAsset(remapTex).Completed += delegate (AsyncOperationHandle<Texture> x)
             {
                 scarf.SetTexture("_RemapTex", x.Result);
             };
-            scarf.SetVector("_CutoffScroll", new Vector4(-4, 0, -10, 2));
-            scarf.SetFloat("_AlphaBoost", 1.5f);
+            scarf.SetVector("_CutoffScroll", new Vector4(0, -5, 0, 0));
+            scarf.SetFloat("_AlphaBoost", 3.75f);
 
             return scarf;
         }

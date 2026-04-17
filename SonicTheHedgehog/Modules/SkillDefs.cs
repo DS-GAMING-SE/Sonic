@@ -73,5 +73,25 @@ namespace SonicTheHedgehog.Modules
         {
             public FormDef requiredForm { get; set; }
         }
+
+        public class RequiresFormTargetSkillDef : SkillDef, IRequiresFormSkillDef
+        {
+            public FormDef requiredForm { get; set; }
+            public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
+            {
+                return new InstanceData
+                {
+                    homingTracker = skillSlot.GetComponent<HomingTracker>()
+                };
+            }
+            public override bool IsReady([NotNull] GenericSkill skillSlot)
+            {
+                return base.IsReady(skillSlot) && ((RequiresFormTargetSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true);
+            }
+            protected class InstanceData : BaseSkillInstanceData
+            {
+                public HomingTracker homingTracker;
+            }
+        }
     }
 }
