@@ -2,6 +2,8 @@
 using RoR2;
 using RoR2.ContentManagement;
 using RoR2.Projectile;
+using SonicTheHedgehog.Components;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -19,7 +21,6 @@ namespace SonicTheHedgehog.Modules
         internal static GameObject superMeleeKickProjectilePrefab;
         internal static AssetReferenceT<GameObject> superMetalMeleePunchProjectileGhost;
         internal static AssetReferenceT<GameObject> superMetalMeleeKickProjectileGhost;
-        internal static AssetReferenceT<GameObject> superMetalAfterimageRainGhost;
         internal static GameObject superSonicAfterimageRainPrefab;
         internal static GameObject superSonicAfterimageRainGhost;
 
@@ -185,6 +186,7 @@ namespace SonicTheHedgehog.Modules
 
             ProjectileController controller = superSonicAfterimageRainPrefab.AddComponent<ProjectileController>();
             controller.cannotBeDeleted = true;
+            superSonicAfterimageRainPrefab.AddComponent<SuperGrandSlamProjectileMeshReplacer>();
             //controller.flightSoundLoop = Assets.superGrandSlamLoopSoundDef;
 
             Log.Message("Afterimage Rain hitboxes");
@@ -219,14 +221,6 @@ namespace SonicTheHedgehog.Modules
             ModifyAfterimageRainGhost(superSonicAfterimageRainGhost);
 
             controller.ghostPrefab = superSonicAfterimageRainGhost;
-
-            AfterimageRainSkins();
-        }
-
-        private static void AfterimageRainSkins()
-        {
-            superMetalAfterimageRainGhost = new AssetReferenceT<GameObject>("2c66e0b7d5fa3b8459b7bacdb91213b9");
-            AssetAsyncReferenceManager<GameObject>.LoadAsset(superMetalAfterimageRainGhost).Completed += (x) => ModifyAfterimageRainGhost(CreateGhostPrefab(x.Result));
         }
         public static GameObject ModifyAfterimageRainGhost(GameObject prefab)
         {

@@ -2,13 +2,18 @@
 
 ## v5.0.0
 *This update breaks all Sonic skin mods*
+ - (Animations) Sonic now has a custom animation for entering the first stage
+
  - (Visuals) Sonic's homing skills now use a new animated reticle
+
+ - (= Change) IDW Attack can now only be activated when targeting an enemy, so the move is impossible to miss
 
  - (- Nerf) You must now successfully trigger a parry for it to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
  - (- Nerf) Grand Slam's cooldown no longer starts until the *entire* move has finished
  
  - (Optimization) This mod now uses addressables, meaning assets will only be loaded when needed. This should reduce memory usage by a lot
  
+ - (Internal) The component used for Metal Sonic's custom animations, MetalSonicAnimation, has been replaced with a new component called UniqueSkinEffect. This component is used to handle any skins with custom animations or effects.
 ### HedgehogUtils v2.0.0
  - (Voicelines) Added a new system for handling voicelines
  

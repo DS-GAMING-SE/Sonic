@@ -11,6 +11,7 @@ namespace SonicTheHedgehog.Modules
     {
         internal static AssetReferenceT<Material> metalMaterial = new AssetReferenceT<Material>("0aec3cb6fc371554892b3463bedd454c");
         internal static AssetReferenceT<Material> superMetalMaterial = new AssetReferenceT<Material>("21ba9e605dea3a04b995f75206c6a3b8");
+        internal static AssetReferenceT<Mesh> superMetalGrandSlam = new AssetReferenceT<Mesh>("37e091f139ebbc54b974c2e8249c6958");
     }
     internal static class Skins
     {

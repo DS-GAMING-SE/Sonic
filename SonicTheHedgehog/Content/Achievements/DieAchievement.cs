@@ -7,9 +7,11 @@ using UnityEngine;
 
 namespace SonicTheHedgehog.Modules.Achievements
 {
-    [RegisterAchievement(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE", "Skin.Sonic.Sailor", null, 1)]
+    [RegisterAchievement(identifier, unlockableIdentifier, null, 1)]
     public class SonicDieAchievement : BaseAchievement
     {
+        public const string identifier = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE";
+        public const string unlockableIdentifier = "Skin.Sonic.Sailor";
         public override BodyIndex LookUpRequiredBodyIndex()
         {
             return BodyCatalog.FindBodyIndex("SonicTheHedgehog");
