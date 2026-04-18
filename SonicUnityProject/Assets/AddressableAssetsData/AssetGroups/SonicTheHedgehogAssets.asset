@@ -33,8 +33,8 @@ MonoBehaviour:
     m_Address: Assets/SonicAddressables/Skins/Metal/matMetalSonic.mat
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 2c66e0b7d5fa3b8459b7bacdb91213b9
-    m_Address: Assets/SonicAddressables/Skins/Metal/SonicSuperMetalAfterimageRainGhost.prefab
+  - m_GUID: 37e091f139ebbc54b974c2e8249c6958
+    m_Address: Assets/SonicAddressables/Skins/Metal/SuperMetalGrandSlamProjMesh.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

@@ -1,5 +1,6 @@
 ﻿using R2API;
 using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules.Achievements;
 using System;
 using System.Drawing;
 using System.Text;
@@ -201,14 +202,34 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_DESCRIPTION",
                 "As Sonic, beat the game or obliterate on Monsoon.");
 
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicGrandMasteryAchievement.identifier + "_NAME",
+                "Sonic: Grand Mastery");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicGrandMasteryAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, beat the game or obliterate on Typhoon or Eclipse.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMeridianEventTriggerAchievement.identifier + "_NAME",
+                "Sonic: Cleared Prime Meridian");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMeridianEventTriggerAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, complete the Event on Prime Meridian.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDecompileAchievement.identifier + "_NAME",
+                "Sonic: Accept and Decompile");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDecompileAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, accept the offering of the Collective.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_NAME",
+                "Sonic: Purge");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, reject the offering of the Collective.");
+
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME",
                 "Sonic: Spinning Upside Down");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION",
                 $"As Sonic, hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
 
-            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE_NAME",
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_NAME",
                 "Sonic: The Murder of...");
-            LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE_DESCRIPTION",
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_DESCRIPTION",
                 "As Sonic, be murdered.");
 
             #endregion

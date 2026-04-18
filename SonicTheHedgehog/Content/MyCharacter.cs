@@ -87,10 +87,15 @@ namespace SonicTheHedgehog.Modules.Survivors
         public override ConfigEntry<bool> characterEnabledConfig =>
             null; //Modules.Config.CharacterEnableConfig(bodyName);
 
-        private static UnlockableDef masterySkinUnlockableDef;
+        public static UnlockableDef masterySkinUnlockableDef;
 
-        private static UnlockableDef parryUnlockableDef;
-        private static UnlockableDef dieUnlockableDef;
+        public static UnlockableDef grandMasterySkinUnlockableDef;
+        public static UnlockableDef meridianSkinUnlockableDef;
+        public static UnlockableDef decompileSkinUnlockableDef;
+        public static UnlockableDef purgeSkinUnlockableDef;
+
+        public static UnlockableDef parryUnlockableDef;
+        public static UnlockableDef dieUnlockableDef;
 
         public override void InitializeCharacter()
         {
@@ -101,15 +106,36 @@ namespace SonicTheHedgehog.Modules.Survivors
 
         public override void InitializeUnlockables()
         {
-            //Henry tutorial tells me to just uncomment something to get the mastery achievement but the uncommented stuff doesn't even compile
-            //masterySkinUnlockableDef = Modules.Unlockables.AddUnlockable<Modules.Achievements.MasteryAchievement>();
             masterySkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             masterySkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon");
             masterySkinUnlockableDef.cachedName = "Skins.Sonic.Alt1";
             masterySkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(masterySkinUnlockableDef);
-            
-            // I hate achievements almost as much as I hate networking
+
+            grandMasterySkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            grandMasterySkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texExcaliburSkinIcon");
+            grandMasterySkinUnlockableDef.cachedName = SonicGrandMasteryAchievement.unlockableIdentifier;
+            grandMasterySkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicGrandMasteryAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(grandMasterySkinUnlockableDef);
+
+            meridianSkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            meridianSkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texNoPlaceSkinIcon");
+            meridianSkinUnlockableDef.cachedName = SonicMeridianEventTriggerAchievement.unlockableIdentifier;
+            meridianSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicMeridianEventTriggerAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(meridianSkinUnlockableDef);
+
+            decompileSkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            decompileSkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texRewriteSkinIcon");
+            decompileSkinUnlockableDef.cachedName = SonicDecompileAchievement.unlockableIdentifier;
+            decompileSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicDecompileAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(decompileSkinUnlockableDef);
+
+            purgeSkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            purgeSkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texACMetalSkinIcon");
+            purgeSkinUnlockableDef.cachedName = SonicPurgeAchievement.unlockableIdentifier;
+            purgeSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(purgeSkinUnlockableDef);
+
             parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");
             parryUnlockableDef.cachedName = "SonicSkills.Parry";
@@ -117,17 +143,10 @@ namespace SonicTheHedgehog.Modules.Survivors
             Content.AddUnlockableDef(parryUnlockableDef);
 
             dieUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
-            dieUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texDefaultSkinIcon");
-            dieUnlockableDef.cachedName = "Skins.Sonic.Sailor";
-            dieUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE_NAME";
+            dieUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSailorSkinIcon");
+            dieUnlockableDef.cachedName = SonicDieAchievement.unlockableIdentifier;
+            dieUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicDieAchievement.identifier + "_NAME";
             Content.AddUnlockableDef(dieUnlockableDef);
-
-            /*UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
-            if (!user.HasUnlockable(parryUnlockableDef) && Config.ForceUnlockParry().Value)
-            {
-                user.GrantUnlockable(parryUnlockableDef);
-            }
-            */
         }
 
         public override void InitializeHitboxes()
@@ -668,11 +687,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             Log.Message("Super Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(superSkillDef, "SonicTheHedgehog",
                           SuperSkillReplacer.boost)).ToString());
-
-            /*if (SonicTheHedgehogPlugin.betterUILoaded)
-            {
-                ScepterBetterUI();
-            }*/
         }
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void EmoteSupport()
@@ -680,25 +694,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             var skele = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicEmoteSupport.prefab");
             CustomEmotesAPI.ImportArmature(bodyPrefab, skele);
         }
-
-        /*[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private void ScepterBetterUI()
-        {
-            AddSkill(SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME",
-                new ProcCoefficientInfo
-                {
-                    name = "Boost",
-                    procCoefficient = StaticValues.scepterBoostProcCoefficient
-                });
-
-            AddSkill(
-                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME",
-                new ProcCoefficientInfo
-                {
-                    name = "Boost",
-                    procCoefficient = StaticValues.scepterBoostProcCoefficient
-                });
-        }*/
 
         public override void InitializeSkins()
         {
@@ -762,9 +757,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleePunchProjectilePrefab,
                     ghostReplacementAddress = Projectiles.superMetalMeleePunchProjectileGhost },
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab,
-                    ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost },
-                new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superSonicAfterimageRainPrefab,
-                    ghostReplacementAddress = Projectiles.superMetalAfterimageRainGhost }};
+                    ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost }};
             AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.metalMaterial).Completed += (x) =>
             { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f, 4f); };
 
@@ -801,13 +794,14 @@ namespace SonicTheHedgehog.Modules.Survivors
             Forms.AddSkinForForm(metalSkin.nameToken,
                 masterySkinSuper,
                 ref SuperFormDef.superFormDef);
+            UniqueSkinEffect.AddSuperGrandSlamMeshReplacement(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME", SkinAddressables.superMetalGrandSlam);
             #endregion
             #endregion
 
             #region AnointedSkin EnemiesReturns
             if (SonicTheHedgehogPlugin.enemiesReturnsLoaded)
             {
-                //skins.Add(AnointedSkinEnemiesReturns(metalSkin));
+                skins.Add(AnointedSkinEnemiesReturns(metalSkin));
             }
             #endregion
             skinController.skins = skins.ToArray();
@@ -816,9 +810,10 @@ namespace SonicTheHedgehog.Modules.Survivors
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static SkinDef AnointedSkinEnemiesReturns(SkinDef skinToCopy)
         {
-            SkinDef anointedSkin = EnemiesReturns.Enemies.Judgement.AnointedSkins.CreateAnointedSkin("SonicTheHedgehog", skinToCopy, true);
+            SkinDef anointedSkin = EnemiesReturns.Enemies.Judgement.AnointedSkins.CreateAnointedSkin("SonicTheHedgehog", skinToCopy, true, Assets.mainAssetBundle.LoadAsset<Sprite>("texSpaceSuitSkinIcon"));
             anointedSkin.name = SONIC_THE_HEDGEHOG_PREFIX + "ENEMIES_RETURNS_JUDGEMENT_SKIN";
             anointedSkin.nameToken = "ENEMIES_RETURNS_JUDGEMENT_SKIN_ANOINTED_NAME";
+            anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSpaceSuitSkinIcon");
             return anointedSkin;
         }
     }
