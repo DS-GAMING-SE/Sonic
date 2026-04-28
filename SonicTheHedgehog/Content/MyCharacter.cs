@@ -169,7 +169,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             hitboxTransform = childLocator.FindChild("ParryFollowUpHitbox");
             Modules.Prefabs.SetupHitbox(prefabCharacterModel.gameObject, hitboxTransform, "FollowUp");
         }
-
+        #region Unlockable Configs
         public static void UnlockParryConfig(object orig, EventArgs self)
         {
             // Thanks RealerCheatUnlocks
@@ -243,6 +243,147 @@ namespace SonicTheHedgehog.Modules.Survivors
                 }
             }
         }
+        public static void UnlockGrandMasteryConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock Grand Mastery Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockGrandMastery().Value)
+            {
+                if (!user.HasAchievement(SonicGrandMasteryAchievement.identifier))
+                {
+                    user.AddAchievement(SonicGrandMasteryAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(grandMasterySkinUnlockableDef))
+                {
+                    user.GrantUnlockable(grandMasterySkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicGrandMasteryAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicGrandMasteryAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(grandMasterySkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(grandMasterySkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+        public static void UnlockMeridianConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock Meridian Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockMeridian().Value)
+            {
+                if (!user.HasAchievement(SonicMeridianEventTriggerAchievement.identifier))
+                {
+                    user.AddAchievement(SonicMeridianEventTriggerAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(meridianSkinUnlockableDef))
+                {
+                    user.GrantUnlockable(meridianSkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicMeridianEventTriggerAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicMeridianEventTriggerAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(meridianSkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(meridianSkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+        public static void UnlockDecompileConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock Decompile Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockDecompile().Value)
+            {
+                if (!user.HasAchievement(SonicDecompileAchievement.identifier))
+                {
+                    user.AddAchievement(SonicDecompileAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(decompileSkinUnlockableDef))
+                {
+                    user.GrantUnlockable(decompileSkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicDecompileAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicDecompileAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(decompileSkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(decompileSkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+        public static void UnlockPurgeConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock Purge Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockPurge().Value)
+            {
+                if (!user.HasAchievement(SonicPurgeAchievement.identifier))
+                {
+                    user.AddAchievement(SonicPurgeAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(purgeSkinUnlockableDef))
+                {
+                    user.GrantUnlockable(purgeSkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicPurgeAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicPurgeAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(purgeSkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(purgeSkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+        #endregion
 
         public static SkillDefs.MeleeSkillDef primarySkillDef;
 
@@ -253,10 +394,6 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static HedgehogUtils.Boost.SkillDefs.BoostSkillDef boostSkillDef;
 
         public static SkillDef grandSlamSkillDef;
-        public static SkillDef tomPunchSkillDef;
-
-
-        public static SkillDef superSonicSkillDef;
 
         public override void InitializeSkills()
         {
@@ -548,14 +685,8 @@ namespace SonicTheHedgehog.Modules.Survivors
             }
         }
 
-        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry,
-            SkillDefInfo boost, SkillDefInfo grandSlam)
+        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam)
         {
-            //EntityStateMachine superSonicState = bodyPrefab.AddComponent<EntityStateMachine>();
-            //superSonicState.customName = "SonicForms";
-            //superSonicState.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BaseSonic));
-
-            //bodyPrefab.AddComponent<Components.SuperSonicComponent>();
 
             Log.Message("Making Super Sonic: Starting Stuff");
 
@@ -773,7 +904,6 @@ namespace SonicTheHedgehog.Modules.Survivors
                 Icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon"),
                 UnlockableDef = masterySkinUnlockableDef,
                 RootObject = prefabCharacterModel.gameObject,
-                BaseSkins = new[] { defaultSkin },
                 SkinDefParams = metalSkinDefParams
             };
             SkinDef metalSkin = R2API.Skins.CreateNewSkinDef(metalSkinParamsInfo);
@@ -810,10 +940,11 @@ namespace SonicTheHedgehog.Modules.Survivors
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static SkinDef AnointedSkinEnemiesReturns(SkinDef skinToCopy)
         {
-            SkinDef anointedSkin = EnemiesReturns.Enemies.Judgement.AnointedSkins.CreateAnointedSkin("SonicTheHedgehog", skinToCopy, true, Assets.mainAssetBundle.LoadAsset<Sprite>("texSpaceSuitSkinIcon"));
+            SkinDef anointedSkin = EnemiesReturns.Enemies.Judgement.AnointedSkins.CreateAnointedSkin("SonicTheHedgehog", skinToCopy, true, Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon"));
             anointedSkin.name = SONIC_THE_HEDGEHOG_PREFIX + "ENEMIES_RETURNS_JUDGEMENT_SKIN";
-            anointedSkin.nameToken = "ENEMIES_RETURNS_JUDGEMENT_SKIN_ANOINTED_NAME";
-            anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSpaceSuitSkinIcon");
+            anointedSkin.nameToken = SONIC_THE_HEDGEHOG_PREFIX + "ANOINTED_SKIN_NAME";
+            anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon");
+            UniqueSkinEffect.AddFlyingSkin(SONIC_THE_HEDGEHOG_PREFIX + "ANOINTED_SKIN_NAME");
             return anointedSkin;
         }
     }

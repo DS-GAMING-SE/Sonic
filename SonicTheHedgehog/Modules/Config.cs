@@ -35,6 +35,22 @@ namespace SonicTheHedgehog.Modules
         {
             return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Mastery", false, "Automatically unlock the achievement \"Sonic: Mastery\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
         }
+        public static ConfigEntry<bool> ForceUnlockGrandMastery()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Grand Mastery", false, "Automatically unlock the achievement \"Sonic: Grand Mastery\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
+        public static ConfigEntry<bool> ForceUnlockMeridian()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Cleared Prime Meridian", false, "Automatically unlock the achievement \"Sonic: Cleared Prime Meridian\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
+        public static ConfigEntry<bool> ForceUnlockDecompile()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Accept and Decompile", false, "Automatically unlock the achievement \"Sonic: Accept and Decompile\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
+        public static ConfigEntry<bool> ForceUnlockPurge()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Purge", false, "Automatically unlock the achievement \"Sonic: Purge\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
 
         public static ConfigEntry<bool> EnableLogs()
         {

@@ -4,11 +4,6 @@ namespace SonicTheHedgehog.Modules
 {
     internal static class StaticValues
     {
-        internal static string descriptionText = "Sonic is a fast melee fighter who specializes in movement and single target damage.<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine
-             + "< ! > Homing attack lets you quickly close the distance between you and an enemy, letting you quickly rack up damage with melee attacks." + Environment.NewLine + Environment.NewLine
-             + "< ! > Sonic Boom is a fast projectile that lets you attack from a distance." + Environment.NewLine + Environment.NewLine
-             + "< ! > Boost lets you move significantly faster than normal. Use it to dodge attacks or traverse the map." + Environment.NewLine + Environment.NewLine
-             + "< ! > Grand Slam is a powerful single target attack that's perfect for taking down bosses." + Environment.NewLine + Environment.NewLine;
         // Melee
 
         internal const float homingAttackDamageCoefficient = 6f;
