@@ -59,6 +59,7 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "DEFAULT_SKIN_NAME", "Default");
             LanguageAPI.Add(prefix + "MASTERY_SKIN_NAME", "Metal");
+            LanguageAPI.Add(prefix + "ANOINTED_SKIN_NAME", "Arthur");
 
             #endregion
 

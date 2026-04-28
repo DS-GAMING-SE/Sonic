@@ -23,16 +23,22 @@ With the new Artifact of Chaos Emeralds, Chaos Emeralds will spawn scattered aro
 Once all seven Chaos Emeralds have been collected, anyone can transform into their Super form by pressing **V** (Keybind can be changed in the config). Super Sonic gives new upgraded skills, flight, invincibility, and incredible power for 50 seconds. Though this power is unmatched, it takes multiple stages to collect the emeralds, so it is important to use this power wisely. In multiplayer, all players will be able to transform into their Super form if everyone transforms within ten seconds of the first player transforming.
 
 # Compatible Mods
-- CustomEmotesAPI
-- LookingGlass
-- RiskOfOptions
-- StandaloneAncientScepter (Upgrades utility skill)
+- [CustomEmotesAPI](https://thunderstore.io/package/MetrosexualFruitcake/CustomEmotesAPI/)
+- [LookingGlass](https://thunderstore.io/package/DropPod/LookingGlass/)
+- [RiskOfOptions](https://thunderstore.io/package/Rune580/Risk_Of_Options/)
+- [StandaloneAncientScepter](https://thunderstore.io/package/amogus_lovers/StandaloneAncientScepter/) (Upgrades utility skill)
+- [Icons](https://thunderstore.io/package/DTEE/Icons/)
 
-# Special Thanks
-- Presti (Lots of help with Super Sonic code)
-- FORCED_REASSEMBLY (Rigging the mastery skin)
-- Shader Forge (A tool that let me make the custom Chaos Emerald shaders without losing my mind pre SOTS https://github.com/CuteWaterBeary/ShaderForge)
-- Sandwich (Writing the Sonic logbook)
+# Credits
+| Name | Platform | Contribution|
+| ---- | ---- | ------|
+**DS Gaming** (ds_gaming) | Discord | Code, icons, vfx |
+**Presti** (memerinoto) | Discord | Helped with early Super Sonic code |
+**FORCED_REASSEMBLY** (forced_reassembly) | Discord | Metal Sonic skin |
+**Woodmeister** (woodie5273) | Discord | Commissioned the 5.0.0 update |
+**Gerdan Virrey** | Fiverr | Models for the 5.0.0 update skins |
+**Sandwich** (sandwich1661) | Discord | Wrote the logbook and some voice lines |
+**Jehtt** | Youtube | Voice acting |
 
 # For Modders
 There are lots of tools I've made specifically for other modders to expand the Sonic mod or use mechanics from the Sonic mod for their own projects. If you're interested, you can find the code for the Sonic mod [here.](https://github.com/DS-GAMING-SE/Sonic/wiki) The HedgehogUtils mod is what adds mechanics like the Chaos Emeralds, Super forms, Launching attacks, and the Boost skill. You can find the wiki/code for that [here](https://github.com/DS-GAMING-SE/HedgehogUtils)
