@@ -60,7 +60,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 return Modules.Assets.scepterPowerBoostAuraEffect;
             }
-            return null;
+            return Modules.Assets.scepterBoostAuraEffect;
         }
         public override GameObject GetFlashPrefab()
         {

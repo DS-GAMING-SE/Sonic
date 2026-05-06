@@ -93,7 +93,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (((PowerBoostLogic)boostLogic).powerBoosting)
             {
-                return base.GetOverlayMaterial();
+                return LegacyResourcesAPI.Load<Material>("Materials/matOnHelfire");
             }
             return null;
         }
@@ -101,15 +101,15 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (((PowerBoostLogic)boostLogic).powerBoosting)
             {
-                return base.GetAuraPrefab();
+                return Modules.Assets.powerBoostAuraEffect;
             }
-            return null;
+            return Modules.Assets.boostAuraEffect;
         }
         public override GameObject GetFlashPrefab()
         {
             if (((PowerBoostLogic)boostLogic).powerBoosting)
             {
-                return base.GetFlashPrefab();
+                return Modules.Assets.powerBoostFlashEffect;
             }
             return Modules.Assets.boostFlashEffect;
         }
