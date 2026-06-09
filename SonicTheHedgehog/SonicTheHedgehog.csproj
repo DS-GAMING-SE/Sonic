@@ -106,6 +106,9 @@
     <Reference Include="RiskOfOptions">
       <HintPath>..\libs\RiskOfOptions.dll</HintPath>
     </Reference>
+    <Reference Include="StageRanking">
+      <HintPath>..\libs\StageRanking.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
