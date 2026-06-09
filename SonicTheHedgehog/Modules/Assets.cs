@@ -194,21 +194,15 @@ namespace SonicTheHedgehog.Modules
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
 
+            Material scepterElectricMat = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.matPrimeDevastatorChargeVFX2_mat).WaitForCompletion());
+            scepterElectricMat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampTeslaCoil_png).WaitForCompletion());
+            scepterElectricMat.SetColor("_TintColor", new Color(3.5f, 1f, 4f));
+            mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect").GetComponent<ParticleSystemRenderer>().trailMaterial = scepterElectricMat;
             powerBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.texChefSecondaryFlameVFX1_png).WaitForCompletion(), SonicTheHedgehogCharacter.sonicColor2);
-            //powerBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicPowerBoostFlash", 1, 1.3f, new Color(1, 1, 1), new Color(0.1098039f, 0.772549f, 1), new Color(0.05098039f, 0.4469049f, 1), new Color(0.1098039f, 0.772549f, 1));
-                
-                //MaterialSwap(Assets.LoadEffect("SonicPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
-
             powerBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.texChefSecondaryFlameVFX1_png).WaitForCompletion(), SonicTheHedgehogCharacter.sonicColor2);
-            //powerBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicPowerBoostAura", 1, 0.65f, new Color(1, 1, 1), new Color(0.1098039f, 0.772549f, 1), new Color(0.05098039f, 0.4469049f, 1), new Color(0.1098039f, 0.772549f, 1));
-            // ScepterBoostElectricEffect ScepterSuperBoostElectricEffect
 
             scepterPowerBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterPowerBoostFlash", new Color(0.15f, 0.15f, 1f));
-            //scepterPowerBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicScepterPowerBoostFlash", 1, 1.3f, new Color(1, 1, 1), new Color(0.1933962f, 0.6118863f, 1), new Color(0.3363763f, 0.240566f, 1), new Color(0.1933962f, 0.6118863f, 1));
-
-            //AddScepterToBoostFlash(scepterPowerBoostFlashEffect); REVISIT THIS
-
-            //MaterialSwap(Assets.LoadEffect("SonicScepterPowerBoostFlash", true), "RoR2/Base/Common/VFX/matDistortionFaded.mat", "Distortion");
+            AddScepterToBoostFlash(scepterPowerBoostFlashEffect);
             if (scepterPowerBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -225,11 +219,10 @@ namespace SonicTheHedgehog.Modules
                 };
             }
             scepterPowerBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterPowerBoostAura", new Color(0.15f, 0.15f, 1f));
-            //HedgehogUtils.Assets.CreateNewBoostAura("SonicScepterPowerBoostAura", 1, 0.65f, new Color(1, 1, 1), new Color(0.1933962f, 0.6118863f, 1), new Color(0.3363763f, 0.240566f, 1), new Color(0.1933962f, 0.6118863f, 1));
 
             Color windColor = new Color(0.07f, 0.07f, 0.07f);
             scepterBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterBoostFlash", null, windColor, Color.magenta, false, 0.9f);
-            //scepterBoostFlashEffect = Assets.LoadEffect("SonicScepterBoostFlash", true);
+            AddScepterToBoostFlash(scepterBoostFlashEffect);
             if (scepterBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -248,20 +241,14 @@ namespace SonicTheHedgehog.Modules
             scepterBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicBoostAura", null, windColor, Color.black, Color.black, 0.9f);
 
 
-            //boostFlashEffect = Assets.LoadEffect("SonicBoostFlash", true);
             boostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicBoostFlash", null, windColor, Color.black, false, 0.9f);
             boostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicBoostAura", null, windColor, Color.black, Color.black, 0.9f);
 
             superBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicSuperBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor, true, 1.25f);
-            //superBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicSuperBoostFlash", 1.3f, 1.6f, new Color(1, 1, 1), new Color(1, 0.9702323f, 0.08f), new Color(1f, 0.6267163f, 0), new Color(1, 0.9702323f, 0.08f));
-            // superBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicSuperBoostAura", 1.3f, 0.8f, new Color(1, 1, 1), new Color(1, 0.9702323f, 0.08f), new Color(1f, 0.6267163f, 0), new Color(1, 0.9702323f, 0.08f));
             superBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicSuperBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor, new Color(1f, 0.8f, 0.6f), 1.25f);
 
             scepterSuperBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterSuperBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, true, 1.25f);
-            //scepterSuperBoostFlashEffect = HedgehogUtils.Assets.CreateNewBoostFlash("SonicScepterSuperBoostFlash", 1.3f, 1.6f, new Color(1, 1, 1), new Color(1, 0.9843137f, 0.3160377f), new Color(1f, 0.4103774f, 0.6793281f), new Color(1, 0.9843137f, 0.3160377f));
-
-            //AddScepterToBoostFlash(scepterSuperBoostFlashEffect);
-
+            AddScepterToBoostFlash(scepterSuperBoostFlashEffect);
             if (scepterSuperBoostFlashEffect)
             {
                 ShakeEmitter shakeEmitter = scepterPowerBoostFlashEffect.AddComponent<ShakeEmitter>();
@@ -278,7 +265,6 @@ namespace SonicTheHedgehog.Modules
                 };
             }
             scepterSuperBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterSuperBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, new Color(1f, 0.4f, 0.8f), 1.25f);
-            //scepterSuperBoostAuraEffect = HedgehogUtils.Assets.CreateNewBoostAura("SonicScepterSuperBoostAura", 1.3f, 0.8f, new Color(1, 1, 1), new Color(1, 0.9843137f, 0.3160377f), new Color(1f, 0.4103774f, 0.6793281f), new Color(1, 0.9843137f, 0.3160377f));
 
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
 
@@ -313,7 +299,7 @@ namespace SonicTheHedgehog.Modules
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)
         {
-            GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), boostFlashPrefab.transform.Find("BlueCone"));
+            GameObject.Instantiate(mainAssetBundle.LoadAsset<GameObject>("ScepterBoostElectricEffect"), boostFlashPrefab.transform);
         }
 
         public static GameObject MaterialSwap(GameObject prefab, string assetPath, string pathToParticle = "")

@@ -20,6 +20,7 @@ using SonicTheHedgehog.SkillStates.SuperUpgrades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -674,7 +675,13 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             });
             Skills.AddSkillsToFamily(voicelinesGenericSkill.skillFamily, voicelinesEnable, voicelinesDisable);
-
+            SonicVoicelineComponent voiceline = bodyPrefab.AddComponent<SonicVoicelineComponent>();
+            string voicelineSoundBankPath = Assembly.GetExecutingAssembly().Location.Replace("SonicTheHedgehog.dll", "SonicTheHedgehogVoicelinesBank.bnk");
+            voiceline.soundBankFilePath = voicelineSoundBankPath;
+            voiceline.voicelinesEnableSkillDef = voicelinesEnable;
+            voiceline.Initialize();
+            HedgehogUtils.Voicelines.VoicelineDisplayComponent.AddDisplayPrefabVoicelineComponent(displayPrefab, bodyPrefab, voicelinesGenericSkill.skillFamily, voicelinesEnable, voicelineSoundBankPath,
+                SonicVoicelineComponent.lobby1, SonicVoicelineComponent.lobby2, SonicVoicelineComponent.lobby3, SonicVoicelineComponent.lobby4);
             #endregion
 
             MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam);
