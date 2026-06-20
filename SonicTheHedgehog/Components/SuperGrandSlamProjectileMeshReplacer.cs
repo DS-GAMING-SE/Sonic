@@ -28,7 +28,8 @@ namespace SonicTheHedgehog.Components
         }
         public void ReplaceMesh(int index)
         {
-            UniqueSkinEffect.SuperGrandSlamMeshReplacements meshReplacement = UniqueSkinEffect.superGrandSlamMeshReplacements[index];
+            if (!UniqueSkinEffect.skinEffects[index].HasValue) return;
+            UniqueSkinEffect.SuperGrandSlamMeshReplacements meshReplacement = UniqueSkinEffect.skinEffects[index].Value.superGrandSlamMeshReplacement;
             if (meshReplacement.meshAddress != null && meshReplacement.meshAddress.RuntimeKeyIsValid())
             {
                 mesh = AssetAsyncReferenceManager<Mesh>.LoadAsset(meshReplacement.meshAddress).WaitForCompletion();

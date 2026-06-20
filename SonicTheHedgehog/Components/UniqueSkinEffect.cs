@@ -17,10 +17,10 @@ namespace SonicTheHedgehog.Components
         public ModelSkinController skinController;
 
         private static List<string> flyingAnimationSkinTokens = new List<string>();
-        public static bool[] flyingAnimationSkins;
+        private static List<string> swordAnimationSkinTokens = new List<string>();
+        public static SkinEffects?[] skinEffects;
 
         private static Dictionary<string, SuperGrandSlamMeshReplacements> superGrandSlamMeshReplacementTokens = new Dictionary<string, SuperGrandSlamMeshReplacements>();
-        public static SuperGrandSlamMeshReplacements[] superGrandSlamMeshReplacements;
 
 
         private void Start()
@@ -38,7 +38,7 @@ namespace SonicTheHedgehog.Components
         }
         private void UpdateSkin(int skinIndex)
         {
-            if (flyingAnimationSkins[skinIndex])
+            if (skinEffects[skinIndex].HasValue && skinEffects[skinIndex].Value.flying)
             {
                 animator.SetFloat("isMetalSonic", 1);
             }
@@ -47,15 +47,24 @@ namespace SonicTheHedgehog.Components
         {
             RoR2.UI.MainMenu.MainMenuController.OnMainMenuInitialised -= UniqueSkinEffect.Bake;
             SkinDef[] skins = SkinCatalog.GetBodySkinDefs(BodyCatalog.FindBodyIndex("SonicTheHedgehog"));
-            flyingAnimationSkins = new bool[skins.Length];
-            superGrandSlamMeshReplacements = new SuperGrandSlamMeshReplacements[skins.Length];
+            skinEffects = new SkinEffects?[skins.Length];
+            bool flying = false;
+            bool sword = false;
             for (int i = 0; i < skins.Length; i++)
             {
-                flyingAnimationSkins[i] = flyingAnimationSkinTokens.Contains(skins[i].nameToken);
-                if (superGrandSlamMeshReplacementTokens.TryGetValue(skins[i].nameToken, out var meshReplacement)) superGrandSlamMeshReplacements[i] = meshReplacement;
+                flying = flyingAnimationSkinTokens.Contains(skins[i].nameToken);
+                sword = swordAnimationSkinTokens.Contains(skins[i].nameToken);
+
+                skinEffects[i] = new SkinEffects
+                {
+                    flying = flying,
+                    sword = sword,
+                    superGrandSlamMeshReplacement = superGrandSlamMeshReplacementTokens.TryGetValue(skins[i].nameToken, out var meshReplacement) ? meshReplacement : default
+                };
             }
 
             flyingAnimationSkinTokens = null;
+            swordAnimationSkinTokens = null;
             superGrandSlamMeshReplacementTokens = null;
         }
 
@@ -67,6 +76,15 @@ namespace SonicTheHedgehog.Components
         public static void AddFlyingSkin(List<string> nameTokens)
         {
             flyingAnimationSkinTokens.Concat(nameTokens);
+        }
+        public static void AddSwordSkin(string nameToken)
+        {
+            swordAnimationSkinTokens.Add(nameToken);
+        }
+
+        public static void AddSwordSkin(List<string> nameTokens)
+        {
+            swordAnimationSkinTokens.Concat(nameTokens);
         }
 
         public static void AddSuperGrandSlamMeshReplacement(string nameToken, Mesh mesh)
@@ -82,6 +100,13 @@ namespace SonicTheHedgehog.Components
         {
             public Mesh mesh;
             public AssetReferenceT<Mesh> meshAddress;
+        }
+
+        public struct SkinEffects
+        {
+            public bool flying;
+            public bool sword;
+            public SuperGrandSlamMeshReplacements superGrandSlamMeshReplacement;
         }
     }
 }

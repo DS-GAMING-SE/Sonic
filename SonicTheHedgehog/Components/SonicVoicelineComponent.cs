@@ -40,16 +40,15 @@ namespace SonicTheHedgehog.Components
         public static NetworkSoundEventDef[] transforms;
         #region Final Bosses
         public static NetworkSoundEventDef finalBossStartGeneric;
-        public static NetworkSoundEventDef finalBossStartGenericEmeralds;
-        public static NetworkSoundEventDef finalBossCards;
+        public static NetworkSoundEventDef finalBossPhase;
 
         public static NetworkSoundEventDef mithrixHammer;
-        public static NetworkSoundEventDef mithrixDontKnowMe;
+        public static NetworkSoundEventDef mithrixWhoIAm;
 
         public static NetworkSoundEventDef voidlingTitan;
-        public static NetworkSoundEventDef voidlingWorlds;
+        public static NetworkSoundEventDef voidlingFreedom;
 
-        public static NetworkSoundEventDef falseSonElectricPunk;
+        public static NetworkSoundEventDef falseSonStart;
         public static NetworkSoundEventDef falseSonLightning;
 
         public static NetworkSoundEventDef solusWingStart1;
@@ -61,6 +60,8 @@ namespace SonicTheHedgehog.Components
 
         public static NetworkSoundEventDef doppelgangerStart1;
         public static NetworkSoundEventDef doppelgangerStart2;
+        public static NetworkSoundEventDef doppelgangerStart3;
+        public static NetworkSoundEventDef doppelgangerStart4;
         public static NetworkSoundEventDef[] doppelgangerStarts;
 
         public static NetworkSoundEventDef finalBossDefeat1;
@@ -91,16 +92,15 @@ namespace SonicTheHedgehog.Components
             transforms = new[] { transform1, transform2 };
 
             finalBossStartGeneric = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_final_boss_start");
-            finalBossStartGenericEmeralds = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_final_boss_start_emeralds");
-            finalBossCards = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_final_boss_cards");
+            finalBossPhase = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_final_boss_phase_defeat");
 
-            mithrixHammer = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_mithrix_hammer");
-            mithrixDontKnowMe = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_mithrix_dont_know_me");
+            mithrixHammer = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_mithrix_start");
+            mithrixWhoIAm = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_mithrix_who_i_am");
 
-            voidlingTitan = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_voidling_titan");
-            voidlingWorlds = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_voidling_worlds");
+            voidlingTitan = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_voidling_start");
+            voidlingFreedom = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_voidling_freedom");
 
-            falseSonElectricPunk = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_false_son_electric_punk");
+            falseSonStart = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_false_son_start");
             falseSonLightning = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_false_son_lightning");
 
             solusWingStart1 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_soluswing_1");
@@ -110,9 +110,11 @@ namespace SonicTheHedgehog.Components
             neuralSanctumEnter = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_neural_sanctum");
             solusHeartStart = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_solus_heart_start");
 
-            doppelgangerStart1 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_doppelganger_start_1");
-            doppelgangerStart2 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_doppelganger_start_2");
-            doppelgangerStarts = new[] { doppelgangerStart1, doppelgangerStart2 };
+            doppelgangerStart1 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_doppelganger_1");
+            doppelgangerStart2 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_doppelganger_2");
+            doppelgangerStart3 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_doppelganger_3");
+            doppelgangerStart4 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_doppelganger_4");
+            doppelgangerStarts = new[] { doppelgangerStart1, doppelgangerStart2, doppelgangerStart3, doppelgangerStart4 };
 
             finalBossDefeat1 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_final_boss_defeat_1");
             finalBossDefeat2 = Modules.Assets.CreateNetworkSoundEventDef("Play_sonicthehedgehog_voiceline_final_boss_defeat_2");
@@ -217,13 +219,10 @@ namespace SonicTheHedgehog.Components
                     networkedVoicelines.Add(new NetworkedVoiceline(this, voidlingTitan.index, VoicelinePriority.PriorityDialogue));
                     return;
                 case FinalBoss.Voidling2:
-                    networkedVoicelines.Add(new NetworkedVoiceline(this, voidlingWorlds.index, VoicelinePriority.PriorityDialogue));
+                    networkedVoicelines.Add(new NetworkedVoiceline(this, voidlingFreedom.index, VoicelinePriority.PriorityDialogue));
                     return;
                 case FinalBoss.FalseSon1:
-                    networkedVoicelines.Add(new NetworkedVoiceline(this, falseSonElectricPunk.index, VoicelinePriority.PriorityDialogue));
-                    return;
-                case FinalBoss.FalseSon2:
-                    networkedVoicelines.Add(new NetworkedVoiceline(this, falseSonLightning.index, VoicelinePriority.PriorityDialogue));
+                    networkedVoicelines.Add(new NetworkedVoiceline(this, falseSonStart.index, VoicelinePriority.PriorityDialogue));
                     return;
                 case FinalBoss.SolusWing:
                     networkedVoicelines.Add(new NetworkedVoiceline(this, solusWingStarts.GetRandom().index, VoicelinePriority.PriorityDialogue));
@@ -232,21 +231,13 @@ namespace SonicTheHedgehog.Components
                     networkedVoicelines.Add(new NetworkedVoiceline(this, solusHeartStart.index, VoicelinePriority.PriorityDialogue));
                     return;
             }
-            if (finalBoss == FinalBoss.Mithrix3 || finalBoss == FinalBoss.Voidling3 || finalBoss == FinalBoss.FalseSon3 || finalBoss == FinalBoss.Arraign2 || finalBoss == FinalBoss.SolusHeart3)
+            if (finalBoss == FinalBoss.Mithrix3 || finalBoss == FinalBoss.FalseSon3 || finalBoss == FinalBoss.Arraign2 || finalBoss == FinalBoss.SolusHeart3)
             {
-                networkedVoicelines.Add(new NetworkedVoiceline(this, finalBossCards.index, VoicelinePriority.PriorityDialogue));
+                networkedVoicelines.Add(new NetworkedVoiceline(this, finalBossPhase.index, VoicelinePriority.PriorityDialogue));
                 return;
             }
             if (finalBoss == FinalBoss.LunarScavenger || finalBoss == FinalBoss.Arraign1)
             {
-                if (formComponent && Forms.formToHandler.TryGetValue(SuperFormDef.superFormDef, out var handler))
-                {
-                    if (handler.CanTransform(formComponent))
-                    {
-                        networkedVoicelines.Add(new NetworkedVoiceline(this, finalBossStartGenericEmeralds.index, VoicelinePriority.PriorityDialogue));
-                        return;
-                    }
-                }
                 networkedVoicelines.Add(new NetworkedVoiceline(this, finalBossStartGeneric.index, VoicelinePriority.PriorityDialogue));
                 return;
             }
@@ -254,10 +245,17 @@ namespace SonicTheHedgehog.Components
         }
         private void OnFinalBossDefeated(FinalBoss finalBoss, List<NetworkedVoiceline> networkedVoicelines)
         {
-            if (finalBoss == FinalBoss.Mithrix1)
+            switch (finalBoss)
             {
-                networkedVoicelines.Add(new NetworkedVoiceline(this, mithrixDontKnowMe.index, VoicelinePriority.PriorityDialogue));
-                return;
+                case FinalBoss.Mithrix1:
+                    networkedVoicelines.Add(new NetworkedVoiceline(this, mithrixWhoIAm.index, VoicelinePriority.PriorityDialogue));
+                    return;
+                case FinalBoss.FalseSon1:
+                    networkedVoicelines.Add(new NetworkedVoiceline(this, falseSonLightning.index, VoicelinePriority.PriorityDialogue));
+                    return;
+                case FinalBoss.Voidling2:
+                    networkedVoicelines.Add(new NetworkedVoiceline(this, finalBossPhase.index, VoicelinePriority.PriorityDialogue));
+                    return;
             }
             if (finalBoss == FinalBoss.Mithrix4 || finalBoss == FinalBoss.Voidling3 || finalBoss == FinalBoss.FalseSon3 || finalBoss == FinalBoss.SolusWing || finalBoss == FinalBoss.SolusHeart3 || finalBoss == FinalBoss.LunarScavenger || finalBoss == FinalBoss.Arraign2)
             {
