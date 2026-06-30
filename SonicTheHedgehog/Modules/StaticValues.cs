@@ -93,7 +93,13 @@ namespace SonicTheHedgehog.Modules
         internal const float defaultPowerBoostSpeed = 24f;
 
         internal const float scepterBoostICD = 1f;
-        
+
+        // Cyloop
+
+        internal const int cyloopMaxPoints = 40;
+
+        internal const float cyloopLineIntersectWidth = 2f;
+
         // Grand Slam
 
         internal const float grandSlamSpinDamageCoefficient = 1.4f;

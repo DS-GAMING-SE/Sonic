@@ -4,6 +4,7 @@ using SonicTheHedgehog.SkillStates.Emotes;
 using SonicTheHedgehog.SkillStates.Initial;
 using System.Collections.Generic;
 using System;
+using SonicTheHedgehog.SkillStates.Cyloop;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -48,6 +49,8 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(NewSuperBoost));
 
             Modules.Content.AddEntityState(typeof(NewScepterSuperBoost));
+
+            Modules.Content.AddEntityState(typeof(Cyloop));
 
             Modules.Content.AddEntityState(typeof(GrandSlamDash));
             Modules.Content.AddEntityState(typeof(GrandSlamSpin));

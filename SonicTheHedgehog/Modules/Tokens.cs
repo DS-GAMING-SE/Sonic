@@ -57,7 +57,6 @@ namespace SonicTheHedgehog.Modules
 
             #region Skins
 
-            LanguageAPI.Add(prefix + "DEFAULT_SKIN_NAME", "Default");
             LanguageAPI.Add(prefix + "MASTERY_SKIN_NAME", "Metal");
             LanguageAPI.Add(prefix + "ANOINTED_SKIN_NAME", "Arthur");
 
@@ -172,6 +171,15 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION",
                 superBoostDescription + scepterBoostDescription);
 
+            #endregion
+
+            #region Cyloop
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_NAME", "Cyloop");
+            string cyloopDescription =
+                $"Leave a <style=cIsUtility>trail</style> behind you as you move. Creating a closed shape and releasing the skill will deal <style=cIsDamage>damage</style> and <style=cIsUtility>constricting</style> them. Using your primary skill will perform a <style=cIsUtility>homing Quick-Cyloop</style>.";
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", cyloopDescription);
+            LanguageAPI.Add(prefix + "CYLOOP_KEYWORD",
+                $"<style=CKeywordName>Constricted</style><style=cSub>Stuns and holds the enemy in the air. Using Cyloop on a constricted enemy will <style=cIsUtility>launch</style> them downwards.</style>");
             #endregion
 
             #region Special
