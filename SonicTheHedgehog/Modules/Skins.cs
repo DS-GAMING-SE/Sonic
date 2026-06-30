@@ -1,5 +1,6 @@
 ﻿using R2API;
 using RoR2;
+using SonicTheHedgehog.Modules.Survivors;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,7 +48,7 @@ namespace SonicTheHedgehog.Modules
             skinDef.projectileGhostReplacements = skinDefInfo.ProjectileGhostReplacements;
             skinDef.minionSkinReplacements = skinDefInfo.MinionSkinReplacements;
             skinDef.nameToken = skinDefInfo.NameToken;
-            skinDef.name = skinDefInfo.Name;
+            skinDef.name = SonicTheHedgehogCharacter.SONIC_THE_HEDGEHOG_PREFIX + skinDefInfo.Name;
 
             On.RoR2.SkinDef.Awake -= DoNothing;
 

@@ -254,6 +254,7 @@ namespace SonicTheHedgehog.Components
                     networkedVoicelines.Add(new NetworkedVoiceline(this, falseSonLightning.index, VoicelinePriority.PriorityDialogue));
                     return;
                 case FinalBoss.Voidling2:
+                case FinalBoss.SolusWingWeakPoint:
                     networkedVoicelines.Add(new NetworkedVoiceline(this, finalBossPhase.index, VoicelinePriority.PriorityDialogue));
                     return;
             }

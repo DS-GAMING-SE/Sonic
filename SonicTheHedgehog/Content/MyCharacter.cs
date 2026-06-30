@@ -618,6 +618,35 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #endregion
 
+            #region Special - Cyloop
+            SkillDefInfo cyloop = new SkillDefInfo
+            {
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_CYLOOP_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_CYLOOP_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_CYLOOP_DESCRIPTION",
+                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_CYLOOP_KEYWORD", HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD", prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Cyloop.Cyloop)),
+                activationStateMachineName = "Weapon",
+                baseMaxStock = 2,
+                baseRechargeInterval = 6f,
+                beginSkillCooldownOnSkillEnd = false,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = false,
+                mustKeyPress = true,
+                cancelSprintingOnActivation = false,
+                rechargeStock = 0,
+                requiredStock = 1,
+                stockToConsume = 0
+            };
+            SkillDef cyloopSkillDef = Modules.Skills.CreateSkillDef(cyloop);
+            Modules.Skills.AddSpecialSkills(bodyPrefab, cyloopSkillDef);
+            #endregion
+
             SonicSkillDefs.Initialize(primarySkillDef, sonicBoomSkillDef, parrySkillDef, followUpSkillDef, boostSkillDef, grandSlamSkillDef);
 
             // PASSIVES
@@ -848,7 +877,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             #region DefaultSkin
 
             //this creates a SkinDef with all default fields
-            SkinDef defaultSkin = Modules.Skins.CreateSkinDef(SONIC_THE_HEDGEHOG_PREFIX + "DEFAULT_SKIN_NAME",
+            SkinDef defaultSkin = Modules.Skins.CreateSkinDef("DEFAULT_SKIN",
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texDefaultSkinIcon"),
                 defaultRendererinfos,
                 prefabCharacterModel.gameObject);
@@ -880,7 +909,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rendererInfo = defaultSkinSuperRenderer,
                 mesh = defaultSkinSuperMeshes
             };
-            Forms.AddSkinForForm(defaultSkin.nameToken,
+            Forms.AddSkinForForm(defaultSkin.name,
                 defaultSkinSuper,
                 ref SuperFormDef.superFormDef);
             #endregion

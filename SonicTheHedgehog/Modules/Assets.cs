@@ -59,6 +59,8 @@ namespace SonicTheHedgehog.Modules
 
         public static GameObject grandSlamHitEffect;
 
+        public static GameObject cyloopTrail;
+
         // initial
         public static GameObject faceplantDecal;
 
@@ -295,6 +297,8 @@ namespace SonicTheHedgehog.Modules
             {
                 faceplantDecalComponent.Material = x.Result;
             };
+
+            cyloopTrail = LoadEffect("SonicCyloopTrail", "", false, -1f);
         }
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)
@@ -420,7 +424,7 @@ namespace SonicTheHedgehog.Modules
             return newEffect;
         }
 
-        private static GameObject LoadEffect(string resourceName, string soundName, bool parentToTransform)
+        private static GameObject LoadEffect(string resourceName, string soundName, bool parentToTransform, float destroyOnTimer = 12)
         {
             GameObject newEffect = mainAssetBundle.LoadAsset<GameObject>(resourceName);
 
@@ -430,7 +434,7 @@ namespace SonicTheHedgehog.Modules
                 return null;
             }
 
-            newEffect.AddComponent<DestroyOnTimer>().duration = 12;
+            if (destroyOnTimer > 0) newEffect.AddComponent<DestroyOnTimer>().duration = destroyOnTimer;
             newEffect.AddComponent<NetworkIdentity>();
             newEffect.AddComponent<VFXAttributes>().vfxPriority = VFXAttributes.VFXPriority.Always;
             var effect = newEffect.AddComponent<EffectComponent>();
