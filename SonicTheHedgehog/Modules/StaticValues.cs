@@ -98,7 +98,11 @@ namespace SonicTheHedgehog.Modules
 
         internal const int cyloopMaxPoints = 40;
 
-        internal const float cyloopLineIntersectWidth = 2f;
+        internal const float cyloopLineIntersectWidth = 1.5f;
+
+        internal const float cyloopDamageCoefficient = 9f;
+
+        internal const float cyloopConstrictDuration = 4.5f;
 
         // Grand Slam
 

@@ -173,15 +173,6 @@ namespace SonicTheHedgehog.Modules
 
             #endregion
 
-            #region Cyloop
-            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_NAME", "Cyloop");
-            string cyloopDescription =
-                $"Leave a <style=cIsUtility>trail</style> behind you as you move. Creating a closed shape and releasing the skill will deal <style=cIsDamage>damage</style> and <style=cIsUtility>constricting</style> them. Using your primary skill will perform a <style=cIsUtility>homing Quick-Cyloop</style>.";
-            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", cyloopDescription);
-            LanguageAPI.Add(prefix + "CYLOOP_KEYWORD",
-                $"<style=CKeywordName>Constricted</style><style=cSub>Stuns and holds the enemy in the air. Using Cyloop on a constricted enemy will <style=cIsUtility>launch</style> them downwards.</style>");
-            #endregion
-
             #region Special
 
             LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_NAME", "Grand Slam");
@@ -198,6 +189,22 @@ namespace SonicTheHedgehog.Modules
                 grandSlamDescription +
                 $" and {HedgehogUtils.Helpers.SuperFormText("Launching")} enemies.\n{HedgehogUtils.Helpers.SuperFormText($"Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
 
+            #endregion
+
+            #region Cyloop
+            // Achievement ideas:
+            // Defeat 4 mountain shrines in one run (reference to the 4 titans) "Tearing down walls" "Tall as titans"
+            // Enter A Moment, Whole or the Neural Sanctum "Walls Between Dimensions"
+            // Complete Void Fields "Break Free" "Tearing down walls"
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_NAME", "Cyloop");
+            string cyloopDescription =
+                $"Leave a trail behind you as you move. Creating a <style=cIsUtility>closed shape</style> and releasing the skill will deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constrict</style> enemies inside. Using your primary skill will perform a <style=cIsUtility>homing Quick Cyloop</style>.";
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", cyloopDescription);
+            LanguageAPI.Add(prefix + "CYLOOP_KEYWORD",
+                $"<style=CKeywordName>Constrict</style><style=cSub>Stun and hold the enemy in the air. Using Cyloop on a constricted enemy will <style=cIsUtility>launch</style> them downwards.</style>");
+
+            LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_NAME", "Quick Cyloop");
+            LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them, dealing <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constricting</style> them.");
             #endregion
 
             #region Voicelines
