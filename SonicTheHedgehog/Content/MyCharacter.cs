@@ -395,6 +395,8 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static HedgehogUtils.Boost.SkillDefs.BoostSkillDef boostSkillDef;
 
         public static SkillDef grandSlamSkillDef;
+        public static CyloopSkillDef cyloopSkillDef;
+        public static RequiresTargetSkillDef quickCyloopSkillDef;
 
         public override void InitializeSkills()
         {
@@ -625,12 +627,12 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_CYLOOP_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_CYLOOP_DESCRIPTION",
                 keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_CYLOOP_KEYWORD", HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD", prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texCyloopIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Cyloop.Cyloop)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 2,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
+                baseRechargeInterval = 10f,
+                beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
                 fullRestockOnAssign = true,
@@ -639,11 +641,39 @@ namespace SonicTheHedgehog.Modules.Survivors
                 isCombatSkill = false,
                 mustKeyPress = true,
                 cancelSprintingOnActivation = false,
-                rechargeStock = 0,
+                rechargeStock = 1,
                 requiredStock = 1,
                 stockToConsume = 0
             };
-            SkillDef cyloopSkillDef = Modules.Skills.CreateSkillDef(cyloop);
+            cyloopSkillDef = Modules.Skills.CreateSkillDef<CyloopSkillDef>(cyloop);
+            cyloopSkillDef.autoHandleLuminousShot = false;
+            cyloopSkillDef.suppressSkillActivation = true;
+            SkillDefInfo quickCyloop = new SkillDefInfo
+            {
+                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_QUICK_CYLOOP_NAME",
+                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_QUICK_CYLOOP_NAME",
+                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_QUICK_CYLOOP_DESCRIPTION",
+                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_CYLOOP_KEYWORD", HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD", prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
+                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texQuickCyloopIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(HomingAttack)),
+                activationStateMachineName = "Body",
+                baseMaxStock = 1,
+                baseRechargeInterval = 0f,
+                beginSkillCooldownOnSkillEnd = false,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = true,
+                interruptPriority = EntityStates.InterruptPriority.Skill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = true,
+                mustKeyPress = true,
+                cancelSprintingOnActivation = true,
+                rechargeStock = 1,
+                requiredStock = 1,
+                stockToConsume = 1,
+            };
+            quickCyloopSkillDef = Modules.Skills.CreateSkillDef<SkillDefs.RequiresTargetSkillDef>(quickCyloop);
+            cyloopSkillDef.quickCyloopSkillDef = quickCyloopSkillDef;
             Modules.Skills.AddSpecialSkills(bodyPrefab, cyloopSkillDef);
             #endregion
 

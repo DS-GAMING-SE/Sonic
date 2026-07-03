@@ -60,6 +60,7 @@ namespace SonicTheHedgehog.Modules
         public static GameObject grandSlamHitEffect;
 
         public static GameObject cyloopTrail;
+        public static GameObject cyloopTrailSpawningEffect;
 
         // initial
         public static GameObject faceplantDecal;
@@ -69,7 +70,7 @@ namespace SonicTheHedgehog.Modules
 
         // materials
 
-        internal static Material superSonicOverlay;
+        internal static Material cyloopOverlay;
 
         // networked hit sounds
         internal static NetworkSoundEventDef meleeHitSoundEvent;
@@ -170,28 +171,28 @@ namespace SonicTheHedgehog.Modules
             superSonicMesh = Assets.mainAssetBundle.LoadAsset<GameObject>("SuperSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
             metalSonicMesh = Assets.mainAssetBundle.LoadAsset<GameObject>("MetalSonicMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
-            sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick", true);
+            sonicBoomKickEffect = Assets.LoadEffect("SonicSonicBoomKick", "", true, 1f);
             homingAttackTrailEffect = Assets.LoadEffect("SonicHomingAttack", true);
 
-            sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact");
+            sonicBoomImpactEffect = Assets.LoadEffect("SonicSonicBoomImpact", "", false, 0.5f);
             if (sonicBoomImpactEffect)
             {
                 sonicBoomImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonicthehedgehog_sonic_boom_explode";
             }
-            crossSlashImpactEffect = Assets.LoadEffect("SonicCrossSlashImpact");
+            crossSlashImpactEffect = Assets.LoadEffect("SonicCrossSlashImpact", "", false, 0.5f);
             if (crossSlashImpactEffect)
             {
                 crossSlashImpactEffect.AddComponent<SoundOnStart>().soundString = "Play_sonicthehedgehog_sonic_boom_explode";
             }
 
-            meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", true);
-            meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact");
+            meleeHitEffect = Assets.LoadEffect("SonicMeleeHit", "", true, 0.25f);
+            meleeImpactEffect = Assets.LoadEffect("SonicMeleeImpact", "", false, 0.2f);
             homingAttackLaunchEffect = Assets.LoadEffect("SonicHomingAttackLaunch");
-            homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", true);
+            homingAttackHitEffect = Assets.LoadEffect("SonicHomingAttackHit", "", true, 0.3f);
 
-            parryEffect = Assets.LoadEffect("SonicParry", true);
-            parryActivateEffect = Assets.LoadEffect("SonicParryActivate", true);
-            followUpKickEffect = Assets.LoadEffect("SonicFollowUpKick", true);
+            parryEffect = Assets.LoadEffect("SonicParry", "", true, 0.15f);
+            parryActivateEffect = Assets.LoadEffect("SonicParryActivate", "", true, 0.5f);
+            followUpKickEffect = Assets.LoadEffect("SonicFollowUpKick", "", true, 0.35f);
             idwAttackEffect = MaterialSwap(Assets.LoadAsyncedEffect("SonicIDWAttack"), RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.matCrocoSlashDistortion_mat, "Blur/Distortion");
 
             superSonicBlurEffect = Assets.LoadEffect("SonicSuperBlur", true);
@@ -268,7 +269,7 @@ namespace SonicTheHedgehog.Modules
             }
             scepterSuperBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterSuperBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, new Color(1f, 0.4f, 0.8f), 1.25f);
 
-            grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", true);
+            grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", "", true, 0.7f);
 
             meleeHitSoundEvent = CreateNetworkSoundEventDef("Play_sonicthehedgehog_melee_hit");
             meleeFinalHitSoundEvent = CreateNetworkSoundEventDef("Play_sonicthehedgehog_melee_hit_final");
@@ -278,11 +279,6 @@ namespace SonicTheHedgehog.Modules
             superGrandSlamLoopSoundDef = ScriptableObject.CreateInstance<LoopSoundDef>();
             superGrandSlamLoopSoundDef.startSoundName = "Play_sonicthehedgehog_super_grand_slam_loop";
             superGrandSlamLoopSoundDef.stopSoundName = "Stop_sonicthehedgehog_super_grand_slam_loop";
-
-            superSonicOverlay = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LunarGolem.matLunarGolemShield_mat).WaitForCompletion());
-            superSonicOverlay.SetColor("_TintColor", new Color(1, 0.8f, 0.4f, 1));
-            superSonicOverlay.SetColor("_EmissionColor", new Color(1, 0.8f, 0.4f, 1));
-            superSonicOverlay.SetFloat("_OffsetAmount", 0.01f);
 
             powerBoostHud = Assets.mainAssetBundle.LoadAsset<GameObject>("PowerParticles");
             powerBoostHud.AddComponent<PowerBoostHUD>();
@@ -298,7 +294,41 @@ namespace SonicTheHedgehog.Modules
                 faceplantDecalComponent.Material = x.Result;
             };
 
-            cyloopTrail = LoadEffect("SonicCyloopTrail", "", false, -1f);
+            cyloopTrail = LoadEffect("SonicCyloopTrail", "", false, -1f, false);
+            Material cyberTrailMat = new Material(AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidSurvivor.matVoidSurvivorBlasterTrail_mat)).WaitForCompletion());
+            cyberTrailMat.SetFloat("_InvFade", 0f);
+            cyberTrailMat.SetFloat("_Boost", 1f);
+            cyberTrailMat.SetFloat("_AlphaBoost", 2f);
+            cyberTrailMat.SetTexture("_RampTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2.texRampTritoneHShrine_png).WaitForCompletion());
+            cyberTrailMat.SetTexture("_MainTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_TiledTextures.texCloudPixel2_png).WaitForCompletion());
+            cyberTrailMat.SetTextureScale("_MainTex", new Vector2(0.1f, 0.4f));
+            cyberTrailMat.EnableKeyword("VERTEXCOLOR");
+            cyberTrailMat.SetColor("_TintColor", Color.white);
+            cyloopTrail.transform.GetComponent<LineRenderer>().sharedMaterial = cyberTrailMat;
+
+            cyloopTrailSpawningEffect = LoadEffect("SonicCyloopTrailSpawningEffect", "", false, -1f, false);
+            Material cyberLinesMat = new Material(AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.matNanoSeekerPixelTrail_1_mat)).WaitForCompletion());
+            cyberLinesMat.SetTexture("_MainTex", mainAssetBundle.LoadAsset<Texture>("texCyberLines"));
+            cyberLinesMat.SetFloat("_Boost", 5f);
+            cyberLinesMat.SetTexture("_Cloud1Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.texPrimeDevastatorTetherMask2_png).WaitForCompletion());
+            cyberLinesMat.SetVector("_CutoffScroll", new Vector4(20f, 0, 0, 0));
+            cyloopTrailSpawningEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().sharedMaterial = cyberLinesMat;
+            Material cyberPixelMat = new Material(AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.matDT_ShieldPixelBurst50_mat)).WaitForCompletion());
+            cyberPixelMat.DisableKeyword("DISABLEREMAP");
+            cyberPixelMat.EnableKeyword("VERTEXCOLOR");
+            cyberPixelMat.SetFloat("_Boost", 3f);
+            cyberPixelMat.SetColor("_TintColor", Color.white);
+            cyberPixelMat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.texDroneTechRamp_png).WaitForCompletion());
+            cyloopTrailSpawningEffect.transform.GetChild(1).GetComponent<ParticleSystemRenderer>().sharedMaterial = cyberPixelMat;
+            var cyloopSpawnDestroy = cyloopTrailSpawningEffect.AddComponent<DisableParticleEmissionAndDestroyOnTimer>();
+            cyloopSpawnDestroy.waitDuration = 1.7f;
+            cyloopSpawnDestroy.particleSystems = new List<ParticleSystem> { cyloopTrailSpawningEffect.transform.GetChild(0).GetComponent<ParticleSystem>(), cyloopTrailSpawningEffect.transform.GetChild(1).GetComponent<ParticleSystem>() };
+
+            cyloopOverlay = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LunarGolem.matLunarGolemShield_mat).WaitForCompletion());
+            cyloopOverlay.SetColor("_TintColor", new Color(0.05f, 0.3f, 0.5f, 1));
+            cyloopOverlay.SetFloat("_OffsetAmount", 0.007f);
+
+            // REMOVE THE DUMB SOUNDONSTART COMPONENT. IT DOESN"T WORK WITH POOLED EFFECTS (it would if it was onenable but that component shouldn't exist to begin with)
         }
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)
@@ -424,7 +454,7 @@ namespace SonicTheHedgehog.Modules
             return newEffect;
         }
 
-        private static GameObject LoadEffect(string resourceName, string soundName, bool parentToTransform, float destroyOnTimer = 12)
+        private static GameObject LoadEffect(string resourceName, string soundName, bool parentToTransform, float destroyOnTimer = 3, bool effectDef = true)
         {
             GameObject newEffect = mainAssetBundle.LoadAsset<GameObject>(resourceName);
 
@@ -435,7 +465,7 @@ namespace SonicTheHedgehog.Modules
             }
 
             if (destroyOnTimer > 0) newEffect.AddComponent<DestroyOnTimer>().duration = destroyOnTimer;
-            newEffect.AddComponent<NetworkIdentity>();
+            if (effectDef) newEffect.AddComponent<NetworkIdentity>();
             newEffect.AddComponent<VFXAttributes>().vfxPriority = VFXAttributes.VFXPriority.Always;
             var effect = newEffect.AddComponent<EffectComponent>();
             effect.applyScale = false;
@@ -444,7 +474,7 @@ namespace SonicTheHedgehog.Modules
             effect.positionAtReferencedTransform = true;
             effect.soundName = soundName;
 
-            AddNewEffectDef(newEffect, soundName);
+            if (effectDef) AddNewEffectDef(newEffect, soundName);
 
             return newEffect;
         }

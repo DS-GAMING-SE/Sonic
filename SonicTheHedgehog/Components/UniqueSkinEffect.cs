@@ -107,6 +107,7 @@ namespace SonicTheHedgehog.Components
             public bool flying;
             public bool sword;
             public SuperGrandSlamMeshReplacements superGrandSlamMeshReplacement;
+            // add skin specific boost vfx
         }
     }
 }

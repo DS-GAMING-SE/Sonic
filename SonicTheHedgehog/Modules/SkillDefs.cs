@@ -73,10 +73,8 @@ namespace SonicTheHedgehog.Modules
         {
             public FormDef requiredForm { get; set; }
         }
-
-        public class RequiresFormTargetSkillDef : SkillDef, IRequiresFormSkillDef
+        public class RequiresTargetSkillDef : SkillDef
         {
-            public FormDef requiredForm { get; set; }
             public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
             {
                 return new InstanceData
@@ -86,11 +84,25 @@ namespace SonicTheHedgehog.Modules
             }
             public override bool IsReady([NotNull] GenericSkill skillSlot)
             {
-                return base.IsReady(skillSlot) && ((RequiresFormTargetSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true);
+                return base.IsReady(skillSlot) && ((RequiresTargetSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true);
             }
             protected class InstanceData : BaseSkillInstanceData
             {
                 public HomingTracker homingTracker;
+            }
+        }
+
+        public class RequiresFormTargetSkillDef : RequiresTargetSkillDef, IRequiresFormSkillDef
+        {
+            public FormDef requiredForm { get; set; }
+        }
+
+        public class CyloopSkillDef : SkillDef
+        {
+            public SkillDef quickCyloopSkillDef { get; set; }
+            public override bool IsReady([NotNull] GenericSkill skillSlot)
+            {
+                return base.IsReady(skillSlot) && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent;
             }
         }
     }

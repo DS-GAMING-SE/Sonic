@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using RoR2;
+using RoR2.Skills;
 using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Survivors;
 using System;
@@ -10,6 +11,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using static RoR2.CharacterSpeech.SolusHeartSpeechDriver;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace SonicTheHedgehog.SkillStates.Cyloop
@@ -20,14 +22,16 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public const float timeBetweenUpdates = 0.25f;
         public const float minMoveSpeedPercent = 0.4f;
 
-        public const int distanceFromPointsToIntersect = 2;
+        public const int distanceFromPointsToIntersect = 3;
         public const float maxAngleDotForIntersection = 0.7f;
 
         public const float lineRendererIntersectColorFadeDuration = 0.4f;
 
         public virtual float cyloopLineIntersectWidth { get { return StaticValues.cyloopLineIntersectWidth; } }
-        public virtual Color cyloopTrailColor { get{ return SonicTheHedgehogCharacter.sonicColor; } }
+        public virtual Color cyloopTrailColor { get{ return SonicTheHedgehogCharacter.sonicColor2; } }
         public virtual Color cyloopTrailIntersectColor { get { return new Color(1f,0.3f,0.7f); } }
+
+        public virtual Material temporaryOverlayMaterial { get { return Modules.Assets.cyloopOverlay; } }
 
         private float updateTimer;
 
@@ -39,7 +43,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private int startingPointIndex = -1;
 
         private JobHandle intersectJobHandle;
-        private NativeArray<bool> intersected;
+        private NativeArray<int> newIntersect;
         private Vector3 lastPosition;
 
         public EffectManagerHelper lineRendererObject;
@@ -48,25 +52,58 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private NativeArray<Vector3> lineRendererPositions;
         private float lineIntersectColorLerp;
 
+        public EffectManagerHelper trailSpawningEffect;
+
+        public TemporaryOverlayInstance temporaryOverlay;
+
+        private SkillDef quickCyloopSkillDef;
 
         Run.FixedTimeStamp timeToLog;
 
         public override void OnEnter()
         {
             base.OnEnter();
-            lineRendererObject = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrail, Vector3.zero, Quaternion.identity);
-            lineRenderer = lineRendererObject.GetComponent<LineRenderer>();
-            SetLineColor(cyloopTrailColor);
+            SpawnVFX();
+            if (activatorSkillSlot.skillDef is SkillDefs.CyloopSkillDef cyloopSkillDef)
+            {
+                quickCyloopSkillDef = cyloopSkillDef.quickCyloopSkillDef;
+                skillLocator.primary.SetSkillOverride(this, cyloopSkillDef.quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+            }
 
             cyloopPoints = new NativeArray<CyloopPoint>(StaticValues.cyloopMaxPoints, Allocator.Persistent);
             cyloopLines = new NativeArray<CyloopLine>(StaticValues.cyloopMaxPoints - 1, Allocator.Persistent);
             lineRendererPositions = new NativeArray<Vector3>(StaticValues.cyloopMaxPoints + 1, Allocator.Persistent);
-            intersected = new NativeArray<bool>(1, Allocator.Persistent);
+            newIntersect = new NativeArray<int>(1, Allocator.Persistent);
+            newIntersect[0] = -1;
             timeToLog = Run.FixedTimeStamp.now + 1f;
             lastPosition = characterBody.corePosition;
             for (int i = 0; i < cyloopPoints.Length; i++)
             {
                 cyloopPoints[i] = CyloopPoint.invalid;
+            }
+        }
+
+        private void SpawnVFX()
+        {
+            lineRendererObject = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrail, Vector3.zero, Quaternion.identity);
+            lineRenderer = lineRendererObject.GetComponent<LineRenderer>();
+            SetLineColor(cyloopTrailColor);
+
+            trailSpawningEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrailSpawningEffect, characterBody.coreTransform);
+            trailSpawningEffect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            trailSpawningEffect.transform.localScale = Vector3.one * characterBody.radius;
+            
+            if (temporaryOverlayMaterial)
+            {
+                Transform modelTransform = GetModelTransform();
+                if (modelTransform && modelTransform.TryGetComponent<CharacterModel>(out var model))
+                {
+                    temporaryOverlay = TemporaryOverlayManager.AddOverlay(model.gameObject);
+                    temporaryOverlay.originalMaterial = temporaryOverlayMaterial;
+                    temporaryOverlay.destroyComponentOnEnd = false;
+                    temporaryOverlay.inspectorCharacterModel = model;
+                    temporaryOverlay.Start(); // Apparently Start() isn't run if the overlay doesn't have animateShaderAlpha on so I gotta do this myself
+                }
             }
         }
 
@@ -83,11 +120,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     startingPointIndex = (startingPointIndex + 1) % StaticValues.cyloopMaxPoints;
                     cyloopPoints[startingPointIndex] = new CyloopPoint(characterBody.corePosition, characterMotor.velocity.normalized, startingPointIndex);
                     if (numValidPoints < StaticValues.cyloopMaxPoints) numValidPoints++;
-                    if (cyloopPoints[(startingPointIndex - 1) % StaticValues.cyloopMaxPoints].IsValid())
+                    if (startingPointIndex > 0 && cyloopPoints[(startingPointIndex - 1) % StaticValues.cyloopMaxPoints].IsValid())
                     {
-                        cyloopLines[startingPointIndex % (StaticValues.cyloopMaxPoints - 1)] = new CyloopLine(cyloopPoints[startingPointIndex], cyloopPoints[(startingPointIndex - 1) % StaticValues.cyloopMaxPoints]);
+                        cyloopLines[startingPointIndex - 1 % (StaticValues.cyloopMaxPoints - 1)] = new CyloopLine(cyloopPoints[startingPointIndex], cyloopPoints[(startingPointIndex - 1) % StaticValues.cyloopMaxPoints]);
                     }
-                    if (numValidPoints < StaticValues.cyloopMaxPoints) Chat.AddMessage($"Cyloop points {numValidPoints}");
+                    //if (numValidPoints < StaticValues.cyloopMaxPoints) Chat.AddMessage($"Cyloop points {numValidPoints}");
                 }
                 if ((!inputBank.skill4.down || characterMotor.velocity.magnitude < characterBody.moveSpeed * minMoveSpeedPercent) && fixedAge >= minDuration)
                 {
@@ -107,10 +144,12 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     lineRenderer.positionCount = lastNumValidPoints + 1;
                     lineRenderer.SetPositions(lineRendererPositions);
 
-                    if (intersected[0])
+                    if (newIntersect[0] != -1)
                     {
+                        EffectManager.SimpleEffect(Modules.Assets.sonicBoomImpactEffect, cyloopLines[newIntersect[0]].lineIntersectPosition, Quaternion.identity, false);
                         lineIntersectColorLerp = 1f;
-                        intersected[0] = false;
+                        newIntersect[0] = -1;
+                        Log.Message("current index:" + startingPointIndex);
                     }
                 }
 
@@ -125,7 +164,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                         width = cyloopLineIntersectWidth,
                         startIndex = startingPointIndex,
                         ignoreFirstLines = distanceFromPointsToIntersect,
-                        intersected = intersected
+                        newIntersect = newIntersect
                     };
                     //intersectJob.Run(cyloopLines.Length);
                     intersectJobHandle = intersectJob.Schedule(cyloopLines.Length, default);
@@ -162,8 +201,21 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             cyloopPoints.Dispose();
             cyloopLines.Dispose();
             lineRendererPositions.Dispose();
-            intersected.Dispose();
+            newIntersect.Dispose();
             lineRendererObject.ReturnToPool();
+            if (trailSpawningEffect.TryGetComponent<DisableParticleEmissionAndDestroyOnTimer>(out var trailSpawnDestroy))
+            {
+                trailSpawnDestroy.DisableParticlesStartTimer();
+            }
+            else
+            {
+                trailSpawningEffect.ReturnToPool();
+            }
+            temporaryOverlay.Destroy();
+            if (quickCyloopSkillDef)
+            {
+                skillLocator.primary.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+            }
             base.OnExit();
         }
 
@@ -180,13 +232,23 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public void EndLoop()
         {
             ending = true;
+            bool intersected = false;
             foreach (var line in cyloopLines)
             {
                 if (line.HasIntersect())
                 {
+                    intersected = true;
                     Chat.AddMessage("Cylooped");
-                    EffectManager.SimpleEffect(Modules.Assets.sonicBoomImpactEffect, line.lineIntersectPosition, Quaternion.identity, false);
                 }
+            }
+            if (intersected) // consume stocks on activation or if it actually hits something?
+            {
+                activatorSkillSlot.DeductStock(1);
+                characterBody.OnSkillActivated(activatorSkillSlot);
+            }
+            if (quickCyloopSkillDef)
+            {
+                skillLocator.primary.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
             }
             // make cyloop do shit here
             // if cyloop actually activated, reduce skill stock by 1
@@ -229,7 +291,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         }
         public bool IsValid()
         {
-            return point1.index != point2.index;
+            return point1.index != point2.index && point1.IsValid() && point2.IsValid();
         }
         public bool HasIntersect()
         {
