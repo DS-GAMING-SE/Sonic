@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using HedgehogUtils.Voicelines;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -43,6 +44,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterMotor.Motor.ForceUnground();
             }
             base.PlayAnimation("FullBody, Override", "IDWStart", "Slash.playbackRate", searchTime);
+            VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_idw_full_throttle", VoicelinePriority.Dialogue);
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;

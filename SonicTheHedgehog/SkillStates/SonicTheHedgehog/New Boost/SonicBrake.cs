@@ -8,6 +8,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using HedgehogUtils.Boost;
+using HedgehogUtils.Voicelines;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -28,6 +29,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 Util.PlaySound("Play_sonicthehedgehog_swing_low", base.gameObject);
             }
+            VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt", VoicelinePriority.Any);
         }
 
         public override void OnExit()

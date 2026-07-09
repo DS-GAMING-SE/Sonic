@@ -62,7 +62,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     line.lineIntersectPosition = characterPosition;
                     lines[index] = line;
                     newIntersect[0] = index;
-                    Log.Message($"---------------intersect----------------\nnormal:{cyloopLineNormal} up:{up} direction:{normalizedLineDirection} \nvert:{math.abs(math.length(characterPlaneRelativeToLine) * math.dot(math.normalize(characterOnPlane), up))}/{width / 2} -- hor:{math.abs(math.length(characterPlaneRelativeToLine) * math.dot(math.normalize(characterOnPlane), normalizedLineDirection))}/{math.length(lines[index].lineDirection) / 2}\nline points:{lines[index].point1.position} {lines[index].point2.position} index:{index}\ncharacter pos:{characterPosition} plane:{characterOnPlane}");
+                    //Log.Message($"---------------intersect----------------\nnormal:{cyloopLineNormal} up:{up} direction:{normalizedLineDirection} \nvert:{math.abs(math.length(characterPlaneRelativeToLine) * math.dot(math.normalize(characterOnPlane), up))}/{width / 2} -- hor:{math.abs(math.length(characterPlaneRelativeToLine) * math.dot(math.normalize(characterOnPlane), normalizedLineDirection))}/{math.length(lines[index].lineDirection) / 2}\nline points:{lines[index].point1.position} {lines[index].point2.position} index:{index}\ncharacter pos:{characterPosition} plane:{characterOnPlane}");
                 }
             }
         }
@@ -70,14 +70,6 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private float3 ClosestPointOnPlane(float3 planeOffset, float3 planeNormal, float3 point)
         {
             return point + (math.dot(planeOffset - point, planeNormal) * planeNormal);
-        }
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        private float3 ProjectOnPlane(float3 vector, float3 planeNormal)
-        {
-            var dot = math.dot(vector, planeNormal);
-            return new float3(vector.x - planeNormal.x * dot,
-                vector.y - planeNormal.y * dot,
-                vector.z - planeNormal.z * dot);
         }
     }
 }

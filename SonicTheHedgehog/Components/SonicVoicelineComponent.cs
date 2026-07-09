@@ -170,7 +170,7 @@ namespace SonicTheHedgehog.Components
         }
         private void OnJump()
         {
-            PlayVoiceline("Play_sonicthehedgehog_voiceline_jump", VoicelinePriority.Any);
+            PlayVoiceline("Play_sonicthehedgehog_voiceline_grunt", VoicelinePriority.Any);
         }
         private void OnTransform(FormComponent formComponent, FormDef form)
         {

@@ -1,36 +1,36 @@
 ﻿using BepInEx;
-using SonicTheHedgehog.Modules.Survivors;
-using R2API.Utils;
-using RoR2;
-using System.Collections.Generic;
-using System.Security;
-using System.Security.Permissions;
-using SonicTheHedgehog.Modules;
-using IL.RoR2.UI;
-using UnityEngine;
 using EmotesAPI;
-using System.Runtime.CompilerServices;
-using R2API;
-using SonicTheHedgehog.Components;
-
-using static BetterUI.ProcCoefficientCatalog;
-using static BetterUI.Buffs;
-using RiskOfOptions;
-
-using SonicTheHedgehog.SkillStates;
-using RiskOfOptions.Options;
 using EntityStates;
-using System.Security.Claims;
-using UnityEngine.Networking;
-using R2API.Networking.Interfaces;
-using R2API.Networking;
-using System;
 using HarmonyLib;
-using LookingGlass.LookingGlassLanguage;
+using IL.RoR2.UI;
+using LoadingScreenFix;
 using LookingGlass.BuffDescriptions;
 using LookingGlass.ItemStatsNameSpace;
-using LoadingScreenFix;
+using LookingGlass.LookingGlassLanguage;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using R2API;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
+using R2API.Utils;
+using RiskOfOptions;
+using RiskOfOptions.Options;
+using RoR2;
+using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules;
 using SonicTheHedgehog.Modules.Achievements;
+using SonicTheHedgehog.Modules.Survivors;
+using SonicTheHedgehog.SkillStates;
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Claims;
+using System.Security.Permissions;
+using UnityEngine;
+using UnityEngine.Networking;
+using static BetterUI.Buffs;
+using static BetterUI.ProcCoefficientCatalog;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -155,7 +155,7 @@ namespace SonicTheHedgehog
 
             On.RoR2.HealthComponent.TakeDamage += TakeDamage;
 
-            On.RoR2.CharacterBody.OnBuffFirstStackGained += AddGrandSlamJuggleFloat;
+            On.RoR2.CharacterMotor.ModifyGravity += GrandSlamJuggleAndCyloopFloat;
 
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
 
@@ -275,7 +275,7 @@ namespace SonicTheHedgehog
 
         private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
         {
-            if (self && NetworkServer.active)
+            if (self && NetworkServer.active) // Move parrying to an IOnIncomingDamageServerReceiver?
             {
                 EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.gameObject, "Body");
                 if (stateMachine)
@@ -293,26 +293,28 @@ namespace SonicTheHedgehog
             if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle) && NetworkServer.active
                 && self
                 && self.body
-                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup))
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup) 
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Unmovable))
             {
-                self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 1, 1);
+                self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 0.6f, 1);
             }
         }
-
-        private void AddGrandSlamJuggleFloat(On.RoR2.CharacterBody.orig_OnBuffFirstStackGained orig, CharacterBody self, BuffDef buff)
+        // could also mess with Icharactergravityparameters to get rid of gravity entirely
+        private void GrandSlamJuggleAndCyloopFloat(On.RoR2.CharacterMotor.orig_ModifyGravity orig, CharacterMotor self, ref float verticalVelocity, ref float gravity, float deltaTime)
         {
-            orig(self, buff);
-            if (self)
+            if (self.body && self.body.HasBuff(Buffs.grandSlamJuggleDebuff) || self.body.HasBuff(Buffs.cyloopDebuff))
             {
-                if (buff && buff == Buffs.grandSlamJuggleDebuff)
+                if (verticalVelocity > 0)
                 {
-                    GrandSlamJuggleFloat juggleFloat = self.GetComponent<GrandSlamJuggleFloat>();
-                    if (!juggleFloat)
-                    {
-                        self.gameObject.AddComponent<GrandSlamJuggleFloat>();
-                    }
+                    gravity *= 1.5f;
                 }
-            }
+                else
+                {
+                    gravity *= 0.2f;
+                }
+                return;
+            } // me when I don't call orig like a VILLAIN
+            orig(self, ref verticalVelocity, ref gravity, deltaTime);
         }
 
 

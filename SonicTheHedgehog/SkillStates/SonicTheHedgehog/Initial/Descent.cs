@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using RoR2;
 using UnityEngine.Networking;
 
@@ -7,6 +8,8 @@ namespace SonicTheHedgehog.SkillStates.Initial
     public class Descent : BaseState
     {
         public const float duration = 3f;
+        public const float screamDurationPercent = 0.5f;
+        private bool voicelinePlayed;
         public override void OnEnter()
         {
             base.OnEnter();
@@ -23,6 +26,11 @@ namespace SonicTheHedgehog.SkillStates.Initial
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+            if (fixedAge >= duration * screamDurationPercent && !voicelinePlayed)
+            {
+                voicelinePlayed = true;
+                VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_stage_intro", VoicelinePriority.Dialogue);
+            }
             if (base.isAuthority && fixedAge >= duration)
             {
                 this.outer.SetNextState(new Landed());
