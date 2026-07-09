@@ -1,16 +1,17 @@
 ﻿using EntityStates;
+using HedgehogUtils.Forms;
+using HedgehogUtils.Forms.SuperForm;
+using HedgehogUtils.Voicelines;
 using Rewired;
 using RoR2;
 using RoR2.Audio;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;
-using HedgehogUtils.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using HedgehogUtils.Forms.SuperForm;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -159,7 +160,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (invisible)
                 {
-                    EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicBlurEffect, base.gameObject, "BlurSide", true);
+                    EffectManager.SimpleMuzzleFlash(Modules.Assets.superSonicBlurEffect, base.gameObject, "BlurSide", false);
                     idwAttackEffect.GetComponentInChildren<ParticleSystem>().Stop();
                     if (this.characterModel)
                     {
@@ -170,6 +171,7 @@ namespace SonicTheHedgehog.SkillStates
                     {
                         base.characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
                     }
+                    VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_idw_time", VoicelinePriority.PriorityDialogue);
                     Util.PlaySound("Play_sonicthehedgehog_idw_end", base.gameObject);
                     this.endLag = baseEndLag / base.characterBody.attackSpeed;
                     base.PlayAnimation("FullBody, Override", "IDWEnd", "Slash.playbackRate", this.endLag);

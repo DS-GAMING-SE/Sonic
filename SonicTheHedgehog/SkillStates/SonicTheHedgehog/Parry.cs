@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using RoR2;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.Modules;

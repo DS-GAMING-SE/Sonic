@@ -109,6 +109,9 @@
     <Reference Include="StageRanking">
       <HintPath>..\libs\StageRanking.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>..\libs\Unity.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Mathematics">
       <HintPath>..\libs\Unity.Mathematics.dll</HintPath>
     </Reference>

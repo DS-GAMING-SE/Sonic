@@ -94,16 +94,6 @@ namespace SonicTheHedgehog.Modules
 
         internal const float scepterBoostICD = 1f;
 
-        // Cyloop
-
-        internal const int cyloopMaxPoints = 40;
-
-        internal const float cyloopLineIntersectWidth = 1.5f;
-
-        internal const float cyloopDamageCoefficient = 9f;
-
-        internal const float cyloopConstrictDuration = 4.5f;
-
         // Grand Slam
 
         internal const float grandSlamSpinDamageCoefficient = 1.4f;
@@ -115,6 +105,20 @@ namespace SonicTheHedgehog.Modules
         internal const float grandSlamFinalProcCoefficient = 1.5f;
 
         internal const float grandSlamJuggleSpeedReductionMult = 1f;
+
+        // Cyloop
+
+        internal const int cyloopMaxPoints = 40;
+
+        internal const float cyloopLinePointsPerPoint = 1.5f;
+
+        internal const float cyloopLineIntersectWidth = 3f;
+
+        internal const float cyloopCollisionWidth = 6f;
+
+        internal const float cyloopDamageCoefficient = 10f;
+
+        internal const float cyloopConstrictDuration = 4.5f;
 
         // Super Melee
 
@@ -163,6 +167,12 @@ namespace SonicTheHedgehog.Modules
         internal const float superGrandSlamDOTProcCoefficient = 0.3f;
 
         internal const float superGrandSlamDOTLifetime = 4f;
+
+        // Super Cyloop
+
+        internal const float superCyloopLineIntersectWidth = 5.5f;
+
+        internal const float superCyloopCollisionWidth = 8f;
 
     }
 }

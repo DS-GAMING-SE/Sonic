@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using RoR2;
 using RoR2.Skills;
 using SonicTheHedgehog.Components;
@@ -38,6 +39,7 @@ namespace SonicTheHedgehog.SkillStates
                 EffectManager.SimpleMuzzleFlash(Modules.Assets.parryEffect, base.gameObject, this.muzzleString, true);
             }
             Util.PlaySound("Play_sonicthehedgehog_swing_low", base.gameObject);
+            VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt", VoicelinePriority.Skill);
             if (parrySuccess)
             {
                 OnSuccessfulParry();

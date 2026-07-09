@@ -101,6 +101,13 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (((PowerBoostLogic)boostLogic).powerBoosting)
             {
+                if (UniqueSkinEffect.TryGetSkinEffects(gameObject, out var skinEffect))
+                {
+                    if (skinEffect.Value.boostAuraEffect)
+                    {
+                        return skinEffect.Value.boostAuraEffect;
+                    }
+                }
                 return Modules.Assets.powerBoostAuraEffect;
             }
             return Modules.Assets.boostAuraEffect;
@@ -109,6 +116,13 @@ namespace SonicTheHedgehog.SkillStates
         {
             if (((PowerBoostLogic)boostLogic).powerBoosting)
             {
+                if (UniqueSkinEffect.TryGetSkinEffects(gameObject, out var skinEffect))
+                {
+                    if (skinEffect.Value.boostFlashEffect)
+                    {
+                        return skinEffect.Value.boostFlashEffect;
+                    }
+                }
                 return Modules.Assets.powerBoostFlashEffect;
             }
             return Modules.Assets.boostFlashEffect;

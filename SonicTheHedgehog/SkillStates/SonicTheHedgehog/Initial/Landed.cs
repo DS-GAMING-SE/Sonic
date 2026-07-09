@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -13,6 +14,7 @@ namespace SonicTheHedgehog.SkillStates.Initial
             base.OnEnter();
             EffectManager.SimpleEffect(HedgehogUtils.Assets.launchWallCollisionEffect, base.characterBody.footPosition, modelLocator.modelTransform.rotation, false);
             GameObject.Instantiate(Modules.Assets.faceplantDecal, base.characterBody.footPosition, modelLocator.modelTransform.rotation);
+            VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_damage", VoicelinePriority.PriorityDialogue);
             if (NetworkServer.active)
             {
                 base.characterBody.AddBuff(DLC3Content.Buffs.Untargetable);

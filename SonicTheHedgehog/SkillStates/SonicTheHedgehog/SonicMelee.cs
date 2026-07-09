@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using R2API;
 using Rewired;
 using RiskOfOptions.Components.AssetResolution.Data;
@@ -311,6 +312,7 @@ namespace SonicTheHedgehog.SkillStates
                 if (!swingSoundPlayed)
                 {
                     Util.PlayAttackSpeedSound(swingSoundString, base.gameObject, base.attackSpeedStat);
+                    if (swingIndex == 4) VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_attack", VoicelinePriority.Skill);
                     swingSoundPlayed = true;
                 }
             }

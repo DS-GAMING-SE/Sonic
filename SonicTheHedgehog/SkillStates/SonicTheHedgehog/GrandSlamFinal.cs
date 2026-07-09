@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using IL.RoR2.ConVar;
 using R2API;
 using Rewired;
@@ -56,6 +57,7 @@ namespace SonicTheHedgehog.SkillStates
         private float speedMultiplier;
         private bool animationEnded=false;
         private bool effectFired = false;
+        private bool voicelinePlayed;
 
         protected float startUpVelocityMax = 60f;
         protected float startUpVelocityMin = 3f;
@@ -161,7 +163,11 @@ namespace SonicTheHedgehog.SkillStates
                 if (base.characterMotor) base.characterMotor.velocity = Vector3.zero;
                 if (this.animator) this.animator.SetFloat("Swing.playbackRate", 0f);
             }
-
+            if (fixedAge >= startUpTime && !voicelinePlayed)
+            {
+                voicelinePlayed = true;
+                VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_strong", VoicelinePriority.PrioritySkill);
+            }
             if (base.isAuthority)
             {
                 if (!hasHit)

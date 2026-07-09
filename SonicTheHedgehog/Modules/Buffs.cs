@@ -2,6 +2,7 @@
 using SonicTheHedgehog.Modules.Survivors;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -16,6 +17,7 @@ namespace SonicTheHedgehog.Modules
         internal static BuffDef grandSlamJuggleDebuff;
         internal static BuffDef sonicBoomDebuff;
         internal static BuffDef crossSlashDebuff;
+        internal static BuffDef cyloopDebuff;
 
         internal static void RegisterBuffs()
         {
@@ -60,6 +62,11 @@ namespace SonicTheHedgehog.Modules
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texCrossSlashDebuffIcon"),
                 new Color(1f, 1f, 1f),
                 true,
+                true);
+            cyloopDebuff = AddNewBuff("bdSonicCyloopDebuff",
+                Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_SharedSuffering.texSharedSufferingDebuffIcon_png).WaitForCompletion(),
+                new Color(1f, 1f, 1f),
+                false,
                 true);
         }
 

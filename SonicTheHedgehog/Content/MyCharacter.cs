@@ -973,7 +973,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 SkinDefParams = metalSkinDefParams
             };
             SkinDef metalSkin = R2API.Skins.CreateNewSkinDef(metalSkinParamsInfo);
-            UniqueSkinEffect.AddFlyingSkin(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME");
+            metalSkin.AddFlyingSkin();
             skins.Add(metalSkin);
 
             #region Super Form
@@ -990,14 +990,14 @@ namespace SonicTheHedgehog.Modules.Survivors
             Forms.AddSkinForForm(metalSkin.nameToken,
                 masterySkinSuper,
                 ref SuperFormDef.superFormDef);
-            UniqueSkinEffect.AddSuperGrandSlamMeshReplacement(SONIC_THE_HEDGEHOG_PREFIX + "MASTERY_SKIN_NAME", SkinAddressables.superMetalGrandSlam);
+            metalSkin.AddSuperGrandSlamMeshReplacement(SkinAddressables.superMetalGrandSlam);
             #endregion
             #endregion
 
             #region AnointedSkin EnemiesReturns
             if (SonicTheHedgehogPlugin.enemiesReturnsLoaded)
             {
-                skins.Add(AnointedSkinEnemiesReturns(metalSkin));
+                skins.Add(AnointedSkinEnemiesReturns(defaultSkin));
             }
             #endregion
             skinController.skins = skins.ToArray();
@@ -1010,7 +1010,8 @@ namespace SonicTheHedgehog.Modules.Survivors
             anointedSkin.name = SONIC_THE_HEDGEHOG_PREFIX + "ENEMIES_RETURNS_JUDGEMENT_SKIN";
             anointedSkin.nameToken = SONIC_THE_HEDGEHOG_PREFIX + "ANOINTED_SKIN_NAME";
             anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon");
-            UniqueSkinEffect.AddFlyingSkin(SONIC_THE_HEDGEHOG_PREFIX + "ANOINTED_SKIN_NAME");
+            anointedSkin.AddBoostFlashReplacement(HedgehogUtils.Assets.CreateBoostFlashEffect("SonicAnointedPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampWispSoul_png).WaitForCompletion(), sonicColor2));
+            anointedSkin.AddBoostAuraReplacement(HedgehogUtils.Assets.CreateBoostAuraEffect("SonicAnointedPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampWispSoul_png).WaitForCompletion(), sonicColor2));
             return anointedSkin;
         }
     }
