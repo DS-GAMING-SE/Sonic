@@ -100,10 +100,14 @@ namespace SonicTheHedgehog.Modules
         public class CyloopSkillDef : SkillDef
         {
             public SkillDef quickCyloopSkillDef { get; set; }
-            public override bool IsReady([NotNull] GenericSkill skillSlot)
+            public override bool CanExecute([NotNull] GenericSkill skillSlot)
             {
-                return base.IsReady(skillSlot) && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent;
+                return base.CanExecute(skillSlot) && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent;
             }
+        }
+        public class RequiresFormCyloopSkillDef : CyloopSkillDef, IRequiresFormSkillDef
+        {
+            public FormDef requiredForm { get; set; }
         }
     }
 }

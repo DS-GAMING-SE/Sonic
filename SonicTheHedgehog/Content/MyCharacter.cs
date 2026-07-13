@@ -512,10 +512,10 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 1,
                 stockToConsume = 1,
+                autoHandleLuminousShot = false
             };
 
             parrySkillDef = Modules.Skills.CreateSkillDef(parry);
-            parrySkillDef.autoHandleLuminousShot = false;
 
             Skills.AddSkillToFamily(bodyPrefab.GetComponent<SkillLocator>().secondary.skillFamily, parrySkillDef,
                 parryUnlockableDef);
@@ -643,11 +643,11 @@ namespace SonicTheHedgehog.Modules.Survivors
                 cancelSprintingOnActivation = false,
                 rechargeStock = 1,
                 requiredStock = 1,
-                stockToConsume = 0
+                stockToConsume = 0,
+                autoHandleLuminousShot = false,
+                suppressSkillActivation = true
             };
             cyloopSkillDef = Modules.Skills.CreateSkillDef<CyloopSkillDef>(cyloop);
-            cyloopSkillDef.autoHandleLuminousShot = false;
-            cyloopSkillDef.suppressSkillActivation = true;
             SkillDefInfo quickCyloop = new SkillDefInfo
             {
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_QUICK_CYLOOP_NAME",
@@ -743,7 +743,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 SonicVoicelineComponent.lobby1, SonicVoicelineComponent.lobby2, SonicVoicelineComponent.lobby3, SonicVoicelineComponent.lobby4);
             #endregion
 
-            MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam);
+            MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam, cyloop);
 
             if (SonicTheHedgehogPlugin.ancientScepterLoaded)
             {
@@ -751,7 +751,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             }
         }
 
-        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam)
+        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam, SkillDefInfo cyloop)
         {
 
             Log.Message("Making Super Sonic: Starting Stuff");
@@ -843,6 +843,15 @@ namespace SonicTheHedgehog.Modules.Survivors
             grandSlam.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperGrandSlamIcon");
             SuperSkillReplacer.grandSlam = Modules.Skills.CreateSkillDef<HedgehogUtils.Forms.SkillDefs.RequiresFormSkillDef>(grandSlam);
             SuperSkillReplacer.grandSlam.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
+
+            cyloop.activationState = new EntityStates.SerializableEntityStateType(typeof(SuperCyloop));
+            //cyloop.skillName = 
+            //cyloop.skillNameToken = 
+            //cyloop.skillNameDescriptionToken = 
+            //cyloop.skillIcon =
+            SuperSkillReplacer.cyloop = Modules.Skills.CreateSkillDef<RequiresFormCyloopSkillDef>(cyloop);
+            SuperSkillReplacer.cyloop.requiredForm = SuperFormDef.superFormDef;
+            SuperSkillReplacer.cyloop.quickCyloopSkillDef = quickCyloopSkillDef;
 
             Log.Message("Making Super Sonic: All Skills");
 

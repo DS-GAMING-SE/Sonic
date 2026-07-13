@@ -141,6 +141,9 @@ namespace SonicTheHedgehog.Modules
 
             skillDef.keywordTokens = skillDefInfo.keywordTokens;
 
+            skillDef.suppressSkillActivation = skillDefInfo.suppressSkillActivation;
+            skillDef.autoHandleLuminousShot = skillDefInfo.autoHandleLuminousShot;
+
             SonicTheHedgehog.Modules.Content.AddSkillDef(skillDef);
 
 
@@ -180,6 +183,9 @@ namespace SonicTheHedgehog.Modules
         public bool fullRestockOnAssign = true;
         public bool resetCooldownTimerOnUse;
         public bool mustKeyPress;
+
+        public bool suppressSkillActivation = false;
+        public bool autoHandleLuminousShot = true;
 
         #region constructors
         public SkillDefInfo() { }

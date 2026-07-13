@@ -170,9 +170,9 @@ namespace SonicTheHedgehog.Modules
 
         // Super Cyloop
 
-        internal const float superCyloopLineIntersectWidth = 5.5f;
+        internal const float superCyloopLineIntersectWidth = 7f;
 
-        internal const float superCyloopCollisionWidth = 8f;
+        internal const float superCyloopCollisionWidth = 13f;
 
     }
 }

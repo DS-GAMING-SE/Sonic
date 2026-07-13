@@ -153,7 +153,7 @@ namespace SonicTheHedgehog
             // run hooks here, disabling one is as simple as commenting out the line
             //On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
 
-            On.RoR2.HealthComponent.TakeDamage += TakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += TakeDamage;
 
             On.RoR2.CharacterMotor.ModifyGravity += GrandSlamJuggleAndCyloopFloat;
 
@@ -270,10 +270,14 @@ namespace SonicTheHedgehog
                 {
                     stats.armorAdd -= StaticValues.superSonicBoomDebuffArmorReduction * self.GetBuffCount(Buffs.crossSlashDebuff);
                 }
+                if (self.HasBuff(Buffs.cyloopDebuff))
+                {
+                    stats.moveSpeedRootCount += 1;
+                }
             }
         }
 
-        private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
+        private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damage)
         {
             if (self && NetworkServer.active) // Move parrying to an IOnIncomingDamageServerReceiver?
             {
@@ -290,13 +294,18 @@ namespace SonicTheHedgehog
                 }
             }
             orig(self, damage);
-            if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle) && NetworkServer.active
-                && self
-                && self.body
-                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup) 
-                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Unmovable))
+            if (NetworkServer.active && !damage.rejected && self && self.body)
             {
-                self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 0.6f, 1);
+                if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle)
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup)
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Unmovable))
+                {
+                    self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 0.6f, 1);
+                }
+                if (damage.damageType.HasModdedDamageType(DamageTypes.cyloop))
+                {
+                    self.body.AddTimedBuff(Buffs.cyloopDebuff, StaticValues.cyloopConstrictDuration);
+                }
             }
         }
         // could also mess with Icharactergravityparameters to get rid of gravity entirely
@@ -308,9 +317,13 @@ namespace SonicTheHedgehog
                 {
                     gravity *= 1.5f;
                 }
+                else if (verticalVelocity < 3f)
+                {
+                    gravity = 0f;
+                }
                 else
                 {
-                    gravity *= 0.2f;
+                    gravity *= 0.1f;
                 }
                 return;
             } // me when I don't call orig like a VILLAIN
