@@ -50,8 +50,6 @@ namespace SonicTheHedgehog.Modules
 
             Modules.Content.AddEntityState(typeof(NewScepterSuperBoost));
 
-            Modules.Content.AddEntityState(typeof(Cyloop));
-
             Modules.Content.AddEntityState(typeof(GrandSlamDash));
             Modules.Content.AddEntityState(typeof(GrandSlamSpin));
             Modules.Content.AddEntityState(typeof(GrandSlamFinal));
@@ -59,6 +57,10 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperGrandSlamDash));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamSpin));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamFinal));
+
+            Modules.Content.AddEntityState(typeof(Cyloop));
+
+            Modules.Content.AddEntityState(typeof(SuperCyloop));
         }
     }
 }

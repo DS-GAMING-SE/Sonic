@@ -7,11 +7,13 @@ using SonicTheHedgehog.Modules.Survivors;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static RoR2.CharacterSpeech.SolusHeartSpeechDriver;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
@@ -29,6 +31,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public const float lineRendererIntersectColorFadeDuration = 0.4f;
 
         public virtual float cyloopLineIntersectWidth { get { return StaticValues.cyloopLineIntersectWidth; } }
+        public virtual float cyloopCollisionWidth { get { return StaticValues.cyloopCollisionWidth; } }
         public virtual Color cyloopTrailColor { get{ return SonicTheHedgehogCharacter.sonicColor2; } }
         public virtual Color cyloopTrailIntersectColor { get { return new Color(1f,0.3f,0.7f); } }
         public virtual float cyloopTrailSizeMultiplier { get { return 1f; } }
@@ -47,7 +50,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private JobHandle intersectJobHandle;
         private NativeArray<int> newIntersect;
         private int applyIntersectToNextLine;
-        private int numIntersects;
+        private Queue<int2> intersectIndices;
         private Vector3 lastPosition;
 
         public EffectManagerHelper lineRendererObject;
@@ -57,8 +60,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private float lineIntersectColorLerp;
 
         private JobHandle endJobHandle;
-        private NativeArray<RaycastHit> targetsHit;
+        private NativeArray<JobHandle> endMeshCreationJobs;
+        private Mesh.MeshDataArray endCollisionMesh;
         public OverlapAttack overlapAttack;
+        private bool attacked;
+        private int endNumSections;
 
         public EffectManagerHelper trailSpawningEffect;
 
@@ -80,6 +86,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             }
             activatorSkillSlot.onSkillChanged += OnSkillChanged;
 
+            intersectIndices = new Queue<int2>();
             cyloopPoints = new NativeArray<CyloopPoint>(StaticValues.cyloopMaxPoints, Allocator.Persistent);
             cyloopLines = new NativeArray<CyloopLine>(StaticValues.cyloopMaxPoints - 1, Allocator.Persistent);
             lineRendererPositions = new NativeArray<Vector3>(StaticValues.cyloopMaxPoints + 1, Allocator.Persistent);
@@ -100,10 +107,6 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             lineRenderer = lineRendererObject.GetComponent<LineRenderer>();
             lineRenderer.widthCurve = AnimationCurve.Constant(0, 1, 1.5f * cyloopTrailSizeMultiplier);
             SetLineColor(cyloopTrailColor);
-            if (lineRendererObject.TryGetComponent<DestroyOnTimer>(out var trailDestroy))
-            {
-                trailDestroy.enabled = false;
-            }
 
             trailSpawningEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrailSpawningEffect, characterBody.coreTransform);
             trailSpawningEffect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -141,7 +144,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                         int newLineIndex = startingPointIndex - 1 % (StaticValues.cyloopMaxPoints - 1);
                         if (cyloopLines[newLineIndex].HasIntersect()) // Get rid of old intersects that expired
                         {
-                            numIntersects--;
+                            intersectIndices.Dequeue();
                             CyloopLine removingLineIntersectFromLine = cyloopLines[cyloopLines[newLineIndex].lineIntersectIndex];
                             removingLineIntersectFromLine.lineIntersectIndex = -1;
                             cyloopLines[cyloopLines[newLineIndex].lineIntersectIndex] = removingLineIntersectFromLine;
@@ -182,9 +185,9 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                         EffectManager.SimpleEffect(Modules.Assets.sonicBoomImpactEffect, cyloopLines[newIntersect[0]].lineIntersectPosition, Quaternion.identity, false);
                         lineIntersectColorLerp = 1f;
                         applyIntersectToNextLine = newIntersect[0];
+                        intersectIndices.Enqueue(new int2(newIntersect[0], (startingPointIndex-newIntersect[0]) % StaticValues.cyloopMaxPoints));
                         newIntersect[0] = -1;
-                        numIntersects++;
-                        Log.Message("current index:" + startingPointIndex);
+                        //Log.Message("current index:" + startingPointIndex);
                     }
                 }
 
@@ -227,9 +230,27 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     lineIntersectColorLerp -= Time.deltaTime * (1 / lineRendererIntersectColorFadeDuration);
                 }
             }
-            else if (endJobHandle.IsCompleted)
+            else if (endJobHandle.IsCompleted && isAuthority)
             {
                 endJobHandle.Complete();
+                attacked = true;
+                Mesh[] meshes = new Mesh[endNumSections];
+                for (int i = 0;i < meshes.Length;i++)
+                {
+                    Mesh.MeshData meshData = endCollisionMesh[i];
+                    meshData.subMeshCount = 1;
+                    meshData.SetSubMesh(0, new SubMeshDescriptor(0, meshData.GetIndexData<ushort>().Length));
+                    meshes[i] = new Mesh();
+                    meshes[i].name = "SonicCyloopCollisionMesh_" + i;
+                }
+                Mesh.ApplyAndDisposeWritableMeshData(endCollisionMesh, meshes, MeshUpdateFlags.DontValidateIndices);
+                for (int i = 0; i < meshes.Length; i++)
+                {
+                    Physics.BakeMesh(meshes[i].GetInstanceID(), true);
+                }
+                Log.Message("Created " + meshes.Length + " CyloopCollider Mesh(es)");
+                CyloopManager.GetPooledCyloopColliderController(this, meshes);
+
                 this.outer.SetNextStateToMain();
             }
         }
@@ -244,13 +265,12 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             cyloopLines.Dispose();
             lineRendererPositions.Dispose();
             newIntersect.Dispose();
-            if (lineRendererObject.TryGetComponent<DestroyOnTimer>(out var trailDestroy))
+            if (endMeshCreationJobs.IsCreated) endMeshCreationJobs.Dispose();
+            if (ending && !attacked) endCollisionMesh.Dispose();
+            if (lineRendererObject.TryGetComponent<AnimateShaderAlpha>(out var trailFade))
             {
-                trailDestroy.enabled = true;
-                if (lineRendererObject.TryGetComponent<AnimateShaderAlpha>(out var trailFade))
-                {
-                    trailFade.enabled = true;
-                }
+                trailFade.enabled = true;
+                trailFade.Restart();
             }
             else
             {
@@ -264,7 +284,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             {
                 trailSpawningEffect.ReturnToPool();
             }
-            temporaryOverlay.Destroy();
+            if (temporaryOverlay != null) temporaryOverlay.Destroy();
             if (quickCyloopSkillDef)
             {
                 skillLocator.primary.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
@@ -290,31 +310,39 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 skillLocator.primary.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
                 quickCyloopSkillDef = null;
             }
-            if (numIntersects > 0)
+            if (intersectIndices.Count > 0 && isAuthority)
             {
                 ending = true;
-                /*endJobHandle = new CyloopDivideIntersectedSectionsJob()
-                {
-                    cyloopLines = cyloopLines,
-                }.Schedule(numValidPoints - 1, default);
-                
-                THE PLAN
-                Create multiple convex shapes out of the concave shapes given from last job? 
-                Rebuild the whole shape from scratch with easier-to-work-with points? Who says the points have to connect anymore? Just boxcast wider
-                Use a stack to keep track of going one direction and going opposite to find opposite points? Might not work well if the same line is opposite of multiple points?
-                Job goes through and gets info from the points, such as which point is across, direction vector, up vector, what width should boxcast be
-                Make the shapes have even distance-between/distribution of points? Would need to be consistent if checking opposite end
-                Go through all points and create boxcastcommand from it to the point on the opposite end of the shape
-                Boxcast everything at once
+                endNumSections = intersectIndices.Count; // Add concave points here
+                // Figure out how many separate meshes to make using intersect sections and concave points
 
-                endJobHandle = new CyloopWriteBoxcastsJob()
+                endCollisionMesh = Mesh.AllocateWritableMeshData(endNumSections);
+                endMeshCreationJobs = new NativeArray<JobHandle>(endNumSections * 2, Allocator.TempJob);
+                for (int i = 0; i < endNumSections; i++)
                 {
-                
-                }.Schedule(?, endJobHandle);
-                endJobHandle = BoxcastCommand.ScheduleBatch(, , 10, endJobHandle);
+                    NativeArray<CyloopPoint> points = cyloopPoints.GetSubArray(intersectIndices.Peek().x, intersectIndices.Dequeue().y);
+                    Mesh.MeshData cyloopCollisionMeshData = endCollisionMesh[i];
 
-                EffectManager.SpawnEffect(Modules.Assets.cyloopDebugHitboxVisual, new EffectData { origin = center, scale = halfExtents * 2f, rotation = orientation }, false);
-                 */
+                    cyloopCollisionMeshData.SetVertexBufferParams(points.Length * 2, new VertexAttributeDescriptor(VertexAttribute.Position));
+                    var pos = cyloopCollisionMeshData.GetVertexData<float3>();
+                    endMeshCreationJobs[i * 2] = new CyloopMeshPointsJob()
+                    {
+                        points = points,
+                        width = cyloopCollisionWidth,
+                        output = pos
+                    }.Schedule(pos.Length, 20);
+
+                    cyloopCollisionMeshData.SetIndexBufferParams(pos.Length * 3, IndexFormat.UInt16);
+                    var indexBuffer = cyloopCollisionMeshData.GetIndexData<ushort>();
+                    // Trigger colliders must be convex so I only have to make the sides of the mesh and the top and bottom are auto-generated
+                    endMeshCreationJobs[(i * 2) + 1] = new CyloopMeshTriangulateSidesJob()
+                    {
+                        length = pos.Length,
+                        indexBuffer = indexBuffer
+                    }.Schedule(pos.Length, 20);
+                }
+                endJobHandle = JobHandle.CombineDependencies(endMeshCreationJobs);
+                 
                 activatorSkillSlot.DeductStock(1);
                 characterBody.OnSkillActivated(activatorSkillSlot);
             }
@@ -324,33 +352,19 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             }
         }
 
-        public virtual void PrepareAttack()
+        public virtual void PrepareAttack(ref OverlapAttack overlapAttack)
         {
-            overlapAttack = new OverlapAttack();
+            overlapAttack.Reset();
             overlapAttack.attacker = gameObject;
             overlapAttack.inflictor = gameObject;
             overlapAttack.damage = StaticValues.cyloopDamageCoefficient * characterBody.damage;
             overlapAttack.damageType = DamageSource.Special;
-            //overlapAttack.damageType.AddModdedDamageType(DamageTypes.cyloop)
-            overlapAttack.forceVector = Vector3.up * 30f;
+            overlapAttack.damageType.AddModdedDamageType(DamageTypes.cyloop);
+            overlapAttack.forceVector = Vector3.up * 33f;
+            overlapAttack.physForceFlags |= PhysForceFlags.massIsOne | PhysForceFlags.resetVelocity | PhysForceFlags.respectKnockbackImmuneFlag;
             overlapAttack.hitEffectPrefab = Modules.Assets.cyloopHitEffect;
             overlapAttack.isCrit = RollCrit(); // If I do multiple separate overlaps for different kinds of attacks, move this outside so it only happens once
             overlapAttack.teamIndex = characterBody.teamComponent.teamIndex;
-        }
-        // I want to use BoxcastCommands for the hit detection for performance reasons, but I also want OverlapAttack to handle networking for me
-        // I take the RaycastHits from the BoxcastCommands and make my own OverlapAttack.OverlapInfo that I pass directly into the overlap attack
-        private void RunOverlapAttack(List<RaycastHit> hits)
-        {
-            // Use a separate nativearray for just the raycasts that hit?
-            List<OverlapAttack.OverlapInfo> overlapinfo = new List<OverlapAttack.OverlapInfo>();
-            for (int i = 0; i < hits.Count; i++)
-            {
-                if (hits[i].collider.TryGetComponent<HurtBox>(out var hurtBox))
-                {
-                    overlapinfo.Add(new OverlapAttack.OverlapInfo { hurtBox = hurtBox, hitPosition = hits[i].point, pushDirection = Vector3.zero });
-                }
-            }
-            overlapAttack.ProcessHits(overlapinfo);
         }
 
         private void OnSkillChanged(GenericSkill skill)
@@ -367,9 +381,9 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             this.direction = direction;
             this.index = index;
         }
-        public int index; // these are kinda useless aside from invalid checking
         public float3 position;
         public float3 direction;
+        public int index; // these are kinda useless aside from invalid checking
         public bool IsValid()
         {
             return index != -1;

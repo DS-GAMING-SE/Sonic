@@ -61,7 +61,6 @@ namespace SonicTheHedgehog.Modules
 
         public static GameObject cyloopTrail;
         public static GameObject cyloopTrailSpawningEffect;
-        public static GameObject cyloopDebugHitboxVisual;
         public static GameObject cyloopHitEffect;
         public static GameObject cyloopDebuffEffect;
 
@@ -289,7 +288,7 @@ namespace SonicTheHedgehog.Modules
                 faceplantDecalComponent.Material = x.Result;
             };
 
-            cyloopTrail = LoadEffect("SonicCyloopTrail", "", false, 0.5f, false);
+            cyloopTrail = LoadEffect("SonicCyloopTrail", "", false, -1f, false);
             Material cyberTrailMat = new Material(AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidSurvivor.matVoidSurvivorBlasterTrail_mat)).WaitForCompletion());
             cyberTrailMat.SetFloat("_InvFade", 0f);
             cyberTrailMat.SetFloat("_Boost", 1f);
@@ -303,12 +302,12 @@ namespace SonicTheHedgehog.Modules
             cyberTrailMat.SetTextureScale("_Cloud2Tex", new Vector2(0.15f, 2f));
             cyberTrailMat.SetVector("_CutoffScroll", new Vector4(-7, 0, -3, 5));
             cyloopTrail.transform.GetComponent<LineRenderer>().sharedMaterial = cyberTrailMat;
-            cyloopTrail.GetComponent<DestroyOnTimer>().enabled = false;
             var cyloopTrailFade = cyloopTrail.AddComponent<AnimateShaderAlpha>();
             cyloopTrailFade.alphaCurve = AnimationCurve.Linear(0, 1, 1, 0);
             cyloopTrailFade.initialyEnabled = false;
             cyloopTrailFade.timeMax = 0.45f;
             cyloopTrailFade.disableOnEnd = true;
+            cyloopTrailFade.enabled = false;
 
             cyloopTrailSpawningEffect = LoadEffect("SonicCyloopTrailSpawningEffect", "", false, -1f, false);
             Material cyberLinesMat = new Material(AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.matNanoSeekerPixelTrail_1_mat)).WaitForCompletion());
@@ -332,20 +331,12 @@ namespace SonicTheHedgehog.Modules
             cyloopOverlay.SetColor("_TintColor", new Color(0.05f, 0.3f, 0.5f, 1));
             cyloopOverlay.SetFloat("_OffsetAmount", 0.007f);
 
-            cyloopDebugHitboxVisual = LoadEffect("SonicCyloopDebugHitboxVisual", "", false, 1f);
-            var cyloopDebugRenderer = cyloopDebugHitboxVisual.GetComponent<MeshRenderer>();
-            cyloopDebugRenderer.sharedMaterial = Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_computationalexchange.matCEFlowerGlowBase_mat).WaitForCompletion();
-            var cyloopDebugAlpha = cyloopDebugHitboxVisual.AddComponent<AnimateShaderAlpha>();
-            cyloopDebugAlpha.timeMax = 1f;
-            cyloopDebugAlpha.alphaCurve = AnimationCurve.Linear(0, 1, 1, 0);
-            cyloopDebugAlpha.targetRenderer = cyloopDebugRenderer;
-
             Mesh donut2 = Addressables.LoadAssetAsync<Mesh>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.mdlVFXDonut2_fbx_donut2Mesh_).WaitForCompletion();
             cyloopHitEffect = LoadEffect("SonicCyloopHitEffect", "", false, 0.7f);
             cyloopHitEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.matWideGlow_mat).WaitForCompletion();
-            var cyloopHitDonut5 = cyloopHitEffect.transform.GetChild(2).GetComponent<ParticleSystemRenderer>();
+            var cyloopHitDonut5 = cyloopHitEffect.transform.GetChild(1).GetComponent<ParticleSystemRenderer>();
             cyloopHitDonut5.mesh = Addressables.LoadAssetAsync<Mesh>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.mdlVFXDonut5_fbx_donut5Mesh_).WaitForCompletion();
-            cyloopHitDonut5.sharedMaterial = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_MealPrep.matMealPrepUIFlames2_mat).WaitForCompletion());
+            cyloopHitDonut5.sharedMaterial = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.matTeleportOut_mat).WaitForCompletion());
             cyloopHitDonut5.sharedMaterial.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampHelfire_png).WaitForCompletion());
             var cyloopHitRing = cyloopHitEffect.transform.GetChild(2).GetComponent<ParticleSystemRenderer>();
             cyloopHitRing.mesh = donut2;
@@ -366,6 +357,7 @@ namespace SonicTheHedgehog.Modules
             cyloopDebuffEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().sharedMaterial = pixelFlash;
             // Look into Computational Exchange stuff, Nanopistol, and Access Node portal for VFX
             // matCompExchangePortalCenter as starting place for Constrict aura
+            SkillStates.Cyloop.CyloopManager.Initialize();
         }
 
         public static void AddScepterToBoostFlash(GameObject boostFlashPrefab)
