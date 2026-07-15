@@ -205,6 +205,11 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_NAME", "Quick Cyloop");
             LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them, dealing <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constricting</style> them.");
+
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_NAME", "Super Cyloop");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_DESCRIPTION", cyloopDescription);
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_NAME", "Super Quick Cyloop");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them, dealing <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constricting</style> them.");
             #endregion
 
             #region Voicelines

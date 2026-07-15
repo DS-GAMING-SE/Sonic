@@ -230,7 +230,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     lineIntersectColorLerp -= Time.deltaTime * (1 / lineRendererIntersectColorFadeDuration);
                 }
             }
-            else if (endJobHandle.IsCompleted && isAuthority)
+            else if (isAuthority)
             {
                 endJobHandle.Complete();
                 attacked = true;
@@ -278,6 +278,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             }
             if (trailSpawningEffect.TryGetComponent<DisableParticleEmissionAndDestroyOnTimer>(out var trailSpawnDestroy))
             {
+                trailSpawningEffect.transform.SetParent(null, true);
                 trailSpawnDestroy.DisableParticlesStartTimer();
             }
             else

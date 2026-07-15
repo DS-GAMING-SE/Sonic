@@ -2,6 +2,8 @@
 
 ## v5.0.0
 *This update breaks all Sonic skin mods*
+ - (New Skill) Added a new alternate special skill. This can be unlocked by completing a newly added achievement (Or just unlocking it with the config)
+ 
  - (Animations) Sonic now has a custom animation for entering the first stage
 
  - (Visuals) Sonic's homing skills now use a new animated reticle
@@ -13,20 +15,21 @@
  
  - (Optimization) This mod now uses addressables, meaning assets will only be loaded when needed. This should reduce memory usage by a lot
  
- - (Internal) The component used for Metal Sonic's custom animations, MetalSonicAnimation, has been replaced with a new component called UniqueSkinEffect. This component is used to handle any skins with custom animations or effects.
+ - (Internal) The component used for Metal Sonic's custom animations, MetalSonicAnimation, has been replaced with a new component called UniqueSkinEffect. This component is used to handle any skins with custom animations or effects. This component also adds support for adding skin-specific boost vfx through code
 ### HedgehogUtils v2.0.0
  - (Voicelines) Added a new system for handling voicelines
  
- - (Visuals) The super form transformation now has a subtle glow around your character
- 
- - (Visuals) Redone the aura for the super form. There are now Assets.CreateFormAura methods for creating custom auras for modded super forms
- 
+ - (Visuals) Redid the vfx for boosting. New methods have been added to the Assets class for making your own boost vfx. The previous methods for creating boost auras have been deprecated
+ - (Visuals) Redid the vfx for transforming into the super form.
+ - (Visuals) Redid the aura for the super form. There are now Assets.CreateFormAura methods for creating custom auras for modded super forms
+ - (Visuals) Chaos Emeralds now have unique vfx for when the item is dropped
+
  - (Bug Fix) Transformations can no longer be activated while in UI (such as typing in chat) or while you're not in your main body state (usually doing some action where you can't use other skills)
- 
  - (Bug Fix) Fixed the Chaos Emerald interactable breaking if you purchase it and pick it up with Drifter at the same time
 
 ### Known Issues
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)
+ - Using a non-one timescale (Photomode or changing timescale through console commands) while using the alternate special may crash the game
  - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
  - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
 
