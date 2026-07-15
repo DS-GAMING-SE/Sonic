@@ -25,6 +25,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         {
             base.PrepareAttack(ref overlapAttack);
             overlapAttack.forceVector = Vector3.up * 50f;
+            overlapAttack.hitEffectPrefab = Modules.Assets.superCyloopHitWindEffect;
         }
     }
 }

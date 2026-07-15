@@ -59,6 +59,8 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperGrandSlamFinal));
 
             Modules.Content.AddEntityState(typeof(Cyloop));
+            Modules.Content.AddEntityState(typeof(QuickCyloopDash));
+            Modules.Content.AddEntityState(typeof(QuickCyloop));
 
             Modules.Content.AddEntityState(typeof(SuperCyloop));
         }

@@ -655,7 +655,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_QUICK_CYLOOP_DESCRIPTION",
                 keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_CYLOOP_KEYWORD", HedgehogUtilsPlugin.Prefix + "LAUNCH_KEYWORD", prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texQuickCyloopIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(HomingAttack)),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Cyloop.QuickCyloopDash)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
                 baseRechargeInterval = 0f,
@@ -663,14 +663,15 @@ namespace SonicTheHedgehog.Modules.Survivors
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
                 fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
                 resetCooldownTimerOnUse = false,
                 isCombatSkill = true,
                 mustKeyPress = true,
                 cancelSprintingOnActivation = true,
                 rechargeStock = 1,
                 requiredStock = 1,
-                stockToConsume = 1,
+                stockToConsume = 0,
+                suppressSkillActivation = true,
             };
             quickCyloopSkillDef = Modules.Skills.CreateSkillDef<SkillDefs.RequiresTargetSkillDef>(quickCyloop);
             cyloopSkillDef.quickCyloopSkillDef = quickCyloopSkillDef;
@@ -845,10 +846,10 @@ namespace SonicTheHedgehog.Modules.Survivors
             SuperSkillReplacer.grandSlam.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
             cyloop.activationState = new EntityStates.SerializableEntityStateType(typeof(SuperCyloop));
-            //cyloop.skillName = 
-            //cyloop.skillNameToken = 
-            //cyloop.skillNameDescriptionToken = 
-            //cyloop.skillIcon =
+            cyloop.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_CYLOOP_NAME";
+            cyloop.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_CYLOOP_NAME";
+            cyloop.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_CYLOOP_DESCRIPTION";
+            cyloop.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperCyloopIcon");
             SuperSkillReplacer.cyloop = Modules.Skills.CreateSkillDef<RequiresFormCyloopSkillDef>(cyloop);
             SuperSkillReplacer.cyloop.requiredForm = SuperFormDef.superFormDef;
             SuperSkillReplacer.cyloop.quickCyloopSkillDef = quickCyloopSkillDef;

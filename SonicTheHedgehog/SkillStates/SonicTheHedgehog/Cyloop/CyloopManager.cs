@@ -72,6 +72,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public CyloopCollider[] colliders;
         public OverlapAttack overlapAttack;
 
+        private GameObject hitEffectPrefab;
+
         private List<HealthComponent> hitHealthComponents = new List<HealthComponent>();
         private List<OverlapAttack.OverlapInfo> hits = new List<OverlapAttack.OverlapInfo>();
 
@@ -91,11 +93,22 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             timer += Time.fixedDeltaTime;
             if (timer > DELAY && !attacked)
             {
+                hitEffectPrefab = overlapAttack.hitEffectPrefab;
+                overlapAttack.hitEffectPrefab = null;
                 if (hits != null && hits.Count > 0)
                 {
                     overlapAttack.ProcessHits(hits);
                 }
                 attacked = true;
+                for (int i = 0; i < hits.Count; i++)
+                {
+                    EffectManager.SpawnEffect(hitEffectPrefab, new EffectData
+                    {
+                        origin = hits[i].hitPosition,
+                        scale = Mathf.Min(hits[i].hurtBox.healthComponent.body.radius, 3f),
+                        rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
+                    }, true);
+                }
                 hitHealthComponents.Clear();
                 hits.Clear();
             }

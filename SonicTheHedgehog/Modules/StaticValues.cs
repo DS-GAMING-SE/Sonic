@@ -120,6 +120,8 @@ namespace SonicTheHedgehog.Modules
 
         internal const float cyloopConstrictDuration = 4.5f;
 
+        internal const float quickCyloopExtraRadius = 1.7f;
+
         // Super Melee
 
         internal const float superMeleeExtraDamagePercent = 0.5f;
@@ -170,9 +172,9 @@ namespace SonicTheHedgehog.Modules
 
         // Super Cyloop
 
-        internal const float superCyloopLineIntersectWidth = 7f;
+        internal const float superCyloopLineIntersectWidth = 10f;
 
-        internal const float superCyloopCollisionWidth = 13f;
+        internal const float superCyloopCollisionWidth = 17f;
 
     }
 }
