@@ -744,7 +744,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 SonicVoicelineComponent.lobby1, SonicVoicelineComponent.lobby2, SonicVoicelineComponent.lobby3, SonicVoicelineComponent.lobby4);
             #endregion
 
-            MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam, cyloop);
+            MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam, cyloop, quickCyloop);
 
             if (SonicTheHedgehogPlugin.ancientScepterLoaded)
             {
@@ -752,7 +752,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             }
         }
 
-        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam, SkillDefInfo cyloop)
+        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam, SkillDefInfo cyloop, SkillDefInfo quickCyloop)
         {
 
             Log.Message("Making Super Sonic: Starting Stuff");
@@ -852,7 +852,15 @@ namespace SonicTheHedgehog.Modules.Survivors
             cyloop.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperCyloopIcon");
             SuperSkillReplacer.cyloop = Modules.Skills.CreateSkillDef<RequiresFormCyloopSkillDef>(cyloop);
             SuperSkillReplacer.cyloop.requiredForm = SuperFormDef.superFormDef;
-            SuperSkillReplacer.cyloop.quickCyloopSkillDef = quickCyloopSkillDef;
+
+            quickCyloop.activationState = new EntityStates.SerializableEntityStateType(typeof(SuperQuickCyloopDash));
+            quickCyloop.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_QUICK_CYLOOP_NAME";
+            quickCyloop.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_QUICK_CYLOOP_NAME";
+            quickCyloop.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_QUICK_CYLOOP_DESCRIPTION";
+            quickCyloop.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperQuickCyloopIcon");
+            SuperSkillReplacer.quickCyloop = Modules.Skills.CreateSkillDef<RequiresFormTargetSkillDef>(quickCyloop);
+            SuperSkillReplacer.quickCyloop.requiredForm = SuperFormDef.superFormDef;
+            SuperSkillReplacer.cyloop.quickCyloopSkillDef = SuperSkillReplacer.quickCyloop;
 
             Log.Message("Making Super Sonic: All Skills");
 

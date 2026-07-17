@@ -63,6 +63,8 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(QuickCyloop));
 
             Modules.Content.AddEntityState(typeof(SuperCyloop));
+            Modules.Content.AddEntityState(typeof(SuperQuickCyloopDash));
+            Modules.Content.AddEntityState(typeof(SuperQuickCyloop));
         }
     }
 }

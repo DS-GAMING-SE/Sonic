@@ -24,6 +24,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public const float minDuration = 0.5f;
         public const float timeBetweenUpdates = 0.25f;
         public const float minMoveSpeedPercent = 0.4f;
+        public const float minMoveSpeedMaxDuration = 0.3f;
+        private float minMoveSpeedTimer;
 
         public const int distanceFromPointsToIntersect = 3;
         public const float maxAngleDotForIntersection = 0.7f;
@@ -35,8 +37,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public virtual Color cyloopTrailColor { get{ return SonicTheHedgehogCharacter.sonicColor2; } }
         public virtual Color cyloopTrailIntersectColor { get { return new Color(1f,0.3f,0.7f); } }
         public virtual float cyloopTrailSizeMultiplier { get { return 1f; } }
-
         public virtual Material temporaryOverlayMaterial { get { return Modules.Assets.cyloopOverlay; } }
+        public virtual float cyloopDoublePushForce { get { return 1000f; } }
 
         private float updateTimer;
 
@@ -53,8 +55,6 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private Queue<int2> intersectIndices;
         private Vector3 lastPosition;
 
-        public EffectManagerHelper lineRendererObject;
-        public LineRenderer lineRenderer;
         private JobHandle lineRendererPositionsJobHandle;
         private NativeArray<Vector3> lineRendererPositions;
         private float lineIntersectColorLerp;
@@ -66,11 +66,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private bool attacked;
         private int endNumSections;
 
-        public EffectManagerHelper trailSpawningEffect;
-
-        public TemporaryOverlayInstance temporaryOverlay;
-
-        private SkillDef quickCyloopSkillDef;
+        public CyloopVFX cyloopVFX;
 
         Run.FixedTimeStamp timeToLog;
 
@@ -78,51 +74,24 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         {
             base.OnEnter();
             Util.PlaySound("Play_sonicthehedgehog_cyloop", gameObject);
-            SpawnVFX();
-            if (activatorSkillSlot.skillDef is SkillDefs.CyloopSkillDef cyloopSkillDef)
-            {
-                quickCyloopSkillDef = cyloopSkillDef.quickCyloopSkillDef;
-                skillLocator.primary.SetSkillOverride(this, cyloopSkillDef.quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
-            }
+            cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
             activatorSkillSlot.onSkillChanged += OnSkillChanged;
 
             intersectIndices = new Queue<int2>();
             cyloopPoints = new NativeArray<CyloopPoint>(StaticValues.cyloopMaxPoints, Allocator.Persistent);
             cyloopLines = new NativeArray<CyloopLine>(StaticValues.cyloopMaxPoints - 1, Allocator.Persistent);
             lineRendererPositions = new NativeArray<Vector3>(StaticValues.cyloopMaxPoints + 1, Allocator.Persistent);
-            newIntersect = new NativeArray<int>(1, Allocator.Persistent);
-            newIntersect[0] = -1; // I wanted to use a job to save a value here and making a nativearray seemed like the way to do it
+            if (isAuthority)
+            {
+                newIntersect = new NativeArray<int>(1, Allocator.Persistent);
+                newIntersect[0] = -1; // I wanted to use a job to save a value here and making a nativearray seemed like the way to do it
+            }
             applyIntersectToNextLine = -1;
             timeToLog = Run.FixedTimeStamp.now + 1f;
             lastPosition = characterBody.corePosition;
             for (int i = 0; i < cyloopPoints.Length; i++)
             {
                 cyloopPoints[i] = CyloopPoint.invalid;
-            }
-        }
-
-        private void SpawnVFX()
-        {
-            lineRendererObject = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrail, Vector3.zero, Quaternion.identity);
-            lineRenderer = lineRendererObject.GetComponent<LineRenderer>();
-            lineRenderer.widthCurve = AnimationCurve.Constant(0, 1, 1.5f * cyloopTrailSizeMultiplier);
-            SetLineColor(cyloopTrailColor);
-
-            trailSpawningEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrailSpawningEffect, characterBody.coreTransform);
-            trailSpawningEffect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            trailSpawningEffect.transform.localScale = Vector3.one * characterBody.radius * cyloopTrailSizeMultiplier;
-            
-            if (temporaryOverlayMaterial)
-            {
-                Transform modelTransform = GetModelTransform();
-                if (modelTransform && modelTransform.TryGetComponent<CharacterModel>(out var model))
-                {
-                    temporaryOverlay = TemporaryOverlayManager.AddOverlay(model.gameObject);
-                    temporaryOverlay.originalMaterial = temporaryOverlayMaterial;
-                    temporaryOverlay.destroyComponentOnEnd = false;
-                    temporaryOverlay.inspectorCharacterModel = model;
-                    temporaryOverlay.Start(); // Apparently Start() isn't run if the overlay doesn't have animateShaderAlpha on so I gotta do this myself
-                }
             }
         }
 
@@ -142,7 +111,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     if (startingPointIndex > 0 && cyloopPoints[(startingPointIndex - 1) % StaticValues.cyloopMaxPoints].IsValid())
                     {
                         int newLineIndex = startingPointIndex - 1 % (StaticValues.cyloopMaxPoints - 1);
-                        if (cyloopLines[newLineIndex].HasIntersect()) // Get rid of old intersects that expired
+                        if (isAuthority && cyloopLines[newLineIndex].HasIntersect()) // Get rid of old intersects that expired
                         {
                             intersectIndices.Dequeue();
                             CyloopLine removingLineIntersectFromLine = cyloopLines[cyloopLines[newLineIndex].lineIntersectIndex];
@@ -162,9 +131,20 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     }
                     //if (numValidPoints < StaticValues.cyloopMaxPoints) Chat.AddMessage($"Cyloop points {numValidPoints}");
                 }
-                if ((!inputBank.skill4.down || characterMotor.velocity.magnitude < characterBody.moveSpeed * minMoveSpeedPercent) && fixedAge >= minDuration)
+                if (isAuthority)
                 {
-                    EndLoop();
+                    if (characterMotor.velocity.magnitude < characterBody.moveSpeed * minMoveSpeedPercent)
+                    {
+                        minMoveSpeedTimer += Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        minMoveSpeedTimer = 0f;
+                    }
+                    if ((!inputBank.skill4.down || minMoveSpeedTimer >= minMoveSpeedMaxDuration) && fixedAge >= minDuration)
+                    {
+                        EndLoop();
+                    }
                 }
             }
         }
@@ -175,14 +155,14 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             {
                 lineRendererPositionsJobHandle.Complete();
 
-                if (lineRenderer && lastNumValidPoints > 0)
+                if (cyloopVFX.lineRenderer && lastNumValidPoints > 0)
                 {
-                    lineRenderer.positionCount = lastNumValidPoints + 1;
-                    lineRenderer.SetPositions(lineRendererPositions);
+                    cyloopVFX.lineRenderer.positionCount = lastNumValidPoints + 1;
+                    cyloopVFX.lineRenderer.SetPositions(lineRendererPositions);
 
-                    if (newIntersect[0] != -1)
+                    if (isAuthority && newIntersect[0] != -1)
                     {
-                        EffectManager.SimpleEffect(Modules.Assets.sonicBoomImpactEffect, cyloopLines[newIntersect[0]].lineIntersectPosition, Quaternion.identity, false);
+                        //EffectManager.SimpleEffect(Modules.Assets.sonicBoomImpactEffect, cyloopLines[newIntersect[0]].lineIntersectPosition, Quaternion.identity, false);
                         lineIntersectColorLerp = 1f;
                         applyIntersectToNextLine = newIntersect[0];
                         intersectIndices.Enqueue(new int2(newIntersect[0], (startingPointIndex-newIntersect[0]) % StaticValues.cyloopMaxPoints));
@@ -206,11 +186,6 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     };
                     //intersectJob.Run(cyloopLines.Length);
                     intersectJobHandle = intersectJob.Schedule(cyloopLines.Length, default);
-                    if (timeToLog.hasPassed)
-                    {
-                        timeToLog = Run.FixedTimeStamp.now + 1f;
-                        // log something
-                    }
                 }
                 lastPosition = characterBody.corePosition;
 
@@ -224,10 +199,16 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 };
                 lineRendererPositionsJobHandle = lineRendererPositionsJob.Schedule(numValidPoints + 1, 20, intersectJobHandle);
                 lastNumValidPoints = numValidPoints;
-                SetLineColor(Color.Lerp(cyloopTrailColor, cyloopTrailIntersectColor, lineIntersectColorLerp));
+                cyloopVFX.SetLineColor(Color.Lerp(cyloopTrailColor, cyloopTrailIntersectColor, lineIntersectColorLerp));
                 if (lineIntersectColorLerp > 0)
                 {
                     lineIntersectColorLerp -= Time.deltaTime * (1 / lineRendererIntersectColorFadeDuration);
+                }
+
+                if (timeToLog.hasPassed)
+                {
+                    timeToLog = Run.FixedTimeStamp.now + 1f;
+                    // log something
                 }
             }
             else if (isAuthority)
@@ -264,54 +245,17 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             cyloopPoints.Dispose();
             cyloopLines.Dispose();
             lineRendererPositions.Dispose();
-            newIntersect.Dispose();
+            if (isAuthority) newIntersect.Dispose();
             if (endMeshCreationJobs.IsCreated) endMeshCreationJobs.Dispose();
             if (ending && !attacked) endCollisionMesh.Dispose();
-            if (lineRendererObject.TryGetComponent<AnimateShaderAlpha>(out var trailFade))
-            {
-                trailFade.enabled = true;
-                trailFade.Restart();
-            }
-            else
-            {
-                lineRendererObject.ReturnToPool();
-            }
-            if (trailSpawningEffect.TryGetComponent<DisableParticleEmissionAndDestroyOnTimer>(out var trailSpawnDestroy))
-            {
-                trailSpawningEffect.transform.SetParent(null, true);
-                trailSpawnDestroy.DisableParticlesStartTimer();
-            }
-            else
-            {
-                trailSpawningEffect.ReturnToPool();
-            }
-            if (temporaryOverlay != null) temporaryOverlay.Destroy();
-            if (quickCyloopSkillDef)
-            {
-                skillLocator.primary.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
-            }
+            cyloopVFX.EndAllVFX();
             Util.PlaySound("Stop_sonicthehedgehog_cyloop", gameObject);
             base.OnExit();
         }
 
-        private void SetLineColor(Color color)
-        {
-            if (lineRenderer)
-            {
-                var gradient = lineRenderer.GetColorGradientCopy();
-                gradient.colorKeys = new GradientColorKey[] { new GradientColorKey(color, 0f) };
-                lineRenderer.SetColorGradient(gradient);
-            }
-        }
-
         public void EndLoop()
         {
-            if (quickCyloopSkillDef)
-            {
-                skillLocator.primary.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
-                quickCyloopSkillDef = null;
-            }
-            if (intersectIndices.Count > 0 && isAuthority)
+            if (intersectIndices.Count > 0)
             {
                 ending = true;
                 endNumSections = intersectIndices.Count; // Add concave points here
@@ -367,12 +311,101 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             overlapAttack.isCrit = RollCrit(); // If I do multiple separate overlaps for different kinds of attacks, move this outside so it only happens once
             overlapAttack.teamIndex = characterBody.teamComponent.teamIndex;
         }
+        public virtual void PrepareDoubleAttack(ref OverlapAttack overlapAttack)
+        {
+            overlapAttack.Reset();
+            overlapAttack.attacker = gameObject;
+            overlapAttack.inflictor = gameObject;
+            overlapAttack.damage = StaticValues.cyloopDoubleDamageCoefficient * characterBody.damage;
+            overlapAttack.procCoefficient = 1.5f;
+            overlapAttack.damageType = DamageSource.Special;
+            overlapAttack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
+            overlapAttack.forceVector = Vector3.down * cyloopDoublePushForce;
+            overlapAttack.hitEffectPrefab = Modules.Assets.cyloopDoubleHitEffect;
+            overlapAttack.teamIndex = characterBody.teamComponent.teamIndex;
+        }
 
         private void OnSkillChanged(GenericSkill skill)
         {
             this.outer.SetNextStateToMain();
         }
     }
+
+    public struct CyloopVFX
+    {
+        public EffectManagerHelper lineRendererEffect;
+        private Color lineRendererColor;
+        public LineRenderer lineRenderer;
+        public EffectManagerHelper trailSpawningEffect;
+        public TemporaryOverlayInstance temporaryOverlay;
+
+        public static CyloopVFX SpawnVFX(float lineRendererScale, Color lineRendererColor, Transform coreTransform, float trailSpawningScale, Material temporaryOverlayMaterial, Transform modelTransform)
+        {
+            CyloopVFX cyloopVFX = default;
+            cyloopVFX.lineRendererEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrail, Vector3.zero, Quaternion.identity);
+            cyloopVFX.lineRenderer = cyloopVFX.lineRendererEffect.GetComponent<LineRenderer>();
+            cyloopVFX.lineRenderer.widthCurve = AnimationCurve.Constant(0, 1, 1.5f * lineRendererScale);
+            cyloopVFX.SetLineColor(lineRendererColor);
+
+            cyloopVFX.trailSpawningEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrailSpawningEffect, coreTransform);
+            cyloopVFX.trailSpawningEffect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            cyloopVFX.trailSpawningEffect.transform.localScale = Vector3.one * trailSpawningScale;
+
+            if (temporaryOverlayMaterial)
+            {
+                if (modelTransform && modelTransform.TryGetComponent<CharacterModel>(out var model))
+                {
+                    cyloopVFX.temporaryOverlay = TemporaryOverlayManager.AddOverlay(model.gameObject);
+                    cyloopVFX.temporaryOverlay.originalMaterial = temporaryOverlayMaterial;
+                    cyloopVFX.temporaryOverlay.destroyComponentOnEnd = false;
+                    cyloopVFX.temporaryOverlay.inspectorCharacterModel = model;
+                    cyloopVFX.temporaryOverlay.Start(); // Apparently Start() isn't run if the overlay doesn't have animateShaderAlpha on so I gotta do this myself
+                }
+            }
+            return cyloopVFX;
+        }
+
+        public void SetLineColor(Color color)
+        {
+            if (lineRenderer && color != lineRendererColor)
+            {
+                lineRendererColor = color;
+                var gradient = lineRenderer.GetColorGradientCopy();
+                gradient.colorKeys = new GradientColorKey[] { new GradientColorKey(color, 0f), new GradientColorKey(color * new Color(0.5f, 0.25f, 0.75f), 1f) };
+                lineRenderer.SetColorGradient(gradient);
+            }
+        }
+
+        public void EndAllVFX()
+        {
+            if (lineRendererEffect)
+            {
+                if (lineRendererEffect.TryGetComponent<AnimateShaderAlpha>(out var trailFade))
+                {
+                    trailFade.enabled = true;
+                    trailFade.Restart();
+                }
+                else
+                {
+                    lineRendererEffect.ReturnToPool();
+                }
+            }
+            if (trailSpawningEffect)
+            {
+                if (trailSpawningEffect.TryGetComponent<DisableParticleEmissionAndDestroyOnTimer>(out var trailSpawnDestroy))
+                {
+                    trailSpawningEffect.transform.SetParent(null, true);
+                    trailSpawnDestroy.DisableParticlesStartTimer();
+                }
+                else
+                {
+                    trailSpawningEffect.ReturnToPool();
+                }
+            }
+            if (temporaryOverlay != null) temporaryOverlay.Destroy();
+        }
+    }
+
     public struct CyloopPoint
     {
         public static readonly CyloopPoint invalid = new CyloopPoint(float3.zero, float3.zero, -1);

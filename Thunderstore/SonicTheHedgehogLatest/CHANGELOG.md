@@ -10,7 +10,7 @@
 
  - (= Change) IDW Attack can now only be activated when targeting an enemy, so the move is impossible to miss
 
- - (- Nerf) You must now successfully trigger a parry for it to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
+ - (- Nerf) The Parry skill must be triggered successfully to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
  - (- Nerf) Grand Slam's cooldown no longer starts until the *entire* move has finished
  
  - (Optimization) This mod now uses addressables, meaning assets will only be loaded when needed. This should reduce memory usage by a lot

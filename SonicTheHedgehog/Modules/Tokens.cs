@@ -198,18 +198,18 @@ namespace SonicTheHedgehog.Modules
             // Complete Void Fields "Break Free" "Tearing down walls"
             LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_NAME", "Cyloop");
             string cyloopDescription =
-                $"Leave a trail behind you as you move. Creating a <style=cIsUtility>closed shape</style> and releasing the skill will deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constrict</style> enemies inside. Using your primary skill will perform a <style=cIsUtility>homing Quick Cyloop</style>.";
+                $"Leave a trail behind you as you move. Creating a <style=cIsUtility>closed shape</style> and releasing the skill will deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constrict</style> enemies inside. Using it again will deal <style=cIsDamage>{StaticValues.cyloopDoubleDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Launch</style> them downwards. Using your primary skill will perform a <style=cIsUtility>homing Quick Cyloop</style>.";
             LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", cyloopDescription);
             LanguageAPI.Add(prefix + "CYLOOP_KEYWORD",
-                $"<style=CKeywordName>Constrict</style><style=cSub>Stun and hold the enemy in the air. Using Cyloop on a constricted enemy will <style=cIsUtility>launch</style> them downwards.</style>");
+                $"<style=CKeywordName>Constrict</style><style=cSub>Stun and hold the enemy in the air. Constricted enemies take <style=cIsDamage>{StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%</style> more damage from <style=cIsUtility>skills</style>.</style>");
 
             LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_NAME", "Quick Cyloop");
-            LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them, dealing <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constricting</style> them.");
+            LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them.");
 
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_NAME", "Super Cyloop");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Cyloop"));
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_DESCRIPTION", cyloopDescription);
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_NAME", "Super Quick Cyloop");
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them, dealing <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constricting</style> them.");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Quick Cyloop"));
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly {HedgehogUtils.Helpers.SuperFormText("Super Cyloop")} them.");
             #endregion
 
             #region Voicelines
