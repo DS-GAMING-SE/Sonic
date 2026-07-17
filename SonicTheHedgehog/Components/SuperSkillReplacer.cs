@@ -28,6 +28,7 @@ namespace SonicTheHedgehog.Components
         public static SkillDefs.RequiresFormSkillDef grandSlam;
 
         public static Modules.SkillDefs.RequiresFormCyloopSkillDef cyloop;
+        public static Modules.SkillDefs.RequiresFormTargetSkillDef quickCyloop;
 
         public void Start()
         {

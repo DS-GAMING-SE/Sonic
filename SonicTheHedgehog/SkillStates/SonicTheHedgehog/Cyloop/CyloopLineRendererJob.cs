@@ -19,6 +19,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public float lerp;
         [ReadOnly]
         public int startIndex;
+        //[ReadOnly]
+        //public bool log;
         [WriteOnly]
         public NativeArray<Vector3> output;
 
@@ -40,7 +42,10 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private int AdjustIndex(int index)
         {
-            return (startIndex - (index - 1)) % points.Length;
+            var mod = (startIndex - (index - 1)) % points.Length;
+            if (mod < 0) mod += points.Length;
+            //if (log) Log.Message(index + " -> "+mod);
+            return mod;
         }
 
         /*

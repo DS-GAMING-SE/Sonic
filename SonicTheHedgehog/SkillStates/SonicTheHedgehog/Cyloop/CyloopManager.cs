@@ -1,12 +1,13 @@
-﻿using SonicTheHedgehog.Components;
+﻿using EnemiesReturns.Components;
+using R2API;
+using RoR2;
+using SonicTheHedgehog.Components;
+using SonicTheHedgehog.SkillStates.Cyloop;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using RoR2;
-using SonicTheHedgehog.SkillStates.Cyloop;
-using R2API;
 
 namespace SonicTheHedgehog.SkillStates.Cyloop
 {
@@ -52,6 +53,9 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             }
             cyloop.overlapAttack = new OverlapAttack();
             cyloopState.PrepareAttack(ref cyloop.overlapAttack);
+            cyloop.doubleOverlapAttack = new OverlapAttack();
+            cyloop.doubleOverlapAttack.isCrit = cyloop.overlapAttack.isCrit;
+            cyloopState.PrepareDoubleAttack(ref cyloop.doubleOverlapAttack);
             return cyloop;
         }
         public static CyloopCollider GetPooledCyloopCollider(Mesh mesh, CyloopColliderController owner)
@@ -71,11 +75,14 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
     {
         public CyloopCollider[] colliders;
         public OverlapAttack overlapAttack;
+        public OverlapAttack doubleOverlapAttack;
 
         private GameObject hitEffectPrefab;
 
         private List<HealthComponent> hitHealthComponents = new List<HealthComponent>();
         private List<OverlapAttack.OverlapInfo> hits = new List<OverlapAttack.OverlapInfo>();
+        private List<HealthComponent> doubleHitHealthComponents = new List<HealthComponent>();
+        private List<OverlapAttack.OverlapInfo> doubleHits = new List<OverlapAttack.OverlapInfo>();
 
         private const float DELAY = 0.15f;
         private const float RETURN_DELAY = 0.4f;
@@ -95,6 +102,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             {
                 hitEffectPrefab = overlapAttack.hitEffectPrefab;
                 overlapAttack.hitEffectPrefab = null;
+
                 if (hits != null && hits.Count > 0)
                 {
                     overlapAttack.ProcessHits(hits);
@@ -111,6 +119,23 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 }
                 hitHealthComponents.Clear();
                 hits.Clear();
+
+                hitEffectPrefab = doubleOverlapAttack.hitEffectPrefab;
+                if (doubleHits != null && doubleHits.Count > 0)
+                {
+                    doubleOverlapAttack.ProcessHits(doubleHits);
+                }
+                for (int i = 0; i < doubleHits.Count; i++)
+                {
+                    EffectManager.SpawnEffect(hitEffectPrefab, new EffectData
+                    {
+                        origin = doubleHits[i].hitPosition,
+                        scale = Mathf.Min(doubleHits[i].hurtBox.healthComponent.body.radius, 3f),
+                        rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
+                    }, true);
+                }
+                doubleHitHealthComponents.Clear();
+                doubleHits.Clear();
             }
             if (timer > RETURN_DELAY)
             {
@@ -124,10 +149,18 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         }
         public void TryAddHit(HurtBox hurtBox)
         {
-            if (!attacked && !hitHealthComponents.Contains(hurtBox.healthComponent))
+            if (!attacked)
             {
-                hitHealthComponents.Add(hurtBox.healthComponent);
-                hits.Add(new OverlapAttack.OverlapInfo { hurtBox = hurtBox, hitPosition = hurtBox.transform.position, pushDirection = Vector3.zero });
+                if (Modules.Buffs.HasCyloopDebuff(hurtBox.healthComponent.body) && !doubleHitHealthComponents.Contains(hurtBox.healthComponent))
+                {
+                    doubleHitHealthComponents.Add(hurtBox.healthComponent);
+                    doubleHits.Add(new OverlapAttack.OverlapInfo { hurtBox = hurtBox, hitPosition = hurtBox.transform.position, pushDirection = Vector3.zero });
+                }
+                else if (!hitHealthComponents.Contains(hurtBox.healthComponent))
+                {
+                    hitHealthComponents.Add(hurtBox.healthComponent);
+                    hits.Add(new OverlapAttack.OverlapInfo { hurtBox = hurtBox, hitPosition = hurtBox.transform.position, pushDirection = Vector3.zero });
+                }
             }
         }
     }

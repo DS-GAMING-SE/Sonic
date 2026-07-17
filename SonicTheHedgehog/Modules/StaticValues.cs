@@ -112,13 +112,17 @@ namespace SonicTheHedgehog.Modules
 
         internal const float cyloopLinePointsPerPoint = 1.5f;
 
-        internal const float cyloopLineIntersectWidth = 3f;
+        internal const float cyloopLineIntersectWidth = 4.5f;
 
-        internal const float cyloopCollisionWidth = 6f;
+        internal const float cyloopCollisionWidth = 6.5f;
 
-        internal const float cyloopDamageCoefficient = 10f;
+        internal const float cyloopDamageCoefficient = 6f;
+
+        internal const float cyloopDoubleDamageCoefficient = 20f;
 
         internal const float cyloopConstrictDuration = 4.5f;
+
+        internal const float cyloopConstrictSkillDamageMultiplier = 0.5f;
 
         internal const float quickCyloopExtraRadius = 1.7f;
 
@@ -175,6 +179,10 @@ namespace SonicTheHedgehog.Modules
         internal const float superCyloopLineIntersectWidth = 10f;
 
         internal const float superCyloopCollisionWidth = 17f;
+
+        internal const float superCyloopDoubleDamageCoefficient = 60f;
+
+        internal const float superCyloopConstrictDuration = 8f;
 
     }
 }

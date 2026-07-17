@@ -115,9 +115,9 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     {
                         base.characterMotor.Motor.ForceUnground();
                     }
-                    if (target && target.healthComponent && targetDirection.magnitude <= target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius)
+                    if (target && target.healthComponent && targetDirection.magnitude <= target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius + 0.5f)
                     {
-                        this.outer.SetNextState(new QuickCyloop { target = this.target });
+                        SetNextState();
                     }
                 }
                 else
@@ -127,6 +127,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     return;
                 }
             }
+        }
+
+        protected virtual void SetNextState()
+        {
+            this.outer.SetNextState(new QuickCyloop { target = this.target });
         }
 
         private void EndChrysalis()

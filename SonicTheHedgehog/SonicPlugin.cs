@@ -161,6 +161,8 @@ namespace SonicTheHedgehog
 
             On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
 
+            On.RoR2.CharacterBody.OnBuffFirstStackGained += REPLACETHISWITHEVENTINHEDGEHOGUTILS;
+
             if (lookingGlassLoaded)
             {
                 RoR2Application.onLoad += LookingGlassSetup;
@@ -186,6 +188,8 @@ namespace SonicTheHedgehog
                 RegisterLookingGlassBuff(language, Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superParryArmorDebuff}, reduces <style=cIsUtility>attack speed and movement speed</style> by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%.");
                 RegisterLookingGlassBuff(language, Buffs.sonicBoomDebuff, "Sonic Boom Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.sonicBoomDebuffArmorReduction}.");
                 RegisterLookingGlassBuff(language, Buffs.crossSlashDebuff, "Sonic Cross Slash Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superSonicBoomDebuffArmorReduction}.");
+                RegisterLookingGlassBuff(language, Buffs.cyloopDebuff, "Sonic Cyloop Debuff", $"Disables <style=cIsUtility>movement</style> and increases <style=cIsUtility>skill</style> damage taken by {StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%.");
+                RegisterLookingGlassBuff(language, Buffs.superCyloopDebuff, "Sonic Super Cyloop Debuff", $"Disables <style=cIsUtility>movement</style> and increases <style=cIsUtility>skill</style> damage taken by {StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%.");
             }
         }
 
@@ -270,7 +274,7 @@ namespace SonicTheHedgehog
                 {
                     stats.armorAdd -= StaticValues.superSonicBoomDebuffArmorReduction * self.GetBuffCount(Buffs.crossSlashDebuff);
                 }
-                if (self.HasBuff(Buffs.cyloopDebuff))
+                if (Buffs.HasCyloopDebuff(self))
                 {
                     stats.moveSpeedRootCount += 1;
                 }
@@ -292,6 +296,10 @@ namespace SonicTheHedgehog
                         new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
                     }
                 }
+                if (Buffs.HasCyloopDebuff(self.body))
+                {
+                    damage.damage *= (1 + StaticValues.cyloopConstrictSkillDamageMultiplier);
+                }
             }
             orig(self, damage);
             if (NetworkServer.active && !damage.rejected && self && self.body)
@@ -306,12 +314,25 @@ namespace SonicTheHedgehog
                 {
                     self.body.AddTimedBuff(Buffs.cyloopDebuff, StaticValues.cyloopConstrictDuration);
                 }
+                if (damage.damageType.HasModdedDamageType(DamageTypes.superCyloop))
+                {
+                    self.body.AddTimedBuff(Buffs.superCyloopDebuff, StaticValues.superCyloopConstrictDuration);
+                }
+            }
+        }
+        private void REPLACETHISWITHEVENTINHEDGEHOGUTILS(On.RoR2.CharacterBody.orig_OnBuffFirstStackGained orig, CharacterBody self, BuffDef buff)
+        {
+            orig(self, buff);
+            if (buff == HedgehogUtils.Buffs.launchedBuff)
+            {
+                self.ClearTimedBuffs(Buffs.cyloopDebuff);
+                self.ClearTimedBuffs(Buffs.superCyloopDebuff);
             }
         }
         // could also mess with Icharactergravityparameters to get rid of gravity entirely
         private void GrandSlamJuggleAndCyloopFloat(On.RoR2.CharacterMotor.orig_ModifyGravity orig, CharacterMotor self, ref float verticalVelocity, ref float gravity, float deltaTime)
         {
-            if (self.body && self.body.HasBuff(Buffs.grandSlamJuggleDebuff) || self.body.HasBuff(Buffs.cyloopDebuff))
+            if (self.body && (self.body.HasBuff(Buffs.grandSlamJuggleDebuff) || Buffs.HasCyloopDebuff(self.body)))
             {
                 if (verticalVelocity > 0)
                 {

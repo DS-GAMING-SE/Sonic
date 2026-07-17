@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using EntityStates;
+using HedgehogUtils.Boost.EntityStates;
+using HedgehogUtils.Forms;
 using JetBrains.Annotations;
 using RoR2;
 using RoR2.Skills;
-using EntityStates;
-using UnityEngine;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.SkillStates;
-using HedgehogUtils.Forms;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
 using static HedgehogUtils.Forms.SkillDefs;
-using HedgehogUtils.Boost.EntityStates;
+using static SonicTheHedgehog.Modules.SkillDefs;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -100,9 +101,41 @@ namespace SonicTheHedgehog.Modules
         public class CyloopSkillDef : SkillDef
         {
             public SkillDef quickCyloopSkillDef { get; set; }
+            public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
+            {
+                return new CyloopInstanceData()
+                {
+                    primarySkill = skillSlot.GetComponent<SkillLocator>().primary,
+                    inputBank = skillSlot.GetComponent<InputBankTest>()
+                };
+            }
             public override bool CanExecute([NotNull] GenericSkill skillSlot)
             {
                 return base.CanExecute(skillSlot) && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent;
+            }
+
+            public override void OnFixedUpdate([NotNull] GenericSkill skillSlot, float deltaTime)
+            {
+                base.OnFixedUpdate(skillSlot, deltaTime);
+                CyloopInstanceData instanceData = (CyloopInstanceData)skillSlot.skillInstanceData;
+                if (IsReady(skillSlot) && instanceData.inputBank.skill4.down)
+                {
+                    instanceData.primarySkill.SetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+                }
+                else
+                {
+                    instanceData.primarySkill.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+                }
+            }
+            public override void OnUnassigned([NotNull] GenericSkill skillSlot)
+            {
+                base.OnUnassigned(skillSlot);
+                ((CyloopInstanceData)skillSlot.skillInstanceData).primarySkill.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+            }
+            protected class CyloopInstanceData : BaseSkillInstanceData 
+            {
+                public GenericSkill primarySkill;
+                public InputBankTest inputBank;
             }
         }
         public class RequiresFormCyloopSkillDef : CyloopSkillDef, IRequiresFormSkillDef

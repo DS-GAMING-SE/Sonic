@@ -18,6 +18,7 @@ namespace SonicTheHedgehog.Modules
         internal static BuffDef sonicBoomDebuff;
         internal static BuffDef crossSlashDebuff;
         internal static BuffDef cyloopDebuff;
+        internal static BuffDef superCyloopDebuff;
 
         internal static void RegisterBuffs()
         {
@@ -64,10 +65,20 @@ namespace SonicTheHedgehog.Modules
                 true,
                 true);
             cyloopDebuff = AddNewBuff("bdSonicCyloopDebuff",
-                Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_SharedSuffering.texSharedSufferingDebuffIcon_png).WaitForCompletion(),
-                new Color(1f, 1f, 1f),
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texCyloopBuffIcon"),
+                SonicTheHedgehogCharacter.sonicColor2,
                 false,
                 true);
+            superCyloopDebuff = AddNewBuff("bdSonicSuperCyloopDebuff",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texCyloopBuffIcon"),
+                SonicTheHedgehogCharacter.superSonicColor,
+                false,
+                true);
+        }
+
+        public static bool HasCyloopDebuff(CharacterBody body)
+        {
+            return body.HasBuff(Buffs.cyloopDebuff) || body.HasBuff(Buffs.superCyloopDebuff);
         }
 
         // simple helper method
