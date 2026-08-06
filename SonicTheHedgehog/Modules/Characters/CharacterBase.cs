@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace SonicTheHedgehog.Modules.Characters
 {
-    internal abstract class CharacterBase
+    public abstract class CharacterBase
     {
         public abstract string prefabBodyName { get; }
 
-        public abstract BodyInfo bodyInfo { get; set; }
+        internal abstract BodyInfo bodyInfo { get; set; }
 
         public abstract CustomRendererInfo[] customRendererInfos { get; set; }
 

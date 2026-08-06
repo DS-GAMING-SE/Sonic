@@ -33,6 +33,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         public override void PrepareDoubleAttack(ref OverlapAttack overlapAttack)
         {
             base.PrepareDoubleAttack(ref overlapAttack);
+            overlapAttack.hitEffectPrefab = Modules.Assets.superCyloopDoubleHitWindEffect;
             overlapAttack.damage = StaticValues.superCyloopDoubleDamageCoefficient * characterBody.damage;
         }
     }

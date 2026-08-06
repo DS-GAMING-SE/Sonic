@@ -1,10 +1,10 @@
 # Changelog
 
 ## v5.0.0
-*This update breaks all Sonic skin mods*
+*This update may break mods that interact with the Super form system*
  - (New Skill) Added a new alternate special skill. This can be unlocked by completing a newly added achievement (Or just unlocking it with the config)
  
- - (Animations) Sonic now has a custom animation for entering the first stage
+ - (Achievements) Added all of the DLC achievements to Sonic. They don't unlock anything... *yet*...
 
  - (Visuals) Sonic's homing skills now use a new animated reticle
 
@@ -13,8 +13,13 @@
  - (- Nerf) The Parry skill must be triggered successfully to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
  - (- Nerf) Grand Slam's cooldown no longer starts until the *entire* move has finished
  
- - (Optimization) This mod now uses addressables, meaning assets will only be loaded when needed. This should reduce memory usage by a lot
+ - (- Nerf/Bug Fix) Boost now only triggers skill activation effects when you actually start boosting. It won't trigger when entering Boost's idle stance, preventing unintended interactions with items like [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Fractured Timepiece
  
+ - (Compatibility) [EnemiesReturns'](https://thunderstore.io/c/riskofrain2/p/Risky_Sleeps/EnemiesReturns/) auto-generated Anointed skin now has properly spiked-up super form quills and recolored boost vfx (to make it not unbearably ugly)
+ 
+ - (Optimization) Parts of this mod have been moved over to addressables, meaning some assets will only be loaded when needed. This should reduce memory usage
+ 
+ - (Internal) Publicized the SonicTheHedgehogCharacter class, because why not? The SonicSkillDefs class has been removed as it is now obsolete
  - (Internal) The component used for Metal Sonic's custom animations, MetalSonicAnimation, has been replaced with a new component called UniqueSkinEffect. This component is used to handle any skins with custom animations or effects. This component also adds support for adding skin-specific boost vfx through code
 ### HedgehogUtils v2.0.0
  - (Voicelines) Added a new system for handling voicelines
@@ -26,6 +31,8 @@
 
  - (Bug Fix) Transformations can no longer be activated while in UI (such as typing in chat) or while you're not in your main body state (usually doing some action where you can't use other skills)
  - (Bug Fix) Fixed the Chaos Emerald interactable breaking if you purchase it and pick it up with Drifter at the same time
+ 
+  - (Config) Super transformation key binds have been moved to the [Rebindables](https://thunderstore.io/c/riskofrain2/p/pseudopulse/Rebindables/) mod, meaning the key binds now have support for controllers. The default key bind for the Super form has been changed to G. *Hallowed Concepts took my damn key bind.*
 
 ### Known Issues
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)

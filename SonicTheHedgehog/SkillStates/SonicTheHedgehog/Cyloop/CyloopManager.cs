@@ -108,31 +108,39 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     overlapAttack.ProcessHits(hits);
                 }
                 attacked = true;
-                for (int i = 0; i < hits.Count; i++)
+                if (hitEffectPrefab)
                 {
-                    EffectManager.SpawnEffect(hitEffectPrefab, new EffectData
+                    for (int i = 0; i < hits.Count; i++)
                     {
-                        origin = hits[i].hitPosition,
-                        scale = Mathf.Min(hits[i].hurtBox.healthComponent.body.radius, 3f),
-                        rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
-                    }, true);
+                        EffectManager.SpawnEffect(hitEffectPrefab, new EffectData
+                        {
+                            origin = hits[i].hitPosition,
+                            scale = Mathf.Min(hits[i].hurtBox.healthComponent.body.radius, 3f),
+                            rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
+                        }, true);
+                    }
                 }
                 hitHealthComponents.Clear();
                 hits.Clear();
 
                 hitEffectPrefab = doubleOverlapAttack.hitEffectPrefab;
+                doubleOverlapAttack.hitEffectPrefab = null;
+
                 if (doubleHits != null && doubleHits.Count > 0)
                 {
                     doubleOverlapAttack.ProcessHits(doubleHits);
                 }
-                for (int i = 0; i < doubleHits.Count; i++)
+                if (hitEffectPrefab)
                 {
-                    EffectManager.SpawnEffect(hitEffectPrefab, new EffectData
+                    for (int i = 0; i < doubleHits.Count; i++)
                     {
-                        origin = doubleHits[i].hitPosition,
-                        scale = Mathf.Min(doubleHits[i].hurtBox.healthComponent.body.radius, 3f),
-                        rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
-                    }, true);
+                        EffectManager.SpawnEffect(hitEffectPrefab, new EffectData
+                        {
+                            origin = doubleHits[i].hitPosition,
+                            scale = Mathf.Min(doubleHits[i].hurtBox.healthComponent.body.radius, 3f),
+                            rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
+                        }, true);
+                    }
                 }
                 doubleHitHealthComponents.Clear();
                 doubleHits.Clear();

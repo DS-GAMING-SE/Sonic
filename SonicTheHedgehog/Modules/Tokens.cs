@@ -58,7 +58,7 @@ namespace SonicTheHedgehog.Modules
             #region Skins
 
             LanguageAPI.Add(prefix + "MASTERY_SKIN_NAME", "Metal");
-            LanguageAPI.Add(prefix + "ANOINTED_SKIN_NAME", "Arthur");
+            LanguageAPI.Add(prefix + "ANOINTED_SKIN_NAME", "Arthur"); // not currently used
 
             #endregion
 
@@ -252,6 +252,11 @@ namespace SonicTheHedgehog.Modules
                 "Sonic: The Murder of...");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_DESCRIPTION",
                 "As Sonic, be murdered.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_NAME",
+                "Sonic: Tearing Down Titans");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_DESCRIPTION",
+                $"As Sonic, activate and complete {SonicMountainShrinesAchievement.requiredMountainShrines} total Shrines of the Mountain.");
 
             #endregion
 
