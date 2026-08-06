@@ -31,7 +31,7 @@ using static SonicTheHedgehog.Modules.SkillDefs;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
-    internal class SonicTheHedgehogCharacter : SurvivorBase
+    public class SonicTheHedgehogCharacter : SurvivorBase
     {
         //used when building your character using the prefabs you set up in unity
         //don't upload to thunderstore without changing this
@@ -48,7 +48,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         //used when registering your survivor's language tokens
         public override string survivorTokenPrefix => SONIC_THE_HEDGEHOG_PREFIX;
 
-        public override BodyInfo bodyInfo { get; set; } = new BodyInfo
+        internal override BodyInfo bodyInfo { get; set; } = new BodyInfo
         {
             bodyName = "SonicTheHedgehog",
             bodyNameToken = SONIC_THE_HEDGEHOG_PREFIX + "NAME",
@@ -94,9 +94,10 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static UnlockableDef meridianSkinUnlockableDef;
         public static UnlockableDef decompileSkinUnlockableDef;
         public static UnlockableDef purgeSkinUnlockableDef;
+        public static UnlockableDef dieUnlockableDef;
 
         public static UnlockableDef parryUnlockableDef;
-        public static UnlockableDef dieUnlockableDef;
+        public static UnlockableDef cyloopUnlockableDef;
 
         public override void InitializeCharacter()
         {
@@ -143,11 +144,18 @@ namespace SonicTheHedgehog.Modules.Survivors
             parryUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME";
             Content.AddUnlockableDef(parryUnlockableDef);
 
-            dieUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            /*dieUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             dieUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSailorSkinIcon");
             dieUnlockableDef.cachedName = SonicDieAchievement.unlockableIdentifier;
             dieUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicDieAchievement.identifier + "_NAME";
-            Content.AddUnlockableDef(dieUnlockableDef);
+            Content.AddUnlockableDef(dieUnlockableDef);*/
+
+            cyloopUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            cyloopUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texCyloopIcon");
+            cyloopUnlockableDef.cachedName = SonicMountainShrinesAchievement.unlockableIdentifier;
+            cyloopUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(cyloopUnlockableDef);
+            SonicMountainShrinesAchievement.Initialize();
         }
 
         public override void InitializeHitboxes()
@@ -384,6 +392,40 @@ namespace SonicTheHedgehog.Modules.Survivors
                 }
             }
         }
+        public static void UnlockCyloopConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            if (SonicMountainShrinesAchievement.configUpdateBlocker) return;
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (SonicMountainShrinesAchievement.sonicMountainShrinesConfig.Value >= SonicMountainShrinesAchievement.requiredMountainShrines)
+            {
+                if (!user.HasAchievement(SonicMountainShrinesAchievement.identifier))
+                {
+                    user.AddAchievement(SonicMountainShrinesAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(cyloopUnlockableDef))
+                {
+                    user.GrantUnlockable(cyloopUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicMountainShrinesAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicMountainShrinesAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(cyloopUnlockableDef))
+                {
+                    user.RevokeUnlockable(cyloopUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
         #endregion
 
         public static SkillDefs.MeleeSkillDef primarySkillDef;
@@ -556,33 +598,14 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #region New Utility
 
-            SkillDefInfo boost = new SkillDefInfo
-            {
-                skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
-                skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
-                skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.NewBoost)),
-                activationStateMachineName = "Body",
-                baseMaxStock = 1,
-                baseRechargeInterval = 0f,
-                beginSkillCooldownOnSkillEnd = true,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
-                resetCooldownTimerOnUse = false,
-                isCombatSkill = false,
-                mustKeyPress = true,
-                cancelSprintingOnActivation = false,
-                rechargeStock = 0,
-                requiredStock = 1,
-                stockToConsume = 0
-            };
-            boostSkillDef = Modules.Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.BoostSkillDef>(boost);
-            boostSkillDef.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.BoostIdle));
-            boostSkillDef.brakeState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicBrake));
-            boostSkillDef.boostHUDColor = new Color(0, 0.9f, 1, 1);
+            boostSkillDef = HedgehogUtils.Boost.SkillDefs.CreateBoostSkillDef<HedgehogUtils.Boost.SkillDefs.BoostSkillDef>(
+                prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_NAME",
+                prefix + "_SONIC_THE_HEDGEHOG_BODY_UTILITY_BOOST_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texBoostIcon"),
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.NewBoost)),
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.BoostIdle)),
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicBrake)),
+                sonicColor2);
             Modules.Skills.AddUtilitySkills(bodyPrefab, boostSkillDef);
 
             #endregion
@@ -678,8 +701,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             Modules.Skills.AddSpecialSkills(bodyPrefab, cyloopSkillDef);
             #endregion
 
-            SonicSkillDefs.Initialize(primarySkillDef, sonicBoomSkillDef, parrySkillDef, followUpSkillDef, boostSkillDef, grandSlamSkillDef);
-
             // PASSIVES
 
             #region Passive
@@ -744,15 +765,15 @@ namespace SonicTheHedgehog.Modules.Survivors
                 SonicVoicelineComponent.lobby1, SonicVoicelineComponent.lobby2, SonicVoicelineComponent.lobby3, SonicVoicelineComponent.lobby4);
             #endregion
 
-            MakeSuperSonicStuff(primary, sonicBoom, parry, boost, grandSlam, cyloop, quickCyloop);
+            MakeSuperSonicStuff(primary, sonicBoom, parry, grandSlam, cyloop, quickCyloop);
 
             if (SonicTheHedgehogPlugin.ancientScepterLoaded)
             {
-                ScepterSkill(boost);
+                ScepterSkill();
             }
         }
 
-        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo boost, SkillDefInfo grandSlam, SkillDefInfo cyloop, SkillDefInfo quickCyloop)
+        private void MakeSuperSonicStuff(SkillDefInfo primary, SkillDefInfo sonicBoom, SkillDefInfo parry, SkillDefInfo grandSlam, SkillDefInfo cyloop, SkillDefInfo quickCyloop)
         {
 
             Log.Message("Making Super Sonic: Starting Stuff");
@@ -823,19 +844,15 @@ namespace SonicTheHedgehog.Modules.Survivors
             SuperParryExit.idwAttackSkillDef = Skills.CreateSkillDef<RequiresFormTargetSkillDef>(idwAttack);
             SuperParryExit.idwAttackSkillDef.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
 
-            SonicSkillDefs.idwAttackSkillDef = SuperParryExit.idwAttackSkillDef;
-
-            boost.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.NewSuperBoost));
-            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
-            boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME";
-            boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION";
-            boost.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperBoostIcon");
-
-            SuperSkillReplacer.boost = Modules.Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef>(boost);
+            SuperSkillReplacer.boost = HedgehogUtils.Boost.SkillDefs.CreateBoostSkillDef<HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef>(
+                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_NAME",
+                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_UTILITY_BOOST_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperBoostIcon"),
+                new EntityStates.SerializableEntityStateType(typeof(NewSuperBoost)),
+                new EntityStates.SerializableEntityStateType(typeof(BoostIdle)),
+                new EntityStates.SerializableEntityStateType(typeof(SonicBrake)),
+                superSonicColor);
             SuperSkillReplacer.boost.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
-            SuperSkillReplacer.boost.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
-            SuperSkillReplacer.boost.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
-            SuperSkillReplacer.boost.boostHUDColor = superSonicColor;
 
             grandSlam.activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SuperUpgrades.SuperGrandSlamDash));
             grandSlam.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME";
@@ -869,35 +886,31 @@ namespace SonicTheHedgehog.Modules.Survivors
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private void ScepterSkill(SkillDefInfo boost)
+        private void ScepterSkill()
         {
             Log.Message("Sonic Scepter skill started");
-            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
-            boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME";
-            boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_DESCRIPTION";
-            boost.activationState = new EntityStates.SerializableEntityStateType(typeof(NewScepterBoost));
-            boost.skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texScepterBoostIcon");
-
-            HedgehogUtils.Boost.SkillDefs.BoostSkillDef skillDef = Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.BoostSkillDef>(boost);
-            skillDef.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
-            skillDef.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
-            skillDef.boostHUDColor = new Color(0, 0.9f, 1, 1);
+            HedgehogUtils.Boost.SkillDefs.BoostSkillDef skillDef = HedgehogUtils.Boost.SkillDefs.CreateBoostSkillDef<HedgehogUtils.Boost.SkillDefs.BoostSkillDef>(
+                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_NAME",
+                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SCEPTER_UTILITY_BOOST_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texScepterBoostIcon"),
+                new EntityStates.SerializableEntityStateType(typeof(NewScepterBoost)),
+                new EntityStates.SerializableEntityStateType(typeof(BoostIdle)),
+                new EntityStates.SerializableEntityStateType(typeof(SonicBrake)),
+                sonicColor2);
 
             Log.Message("Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(skillDef, "SonicTheHedgehog",
                           boostSkillDef)).ToString());
 
-            boost.skillName = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
-            boost.skillNameToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME";
-            boost.skillDescriptionToken = SonicTheHedgehogPlugin.DEVELOPER_PREFIX +"_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION";
-            boost.activationState = new EntityStates.SerializableEntityStateType(typeof(NewScepterSuperBoost));
-            boost.skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperScepterBoostIcon");
-
-            HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef superSkillDef = Skills.CreateSkillDef<HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef>(boost);
+            HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef superSkillDef = HedgehogUtils.Boost.SkillDefs.CreateBoostSkillDef<HedgehogUtils.Boost.SkillDefs.RequiresFormBoostSkillDef>(
+                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_NAME",
+                SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SCEPTER_UTILITY_BOOST_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuperScepterBoostIcon"),
+                new EntityStates.SerializableEntityStateType(typeof(NewScepterSuperBoost)),
+                new EntityStates.SerializableEntityStateType(typeof(BoostIdle)),
+                new EntityStates.SerializableEntityStateType(typeof(SonicBrake)),
+                superSonicColor);
             superSkillDef.requiredForm = HedgehogUtils.Forms.SuperForm.SuperFormDef.superFormDef;
-            superSkillDef.boostIdleState = new EntityStates.SerializableEntityStateType(typeof(BoostIdle));
-            superSkillDef.brakeState = new EntityStates.SerializableEntityStateType(typeof(SonicBrake));
-            superSkillDef.boostHUDColor = new Color(1f, 0.9f, 0, 1);
 
             Log.Message("Super Sonic Scepter skill created? " +
                       (ItemBase<AncientScepterItem>.instance.RegisterScepterSkill(superSkillDef, "SonicTheHedgehog",
@@ -957,9 +970,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rendererInfo = defaultSkinSuperRenderer,
                 mesh = defaultSkinSuperMeshes
             };
-            Forms.AddSkinForForm(defaultSkin.name,
-                defaultSkinSuper,
-                ref SuperFormDef.superFormDef);
+            Forms.AddSkinForForm(defaultSkin, defaultSkinSuper, ref SuperFormDef.superFormDef);
             #endregion
 
             #endregion
@@ -1005,9 +1016,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 rendererInfo = masterySkinSuperRenderer,
                 mesh = masterySkinSuperMeshes
             };
-            Forms.AddSkinForForm(metalSkin.nameToken,
-                masterySkinSuper,
-                ref SuperFormDef.superFormDef);
+            Forms.AddSkinForForm(metalSkin, masterySkinSuper, ref SuperFormDef.superFormDef);
             metalSkin.AddSuperGrandSlamMeshReplacement(SkinAddressables.superMetalGrandSlam);
             #endregion
             #endregion
@@ -1022,40 +1031,22 @@ namespace SonicTheHedgehog.Modules.Survivors
             skinController2.skins = skins.ToArray();
         }
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private static SkinDef AnointedSkinEnemiesReturns(SkinDef skinToCopy)
+        private SkinDef AnointedSkinEnemiesReturns(SkinDef skinToCopy)
         {
             SkinDef anointedSkin = EnemiesReturns.Enemies.Judgement.AnointedSkins.CreateAnointedSkin("SonicTheHedgehog", skinToCopy, true, Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon"));
             anointedSkin.name = SONIC_THE_HEDGEHOG_PREFIX + "ENEMIES_RETURNS_JUDGEMENT_SKIN";
-            anointedSkin.nameToken = SONIC_THE_HEDGEHOG_PREFIX + "ANOINTED_SKIN_NAME";
-            anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon");
+            anointedSkin.nameToken = "ENEMIES_RETURNS_JUDGEMENT_SKIN_ANOINTED_NAME";
+            anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon"); // REPLACE THIS ICON?
             anointedSkin.AddBoostFlashReplacement(HedgehogUtils.Assets.CreateBoostFlashEffect("SonicAnointedPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampWispSoul_png).WaitForCompletion(), sonicColor2));
             anointedSkin.AddBoostAuraReplacement(HedgehogUtils.Assets.CreateBoostAuraEffect("SonicAnointedPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampWispSoul_png).WaitForCompletion(), sonicColor2));
+
+            RenderReplacements anointedSkinSuper = new RenderReplacements
+            {
+                rendererInfo = ArrayUtils.Clone(prefabCharacterModel.baseRendererInfos),
+                mesh = new Mesh[] { Assets.superSonicMesh }
+            };
+            Forms.AddSkinForForm(anointedSkin, anointedSkinSuper, ref SuperFormDef.superFormDef);
             return anointedSkin;
-        }
-    }
-
-    public class SonicSkillDefs
-    {
-        public static SkillDefs.MeleeSkillDef primarySkillDef;
-
-        public static SkillDef sonicBoomSkillDef;
-        public static SkillDef parrySkillDef;
-        public static SkillDef followUpSkillDef;
-
-        public static HedgehogUtils.Boost.SkillDefs.BoostSkillDef boostSkillDef;
-
-        public static SkillDef grandSlamSkillDef;
-
-        public static SkillDef idwAttackSkillDef;
-
-        public static void Initialize(SkillDefs.MeleeSkillDef primary, SkillDef sonicBoom, SkillDef parry, SkillDef followUp, HedgehogUtils.Boost.SkillDefs.BoostSkillDef boost, SkillDef grandSlam)
-        {
-            primarySkillDef = primary;
-            sonicBoomSkillDef = sonicBoom;
-            parrySkillDef = parry;
-            followUpSkillDef = followUp;
-            boostSkillDef = boost;
-            grandSlamSkillDef = grandSlam;
         }
     }
 }

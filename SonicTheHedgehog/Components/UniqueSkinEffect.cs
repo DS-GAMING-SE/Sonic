@@ -17,13 +17,13 @@ namespace SonicTheHedgehog.Components
         public Animator animator;
         public ModelSkinController skinController;
 
-        internal static List<SkinDef> flyingAnimationSkinTokens = new List<SkinDef>();
-        internal static List<SkinDef> swordAnimationSkinTokens = new List<SkinDef>();
+        internal static List<SkinDef> flyingAnimationSkins = new List<SkinDef>();
+        internal static List<SkinDef> swordAnimationSkins = new List<SkinDef>(); // Could it be??? A hint at a future update???
         public static SkinEffects?[] skinEffects;
 
-        internal static Dictionary<SkinDef, AssetOrDirectReference<Mesh>> superGrandSlamMeshReplacementTokens = new Dictionary<SkinDef, AssetOrDirectReference<Mesh>>();
-        internal static Dictionary<SkinDef, GameObject> boostFlashReplacementTokens = new Dictionary<SkinDef, GameObject>();
-        internal static Dictionary<SkinDef, GameObject> boostAuraReplacementTokens = new Dictionary<SkinDef, GameObject>();
+        internal static Dictionary<SkinDef, AssetOrDirectReference<Mesh>> superGrandSlamMeshReplacements = new Dictionary<SkinDef, AssetOrDirectReference<Mesh>>();
+        internal static Dictionary<SkinDef, GameObject> boostFlashReplacements = new Dictionary<SkinDef, GameObject>();
+        internal static Dictionary<SkinDef, GameObject> boostAuraReplacements = new Dictionary<SkinDef, GameObject>();
 
         private void Start()
         {
@@ -64,24 +64,26 @@ namespace SonicTheHedgehog.Components
             bool sword = false;
             for (int i = 0; i < skins.Length; i++)
             {
-                flying = flyingAnimationSkinTokens.Contains(skins[i]);
-                sword = swordAnimationSkinTokens.Contains(skins[i]);
-                // this always makes a skineffects so there's no point in having it be nullable. does it need to be nullable?
-                skinEffects[i] = new SkinEffects
+                flying = flyingAnimationSkins.Contains(skins[i]);
+                sword = swordAnimationSkins.Contains(skins[i]);
+                if (flying || sword || superGrandSlamMeshReplacements.ContainsKey(skins[i]) || boostFlashReplacements.ContainsKey(skins[i]) || boostAuraReplacements.ContainsKey(skins[i]))
                 {
-                    flying = flying,
-                    sword = sword,
-                    superGrandSlamMeshReplacement = superGrandSlamMeshReplacementTokens.GetValueOrDefault(skins[i]),
-                    boostFlashEffect = boostFlashReplacementTokens.GetValueOrDefault(skins[i]),
-                    boostAuraEffect = boostAuraReplacementTokens.GetValueOrDefault(skins[i])
-                };
+                    skinEffects[i] = new SkinEffects
+                    {
+                        flying = flying,
+                        sword = sword,
+                        superGrandSlamMeshReplacement = superGrandSlamMeshReplacements.GetValueOrDefault(skins[i]),
+                        boostFlashEffect = boostFlashReplacements.GetValueOrDefault(skins[i]),
+                        boostAuraEffect = boostAuraReplacements.GetValueOrDefault(skins[i])
+                    };
+                }
             }
 
-            flyingAnimationSkinTokens = null;
-            swordAnimationSkinTokens = null;
-            superGrandSlamMeshReplacementTokens = null;
-            boostFlashReplacementTokens = null;
-            boostAuraReplacementTokens = null;
+            flyingAnimationSkins = null;
+            swordAnimationSkins = null;
+            superGrandSlamMeshReplacements = null;
+            boostFlashReplacements = null;
+            boostAuraReplacements = null;
         }
 
         public struct SkinEffects
@@ -97,27 +99,27 @@ namespace SonicTheHedgehog.Components
     {
         public static void AddFlyingSkin(this SkinDef skin)
         {
-            flyingAnimationSkinTokens.Add(skin);
+            flyingAnimationSkins.Add(skin);
         }
         public static void AddSwordSkin(this SkinDef skin)
         {
-            swordAnimationSkinTokens.Add(skin);
+            swordAnimationSkins.Add(skin);
         }
         public static void AddSuperGrandSlamMeshReplacement(this SkinDef skin, Mesh mesh)
         {
-            superGrandSlamMeshReplacementTokens.Add(skin, new AssetOrDirectReference<Mesh> { directRef = mesh });
+            superGrandSlamMeshReplacements.Add(skin, new AssetOrDirectReference<Mesh> { directRef = mesh });
         }
         public static void AddSuperGrandSlamMeshReplacement(this SkinDef skin, AssetReferenceT<Mesh> meshAddress)
         {
-            superGrandSlamMeshReplacementTokens.Add(skin, new AssetOrDirectReference<Mesh> { loadOnAssigned = false, address = meshAddress });
+            superGrandSlamMeshReplacements.Add(skin, new AssetOrDirectReference<Mesh> { loadOnAssigned = false, address = meshAddress });
         }
         public static void AddBoostFlashReplacement(this SkinDef skin, GameObject boostFlash)
         {
-            boostFlashReplacementTokens.Add(skin, boostFlash);
+            boostFlashReplacements.Add(skin, boostFlash);
         }
         public static void AddBoostAuraReplacement(this SkinDef skin, GameObject boostAura)
         {
-            boostAuraReplacementTokens.Add(skin, boostAura);
+            boostAuraReplacements.Add(skin, boostAura);
         }
     }
 }

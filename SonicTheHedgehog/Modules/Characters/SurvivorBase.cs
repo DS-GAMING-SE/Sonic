@@ -8,7 +8,7 @@ using RoR2.Skills;
 
 namespace SonicTheHedgehog.Modules.Survivors
 {
-    internal abstract class SurvivorBase : CharacterBase
+    public abstract class SurvivorBase : CharacterBase
     {
         public abstract string survivorTokenPrefix { get; }
         

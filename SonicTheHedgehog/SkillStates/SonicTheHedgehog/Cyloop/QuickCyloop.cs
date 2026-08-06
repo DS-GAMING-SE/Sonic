@@ -46,6 +46,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             characterBody.OnSkillActivated(skillLocator.special);
             Util.PlaySound("Play_sonicthehedgehog_cyloop", gameObject);
             VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_buildup_short", VoicelinePriority.PrioritySkill);
+            base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             if (target && target.healthComponent)
             {
                 cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
@@ -89,6 +90,10 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             base.Update();
             if (modelLocator.modelTransform && target)
             {
+                /*Vector3 endPosition = target.transform.position - (startForward * (target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius));
+                endPosition.y = yOffset;
+                characterMotor.AddDisplacement((endPosition - transform.position));*/
+                
                 float lerp = age / attackTime;
                 float lerpCircle = lerp * 2 * Mathf.PI;
                 Vector3 orbitVector = -startRight * Mathf.Sin(lerpCircle + Mathf.PI);
@@ -120,6 +125,10 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 characterMotor.velocity = startRight * Mathf.Min(speed * 0.5f, characterBody.moveSpeed);
                 characterDirection.forward = startRight;
                 characterDirection.moveVector = startRight;
+            }
+            if (base.characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreFallDamage))
+            {
+                base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
             }
 
             cyloopVFX.SetLineColor(cyloopTrailIntersectColor);

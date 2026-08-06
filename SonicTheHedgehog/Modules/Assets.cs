@@ -67,6 +67,8 @@ namespace SonicTheHedgehog.Modules
         public static GameObject cyloopConstrictEffect;
 
         public static GameObject superCyloopHitWindEffect;
+        public static GameObject superCyloopDoubleHitWindEffect;
+        public static GameObject superCyloopConstrictWindEffect;
 
         // initial
         public static GameObject faceplantDecal;
@@ -202,7 +204,7 @@ namespace SonicTheHedgehog.Modules
             powerBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.texChefSecondaryFlameVFX1_png).WaitForCompletion(), SonicTheHedgehogCharacter.sonicColor2);
             powerBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.texChefSecondaryFlameVFX1_png).WaitForCompletion(), SonicTheHedgehogCharacter.sonicColor2);
 
-            scepterPowerBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_SolusWing.texRampSW_SuppressionAoERim_png).WaitForCompletion(), new Color(0.15f, 0.15f, 1f));
+            scepterPowerBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampNullifier_png).WaitForCompletion(), new Color(0.15f, 0.15f, 1f));
             AddScepterToBoostFlash(scepterPowerBoostFlashEffect);
             if (scepterPowerBoostFlashEffect)
             {
@@ -219,7 +221,7 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterPowerBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_SolusWing.texRampSW_SuppressionAoERim_png).WaitForCompletion(), new Color(0.15f, 0.15f, 1f));
+            scepterPowerBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampNullifier_png).WaitForCompletion(), new Color(0.15f, 0.15f, 1f));
 
             Color windColor = new Color(0.07f, 0.07f, 0.07f);
             scepterBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterBoostFlash", null, windColor, Color.magenta, false, 0.9f);
@@ -248,7 +250,7 @@ namespace SonicTheHedgehog.Modules
             superBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicSuperBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor, true, 1.25f);
             superBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicSuperBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor, new Color(1f, 0.8f, 0.6f), 1.25f);
 
-            scepterSuperBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterSuperBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, true, 1.25f);
+            scepterSuperBoostFlashEffect = HedgehogUtils.Assets.CreateBoostFlashEffect("SonicScepterSuperBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampBanditSlash_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, true, 1.25f);
             AddScepterToBoostFlash(scepterSuperBoostFlashEffect);
             if (scepterSuperBoostFlashEffect)
             {
@@ -265,7 +267,7 @@ namespace SonicTheHedgehog.Modules
                     cycleOffset = 0f
                 };
             }
-            scepterSuperBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterSuperBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDroneFire_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, new Color(1f, 0.4f, 0.8f), 1.25f);
+            scepterSuperBoostAuraEffect = HedgehogUtils.Assets.CreateBoostAuraEffect("SonicScepterSuperBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampBanditSlash_png).WaitForCompletion(), Color.white, SonicTheHedgehogCharacter.superSonicColor2, new Color(1f, 0.15f, 0.5f), 1.25f);
 
             grandSlamHitEffect = Assets.LoadEffect("SonicGrandSlamKickHit", "", true, 0.7f);
 
@@ -371,7 +373,7 @@ namespace SonicTheHedgehog.Modules
             cyloopHitEffect.transform.GetChild(4).GetComponent<ParticleSystemRenderer>().sharedMaterial = cyberCube;
             cyloopHitEffect.transform.GetChild(5).GetComponent<ParticleSystemRenderer>().sharedMaterial = cyberPixelMat;
 
-            cyloopDoubleHitEffect = LoadEffect("SonicCyloopDoubleHitEffect", "", false, 0.4f, true, true);
+            cyloopDoubleHitEffect = LoadEffect("SonicCyloopDoubleHitEffect", "", false, 0.45f, true, true);
             cyloopDoubleHitEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>().sharedMaterial = glowSoft;
             cyloopDoubleHitEffect.transform.GetChild(1).GetComponent<ParticleSystemRenderer>().trailMaterial = AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.matPrimeDevastatorChargeVFX2_mat)).WaitForCompletion();
             cyloopDoubleHitEffect.transform.GetChild(2).GetComponent<ParticleSystemRenderer>().sharedMaterial = HedgehogUtils.Assets.darkSparkle;
@@ -388,7 +390,7 @@ namespace SonicTheHedgehog.Modules
             pixelFlash.SetFloat("_AlphaBias", 0.2f);
             pixelFlash.SetFloat("_DepthOffset", -2.5f);
             pixelFlash.SetInt("_ZTest", 7);
-            pixelFlash.SetTexture("_RemapTex", AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Common_ColorRamps.texRampOpalShield_png)).WaitForCompletion());
+            pixelFlash.SetTexture("_RemapTex", AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampHelfire_png)).WaitForCompletion());
             pixelFlash.SetTexture("_Cloud1Tex", AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.texNanoPistolAOE_1c_png)).WaitForCompletion());
             pixelFlash.SetTexture("_Cloud2Tex", AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.texNanoPistolAOE_1b_png)).WaitForCompletion());
             pixelFlash.SetTextureScale("_Cloud2Tex", new Vector2(4f, 0.7f));
@@ -443,6 +445,36 @@ namespace SonicTheHedgehog.Modules
             superCyloopHitWindEffect.transform.GetChild(9).GetComponent<ParticleSystemRenderer>().sharedMaterial = wideGlow;
             superCyloopHitWindEffect.transform.GetChild(10).GetComponent<ParticleSystemRenderer>().sharedMaterial = HedgehogUtils.Assets.darkSparkle;
             superCyloopHitWindEffect.transform.GetChild(11).GetComponent<ParticleSystemRenderer>().sharedMaterial = superCoreMat;
+            Material superRingMat = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Huntress.matHuntressSwingTrail_mat).WaitForCompletion());
+            superRingMat.SetTexture("_RemapTex", AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Common_ColorRamps.texRampConstructLaser_png)).WaitForCompletion());
+            superRingMat.SetFloat("_Boost", 2f);
+
+            superCyloopDoubleHitWindEffect = LoadEffect("SonicSuperCyloopDoubleHitWindEffect", "", false, 0.46f, true, true);
+            var superCyloopDoubleWindSphere = superCyloopDoubleHitWindEffect.transform.GetChild(0).GetComponent<ParticleSystemRenderer>();
+            superCyloopDoubleWindSphere.mesh = AssetAsyncReferenceManager<Mesh>.LoadAsset(new AssetReferenceT<Mesh>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3.mdlNoiseSphere_01_fbx_GEO_NoiseSphere_)).WaitForCompletion();
+            superCyloopDoubleWindSphere.sharedMaterial = new Material(Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_DefectiveUnit.matDefectiveUnitDetonateSphereEnergyPers_mat).WaitForCompletion());
+            superCyloopDoubleWindSphere.sharedMaterial.SetTexture("_RemapTex", AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_SolusAmalgamator.texRampSolusAmalgamator_png)).WaitForCompletion());
+            superCyloopDoubleWindSphere.sharedMaterial.SetColor("_TintColor", Color.white);
+            var superCyloopDoubleShockwave = superCyloopDoubleHitWindEffect.transform.GetChild(1).GetComponent<ParticleSystemRenderer>();
+            superCyloopDoubleShockwave.mesh = donut2;
+            superCyloopDoubleShockwave.sharedMaterial = distortion; // different distortion mat since it's a ring?
+            superCyloopDoubleHitWindEffect.transform.GetChild(2).GetComponent<ParticleSystemRenderer>().sharedMaterial = glowSoft;
+            superCyloopDoubleHitWindEffect.transform.GetChild(3).GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Child.matChildStarGlow_mat).WaitForCompletion();
+            superCyloopDoubleHitWindEffect.transform.GetChild(4).GetComponent<ParticleSystemRenderer>().sharedMaterial = wideGlow;
+            var superCyloopDoubleHitRings = superCyloopDoubleHitWindEffect.transform.GetChild(6).GetComponent<ParticleSystemRenderer>();
+            superCyloopDoubleHitRings.sharedMaterial = superRingMat;
+            superCyloopDoubleHitRings.mesh = donut2;
+
+            superCyloopConstrictWindEffect = LoadEffect("SonicSuperCyloopConstrictWindEffect", "", true, 0.1f, false, true);
+            var superCyloopConstrictWindVfx = superCyloopConstrictWindEffect.transform.GetChild(0);
+            superCyloopConstrictWindVfx.GetChild(1).GetComponent<ParticleSystemRenderer>().sharedMaterial = cyberPixel2Mat;
+            var superCyloopConstrictWindRings = superCyloopConstrictWindVfx.transform.GetChild(0).GetComponent<ParticleSystemRenderer>();
+            superCyloopConstrictWindRings.mesh = donut2;
+            superCyloopConstrictWindRings.sharedMaterial = superRingMat;
+            var superCyloopConstrictWindTempVisualEffect = superCyloopConstrictWindEffect.AddComponent<TemporaryVisualEffect>();
+            superCyloopConstrictWindTempVisualEffect.visualTransform = superCyloopConstrictWindVfx;
+            superCyloopConstrictWindTempVisualEffect.exitComponents = new MonoBehaviour[] { superCyloopConstrictWindEffect.GetComponent<DestroyOnTimer>() };
+            TempVisualEffectAPI.AddTemporaryVisualEffect(superCyloopConstrictWindEffect, (body) => { return body.HasBuff(Buffs.superCyloopDebuff); });
 
             SkillStates.Cyloop.CyloopManager.Initialize();
         }

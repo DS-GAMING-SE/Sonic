@@ -161,7 +161,7 @@ namespace SonicTheHedgehog
 
             On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
 
-            On.RoR2.CharacterBody.OnBuffFirstStackGained += REPLACETHISWITHEVENTINHEDGEHOGUTILS;
+            HedgehogUtils.Launch.LaunchManager.onTryLaunchServer += RemoveCyloopWhenLaunched;
 
             if (lookingGlassLoaded)
             {
@@ -222,6 +222,8 @@ namespace SonicTheHedgehog
 
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockPurge()));
             Modules.Config.ForceUnlockPurge().SettingChanged += SonicTheHedgehogCharacter.UnlockPurgeConfig;
+
+            ModSettingsManager.AddOption(new IntSliderOption(SonicMountainShrinesAchievement.sonicMountainShrinesConfig, new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 0, max = 4 }));
 
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.EnableLogs()));
         }
@@ -320,14 +322,10 @@ namespace SonicTheHedgehog
                 }
             }
         }
-        private void REPLACETHISWITHEVENTINHEDGEHOGUTILS(On.RoR2.CharacterBody.orig_OnBuffFirstStackGained orig, CharacterBody self, BuffDef buff)
+        private void RemoveCyloopWhenLaunched(HealthComponent self, DamageInfo damageInfo)
         {
-            orig(self, buff);
-            if (buff == HedgehogUtils.Buffs.launchedBuff)
-            {
-                self.ClearTimedBuffs(Buffs.cyloopDebuff);
-                self.ClearTimedBuffs(Buffs.superCyloopDebuff);
-            }
+            self.body.ClearTimedBuffs(Buffs.cyloopDebuff);
+            self.body.ClearTimedBuffs(Buffs.superCyloopDebuff);
         }
         // could also mess with Icharactergravityparameters to get rid of gravity entirely
         private void GrandSlamJuggleAndCyloopFloat(On.RoR2.CharacterMotor.orig_ModifyGravity orig, CharacterMotor self, ref float verticalVelocity, ref float gravity, float deltaTime)
@@ -378,6 +376,10 @@ namespace SonicTheHedgehog
             if (!self.HasAchievement(SonicPurgeAchievement.identifier) && Modules.Config.ForceUnlockPurge().Value)
             {
                 self.AddAchievement(SonicPurgeAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicMountainShrinesAchievement.identifier) && SonicMountainShrinesAchievement.sonicMountainShrinesConfig.Value >= SonicMountainShrinesAchievement.requiredMountainShrines)
+            {
+                self.AddAchievement(SonicMountainShrinesAchievement.identifier, true);
             }
         }
     }
