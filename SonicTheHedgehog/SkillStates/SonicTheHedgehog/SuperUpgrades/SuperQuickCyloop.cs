@@ -18,7 +18,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         public override Color cyloopTrailColor { get { return SonicTheHedgehogCharacter.superSonicColor; } }
         public override Color cyloopTrailIntersectColor { get { return new Color(0.2f, 0.6f, 1f); } }
         public override float cyloopTrailSizeMultiplier { get { return 2f; } }
-        public override GameObject hitEffectPrefab { get { return Modules.Assets.superCyloopHitWindEffect; } }
+        public override GameObject hitEffectPrefab { get { return CyloopManager.GetSuperCyloopHitVFX(); } }
         public override GameObject doubleHitEffectPrefab { get { return Modules.Assets.superCyloopDoubleHitWindEffect; } }
         public override Material temporaryOverlayMaterial { get { return null; } }
         public override float cyloopDoublePushForce { get { return 11000f; } }
@@ -32,7 +32,6 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         public override void PrepareDoubleAttack(ref DamageInfo damageInfo)
         {
             base.PrepareDoubleAttack(ref damageInfo);
-            damageInfo.damageType.RemoveModdedDamageType(DamageTypes.superCyloop);
             damageInfo.damage = StaticValues.superCyloopDoubleDamageCoefficient * damageStat;
         }
     }

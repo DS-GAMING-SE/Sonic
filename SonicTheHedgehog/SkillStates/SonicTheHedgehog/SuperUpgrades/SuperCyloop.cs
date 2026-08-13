@@ -26,7 +26,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         {
             base.PrepareAttack(ref overlapAttack);
             overlapAttack.forceVector = Vector3.up * 50f;
-            overlapAttack.hitEffectPrefab = Modules.Assets.superCyloopHitWindEffect;
+            overlapAttack.hitEffectPrefab = CyloopManager.GetSuperCyloopHitVFX();
             overlapAttack.RemoveModdedDamageType(DamageTypes.cyloop);
             overlapAttack.AddModdedDamageType(DamageTypes.superCyloop);
         }
@@ -35,6 +35,8 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
             base.PrepareDoubleAttack(ref overlapAttack);
             overlapAttack.hitEffectPrefab = Modules.Assets.superCyloopDoubleHitWindEffect;
             overlapAttack.damage = StaticValues.superCyloopDoubleDamageCoefficient * characterBody.damage;
+            overlapAttack.RemoveModdedDamageType(DamageTypes.cyloop);
+            overlapAttack.AddModdedDamageType(DamageTypes.superCyloop);
         }
     }
 }

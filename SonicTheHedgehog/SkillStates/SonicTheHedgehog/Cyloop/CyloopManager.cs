@@ -1,4 +1,5 @@
 ﻿using EnemiesReturns.Components;
+using HedgehogUtils.Forms.SuperForm;
 using R2API;
 using RoR2;
 using SonicTheHedgehog.Components;
@@ -9,6 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 namespace SonicTheHedgehog.SkillStates.Cyloop
 {
     public static class CyloopManager
@@ -17,6 +19,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public static ComponentPoolManager cyloopColliderPool;
         public static GameObject cyloopColliderControllerPrefab;
         public static GameObject cyloopColliderPrefab;
+
+        public static SuperCyloopVFX superCyloopVFX = SuperCyloopVFX.Wind;
 
         internal static void Initialize()
         {
@@ -69,6 +73,31 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             cyloopCollider.owner = owner;
             return cyloopCollider;
         }
+
+        [ConCommand(commandName = "cyloopvfx", flags = ConVarFlags.ExecuteOnServer, helpText = "Change the VFX style for Super Sonic's Cyloop skill.")]
+        private static void SetSuperCyloopVFXCommand(ConCommandArgs args)
+        {
+            CyloopManager.superCyloopVFX = args.TryGetArgEnum<SuperCyloopVFX>(0).GetValueOrDefault();
+        }
+        public static GameObject GetSuperCyloopHitVFX()
+        {
+            switch (superCyloopVFX)
+            {
+                case SuperCyloopVFX.Chains:
+                    return null;
+                case SuperCyloopVFX.Spears:
+                    return null;
+                default:
+                case SuperCyloopVFX.Wind:
+                    return Modules.Assets.superCyloopHitWindEffect;
+            }
+        }
+        public enum SuperCyloopVFX
+        {
+            Wind,
+            Chains,
+            Spears
+        }
     }
 
     public class CyloopColliderController : ComponentPoolObject
@@ -100,6 +129,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             timer += Time.fixedDeltaTime;
             if (timer > DELAY && !attacked)
             {
+                attacked = true;
+
                 hitEffectPrefab = overlapAttack.hitEffectPrefab;
                 overlapAttack.hitEffectPrefab = null;
 
@@ -107,7 +138,6 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 {
                     overlapAttack.ProcessHits(hits);
                 }
-                attacked = true;
                 if (hitEffectPrefab)
                 {
                     for (int i = 0; i < hits.Count; i++)
