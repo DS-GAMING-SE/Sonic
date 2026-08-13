@@ -180,7 +180,7 @@ namespace SonicTheHedgehog.Modules
 
         internal const float superCyloopCollisionWidth = 17f;
 
-        internal const float superCyloopDoubleDamageCoefficient = 60f;
+        internal const float superCyloopDoubleDamageCoefficient = 50f;
 
         internal const float superCyloopConstrictDuration = 8f;
 

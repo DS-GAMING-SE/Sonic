@@ -639,8 +639,6 @@ namespace SonicTheHedgehog.Modules.Survivors
             grandSlamSkillDef = Modules.Skills.CreateSkillDef(grandSlam);
             grandSlamSkillDef.isCooldownBlockedUntilManuallyReset = true;
 
-            Modules.Skills.AddSpecialSkills(bodyPrefab, grandSlamSkillDef);
-
             #endregion
 
             #region Special - Cyloop
@@ -698,7 +696,8 @@ namespace SonicTheHedgehog.Modules.Survivors
             };
             quickCyloopSkillDef = Modules.Skills.CreateSkillDef<SkillDefs.RequiresTargetSkillDef>(quickCyloop);
             cyloopSkillDef.quickCyloopSkillDef = quickCyloopSkillDef;
-            Modules.Skills.AddSpecialSkills(bodyPrefab, cyloopSkillDef);
+            Modules.Skills.AddSpecialSkills(bodyPrefab, grandSlamSkillDef, cyloopSkillDef);
+            Skills.AddUnlockablesToFamily(bodyPrefab.GetComponent<SkillLocator>().special.skillFamily, null, cyloopUnlockableDef);
             #endregion
 
             // PASSIVES

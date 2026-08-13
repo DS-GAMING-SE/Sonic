@@ -161,7 +161,7 @@ namespace SonicTheHedgehog
 
             On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
 
-            HedgehogUtils.Launch.LaunchManager.onTryLaunchServer += RemoveCyloopWhenLaunched;
+            HedgehogUtils.Launch.LaunchManager.onLaunchServer += RemoveCyloopWhenLaunched;
 
             if (lookingGlassLoaded)
             {
@@ -312,20 +312,38 @@ namespace SonicTheHedgehog
                 {
                     self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 0.6f, 1);
                 }
-                if (damage.damageType.HasModdedDamageType(DamageTypes.cyloop))
-                {
-                    self.body.AddTimedBuff(Buffs.cyloopDebuff, StaticValues.cyloopConstrictDuration);
-                }
                 if (damage.damageType.HasModdedDamageType(DamageTypes.superCyloop))
                 {
-                    self.body.AddTimedBuff(Buffs.superCyloopDebuff, StaticValues.superCyloopConstrictDuration);
+                    if (Buffs.HasCyloopDebuff(self.body))
+                    {
+                        RemoveCyloop(self.body);
+                    }
+                    else
+                    {
+                        self.body.AddTimedBuff(Buffs.superCyloopDebuff, StaticValues.superCyloopConstrictDuration);
+                    }
+                }
+                else if (damage.damageType.HasModdedDamageType(DamageTypes.cyloop))
+                {
+                    if (Buffs.HasCyloopDebuff(self.body))
+                    {
+                        RemoveCyloop(self.body);
+                    }
+                    else
+                    {
+                        self.body.AddTimedBuff(Buffs.cyloopDebuff, StaticValues.cyloopConstrictDuration);
+                    }
                 }
             }
         }
-        private void RemoveCyloopWhenLaunched(HealthComponent self, DamageInfo damageInfo)
+        public void RemoveCyloop(CharacterBody target)
         {
-            self.body.ClearTimedBuffs(Buffs.cyloopDebuff);
-            self.body.ClearTimedBuffs(Buffs.superCyloopDebuff);
+            target.ClearTimedBuffs(Buffs.cyloopDebuff);
+            target.ClearTimedBuffs(Buffs.superCyloopDebuff);
+        }
+        private void RemoveCyloopWhenLaunched(CharacterBody target, CharacterBody attacker, Vector3 direction, float speed, float damage, float wallCollisionDamage, bool crit, float procCoefficient, float duration, HedgehogUtils.Launch.LaunchProjectileController proj)
+        {
+            RemoveCyloop(target);
         }
         // could also mess with Icharactergravityparameters to get rid of gravity entirely
         private void GrandSlamJuggleAndCyloopFloat(On.RoR2.CharacterMotor.orig_ModifyGravity orig, CharacterMotor self, ref float verticalVelocity, ref float gravity, float deltaTime)

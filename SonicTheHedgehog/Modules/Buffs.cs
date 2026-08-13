@@ -74,6 +74,8 @@ namespace SonicTheHedgehog.Modules
                 SonicTheHedgehogCharacter.superSonicColor,
                 false,
                 true);
+            cyloopDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+            superCyloopDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
         }
 
         public static bool HasCyloopDebuff(CharacterBody body)

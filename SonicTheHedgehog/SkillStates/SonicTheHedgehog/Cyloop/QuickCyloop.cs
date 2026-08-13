@@ -19,6 +19,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
     public class QuickCyloop : BaseSkillState
     {
         public HurtBox target;
+        public Vector3 targetLastPosition;
         public const float baseAttackTime = 0.4f;
         protected float attackTime;
         protected float speed;
@@ -47,8 +48,10 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             Util.PlaySound("Play_sonicthehedgehog_cyloop", gameObject);
             VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_buildup_short", VoicelinePriority.PrioritySkill);
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
+            targetLastPosition = transform.position;
             if (target && target.healthComponent)
             {
+                targetLastPosition = target.transform.position;
                 cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
 
                 attackTime = (baseAttackTime * (1 + (target.healthComponent.body.radius * 0.2f))) / attackSpeedStat;
@@ -78,7 +81,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             if (isAuthority)
             {
                 characterMotor.velocity = Vector3.zero;
-                if (!target || fixedAge > attackTime)
+                if (fixedAge > attackTime)
                 {
                     this.outer.SetNextStateToMain();
                 }
@@ -88,7 +91,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public override void Update()
         {
             base.Update();
-            if (modelLocator.modelTransform && target)
+            if (modelLocator.modelTransform)
             {
                 /*Vector3 endPosition = target.transform.position - (startForward * (target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius));
                 endPosition.y = yOffset;
@@ -100,7 +103,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 orbitVector += -startForward * Mathf.Cos(lerpCircle);
                 orbitVector *= target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius;
                 orbitVector.y = yOffset;
-                modelLocator.modelTransform.SetPositionAndRotation(target.transform.position + orbitVector, Quaternion.LookRotation(Vector3.Cross(orbitVector.normalized, Vector3.up)));
+                modelLocator.modelTransform.SetPositionAndRotation(targetLastPosition + orbitVector, Quaternion.LookRotation(Vector3.Cross(orbitVector.normalized, Vector3.up)));
                 
                 if (lerpCircle > (circumference / linePoints.Length) * linePointOffset.Count)
                 {
@@ -109,10 +112,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 }
                 for (int i = 0; i < linePointOffset.Count; i++)
                 {
-                    linePoints[i] = target.transform.position + linePointOffset[i];
+                    linePoints[i] = targetLastPosition + linePointOffset[i];
                 }
-                linePoints[linePointOffset.Count + 1] = target.transform.position + orbitVector;
+                linePoints[linePointOffset.Count + 1] = targetLastPosition + orbitVector;
                 cyloopVFX.lineRenderer.SetPositions(linePoints);
+                if (target) targetLastPosition = target.transform.position;
             }
         }
         public override void OnExit()
@@ -134,16 +138,20 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             cyloopVFX.SetLineColor(cyloopTrailIntersectColor);
             cyloopVFX.EndAllVFX();
 
+            Util.PlaySound("Play_sonicthehedgehog_cyloop_complete", gameObject);
             if (target)
             {
-                Util.PlaySound("Play_sonicthehedgehog_cyloop_complete", gameObject);
-                EffectManager.SpawnEffect(target.healthComponent && Buffs.HasCyloopDebuff(target.healthComponent.body) ?
-                    doubleHitEffectPrefab : hitEffectPrefab, new EffectData
+                GameObject hitPrefab = target.healthComponent && Buffs.HasCyloopDebuff(target.healthComponent.body) ?
+                    doubleHitEffectPrefab : hitEffectPrefab;
+                if (hitEffectPrefab)
                 {
-                    origin = target.transform.position,
-                    scale = Mathf.Min(target.healthComponent.body.radius, 3f),
-                    rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
-                }, false);
+                    EffectManager.SpawnEffect(hitPrefab, new EffectData
+                    {
+                        origin = target.transform.position,
+                        scale = Mathf.Min(target.healthComponent.body.radius, 3f),
+                        rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up)
+                    }, false);
+                }
             }
             if (NetworkServer.active) characterBody.RemoveBuff(RoR2Content.Buffs.Intangible);
             if (NetworkServer.active && target && target.healthComponent)
@@ -175,7 +183,6 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         {
             damageInfo.damage = StaticValues.cyloopDoubleDamageCoefficient * characterBody.damage;
             damageInfo.procCoefficient = 1.5f;
-            damageInfo.damageType.RemoveModdedDamageType(DamageTypes.cyloop);
             damageInfo.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
             damageInfo.force = Vector3.down * cyloopDoublePushForce;
         }

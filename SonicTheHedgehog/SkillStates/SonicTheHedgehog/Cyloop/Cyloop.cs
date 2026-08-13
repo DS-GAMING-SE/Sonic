@@ -7,6 +7,7 @@ using SonicTheHedgehog.Modules.Survivors;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Collections;
@@ -108,9 +109,9 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     startingPointIndex = (startingPointIndex + 1) % StaticValues.cyloopMaxPoints;
                     cyloopPoints[startingPointIndex] = new CyloopPoint(characterBody.corePosition, characterMotor.velocity, startingPointIndex);
                     if (numValidPoints < StaticValues.cyloopMaxPoints) numValidPoints++;
-                    if (startingPointIndex > 0 && cyloopPoints[(startingPointIndex - 1) % StaticValues.cyloopMaxPoints].IsValid())
+                    if (startingPointIndex > 0 && cyloopPoints[ModNoNegative(startingPointIndex - 1, StaticValues.cyloopMaxPoints)].IsValid())
                     {
-                        int newLineIndex = startingPointIndex - 1 % (StaticValues.cyloopMaxPoints - 1);
+                        int newLineIndex = ModNoNegative(startingPointIndex - 1, StaticValues.cyloopMaxPoints - 1);
                         if (isAuthority && cyloopLines[newLineIndex].HasIntersect()) // Get rid of old intersects that expired
                         {
                             intersectIndices.Dequeue();
@@ -165,7 +166,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                         //EffectManager.SimpleEffect(Modules.Assets.sonicBoomImpactEffect, cyloopLines[newIntersect[0]].lineIntersectPosition, Quaternion.identity, false);
                         lineIntersectColorLerp = 1f;
                         applyIntersectToNextLine = newIntersect[0];
-                        intersectIndices.Enqueue(new int2(newIntersect[0], (startingPointIndex-newIntersect[0]) % StaticValues.cyloopMaxPoints));
+                        intersectIndices.Enqueue(new int2(newIntersect[0], ModNoNegative(startingPointIndex - newIntersect[0], StaticValues.cyloopMaxPoints)));
                         newIntersect[0] = -1;
                         //Log.Message("current index:" + startingPointIndex);
                     }
@@ -197,7 +198,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     startIndex = startingPointIndex,
                     output = lineRendererPositions
                 };
-                lineRendererPositionsJobHandle = lineRendererPositionsJob.Schedule(numValidPoints + 1, 20, intersectJobHandle);
+                lineRendererPositionsJobHandle = lineRendererPositionsJob.Schedule(numValidPoints + 1, 21, intersectJobHandle);
                 lastNumValidPoints = numValidPoints;
                 cyloopVFX.SetLineColor(Color.Lerp(cyloopTrailColor, cyloopTrailIntersectColor, lineIntersectColorLerp));
                 if (lineIntersectColorLerp > 0)
@@ -258,6 +259,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             if (intersectIndices.Count > 0)
             {
                 ending = true;
+                EffectManager.SimpleSoundEffect(Modules.Assets.cyloopCompleteSoundEvent.index, characterBody.corePosition, true);
                 endNumSections = intersectIndices.Count; // Add concave points here
                 // Figure out how many separate meshes to make using intersect sections and concave points
 
@@ -319,6 +321,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             overlapAttack.damage = StaticValues.cyloopDoubleDamageCoefficient * characterBody.damage;
             overlapAttack.procCoefficient = 1.5f;
             overlapAttack.damageType = DamageSource.Special;
+            overlapAttack.damageType.AddModdedDamageType(DamageTypes.cyloop);
             overlapAttack.damageType.AddModdedDamageType(HedgehogUtils.Launch.DamageTypes.launch);
             overlapAttack.forceVector = Vector3.down * cyloopDoublePushForce;
             overlapAttack.hitEffectPrefab = Modules.Assets.cyloopDoubleHitEffect;
@@ -328,6 +331,13 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private void OnSkillChanged(GenericSkill skill)
         {
             this.outer.SetNextStateToMain();
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ModNoNegative(int num, int mod)
+        {
+            var result = num % mod;
+            if (result < 0) result += mod;
+            return result;
         }
     }
 
