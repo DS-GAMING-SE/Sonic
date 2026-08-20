@@ -962,7 +962,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             #region Super Form
             CharacterModel.RendererInfo[] defaultSkinSuperRenderer = ArrayUtils.Clone(defaultRendererinfos);
-            defaultSkinSuperRenderer[0].defaultMaterial = Materials.CreateHopooMaterial("matSuperSonic").Specular(0.3f);
+            defaultSkinSuperRenderer[0].defaultMaterial = Materials.CreateHopooMaterial("matSuperSonic").Specular(0.3f).SetEmission(1.2f).FresnelEmission(AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidSurvivor.texRampVoidSurvivorCorrupted3_png)).WaitForCompletion(), Assets.mainAssetBundle.LoadAsset<Texture>("texSuperSonicFresnelMask"), 0.2f, 4f);
             Mesh[] defaultSkinSuperMeshes = new Mesh[]{ Assets.superSonicMesh };
             RenderReplacements defaultSkinSuper = new RenderReplacements
             {
@@ -1038,10 +1038,15 @@ namespace SonicTheHedgehog.Modules.Survivors
             anointedSkin.icon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSluggerSkinIcon"); // REPLACE THIS ICON?
             anointedSkin.AddBoostFlashReplacement(HedgehogUtils.Assets.CreateBoostFlashEffect("SonicAnointedPowerBoostFlash", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampWispSoul_png).WaitForCompletion(), sonicColor2));
             anointedSkin.AddBoostAuraReplacement(HedgehogUtils.Assets.CreateBoostAuraEffect("SonicAnointedPowerBoostAura", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampWispSoul_png).WaitForCompletion(), sonicColor2));
+            anointedSkin.rendererInfos = ArrayUtils.Clone(prefabCharacterModel.baseRendererInfos);
+            anointedSkin.rendererInfos[0].defaultMaterial = new Material(prefabCharacterModel.baseRendererInfos[0].defaultMaterial).FresnelEmission(AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampMoonArenaWall_png)).WaitForCompletion(), Assets.mainAssetBundle.LoadAsset<Texture>("texSuperSonicFresnelMask"), 3f, 5f);
+
+            CharacterModel.RendererInfo[] anointedSkinSuperRenderer = ArrayUtils.Clone(anointedSkin.rendererInfos);
+            anointedSkinSuperRenderer[0].defaultMaterial = new Material(prefabCharacterModel.baseRendererInfos[0].defaultMaterial).FresnelEmission(AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampIridescent_png)).WaitForCompletion(), Assets.mainAssetBundle.LoadAsset<Texture>("texSuperSonicFresnelMask"), 2f, 4f);
 
             RenderReplacements anointedSkinSuper = new RenderReplacements
             {
-                rendererInfo = ArrayUtils.Clone(prefabCharacterModel.baseRendererInfos),
+                rendererInfo = anointedSkinSuperRenderer,
                 mesh = new Mesh[] { Assets.superSonicMesh }
             };
             Forms.AddSkinForForm(anointedSkin, anointedSkinSuper, ref SuperFormDef.superFormDef);

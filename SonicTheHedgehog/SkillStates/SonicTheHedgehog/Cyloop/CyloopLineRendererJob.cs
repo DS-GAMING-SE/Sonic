@@ -36,7 +36,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             }
             else
             {
-                output[index] = math.lerp(points[AdjustIndex(index)].position, points[AdjustIndex(index + 1)].position, lerp);
+                output[index] = math.lerp(points[AdjustIndex(index)].position, points[AdjustIndex(index - 1)].position, lerp);
             }
         }
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

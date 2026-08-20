@@ -15,19 +15,19 @@ namespace SonicTheHedgehog.Components
 
         public static Dictionary<string, List<Vector3>> soundStringToSoundPosition = new Dictionary<string, List<Vector3>>();
 
-        private void OnEnable()
+        private void Awake()
+        {
+            emh = GetComponent<EffectManagerHelper>();
+            if (emh)
+            {
+                emh.OnEffectActivated += Sound;
+            }
+        }
+        private void Start()
         {
             if (!emh)
             {
-                emh = GetComponent<EffectManagerHelper>();
-                if (emh)
-                {
-                    emh.OnEffectActivated += Sound;
-                }
-                else
-                {
-                    Sound();
-                }
+                Sound();
             }
         }
         private void Sound()
@@ -64,8 +64,11 @@ namespace SonicTheHedgehog.Components
             if (in_type == AkCallbackType.AK_EndOfEvent)
             {
                 AkGameObj obj = (AkGameObj)in_cookie;
-                AkSoundEngine.SetObjectPosition(AkSoundEngine.GetAkGameObjectID(obj.gameObject), Vector3.zero, Vector3.forward, Vector3.up);
-                RoR2.Audio.PointSoundManager.FreeEmitter(obj);
+                if (obj)
+                {
+                    AkSoundEngine.SetObjectPosition(AkSoundEngine.GetAkGameObjectID(obj.gameObject), Vector3.zero, Vector3.forward, Vector3.up);
+                    RoR2.Audio.PointSoundManager.FreeEmitter(obj);
+                }
             }
         }
     }
