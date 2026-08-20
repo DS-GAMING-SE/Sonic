@@ -81,13 +81,16 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             if (isAuthority)
             {
                 characterMotor.velocity = Vector3.zero;
+                Vector3 startPoint = -startForward * (target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius);
+                startPoint.y = yOffset;
+                characterMotor.Motor.MoveCharacter(targetLastPosition + startPoint);
                 if (fixedAge > attackTime)
                 {
                     this.outer.SetNextStateToMain();
                 }
             }
         }
-        // save a "lastTargetPosition" and save orbit radius at the beginning so the move can continue if there is no target
+
         public override void Update()
         {
             base.Update();

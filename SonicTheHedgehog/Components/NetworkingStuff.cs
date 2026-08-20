@@ -6,6 +6,7 @@ using UnityEngine;
 using SonicTheHedgehog.SkillStates;
 using EntityStates;
 using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.SkillStates.Cyloop;
 
 namespace SonicTheHedgehog.Components
 {
@@ -48,6 +49,30 @@ namespace SonicTheHedgehog.Components
         {
             netId = reader.ReadNetworkId();
             damageInfo = reader.ReadDamageInfo();
+        }
+    }
+    public class NetworkSuperCyloopVFX : INetMessage
+    {
+        CyloopManager.SuperCyloopVFX vfx;
+        public NetworkSuperCyloopVFX()
+        {
+
+        }
+        public NetworkSuperCyloopVFX(CyloopManager.SuperCyloopVFX vfx)
+        {
+            this.vfx = vfx;
+        }
+        public void OnReceived()
+        {
+            CyloopManager.superCyloopVFX = this.vfx;
+        }
+        public void Serialize(NetworkWriter writer)
+        {
+            writer.Write((byte)vfx);
+        }
+        public void Deserialize(NetworkReader reader)
+        {
+            vfx = (CyloopManager.SuperCyloopVFX)reader.ReadByte();
         }
     }
 

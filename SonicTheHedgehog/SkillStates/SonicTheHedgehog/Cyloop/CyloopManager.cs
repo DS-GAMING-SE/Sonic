@@ -1,6 +1,8 @@
 ﻿using EnemiesReturns.Components;
 using HedgehogUtils.Forms.SuperForm;
 using R2API;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
 using RoR2;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.SkillStates.Cyloop;
@@ -25,6 +27,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         internal static void Initialize()
         {
             SceneManager.sceneUnloaded += OnSceneUnloaded;
+            Stage.onServerStageBegin += RerollSuperCyloopVFX;
             cyloopColliderControllerPrefab = PrefabAPI.CreateEmptyPrefab("SonicCyloopColliderController", false);
             cyloopColliderControllerPrefab.AddComponent<CyloopColliderController>();
             cyloopColliderPrefab = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicCyloopCollider");
@@ -42,6 +45,10 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             {
                 cyloopColliderPool.ResetPools();
             }
+        }
+        private static void RerollSuperCyloopVFX(Stage stage)
+        {
+            new NetworkSuperCyloopVFX((CyloopManager.SuperCyloopVFX)UnityEngine.Random.RandomRangeInt(0, 3)).Send(NetworkDestination.Clients);
         }
         public static CyloopColliderController GetPooledCyloopColliderController(Cyloop cyloopState, Mesh[] meshes)
         {
@@ -84,12 +91,25 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             switch (superCyloopVFX)
             {
                 case SuperCyloopVFX.Chains:
-                    return null;
+                    return Modules.Assets.superCyloopHitChainsEffect;
                 case SuperCyloopVFX.Spears:
-                    return null;
+                    return Modules.Assets.superCyloopHitWindEffect;
                 default:
                 case SuperCyloopVFX.Wind:
                     return Modules.Assets.superCyloopHitWindEffect;
+            }
+        }
+        public static GameObject GetSuperCyloopDoubleHitVFX()
+        {
+            switch (superCyloopVFX)
+            {
+                case SuperCyloopVFX.Chains:
+                    return Modules.Assets.superCyloopDoubleHitChainsEffect;
+                case SuperCyloopVFX.Spears:
+                    return Modules.Assets.superCyloopDoubleHitWindEffect;
+                default:
+                case SuperCyloopVFX.Wind:
+                    return Modules.Assets.superCyloopDoubleHitWindEffect;
             }
         }
         public enum SuperCyloopVFX
