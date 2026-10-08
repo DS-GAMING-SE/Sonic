@@ -15,11 +15,16 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static RoR2.CharacterSpeech.SolusHeartSpeechDriver;
-using static UnityEngine.ParticleSystem.PlaybackState;
+using static RoR2.SolusWing.SolusWingPodAI.Simulation.SimulationState;
 
 namespace SonicTheHedgehog.SkillStates.Cyloop
 {
+    // This code is a little ugly and possibly overcomplicated
+    // Might've suffered from a case of "I just learned cool new thing (JobHandles), time to find places to use it"
+    // But god damn this whole move is so complicated I'm taking it as an incredible victory that I even got it working
+
+    // REMEMBER: Track player movements as they place points to determine which ones are reflex points
+    // Bayazit to split the concave mesh into convex
     public class Cyloop : BaseSkillState, ISkillState
     {
         public const float minDuration = 0.5f;
@@ -36,6 +41,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public virtual float cyloopLineIntersectWidth { get { return StaticValues.cyloopLineIntersectWidth; } }
         public virtual float cyloopCollisionWidth { get { return StaticValues.cyloopCollisionWidth; } }
         public virtual Color cyloopTrailColor { get{ return SonicTheHedgehogCharacter.sonicColor2; } }
+        public virtual Color cyloopTrailSpawningColor { get { return new Color(1f, 0f, 0.88f); } }
         public virtual Color cyloopTrailIntersectColor { get { return new Color(1f,0.3f,0.7f); } }
         public virtual float cyloopTrailSizeMultiplier { get { return 1f; } }
         public virtual Material temporaryOverlayMaterial { get { return Modules.Assets.cyloopOverlay; } }
@@ -75,7 +81,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         {
             base.OnEnter();
             Util.PlaySound("Play_sonicthehedgehog_cyloop", gameObject);
-            cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
+            cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, cyloopTrailSpawningColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
             activatorSkillSlot.onSkillChanged += OnSkillChanged;
 
             intersectIndices = new Queue<int2>();
@@ -267,7 +273,8 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 endMeshCreationJobs = new NativeArray<JobHandle>(endNumSections * 2, Allocator.TempJob);
                 for (int i = 0; i < endNumSections; i++)
                 {
-                    NativeArray<CyloopPoint> points = cyloopPoints.GetSubArray(intersectIndices.Peek().x, intersectIndices.Dequeue().y);
+                    NativeSlice<float3> points = new NativeSlice<CyloopPoint>(cyloopPoints.GetSubArray(intersectIndices.Peek().x, intersectIndices.Dequeue().y)).SliceWithStride<float3>(0);
+
                     Mesh.MeshData cyloopCollisionMeshData = endCollisionMesh[i];
 
                     cyloopCollisionMeshData.SetVertexBufferParams(points.Length * 2, new VertexAttributeDescriptor(VertexAttribute.Position));
@@ -297,6 +304,50 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             {
                 this.outer.SetNextStateToMain();
             }
+
+            /* I don't think this Bayazit algorithm I found even works. If it did, then this would be used for splitting concave mesh into convex
+             * List<List<float3>> convexPoints = new List<List<float3>>();
+                for (int i = 0; i < intersectIndices.Count; i++)
+                {
+                    NativeSlice<float3> points = new NativeSlice<CyloopPoint>(cyloopPoints.GetSubArray(intersectIndices.Peek().x, intersectIndices.Dequeue().y)).SliceWithStride<float3>();
+                    convexPoints = convexPoints.Concat(Bayazit.ConvexPartition(points.ToList())).ToList();
+                }
+                endNumSections = convexPoints.Count;
+                for (int i = 0; i < convexPoints.Count; i++)
+                {
+                    for (int j = 0; j < convexPoints[i].Count; j++)
+                    {
+                        Log.Message(convexPoints[i][j].ToString());
+                    }
+                    Log.Message("------");
+                }
+
+                endCollisionMesh = Mesh.AllocateWritableMeshData(endNumSections);
+                endMeshCreationJobs = new NativeArray<JobHandle>(endNumSections * 2, Allocator.TempJob);
+                for (int i = 0; i < endNumSections; i++)
+                {
+                    Mesh.MeshData cyloopCollisionMeshData = endCollisionMesh[i];
+
+                    cyloopCollisionMeshData.SetVertexBufferParams(convexPoints[i].Count * 2, new VertexAttributeDescriptor(VertexAttribute.Position));
+                    var pos = cyloopCollisionMeshData.GetVertexData<float3>();
+                    /*endMeshCreationJobs[i * 2] = new CyloopMeshPointsJob()
+                    {
+                        points = points,
+                        width = cyloopCollisionWidth,
+                        output = pos
+                    }.Schedule(pos.Length, 20);
+            for (int j = 0; j < pos.Length; j++)
+            {
+                if (j % 2 == 0)
+                {
+                    pos[j] = convexPoints[i][j / 2] - new float3(0f, cyloopCollisionWidth / 2, 0f);
+                }
+                else
+                {
+                    pos[j] = convexPoints[i][j / 2] + new float3(0f, cyloopCollisionWidth / 2, 0f);
+                }
+            }
+             */
         }
 
         public virtual void PrepareAttack(ref OverlapAttack overlapAttack)
@@ -349,7 +400,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         public EffectManagerHelper trailSpawningEffect;
         public TemporaryOverlayInstance temporaryOverlay;
 
-        public static CyloopVFX SpawnVFX(float lineRendererScale, Color lineRendererColor, Transform coreTransform, float trailSpawningScale, Material temporaryOverlayMaterial, Transform modelTransform)
+        public static CyloopVFX SpawnVFX(float lineRendererScale, Color lineRendererColor, Color trailSpawningColor, Transform coreTransform, float trailSpawningScale, Material temporaryOverlayMaterial, Transform modelTransform)
         {
             CyloopVFX cyloopVFX = default;
             cyloopVFX.lineRendererEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrail, Vector3.zero, Quaternion.identity);
@@ -360,6 +411,12 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             cyloopVFX.trailSpawningEffect = EffectManager.GetAndActivatePooledEffect(Modules.Assets.cyloopTrailSpawningEffect, coreTransform);
             cyloopVFX.trailSpawningEffect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             cyloopVFX.trailSpawningEffect.transform.localScale = Vector3.one * trailSpawningScale;
+            var trailSpawning0 = cyloopVFX.trailSpawningEffect.transform.GetChild(0).GetComponent<ParticleSystem>().main;
+            trailSpawning0.startColor = trailSpawningColor;
+            var trailSpawning1 = cyloopVFX.trailSpawningEffect.transform.GetChild(1).GetComponent<ParticleSystem>().main;
+            trailSpawning1.startColor = trailSpawningColor;
+            var trailSpawning2 = cyloopVFX.trailSpawningEffect.transform.GetChild(2).GetComponent<ParticleSystem>().main;
+            trailSpawning2.startColor = trailSpawningColor;
 
             if (temporaryOverlayMaterial)
             {
@@ -416,6 +473,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         }
     }
 
+    [StructLayout(LayoutKind.Explicit)]
     public struct CyloopPoint
     {
         public static readonly CyloopPoint invalid = new CyloopPoint(float3.zero, float3.zero, -1);
@@ -425,8 +483,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             this.direction = direction;
             this.index = index;
         }
+        [FieldOffset(0)]
         public float3 position;
+        [FieldOffset(sizeof(float) * 3)]
         public float3 direction;
+        [FieldOffset(sizeof(float) * 6)]
         public int index; // these are kinda useless aside from invalid checking
         public bool IsValid()
         {

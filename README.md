@@ -1,6 +1,10 @@
 # <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/texSonicIcon.png?raw=true" width="64"> Sonic The Hedgehog
 
-Sonic's the name and speed is his game! Sonic is a survivor who's all about quick movements and close range single target damage. Sonic's higher than normal movement speed and many movement skills let him jump from enemy to enemy when in combat, or explore the map quickly when looting. Though he's frail, his quick movements and invincibility frames let him avoid danger while he does major damage to nearby enemies. Though close quarters is his specialty, he isn't without ranged options. Sonic's attacks can launch certain enemies, turning them into projectiles
+Sonic's the name and speed is his game! 
+
+Sonic is a survivor who's all about quick movements and close range single target damage. Sonic's higher than normal movement speed and many movement skills let him jump from enemy to enemy when in combat, or explore the map quickly when looting. 
+
+Though he's frail, his quick movements and invincibility frames let him avoid danger while he does major damage to nearby enemies. Though close quarters is his specialty, he isn't without ranged options. Sonic's attacks can launch certain enemies, turning them into projectiles
 
 # Skills
 
@@ -12,15 +16,15 @@ Sonic's the name and speed is his game! Sonic is a survivor who's all about quic
 | Utility - **Boost** | <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/texBoostIcon.png?raw=true" width="128"> | **Spend boost meter** to move 35% faster than normal. If **health is near full**, move 65% faster instead. If **airborne**, do a short **mid-air dash**.<details>While boosting, your movement speed is increased by 35% and you are given 50 armor. If your health is above 90%, you will power boost, increasing speed by 65%. Activating boost gives invincibility for a brief moment. Boosting will drain your boost meter. If the boost meter runs out, you will be unable to boost again until the meter is recharged. The boost meter recharges overtime when not boosting. % based cooldown reduction, such as Alien Head or Brainstalks, will reduce the speed at which the boost meter is drained and increase the speed it comes back. Flat cooldown reduction, such as Purity, will increase the max capacity of the boost meter. By default, you can use boost as a mid-air dash once before having to touch the ground. Any additional utility stocks, such as those from Hardlight Afterburner, will let you use the mid-air dash more times before having to touch the ground.</details> |
 | Special - **Grand Slam** | <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/texGrandSlamIcon.png?raw=true" width="128"> | **Homing**. Dash forward into an enemy to attack with 140% damage **repeatedly** before unleashing a powerful attack from above dealing 2200% damage and **launching** enemies.<details>This attack will home in on the enemy closest to the crosshair, similar to the homing attack. The amount of repeated weak hits you will do is 5 by default, but increases with attack speed. After landing the initial dash attack, you will have invincibility for the rest of the move's duration. 12 second cooldown.</details> |
 
-There's also an **alternate Secondary skill** that can be unlocked through an achievement (Or through the config)
+There's also an **alternate Secondary skill** and **alternate Special skill** that can be unlocked through achievements (Or through the config)
 
 # <img src="https://github.com/DS-GAMING-SE/HedgehogUtils/blob/master/UnityProject/HedgehogUtils/Assets/AssetBundle/Emeralds/Icons/texGreenEmeraldIcon.png?raw=true" width="64"> Super Sonic
 
 ## Chaos Emeralds
-With the new Artifact of Chaos Emeralds, Chaos Emeralds will spawn scattered around every normal stage. The emeralds must be purchased similarly to a large chest. Three Chaos Emeralds will spawn per stage, except if you're playing Simulacrum, where there will be five. You don't need one person to collect all Chaos Emeralds, as long as the players cumulatively have all seven, everyone will be able to transform. Many values relating to the Chaos Emeralds can be changed in the config.
+With the new **Artifact of Chaos Emeralds**, Chaos Emeralds will spawn scattered around every normal stage. The emeralds must be purchased similarly to a large chest. Three Chaos Emeralds will spawn per stage, except if you're playing Simulacrum, where there will be five. You don't need one person to collect all Chaos Emeralds, as long as the players cumulatively have all seven, everyone will be able to transform. Many values relating to the Chaos Emeralds can be changed in the HedgehogUtils config.
 
-## Super Sonic
-Once all seven Chaos Emeralds have been collected, anyone can transform into their Super form by pressing **V** (Keybind can be changed in the config). Super Sonic gives new upgraded skills, flight, invincibility, and incredible power for 50 seconds. Though this power is unmatched, it takes multiple stages to collect the emeralds, so it is important to use this power wisely. In multiplayer, all players will be able to transform into their Super form if everyone transforms within ten seconds of the first player transforming.
+## Super Form
+Once all seven Chaos Emeralds have been collected, *anyone* (not just Sonic) can transform into their Super form by pressing **G** (Keybind can be changed in the config). Super Sonic gives new upgraded skills, flight, invincibility, and incredible power for 50 seconds. Though this power is unmatched, it takes multiple stages to collect the emeralds, so it is important to use this power wisely. In multiplayer, all players will be able to transform into their Super form if everyone transforms within ten seconds of the first player transforming.
 
 # Compatible Mods
 - [CustomEmotesAPI](https://thunderstore.io/package/MetrosexualFruitcake/CustomEmotesAPI/)
@@ -35,10 +39,13 @@ Once all seven Chaos Emeralds have been collected, anyone can transform into the
 **DS Gaming** (ds_gaming) | Discord | Code, icons, vfx |
 **Presti** (memerinoto) | Discord | Helped with early Super Sonic code |
 **FORCED_REASSEMBLY** (forced_reassembly) | Discord | Metal Sonic skin |
-**Woodmeister** (woodie5273) | Discord | Commissioned the 5.0.0 update |
-**Gerdan Virrey** | Fiverr | Models for the 5.0.0 update skins |
-**Sandwich** (sandwich1661) | Discord | Wrote the logbook and some voice lines |
-**Jehtt** | Youtube | Voice acting |
+**Sandwich** (sandwich1661) | Discord | Wrote the logbook |
+
+[People who will be added to the credits in the future once their contributions make it into the mod]: #
+[**Sandwich** (sandwich1661) | Discord | Wrote the logbook and some voice lines |]: #
+[**Woodmeister** (woodie5273) | Discord | Commissioned the 6.0.0 update |]: #
+[**Gerdan Virrey** | Fiverr | Models for the 6.0.0 update skins |]: #
+[**Jehtt** | Youtube | Voice acting ]: #
 
 # For Modders
 There are lots of tools I've made specifically for other modders to expand the Sonic mod or use mechanics from the Sonic mod for their own projects. If you're interested, you can find the code for the Sonic mod [here.](https://github.com/DS-GAMING-SE/Sonic/wiki) The HedgehogUtils mod is what adds mechanics like the Chaos Emeralds, Super forms, Launching attacks, and the Boost skill. You can find the wiki/code for that [here](https://github.com/DS-GAMING-SE/HedgehogUtils)

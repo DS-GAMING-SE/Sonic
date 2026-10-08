@@ -106,7 +106,8 @@ namespace SonicTheHedgehog.Modules
                 return new CyloopInstanceData()
                 {
                     primarySkill = skillSlot.GetComponent<SkillLocator>().primary,
-                    inputBank = skillSlot.GetComponent<InputBankTest>()
+                    inputBank = skillSlot.GetComponent<InputBankTest>(),
+                    bodyStateMachine = EntityStateMachine.FindByCustomName(skillSlot.gameObject, "Body")
                 };
             }
             public override bool CanExecute([NotNull] GenericSkill skillSlot)
@@ -118,7 +119,7 @@ namespace SonicTheHedgehog.Modules
             {
                 base.OnFixedUpdate(skillSlot, deltaTime);
                 CyloopInstanceData instanceData = (CyloopInstanceData)skillSlot.skillInstanceData;
-                if (IsReady(skillSlot) && instanceData.inputBank.skill4.down)
+                if (IsReady(skillSlot) && instanceData.inputBank.skill4.down && typeof(GenericCharacterMain).IsAssignableFrom(instanceData.bodyStateMachine.state.GetType()))
                 {
                     instanceData.primarySkill.SetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
                 }
@@ -136,6 +137,7 @@ namespace SonicTheHedgehog.Modules
             {
                 public GenericSkill primarySkill;
                 public InputBankTest inputBank;
+                public EntityStateMachine bodyStateMachine;
             }
         }
         public class RequiresFormCyloopSkillDef : CyloopSkillDef, IRequiresFormSkillDef

@@ -1,6 +1,10 @@
 # <img src="https://github.com/DS-GAMING-SE/Sonic/blob/master/SonicUnityProject/Assets/SonicAssets/Icons/texSonicIcon.png?raw=true" width="64"> Sonic The Hedgehog
 
-Sonic's the name and speed is his game! Sonic is a survivor who's all about quick movements and close range single target damage. Sonic's higher than normal movement speed and many movement skills let him jump from enemy to enemy when in combat, or explore the map quickly when looting. Though he's frail, his quick movements and invincibility frames let him avoid danger while he does major damage to nearby enemies. Though close quarters is his specialty, he isn't without ranged options. Sonic's attacks can launch certain enemies, turning them into projectiles
+Sonic's the name and speed is his game! 
+
+Sonic is a survivor who's all about quick movements and close range single target damage. Sonic's higher than normal movement speed and many movement skills let him jump from enemy to enemy when in combat, or explore the map quickly when looting. 
+
+Though he's frail, his quick movements and invincibility frames let him avoid danger while he does major damage to nearby enemies. Though close quarters is his specialty, he isn't without ranged options. Sonic's attacks can launch certain enemies, turning them into projectiles
 
 # Skills
 
@@ -17,10 +21,10 @@ There's also an **alternate Secondary skill** and **alternate Special skill** th
 # <img src="https://github.com/DS-GAMING-SE/HedgehogUtils/blob/master/UnityProject/HedgehogUtils/Assets/AssetBundle/Emeralds/Icons/texGreenEmeraldIcon.png?raw=true" width="64"> Super Sonic
 
 ## Chaos Emeralds
-With the new Artifact of Chaos Emeralds, Chaos Emeralds will spawn scattered around every normal stage. The emeralds must be purchased similarly to a large chest. Three Chaos Emeralds will spawn per stage, except if you're playing Simulacrum, where there will be five. You don't need one person to collect all Chaos Emeralds, as long as the players cumulatively have all seven, everyone will be able to transform. Many values relating to the Chaos Emeralds can be changed in the config.
+With the new **Artifact of Chaos Emeralds**, Chaos Emeralds will spawn scattered around every normal stage. The emeralds must be purchased similarly to a large chest. Three Chaos Emeralds will spawn per stage, except if you're playing Simulacrum, where there will be five. You don't need one person to collect all Chaos Emeralds, as long as the players cumulatively have all seven, everyone will be able to transform. Many values relating to the Chaos Emeralds can be changed in the HedgehogUtils config.
 
-## Super Sonic
-Once all seven Chaos Emeralds have been collected, anyone can transform into their Super form by pressing **V** (Keybind can be changed in the config). Super Sonic gives new upgraded skills, flight, invincibility, and incredible power for 50 seconds. Though this power is unmatched, it takes multiple stages to collect the emeralds, so it is important to use this power wisely. In multiplayer, all players will be able to transform into their Super form if everyone transforms within ten seconds of the first player transforming.
+## Super Form
+Once all seven Chaos Emeralds have been collected, *anyone* (not just Sonic) can transform into their Super form by pressing **G** (Keybind can be changed in the config). Super Sonic gives new upgraded skills, flight, invincibility, and incredible power for 50 seconds. Though this power is unmatched, it takes multiple stages to collect the emeralds, so it is important to use this power wisely. In multiplayer, all players will be able to transform into their Super form if everyone transforms within ten seconds of the first player transforming.
 
 # Compatible Mods
 - [CustomEmotesAPI](https://thunderstore.io/package/MetrosexualFruitcake/CustomEmotesAPI/)
@@ -35,9 +39,10 @@ Once all seven Chaos Emeralds have been collected, anyone can transform into the
 **DS Gaming** (ds_gaming) | Discord | Code, icons, vfx |
 **Presti** (memerinoto) | Discord | Helped with early Super Sonic code |
 **FORCED_REASSEMBLY** (forced_reassembly) | Discord | Metal Sonic skin |
-**Sandwich** (sandwich1661) | Discord | Wrote the logbook and some voice lines |
+**Sandwich** (sandwich1661) | Discord | Wrote the logbook |
 
 [People who will be added to the credits in the future once their contributions make it into the mod]: #
+[**Sandwich** (sandwich1661) | Discord | Wrote the logbook and some voice lines |]: #
 [**Woodmeister** (woodie5273) | Discord | Commissioned the 6.0.0 update |]: #
 [**Gerdan Virrey** | Fiverr | Models for the 6.0.0 update skins |]: #
 [**Jehtt** | Youtube | Voice acting ]: #

@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace SonicTheHedgehog.Modules.Achievements
 {
-    [RegisterAchievement(identifier, unlockableIdentifier, null, 1)]
+    // Remember to uncomment the tokens and the unlockable def
+    /*[RegisterAchievement(identifier, unlockableIdentifier, null, 1)]
     public class SonicDieAchievement : BaseAchievement
     {
         public const string identifier = SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICSAILORUNLOCKABLE";
@@ -34,5 +35,5 @@ namespace SonicTheHedgehog.Modules.Achievements
                 Grant();
             }
         }
-    }
+    }*/
 }

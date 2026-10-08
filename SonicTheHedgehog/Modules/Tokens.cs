@@ -246,10 +246,10 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION",
                 $"As Sonic, hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
 
-            LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_NAME",
+            /*LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_NAME",
                 "Sonic: The Murder of...");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_DESCRIPTION",
-                "As Sonic, be murdered.");
+                "As Sonic, be murdered.");*/
 
             LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_NAME",
                 "Sonic: Tearing Down Titans");
