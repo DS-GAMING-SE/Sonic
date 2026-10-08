@@ -18,6 +18,7 @@ namespace SonicTheHedgehog.SkillStates.SuperUpgrades
         public override float cyloopLineIntersectWidth { get { return StaticValues.superCyloopLineIntersectWidth; } }
         public override float cyloopCollisionWidth { get { return StaticValues.superCyloopCollisionWidth; } }
         public override Color cyloopTrailColor { get { return SonicTheHedgehogCharacter.superSonicColor; } }
+        public override Color cyloopTrailSpawningColor { get { return SonicTheHedgehogCharacter.sonicColor2; } }
         public override Color cyloopTrailIntersectColor { get { return new Color(0.2f, 0.6f, 1f); } }
         public override float cyloopTrailSizeMultiplier { get { return 2f; } }
         public override Material temporaryOverlayMaterial { get { return null; } }

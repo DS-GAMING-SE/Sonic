@@ -13,7 +13,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
     public struct CyloopMeshPointsJob : IJobParallelFor
     {
         [ReadOnly]
-        public NativeArray<CyloopPoint> points;
+        public NativeSlice<float3> points;
         [ReadOnly]
         public float width;
         [WriteOnly]
@@ -23,11 +23,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             // do something with figuring out up vector?
             if (i % 2 == 0)
             {
-                output[i] = points[i / 2].position - new float3(0f, width / 2, 0f);
+                output[i] = points[i / 2] - new float3(0f, width / 2, 0f);
             }
             else
             {
-                output[i] = points[i / 2].position + new float3(0f, width / 2, 0f);
+                output[i] = points[i / 2] + new float3(0f, width / 2, 0f);
             }
         }
     }

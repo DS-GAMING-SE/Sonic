@@ -33,6 +33,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
 
         public CyloopVFX cyloopVFX;
         public virtual Color cyloopTrailColor { get { return SonicTheHedgehogCharacter.sonicColor2; } }
+        public virtual Color cyloopTrailSpawningColor { get { return new Color(1f, 0f, 0.88f); } }
         public virtual Color cyloopTrailIntersectColor { get { return new Color(1f, 0.3f, 0.7f); } }
         public virtual float cyloopTrailSizeMultiplier { get { return 1f; } }
         public virtual Material temporaryOverlayMaterial { get { return Modules.Assets.cyloopOverlay; } }
@@ -52,7 +53,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             if (target && target.healthComponent)
             {
                 targetLastPosition = target.transform.position;
-                cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
+                cyloopVFX = CyloopVFX.SpawnVFX(cyloopTrailSizeMultiplier, cyloopTrailColor, cyloopTrailSpawningColor, characterBody.coreTransform, characterBody.radius * cyloopTrailSizeMultiplier, temporaryOverlayMaterial, GetModelTransform());
 
                 attackTime = (baseAttackTime * (1 + (target.healthComponent.body.radius * 0.2f))) / attackSpeedStat;
                 circumference = 2 * Mathf.PI * (target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius);

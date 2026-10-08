@@ -710,6 +710,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillDescriptionToken = HedgehogUtils.Language.momentumPassiveDescriptionToken,
                 icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMomentumIcon"),
             };
+            #endregion
             /*momentumPassiveDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = HedgehogUtils.Language.momentumPassiveNameToken,
@@ -736,6 +737,7 @@ namespace SonicTheHedgehog.Modules.Survivors
 
             Modules.Skills.AddMiscSkills(bodyPrefab, momentumPassiveDef); */
 
+            /*#region Voicelines
             GenericSkill voicelinesGenericSkill = Skills.CreateGenericSkillWithSkillFamily(bodyPrefab, "Voicelines", true);
             voicelinesGenericSkill.loadoutTitleToken = HedgehogUtils.Language.voicelinesTitleToken;
             SkillDef voicelinesEnable = Skills.CreateSkillDef(new SkillDefInfo
@@ -762,7 +764,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             voiceline.Initialize();
             HedgehogUtils.Voicelines.VoicelineDisplayComponent.AddDisplayPrefabVoicelineComponent(displayPrefab, bodyPrefab, voicelinesGenericSkill.skillFamily, voicelinesEnable, voicelineSoundBankPath,
                 SonicVoicelineComponent.lobby1, SonicVoicelineComponent.lobby2, SonicVoicelineComponent.lobby3, SonicVoicelineComponent.lobby4);
-            #endregion
+            #endregion*/
 
             MakeSuperSonicStuff(primary, sonicBoom, parry, grandSlam, cyloop, quickCyloop);
 

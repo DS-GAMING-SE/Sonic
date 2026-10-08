@@ -209,10 +209,13 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         {
             if (!attacked)
             {
-                if (Modules.Buffs.HasCyloopDebuff(hurtBox.healthComponent.body) && !doubleHitHealthComponents.Contains(hurtBox.healthComponent))
+                if (Modules.Buffs.HasCyloopDebuff(hurtBox.healthComponent.body))
                 {
-                    doubleHitHealthComponents.Add(hurtBox.healthComponent);
-                    doubleHits.Add(new OverlapAttack.OverlapInfo { hurtBox = hurtBox, hitPosition = hurtBox.transform.position, pushDirection = Vector3.zero });
+                    if (!doubleHitHealthComponents.Contains(hurtBox.healthComponent))
+                    {
+                        doubleHitHealthComponents.Add(hurtBox.healthComponent);
+                        doubleHits.Add(new OverlapAttack.OverlapInfo { hurtBox = hurtBox, hitPosition = hurtBox.transform.position, pushDirection = Vector3.zero });
+                    }
                 }
                 else if (!hitHealthComponents.Contains(hurtBox.healthComponent))
                 {
