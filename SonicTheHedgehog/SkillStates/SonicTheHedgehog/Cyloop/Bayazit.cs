@@ -11,6 +11,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
 {
     /// <summary>
     /// I don't think this works
+    /// 
     /// This class is took from a random Unity forum post which took from the "FarseerUnity" physics engine, which uses Mark Bayazit's decomposition algorithm.
     /// I also have to make it work with self-intersecting polygons, so I'll use another different algorithm to decompose a self-intersecting polygon into several simple polygons,
     /// and then I would decompose each of them into convex polygons.

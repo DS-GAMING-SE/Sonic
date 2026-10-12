@@ -223,6 +223,13 @@ namespace SonicTheHedgehog
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockPurge()));
             Modules.Config.ForceUnlockPurge().SettingChanged += SonicTheHedgehogCharacter.UnlockPurgeConfig;
 
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockClearGameHexes()));
+            Modules.Config.ForceUnlockClearGameHexes().SettingChanged += SonicTheHedgehogCharacter.UnlockClearGameHexesConfig;
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockClearChampRush()));
+            Modules.Config.ForceUnlockClearChampRush().SettingChanged += SonicTheHedgehogCharacter.UnlockClearChampRushConfig;
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockClearUltima()));
+            Modules.Config.ForceUnlockClearUltima().SettingChanged += SonicTheHedgehogCharacter.UnlockClearUltimaConfig;
+
             ModSettingsManager.AddOption(new IntSliderOption(SonicMountainShrinesAchievement.sonicMountainShrinesConfig, new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 0, max = 4 }));
 
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.EnableLogs()));
@@ -394,6 +401,18 @@ namespace SonicTheHedgehog
             if (!self.HasAchievement(SonicPurgeAchievement.identifier) && Modules.Config.ForceUnlockPurge().Value)
             {
                 self.AddAchievement(SonicPurgeAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicClearGameHexesAchievement.identifier) && Modules.Config.ForceUnlockClearGameHexes().Value)
+            {
+                self.AddAchievement(SonicClearGameHexesAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicClearChampRushAchievement.identifier) && Modules.Config.ForceUnlockClearChampRush().Value)
+            {
+                self.AddAchievement(SonicClearChampRushAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicClearUltimaAchievement.identifier) && Modules.Config.ForceUnlockClearUltima().Value)
+            {
+                self.AddAchievement(SonicClearUltimaAchievement.identifier, true);
             }
             if (!self.HasAchievement(SonicMountainShrinesAchievement.identifier) && SonicMountainShrinesAchievement.sonicMountainShrinesConfig.Value >= SonicMountainShrinesAchievement.requiredMountainShrines)
             {

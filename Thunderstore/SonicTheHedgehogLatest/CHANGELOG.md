@@ -1,10 +1,12 @@
 # Changelog
 
 ## v5.0.0
+Fixed for Hallowed Concepts
+
 *This update may break mods that interact with the Super form system*
  - (New Skill) Added a new alternate special skill. This can be unlocked by completing a newly added achievement (Or just unlocking it with the config)
  
- - (Achievements) Added all of the pre-Hallowed-Concepts DLC achievements to Sonic. They don't unlock anything... *yet*...
+ - (Achievements) Added all of the DLC achievements to Sonic. They don't unlock anything... *yet*...
 
  - (Visuals) Sonic's homing skills now use a new animated reticle
  - (Visuals) Small visual improvements have been made to Super Sonic
@@ -14,12 +16,10 @@
  - (- Nerf) The Parry skill must be triggered successfully to give a stack of Luminous Shot. Follow Up still gives a stack of Luminous Shot like it did before
  - (- Nerf) Grand Slam's cooldown no longer starts until the *entire* move has finished
  
- - (Bug Fix) Boost now only triggers skill activation effects when you actually start boosting. It won't trigger when entering Boost's idle stance, preventing unintended interactions with items like [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Fractured Timepiece
- 
  - (Compatibility) [EnemiesReturns'](https://thunderstore.io/c/riskofrain2/p/Risky_Sleeps/EnemiesReturns/) auto-generated Anointed skin now has properly spiked-up super form quills and recolored boost vfx (to make it not unbearably ugly)
  
  
- - (Internal) Parts of this mod have been moved over to addressables, meaning some assets will only be loaded when needed. This is meant to reduce memory usage, but it's a bit of a messy set up currently, so it probably doesn't actually help
+ - (Internal) Parts of this mod (mainly skins) have been moved over to addressables, meaning some assets will only be loaded when needed. This is meant to reduce memory usage, but it's a bit of a messy set up currently, so it probably doesn't actually help
  - (Internal) Publicized the SonicTheHedgehogCharacter class, because why not? The SonicSkillDefs class has been removed as it is now obsolete
  - (Internal) The component used for Metal Sonic's custom animations, MetalSonicAnimation, has been replaced with a new component called UniqueSkinEffect. This component is used to handle any skins with custom animations or effects. This component also adds support for adding skin-specific boost vfx through code
 ### HedgehogUtils v2.0.0
@@ -34,11 +34,12 @@
 
  - (Bug Fix) Transformations can no longer be activated while in UI (such as typing in chat) or while you're not in your main body state (usually doing some action where you can't use other skills)
  - (Bug Fix) Fixed the Chaos Emerald interactable breaking if you purchase it and pick it up with Drifter at the same time
+ - (Bug Fix) Boost now only triggers skill activation effects when you actually start boosting. It won't trigger when entering Boost's idle stance, preventing unintended interactions with items like [Sandswept's](https://thunderstore.io/package/SandsweptTeam/Sandswept) Fractured Timepiece
  
  - (Config) **Your Super transformation key bind must be redone**. Super transformation key binds have been moved to the [Rebindables](https://thunderstore.io/c/riskofrain2/p/pseudopulse/Rebindables/) mod, meaning the key binds now have support for controllers. The default key bind for the Super form has been changed from V to G. *Hallowed Concepts took my damn key bind.*
 
 ### Known Issues
- - The new alternate special may hit in a larger area than expected. The move is otherwise functional, so I didn't want to exclude it from the update because of this issue. Concave and convex meshes melt my puny brain
+ - The new alternate special may hit in a larger area than expected. I didn't have time to work out that last technical challenge with Hallowed Concepts releasing unexpectedly quickly. The move is otherwise functional, so I didn't want to exclude it from the update because of this niche issue. Concave and convex meshes melt my puny brain
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)
  - Using a non-one timescale (Photomode or changing timescale through console commands) while using the alternate special may crash the game
  - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile

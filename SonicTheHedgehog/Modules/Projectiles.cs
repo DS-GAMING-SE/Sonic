@@ -91,6 +91,7 @@ namespace SonicTheHedgehog.Modules
             debuff.duration = StaticValues.sonicBoomDebuffDuration;
 
             ProjectileController bombController = sonicBoomPrefab.GetComponent<ProjectileController>();
+            bombController.ghostPrefabAddress = null;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SonicBoomGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("SonicBoomGhost");
             bombController.startSound = "";
             bombController.allowPrediction = true;
@@ -121,6 +122,7 @@ namespace SonicTheHedgehog.Modules
 
             ProjectileController bombController = superSonicBoomPrefab.GetComponent<ProjectileController>();
             bombController.canImpactOnTrigger = false;
+            bombController.ghostPrefabAddress = null;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("CrossSlashGhost") != null) bombController.ghostPrefab = CreateGhostPrefab("CrossSlashGhost");
             bombController.startSound = "";
             bombController.allowPrediction = true;
@@ -148,6 +150,7 @@ namespace SonicTheHedgehog.Modules
 
             ProjectileController bombController = superMeleePunchProjectilePrefab.GetComponent<ProjectileController>();
             bombController.procCoefficient = StaticValues.superMeleeExtraProcCoefficient;
+            bombController.ghostPrefabAddress = null;
             if (Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost") != null) bombController.ghostPrefab = CreateGhostPrefabWithFade(Assets.mainAssetBundle.LoadAsset<GameObject>("SuperMeleePunchGhost"), superProjectileMaterial);
             bombController.startSound = "";
             bombController.allowPrediction = true;

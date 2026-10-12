@@ -180,7 +180,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             damageInfo.damageType = DamageSource.Special;
             damageInfo.damageType.AddModdedDamageType(DamageTypes.cyloop);
             damageInfo.force = Vector3.up * 33f;
-            damageInfo.physForceFlags |= PhysForceFlags.massIsOne | PhysForceFlags.resetVelocity | PhysForceFlags.respectKnockbackImmuneFlag;
+            damageInfo.physForceFlags |= PhysForceFlags.massIsOne | PhysForceFlags.resetVelocity | PhysForceFlags.respectKnockupImmuneFlag;
             damageInfo.crit = RollCrit();
         }
         public virtual void PrepareDoubleAttack(ref DamageInfo damageInfo)

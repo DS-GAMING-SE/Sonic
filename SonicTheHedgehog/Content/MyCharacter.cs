@@ -58,7 +58,7 @@ namespace SonicTheHedgehog.Modules.Survivors
             bodyColor = sonicColor,
 
             crosshair = Modules.Assets.LoadCrosshair("Standard"),
-            podPrefab = null,
+            podPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/SurvivorPod"), // null,
 
             maxHealth = 110f,
             healthRegen = 1,
@@ -95,6 +95,9 @@ namespace SonicTheHedgehog.Modules.Survivors
         public static UnlockableDef decompileSkinUnlockableDef;
         public static UnlockableDef purgeSkinUnlockableDef;
         public static UnlockableDef dieUnlockableDef;
+        public static UnlockableDef clearGameHexesSkinUnlockableDef;
+        public static UnlockableDef clearChampRushSkinUnlockableDef;
+        public static UnlockableDef clearUltimaSkinUnlockableDef;
 
         public static UnlockableDef parryUnlockableDef;
         public static UnlockableDef cyloopUnlockableDef;
@@ -103,7 +106,7 @@ namespace SonicTheHedgehog.Modules.Survivors
         {
             base.InitializeCharacter();
             bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(HedgehogUtils.Miscellaneous.Death));
-            prefabCharacterBody.preferredInitialStateType = new EntityStates.SerializableEntityStateType(typeof(Descent));
+            //prefabCharacterBody.preferredInitialStateType = new EntityStates.SerializableEntityStateType(typeof(Descent));
         }
 
         public override void InitializeUnlockables()
@@ -137,6 +140,24 @@ namespace SonicTheHedgehog.Modules.Survivors
             purgeSkinUnlockableDef.cachedName = SonicPurgeAchievement.unlockableIdentifier;
             purgeSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_NAME";
             Content.AddUnlockableDef(purgeSkinUnlockableDef);
+
+            clearGameHexesSkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            clearGameHexesSkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon");
+            clearGameHexesSkinUnlockableDef.cachedName = SonicClearGameHexesAchievement.unlockableIdentifier;
+            clearGameHexesSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicClearGameHexesAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(clearGameHexesSkinUnlockableDef);
+
+            clearChampRushSkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            clearChampRushSkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon"); // Lord X skin?
+            clearChampRushSkinUnlockableDef.cachedName = SonicClearChampRushAchievement.unlockableIdentifier;
+            clearChampRushSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicClearChampRushAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(clearChampRushSkinUnlockableDef);
+
+            clearUltimaSkinUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
+            clearUltimaSkinUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texMetalSkinIcon"); // Obvious what this should be
+            clearUltimaSkinUnlockableDef.cachedName = SonicClearUltimaAchievement.unlockableIdentifier;
+            clearUltimaSkinUnlockableDef.nameToken = "ACHIEVEMENT_" + SonicClearUltimaAchievement.identifier + "_NAME";
+            Content.AddUnlockableDef(clearUltimaSkinUnlockableDef);
 
             parryUnlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             parryUnlockableDef.achievementIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texParryIcon");
@@ -426,6 +447,112 @@ namespace SonicTheHedgehog.Modules.Survivors
                 }
             }
         }
+
+        public static void UnlockClearGameHexesConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock ClearGameHexes Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockClearGameHexes().Value)
+            {
+                if (!user.HasAchievement(SonicClearGameHexesAchievement.identifier))
+                {
+                    user.AddAchievement(SonicClearGameHexesAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(clearGameHexesSkinUnlockableDef))
+                {
+                    user.GrantUnlockable(clearGameHexesSkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicClearGameHexesAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicClearGameHexesAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(clearGameHexesSkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(clearGameHexesSkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+        public static void UnlockClearChampRushConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock ClearChampRush Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockClearChampRush().Value)
+            {
+                if (!user.HasAchievement(SonicClearChampRushAchievement.identifier))
+                {
+                    user.AddAchievement(SonicClearChampRushAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(clearChampRushSkinUnlockableDef))
+                {
+                    user.GrantUnlockable(clearChampRushSkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicClearChampRushAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicClearChampRushAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(clearChampRushSkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(clearChampRushSkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
+        public static void UnlockClearUltimaConfig(object orig, EventArgs self)
+        {
+            // Thanks RealerCheatUnlocks
+            Log.Message("Unlock ClearUltima Attempt");
+
+            UserProfile user = LocalUserManager.readOnlyLocalUsersList.FirstOrDefault(v => v != null)?.userProfile;
+
+            if (Config.ForceUnlockClearUltima().Value)
+            {
+                if (!user.HasAchievement(SonicClearUltimaAchievement.identifier))
+                {
+                    user.AddAchievement(SonicClearUltimaAchievement.identifier, true);
+                }
+
+                if (!user.HasUnlockable(clearUltimaSkinUnlockableDef))
+                {
+                    user.GrantUnlockable(clearUltimaSkinUnlockableDef);
+                }
+            }
+            else
+            {
+                if (user.HasAchievement(SonicClearUltimaAchievement.identifier))
+                {
+                    foreach (var notification in RoR2.UI.AchievementNotificationPanel.instancesList)
+                        UnityEngine.Object.Destroy(notification.gameObject);
+                    user.RevokeAchievement(SonicClearUltimaAchievement.identifier);
+                }
+
+                if (user.HasUnlockable(clearUltimaSkinUnlockableDef))
+                {
+                    user.RevokeUnlockable(clearUltimaSkinUnlockableDef);
+                    user.RequestEventualSave();
+                }
+            }
+        }
         #endregion
 
         public static SkillDefs.MeleeSkillDef primarySkillDef;
@@ -470,7 +597,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                 skillName = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
                 skillNameToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME",
                 skillDescriptionToken = prefix + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_DESCRIPTION",
-                keywordTokens = new string[] { prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD", HedgehogUtilsPlugin.Prefix+"LAUNCH_KEYWORD" },
+                keywordTokens = new string[] { HedgehogUtilsPlugin.Prefix+"LAUNCH_KEYWORD", prefix + "_SONIC_THE_HEDGEHOG_BODY_HOMING_KEYWORD" },
                 skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMeleeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.SonicMelee)),
                 activationStateMachineName = "Body",
@@ -985,8 +1112,7 @@ namespace SonicTheHedgehog.Modules.Survivors
                     ghostReplacementAddress = Projectiles.superMetalMeleePunchProjectileGhost },
                 new SkinDefParams.ProjectileGhostReplacement { projectilePrefab = Projectiles.superMeleeKickProjectilePrefab,
                     ghostReplacementAddress = Projectiles.superMetalMeleeKickProjectileGhost }};
-            AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.metalMaterial).Completed += (x) =>
-            { x.Result.SetHopooMaterial().MetalFresnel().Specular(0.4f, 4f); };
+            AssetAsyncReferenceManager<Material>.LoadAsset(SkinAddressables.metalMaterial).WaitForCompletion().SetHopooMaterial().MetalFresnel().Specular(0.4f, 4f);
 
             metalSkinDefParams.rendererInfos = ArrayUtils.Clone(defaultRendererinfos);
             metalSkinDefParams.meshReplacements = Modules.Skins.GetParamMeshReplacementsFromObject(defaultRendererinfos, "MetalSonicMesh");

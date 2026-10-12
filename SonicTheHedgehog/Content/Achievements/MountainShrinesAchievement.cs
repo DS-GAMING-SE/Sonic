@@ -43,7 +43,7 @@ namespace SonicTheHedgehog.Modules.Achievements
             if (teleporter.shrineBonusStacks > 0 || teleporter.NetworkshowAccessCodesIndicator)
             {
                 configUpdateBlocker = true;
-                sonicMountainShrinesConfig.Value += TeleporterInteraction.instance.shrineBonusStacks + (TeleporterInteraction.instance.NetworkshowAccessCodesIndicator ? 1 : 0);
+                sonicMountainShrinesConfig.Value += TeleporterInteraction.instance.shrineBonusStacks + (TeleporterInteraction.instance.NetworkshowAccessCodesIndicator ? 1 : 0) + TeleporterInteraction.instance.hexBonusStacks;
                 Check();
                 configUpdateBlocker = false;
             }

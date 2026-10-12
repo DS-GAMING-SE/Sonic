@@ -118,6 +118,20 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     if (target && target.healthComponent && targetDirection.magnitude <= target.healthComponent.body.radius + StaticValues.quickCyloopExtraRadius + 0.5f)
                     {
                         SetNextState();
+                        return;
+                    }
+                    if (fixedAge > estimatedHomingAttackTime / homingAttackOvershoot)
+                    {
+                        int count = HGPhysics.RaycastAll(out var hits, transform.position, targetDirection.normalized, 1f, LayerIndex.entityPrecise.mask);
+                        for (int i = 0;i < count; i++)
+                        {
+                            if (hits[i].colliderInstanceID != 0 && hits[i].collider.TryGetComponent<HurtBox>(out var hurtBox) && hurtBox.healthComponent == target.healthComponent)
+                            {
+                                SetNextState();
+                                break;
+                            }
+                        }
+                        HGPhysics.ReturnResults(hits);
                     }
                 }
                 else

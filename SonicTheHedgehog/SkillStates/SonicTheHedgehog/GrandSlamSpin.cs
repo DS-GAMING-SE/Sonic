@@ -165,7 +165,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;
-            this.attack.physForceFlags = PhysForceFlags.respectKnockbackImmuneFlag | PhysForceFlags.resetVelocity;
+            this.attack.physForceFlags = PhysForceFlags.resetVelocity;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
