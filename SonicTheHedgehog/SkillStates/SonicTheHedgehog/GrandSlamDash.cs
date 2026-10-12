@@ -13,7 +13,7 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class GrandSlamDash : BaseSkillState
+    public class GrandSlamDash : BaseSkillState, ISkillState
     {  
         protected string hitboxName = "Ball";
 
@@ -126,6 +126,7 @@ namespace SonicTheHedgehog.SkillStates
                 homingTracker.visible = false;
                 homingTracker.locked = false;
             }
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             base.OnExit();
 
             this.animator.SetBool("attacking", false);
@@ -165,7 +166,8 @@ namespace SonicTheHedgehog.SkillStates
         {
             this.outer.SetNextState(new GrandSlamSpin
             {
-                target = this.target
+                target = this.target,
+                activatorSkillSlot = this.activatorSkillSlot
             });
         }
 

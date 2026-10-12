@@ -2,6 +2,7 @@
 using SonicTheHedgehog.Modules.Survivors;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -16,6 +17,8 @@ namespace SonicTheHedgehog.Modules
         internal static BuffDef grandSlamJuggleDebuff;
         internal static BuffDef sonicBoomDebuff;
         internal static BuffDef crossSlashDebuff;
+        internal static BuffDef cyloopDebuff;
+        internal static BuffDef superCyloopDebuff;
 
         internal static void RegisterBuffs()
         {
@@ -61,6 +64,23 @@ namespace SonicTheHedgehog.Modules
                 new Color(1f, 1f, 1f),
                 true,
                 true);
+            cyloopDebuff = AddNewBuff("bdSonicCyloopDebuff",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texCyloopBuffIcon"),
+                SonicTheHedgehogCharacter.sonicColor2,
+                false,
+                true);
+            superCyloopDebuff = AddNewBuff("bdSonicSuperCyloopDebuff",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texCyloopBuffIcon"),
+                SonicTheHedgehogCharacter.superSonicColor,
+                false,
+                true);
+            cyloopDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+            superCyloopDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+        }
+
+        public static bool HasCyloopDebuff(CharacterBody body)
+        {
+            return body.HasBuff(Buffs.cyloopDebuff) || body.HasBuff(Buffs.superCyloopDebuff);
         }
 
         // simple helper method

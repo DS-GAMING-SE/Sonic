@@ -14,7 +14,7 @@ namespace SonicTheHedgehog.Modules
             PopulateFromBody("MageBody"); //commando is actually missing some displays
             PopulateFromBody("LunarExploderBody"); //solely for the perfected crown
 
-            PopulateCustomLightningArm();
+            //PopulateCustomLightningArm();
 
             //if you have any custom item displays to add here I would be very impressed
         }

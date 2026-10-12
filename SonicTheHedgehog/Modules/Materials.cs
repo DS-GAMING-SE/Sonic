@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using RoR2.ContentManagement;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -99,17 +101,10 @@ namespace SonicTheHedgehog.Modules
             return mat;
         }
 
-        public static Material Specular(this Material mat, float strength)
+        public static Material Specular(this Material mat, float strength, float exponent = 1f)
         {
             mat.SetFloat("_SpecularStrength", strength);
-            return mat;
-        }
-
-        public static Material MetalMaterial(this Material mat)
-        {
-            mat.Specular(0.2f);
-            mat.SetTexture("_FresnelRamp", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Common.texRampTritone3Reverse_png).WaitForCompletion());
-            mat.EnableKeyword("FRESNEL_EMISSION");
+            mat.SetFloat("_SpecularExponent", exponent);
             return mat;
         }
         /// <summary>
@@ -150,6 +145,40 @@ namespace SonicTheHedgehog.Modules
         {
             material.SetInt("_Cull", cull ? 1 : 0);
             return material;
+        }
+        private const float phantomRiderPatternSize = 5f;
+        public static Material CreatePhantomRiderScarf()
+        {
+            return CreatePhantomRiderScarf(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.texSpeedBoostPickupThornRamp_png));
+        }
+
+        public static Material CreatePhantomRiderScarf(AssetReferenceT<Texture> remapTex)
+        {
+            Material scarf = new Material(Addressables.LoadAssetAsync<Shader>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Shaders.HGOpaqueCloudRemap_shader).WaitForCompletion());
+            scarf.EnableKeyword("EMISSIONFROMALBEDO");
+            scarf.EnableKeyword("DITHER");
+            scarf.EnableKeyword("USE_CLOUDS");
+            scarf.EnableKeyword("USE_UV1");
+            scarf.EnableKeyword("_EMISSION");
+            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.texVerticalGradientBlkWht_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_MainTex", x.Result);
+                scarf.SetTextureScale("_MainTex", new Vector2(1, 0.5f));
+                scarf.SetTextureOffset("_MainTex", new Vector2(0, 0.35f));
+            };
+            AssetAsyncReferenceManager<Texture>.LoadAsset(new AssetReferenceT<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Engi.texEngiShield_png)).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_Cloud1Tex", x.Result);
+                scarf.SetTextureScale("_Cloud1Tex", new Vector2(phantomRiderPatternSize, phantomRiderPatternSize));
+            };
+            AssetAsyncReferenceManager<Texture>.LoadAsset(remapTex).Completed += delegate (AsyncOperationHandle<Texture> x)
+            {
+                scarf.SetTexture("_RemapTex", x.Result);
+            };
+            scarf.SetVector("_CutoffScroll", new Vector4(0, -5, 0, 0));
+            scarf.SetFloat("_AlphaBoost", 3.75f);
+
+            return scarf;
         }
     }
 }

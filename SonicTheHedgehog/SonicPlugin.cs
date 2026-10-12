@@ -1,35 +1,36 @@
 ﻿using BepInEx;
-using SonicTheHedgehog.Modules.Survivors;
-using R2API.Utils;
-using RoR2;
-using System.Collections.Generic;
-using System.Security;
-using System.Security.Permissions;
-using SonicTheHedgehog.Modules;
-using IL.RoR2.UI;
-using UnityEngine;
 using EmotesAPI;
-using System.Runtime.CompilerServices;
-using R2API;
-using SonicTheHedgehog.Components;
-
-using static BetterUI.ProcCoefficientCatalog;
-using static BetterUI.Buffs;
-using RiskOfOptions;
-
-using SonicTheHedgehog.SkillStates;
-using RiskOfOptions.Options;
 using EntityStates;
-using System.Security.Claims;
-using UnityEngine.Networking;
-using R2API.Networking.Interfaces;
-using R2API.Networking;
-using System;
 using HarmonyLib;
-using LookingGlass.LookingGlassLanguage;
+using IL.RoR2.UI;
+using LoadingScreenFix;
 using LookingGlass.BuffDescriptions;
 using LookingGlass.ItemStatsNameSpace;
-using LoadingScreenFix;
+using LookingGlass.LookingGlassLanguage;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using R2API;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
+using R2API.Utils;
+using RiskOfOptions;
+using RiskOfOptions.Options;
+using RoR2;
+using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules;
+using SonicTheHedgehog.Modules.Achievements;
+using SonicTheHedgehog.Modules.Survivors;
+using SonicTheHedgehog.SkillStates;
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Claims;
+using System.Security.Permissions;
+using UnityEngine;
+using UnityEngine.Networking;
+using static BetterUI.Buffs;
+using static BetterUI.ProcCoefficientCatalog;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -57,6 +58,7 @@ namespace SonicTheHedgehog
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Nebby1999.LoadingScreenFix", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(EnemiesReturns.EnemiesReturnsPlugin.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(MODUID, MODNAME, MODVERSION)]
 
@@ -67,7 +69,7 @@ namespace SonicTheHedgehog
         //   this shouldn't even have to be said
         public const string MODUID = "com.ds_gaming.SonicTheHedgehog";
         public const string MODNAME = "SonicTheHedgehog";
-        public const string MODVERSION = "4.0.6";
+        public const string MODVERSION = "5.0.0";
 
         // a prefix for name tokens to prevent conflicts- please capitalize all name tokens for convention
         public const string DEVELOPER_PREFIX = "DS_GAMING";
@@ -79,6 +81,7 @@ namespace SonicTheHedgehog
         public static bool riskOfOptionsLoaded = false;
         public static bool ancientScepterLoaded = false;
         public static bool loadingScreenFixLoaded = false;
+        public static bool enemiesReturnsLoaded = false;
 
 
         private void Awake()
@@ -105,6 +108,9 @@ namespace SonicTheHedgehog
             loadingScreenFixLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("Nebby1999.LoadingScreenFix");
             Log.Message("Loading Screen Fix exists? " + loadingScreenFixLoaded);
 
+            enemiesReturnsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(EnemiesReturns.EnemiesReturnsPlugin.GUID);
+            Log.Message("Enemies Returns exists? " + enemiesReturnsLoaded);
+
             Modules.Assets.Initialize(); // load assets and read config
             if (loadingScreenFixLoaded)
             {
@@ -116,7 +122,6 @@ namespace SonicTheHedgehog
             Modules.Projectiles.RegisterProjectiles(); // add and register custom projectiles
             Modules.Tokens.AddTokens(); // register name tokens
             Modules.ItemDisplays.PopulateDisplays(); // collect item display prefabs for use in our display rules
-            Modules.SuperFormSupport.Initialize();
             Modules.DamageTypes.Initialize();
 
             NetworkingAPI.RegisterMessageType<SonicParryHit>();
@@ -148,13 +153,15 @@ namespace SonicTheHedgehog
             // run hooks here, disabling one is as simple as commenting out the line
             //On.RoR2.CharacterBody.RecalculateStats += WhereIsRecalcStatAPIAcceleration;
 
-            On.RoR2.HealthComponent.TakeDamage += TakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += TakeDamage;
 
-            On.RoR2.CharacterBody.OnBuffFirstStackGained += AddGrandSlamJuggleFloat;
+            On.RoR2.CharacterMotor.ModifyGravity += GrandSlamJuggleAndCyloopFloat;
 
             RecalculateStatsAPI.GetStatCoefficients += SonicRecalculateStats;
 
             On.RoR2.UserProfile.OnLogin += ConfigUnlocks;
+
+            HedgehogUtils.Launch.LaunchManager.onLaunchServer += RemoveCyloopWhenLaunched;
 
             if (lookingGlassLoaded)
             {
@@ -170,73 +177,6 @@ namespace SonicTheHedgehog
             LoadingScreenFix.LoadingScreenFix.AddSpriteAnimation(spriteAnimation);
             Log.Message("Added Sonic loading screen sprite");
         }
-        #region BetterUI
-        /*private static void BetterUISetup()
-        {
-            ProcCoefficientInfo melee = new ProcCoefficientInfo
-            {
-                name = "Melee / Homing Attack",
-                procCoefficient = StaticValues.meleeProcCoefficient
-            };
-            ProcCoefficientInfo superMeleeGhost = new ProcCoefficientInfo
-            {
-                name = "Projectile",
-                procCoefficient = StaticValues.superMeleeExtraProcCoefficient
-            };
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_PRIMARY_MELEE_NAME", melee);
-
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_PRIMARY_MELEE_NAME", new List<ProcCoefficientInfo>
-            {
-                melee, superMeleeGhost
-            });
-
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SECONDARY_SONIC_BOOM_NAME", new ProcCoefficientInfo
-            {
-                name = "Sonic Boom",
-                procCoefficient = StaticValues.sonicBoomProcCoefficient
-            });
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_SONIC_BOOM_NAME", new ProcCoefficientInfo
-            {
-                name = "Sonic Boom",
-                procCoefficient = StaticValues.sonicBoomProcCoefficient
-            });
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SECONDARY_IDW_ATTACK_NAME", new ProcCoefficientInfo
-            {
-                name = "Attack",
-                procCoefficient = StaticValues.idwAttackProcCoefficient
-            });
-
-            ProcCoefficientInfo spin = new ProcCoefficientInfo
-            {
-                name = "Repeated Attack",
-                procCoefficient = StaticValues.grandSlamSpinProcCoefficient
-            };
-            ProcCoefficientInfo kick = new ProcCoefficientInfo
-            {
-                name = "Final Attack",
-                procCoefficient = StaticValues.grandSlamFinalProcCoefficient
-            };
-            ProcCoefficientInfo superGrandSlamAfterimage = new ProcCoefficientInfo
-            {
-                name = "Afterimages",
-                procCoefficient = StaticValues.superGrandSlamDOTProcCoefficient
-            };
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SPECIAL_GRAND_SLAM_NAME", new List<ProcCoefficientInfo>
-            {
-                spin,kick
-            });
-            AddSkill(DEVELOPER_PREFIX + "_SONIC_THE_HEDGEHOG_BODY_SUPER_SPECIAL_GRAND_SLAM_NAME", new List<ProcCoefficientInfo>
-            {
-                spin,kick,superGrandSlamAfterimage
-            });
-
-            RegisterBuffInfo(Buffs.boostBuff, "Sonic Boost", $"+{StaticValues.boostArmor} Armor. If health is above 90%, +{StaticValues.powerBoostListedSpeedCoefficient*100}% movement speed. Otherwise, +{StaticValues.boostListedSpeedCoefficient*100}% movement speed");
-            RegisterBuffInfo(Buffs.ballBuff, "Sonic Ball", $"+{StaticValues.ballArmor} Armor.");
-            RegisterBuffInfo(Buffs.superSonicBuff, "Super Sonic", $"Upgrades all of your skills. +{100f * StaticValues.superSonicBaseDamage}% Damage. +{100f * StaticValues.superSonicAttackSpeed}% Attack speed. +{100f * StaticValues.superSonicMovementSpeed}% Base movement speed. Complete invincibility and flight.");
-            RegisterBuffInfo(Buffs.parryBuff, "Sonic Parry", $"+{StaticValues.parryAttackSpeedBuff*100}% Attack speed. +{StaticValues.parryMovementSpeedBuff*100}% Movement speed.");
-            RegisterBuffInfo(Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"-{StaticValues.superParryArmorDebuff * 100} Armor. -{(1/StaticValues.superParryAttackSpeedDebuff) * 100}% Attack speed. -{(1 / StaticValues.superParryMovementSpeedDebuff) * 100}% Movement speed.");
-        }*/
-        #endregion
         public static void LookingGlassSetup()
         {
             if (Language.languagesByName.TryGetValue("en", out Language language))
@@ -248,6 +188,8 @@ namespace SonicTheHedgehog
                 RegisterLookingGlassBuff(language, Buffs.superParryDebuff, "Super Sonic Parry Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superParryArmorDebuff}, reduces <style=cIsUtility>attack speed and movement speed</style> by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%.");
                 RegisterLookingGlassBuff(language, Buffs.sonicBoomDebuff, "Sonic Boom Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.sonicBoomDebuffArmorReduction}.");
                 RegisterLookingGlassBuff(language, Buffs.crossSlashDebuff, "Sonic Cross Slash Debuff", $"Reduces <style=cIsUtility>armor</style> by {StaticValues.superSonicBoomDebuffArmorReduction}.");
+                RegisterLookingGlassBuff(language, Buffs.cyloopDebuff, "Sonic Cyloop Debuff", $"Disables <style=cIsUtility>movement</style> and increases <style=cIsUtility>skill</style> damage taken by {StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%.");
+                RegisterLookingGlassBuff(language, Buffs.superCyloopDebuff, "Sonic Super Cyloop Debuff", $"Disables <style=cIsUtility>movement</style> and increases <style=cIsUtility>skill</style> damage taken by {StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%.");
             }
         }
 
@@ -264,12 +206,31 @@ namespace SonicTheHedgehog
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.KeyPressHomingAttack()));
             
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockParry()));
-
             Modules.Config.ForceUnlockParry().SettingChanged += SonicTheHedgehogCharacter.UnlockParryConfig;
 
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockMastery()));
-
             Modules.Config.ForceUnlockMastery().SettingChanged += SonicTheHedgehogCharacter.UnlockMasteryConfig;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockGrandMastery()));
+            Modules.Config.ForceUnlockGrandMastery().SettingChanged += SonicTheHedgehogCharacter.UnlockGrandMasteryConfig;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockMeridian()));
+            Modules.Config.ForceUnlockMeridian().SettingChanged += SonicTheHedgehogCharacter.UnlockMeridianConfig;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockDecompile()));
+            Modules.Config.ForceUnlockDecompile().SettingChanged += SonicTheHedgehogCharacter.UnlockDecompileConfig;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockPurge()));
+            Modules.Config.ForceUnlockPurge().SettingChanged += SonicTheHedgehogCharacter.UnlockPurgeConfig;
+
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockClearGameHexes()));
+            Modules.Config.ForceUnlockClearGameHexes().SettingChanged += SonicTheHedgehogCharacter.UnlockClearGameHexesConfig;
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockClearChampRush()));
+            Modules.Config.ForceUnlockClearChampRush().SettingChanged += SonicTheHedgehogCharacter.UnlockClearChampRushConfig;
+            ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.ForceUnlockClearUltima()));
+            Modules.Config.ForceUnlockClearUltima().SettingChanged += SonicTheHedgehogCharacter.UnlockClearUltimaConfig;
+
+            ModSettingsManager.AddOption(new IntSliderOption(SonicMountainShrinesAchievement.sonicMountainShrinesConfig, new RiskOfOptions.OptionConfigs.IntSliderConfig() { min = 0, max = 4 }));
 
             ModSettingsManager.AddOption(new CheckBoxOption(Modules.Config.EnableLogs()));
         }
@@ -322,32 +283,16 @@ namespace SonicTheHedgehog
                 {
                     stats.armorAdd -= StaticValues.superSonicBoomDebuffArmorReduction * self.GetBuffCount(Buffs.crossSlashDebuff);
                 }
+                if (Buffs.HasCyloopDebuff(self))
+                {
+                    stats.moveSpeedRootCount += 1;
+                }
             }
         }
-        /*private void WhereIsRecalcStatAPIAcceleration(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
 
-            if (self.HasBuff(Modules.Buffs.boostBuff))
-            {
-                self.acceleration *= 6f;
-            }
-        }*/
-
-        // GEARBOX THANK YOU! SOTS 3 added JitterBoneBlacklist component which fixes this problem for me
-        // This is so jank and doesn't even work consistently anymore because of skins but idk what else to do to stop jitter bones from being on Sonic
-        /*private void IHateJitterBones(On.RoR2.JitterBones.orig_Start orig, JitterBones self)
+        private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damage)
         {
-            if (self.skinnedMeshRenderer && self.skinnedMeshRenderer.name == "SonicMesh")
-            {
-                UnityEngine.Object.Destroy(self);
-            }
-            orig(self);
-        }*/
-
-        private void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damage)
-        {
-            if (self && NetworkServer.active)
+            if (self && NetworkServer.active) // Move parrying to an IOnIncomingDamageServerReceiver?
             {
                 EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.gameObject, "Body");
                 if (stateMachine)
@@ -360,31 +305,73 @@ namespace SonicTheHedgehog
                         new SonicParryHit(network.netId, damage).Send(NetworkDestination.Clients);
                     }
                 }
+                if (Buffs.HasCyloopDebuff(self.body))
+                {
+                    damage.damage *= (1 + StaticValues.cyloopConstrictSkillDamageMultiplier);
+                }
             }
             orig(self, damage);
-            if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle) && NetworkServer.active
-                && self
-                && self.body
-                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup))
+            if (NetworkServer.active && !damage.rejected && self && self.body)
             {
-                self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 1, 1);
-            }
-        }
-
-        private void AddGrandSlamJuggleFloat(On.RoR2.CharacterBody.orig_OnBuffFirstStackGained orig, CharacterBody self, BuffDef buff)
-        {
-            orig(self, buff);
-            if (self)
-            {
-                if (buff && buff == Buffs.grandSlamJuggleDebuff)
+                if (damage.damageType.HasModdedDamageType(DamageTypes.grandSlamJuggle)
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.IgnoreKnockup)
+                && !self.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Unmovable))
                 {
-                    GrandSlamJuggleFloat juggleFloat = self.GetComponent<GrandSlamJuggleFloat>();
-                    if (!juggleFloat)
+                    self.body.AddTimedBuff(Buffs.grandSlamJuggleDebuff, 0.6f, 1);
+                }
+                if (damage.damageType.HasModdedDamageType(DamageTypes.superCyloop))
+                {
+                    if (Buffs.HasCyloopDebuff(self.body))
                     {
-                        self.gameObject.AddComponent<GrandSlamJuggleFloat>();
+                        RemoveCyloop(self.body);
+                    }
+                    else
+                    {
+                        self.body.AddTimedBuff(Buffs.superCyloopDebuff, StaticValues.superCyloopConstrictDuration);
+                    }
+                }
+                else if (damage.damageType.HasModdedDamageType(DamageTypes.cyloop))
+                {
+                    if (Buffs.HasCyloopDebuff(self.body))
+                    {
+                        RemoveCyloop(self.body);
+                    }
+                    else
+                    {
+                        self.body.AddTimedBuff(Buffs.cyloopDebuff, StaticValues.cyloopConstrictDuration);
                     }
                 }
             }
+        }
+        public void RemoveCyloop(CharacterBody target)
+        {
+            target.ClearTimedBuffs(Buffs.cyloopDebuff);
+            target.ClearTimedBuffs(Buffs.superCyloopDebuff);
+        }
+        private void RemoveCyloopWhenLaunched(CharacterBody target, CharacterBody attacker, Vector3 direction, float speed, float damage, float wallCollisionDamage, bool crit, float procCoefficient, float duration, HedgehogUtils.Launch.LaunchProjectileController proj)
+        {
+            RemoveCyloop(target);
+        }
+        // could also mess with Icharactergravityparameters to get rid of gravity entirely
+        private void GrandSlamJuggleAndCyloopFloat(On.RoR2.CharacterMotor.orig_ModifyGravity orig, CharacterMotor self, ref float verticalVelocity, ref float gravity, float deltaTime)
+        {
+            if (self.body && (self.body.HasBuff(Buffs.grandSlamJuggleDebuff) || Buffs.HasCyloopDebuff(self.body)))
+            {
+                if (verticalVelocity > 0)
+                {
+                    gravity *= 1.5f;
+                }
+                else if (verticalVelocity < 3f)
+                {
+                    gravity = 0f;
+                }
+                else
+                {
+                    gravity *= 0.1f;
+                }
+                return;
+            } // me when I don't call orig like a VILLAIN
+            orig(self, ref verticalVelocity, ref gravity, deltaTime);
         }
 
 
@@ -398,6 +385,38 @@ namespace SonicTheHedgehog
             if (!self.HasAchievement(DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE") && Modules.Config.ForceUnlockMastery().Value)
             {
                 self.AddAchievement(DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE", true);
+            }
+            if (!self.HasAchievement(SonicGrandMasteryAchievement.identifier) && Modules.Config.ForceUnlockGrandMastery().Value)
+            {
+                self.AddAchievement(SonicGrandMasteryAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicMeridianEventTriggerAchievement.identifier) && Modules.Config.ForceUnlockMeridian().Value)
+            {
+                self.AddAchievement(SonicMeridianEventTriggerAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicDecompileAchievement.identifier) && Modules.Config.ForceUnlockDecompile().Value)
+            {
+                self.AddAchievement(SonicDecompileAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicPurgeAchievement.identifier) && Modules.Config.ForceUnlockPurge().Value)
+            {
+                self.AddAchievement(SonicPurgeAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicClearGameHexesAchievement.identifier) && Modules.Config.ForceUnlockClearGameHexes().Value)
+            {
+                self.AddAchievement(SonicClearGameHexesAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicClearChampRushAchievement.identifier) && Modules.Config.ForceUnlockClearChampRush().Value)
+            {
+                self.AddAchievement(SonicClearChampRushAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicClearUltimaAchievement.identifier) && Modules.Config.ForceUnlockClearUltima().Value)
+            {
+                self.AddAchievement(SonicClearUltimaAchievement.identifier, true);
+            }
+            if (!self.HasAchievement(SonicMountainShrinesAchievement.identifier) && SonicMountainShrinesAchievement.sonicMountainShrinesConfig.Value >= SonicMountainShrinesAchievement.requiredMountainShrines)
+            {
+                self.AddAchievement(SonicMountainShrinesAchievement.identifier, true);
             }
         }
     }

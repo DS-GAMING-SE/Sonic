@@ -1,7 +1,10 @@
 ﻿using SonicTheHedgehog.SkillStates;
 using SonicTheHedgehog.SkillStates.SuperUpgrades;
+using SonicTheHedgehog.SkillStates.Emotes;
+using SonicTheHedgehog.SkillStates.Initial;
 using System.Collections.Generic;
 using System;
+using SonicTheHedgehog.SkillStates.Cyloop;
 
 namespace SonicTheHedgehog.Modules
 {
@@ -10,6 +13,12 @@ namespace SonicTheHedgehog.Modules
         internal static void RegisterStates()
         {
             Modules.Content.AddEntityState(typeof(SonicEntityState));
+
+            Modules.Content.AddEntityState(typeof(Descent));
+            Modules.Content.AddEntityState(typeof(Landed));
+            Modules.Content.AddEntityState(typeof(Release));
+
+            Modules.Content.AddEntityState(typeof(IdleEmote));
 
             Modules.Content.AddEntityState(typeof(SonicMelee));
             Modules.Content.AddEntityState(typeof(HomingAttack));
@@ -48,6 +57,14 @@ namespace SonicTheHedgehog.Modules
             Modules.Content.AddEntityState(typeof(SuperGrandSlamDash));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamSpin));
             Modules.Content.AddEntityState(typeof(SuperGrandSlamFinal));
+
+            Modules.Content.AddEntityState(typeof(Cyloop));
+            Modules.Content.AddEntityState(typeof(QuickCyloopDash));
+            Modules.Content.AddEntityState(typeof(QuickCyloop));
+
+            Modules.Content.AddEntityState(typeof(SuperCyloop));
+            Modules.Content.AddEntityState(typeof(SuperQuickCyloopDash));
+            Modules.Content.AddEntityState(typeof(SuperQuickCyloop));
         }
     }
 }

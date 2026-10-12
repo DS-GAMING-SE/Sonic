@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using R2API;
 using Rewired;
 using RiskOfOptions.Components.AssetResolution.Data;
@@ -80,7 +81,7 @@ namespace SonicTheHedgehog.SkillStates
 
         protected virtual void PlayAttackAnimation()
         {
-            base.PlayAnimation("Body", "ParryFollowUp", "Slash.playbackRate", this.duration * 0.8f);
+            base.PlayAnimation("FullBody, Override", "ParryFollowUp", "Slash.playbackRate", this.duration * 0.8f);
         }
 
         public override void OnExit()
@@ -171,7 +172,8 @@ namespace SonicTheHedgehog.SkillStates
                 if (!this.hasFired)
                 {
                     Util.PlayAttackSpeedSound(swingSoundString, base.gameObject, base.attackSpeedStat);
-                    EffectManager.SimpleMuzzleFlash(Modules.Assets.followUpKickEffect, base.gameObject, this.muzzleString, true);
+                    EffectManager.SimpleMuzzleFlash(Modules.Assets.followUpKickEffect, base.gameObject, this.muzzleString, false);
+                    VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_attack", VoicelinePriority.PrioritySkill);
                 }
                 if (base.isAuthority)
                 {

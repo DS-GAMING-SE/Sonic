@@ -27,6 +27,9 @@ namespace SonicTheHedgehog.Components
 
         public static SkillDefs.RequiresFormSkillDef grandSlam;
 
+        public static Modules.SkillDefs.RequiresFormCyloopSkillDef cyloop;
+        public static Modules.SkillDefs.RequiresFormTargetSkillDef quickCyloop;
+
         public void Start()
         {
             formComponent = base.GetComponent<FormComponent>();
@@ -73,7 +76,10 @@ namespace SonicTheHedgehog.Components
 
             }
             SkillHelper(this, body.skillLocator.utility, SonicTheHedgehogCharacter.boostSkillDef, boost);
-            SkillHelper(this, body.skillLocator.special, SonicTheHedgehogCharacter.grandSlamSkillDef, grandSlam);
+            if (!SkillHelper(this, body.skillLocator.special, SonicTheHedgehogCharacter.grandSlamSkillDef, grandSlam))
+            {
+                SkillHelper(this, body.skillLocator.special, SonicTheHedgehogCharacter.cyloopSkillDef, cyloop);
+            }
         }
 
         public void IDWAttackActivated()

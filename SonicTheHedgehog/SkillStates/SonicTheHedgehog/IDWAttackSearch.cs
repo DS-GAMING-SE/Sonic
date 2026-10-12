@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using HedgehogUtils.Voicelines;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -22,11 +23,6 @@ namespace SonicTheHedgehog.SkillStates
         protected HurtBox target = null;
         protected bool targetLocked = false;
         protected Vector3 targetPosition = Vector3.zero;
-
-        protected string chargeSoundString = "Play_sonicthehedgehog_spindash_charge";
-        protected string launchSoundString = "Play_sonicthehedgehog_spindash_release";
-        protected string hitSoundString = "Play_sonicthehedgehog_homing_impact";
-        protected string muzzleString = "SwingCenter";
 
         public float duration;
         protected bool inHitPause;
@@ -48,6 +44,7 @@ namespace SonicTheHedgehog.SkillStates
                 base.characterMotor.Motor.ForceUnground();
             }
             base.PlayAnimation("FullBody, Override", "IDWStart", "Slash.playbackRate", searchTime);
+            VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_idw_full_throttle", VoicelinePriority.Dialogue);
 
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
@@ -122,15 +119,6 @@ namespace SonicTheHedgehog.SkillStates
                 {
                     skill.IDWAttackActivated();
                 }
-                
-                /*EntityStateMachine superStateMachine = EntityStateMachine.FindByCustomName(base.gameObject, "HedgehogUtilsForms");
-                if (superStateMachine)
-                {
-                    /*if (superStateMachine.state.GetType() == typeof(SuperSonic))
-                    {
-                        ((SuperSonic)superStateMachine.state).IDWAttackActivated();
-                    }
-                }*/
             }
         }
 

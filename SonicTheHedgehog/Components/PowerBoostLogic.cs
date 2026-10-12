@@ -21,7 +21,7 @@ namespace SonicTheHedgehog.Components
         public new void OnDestroy()
         {
             base.OnDestroy();
-            powerBoostOverlayController.onInstanceAdded -= PreparePowerBoostHUD;
+            if (powerBoostOverlayController != null) powerBoostOverlayController.onInstanceAdded -= PreparePowerBoostHUD;
         }
         protected override void BoostHUDCreated(GameObject hud)
         {

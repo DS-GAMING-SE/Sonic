@@ -4,11 +4,6 @@ namespace SonicTheHedgehog.Modules
 {
     internal static class StaticValues
     {
-        internal static string descriptionText = "Sonic is a fast melee fighter who specializes in movement and single target damage.<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine
-             + "< ! > Homing attack lets you quickly close the distance between you and an enemy, letting you quickly rack up damage with melee attacks." + Environment.NewLine + Environment.NewLine
-             + "< ! > Sonic Boom is a fast projectile that lets you attack from a distance." + Environment.NewLine + Environment.NewLine
-             + "< ! > Boost lets you move significantly faster than normal. Use it to dodge attacks or traverse the map." + Environment.NewLine + Environment.NewLine
-             + "< ! > Grand Slam is a powerful single target attack that's perfect for taking down bosses." + Environment.NewLine + Environment.NewLine;
         // Melee
 
         internal const float homingAttackDamageCoefficient = 6f;
@@ -98,7 +93,7 @@ namespace SonicTheHedgehog.Modules
         internal const float defaultPowerBoostSpeed = 24f;
 
         internal const float scepterBoostICD = 1f;
-        
+
         // Grand Slam
 
         internal const float grandSlamSpinDamageCoefficient = 1.4f;
@@ -110,6 +105,26 @@ namespace SonicTheHedgehog.Modules
         internal const float grandSlamFinalProcCoefficient = 1.5f;
 
         internal const float grandSlamJuggleSpeedReductionMult = 1f;
+
+        // Cyloop
+
+        internal const int cyloopMaxPoints = 40;
+
+        internal const float cyloopLinePointsPerPoint = 1.5f;
+
+        internal const float cyloopLineIntersectWidth = 4.5f;
+
+        internal const float cyloopCollisionWidth = 6.5f;
+
+        internal const float cyloopDamageCoefficient = 6f;
+
+        internal const float cyloopDoubleDamageCoefficient = 20f;
+
+        internal const float cyloopConstrictDuration = 4.5f;
+
+        internal const float cyloopConstrictSkillDamageMultiplier = 0.5f;
+
+        internal const float quickCyloopExtraRadius = 1.7f;
 
         // Super Melee
 
@@ -158,6 +173,16 @@ namespace SonicTheHedgehog.Modules
         internal const float superGrandSlamDOTProcCoefficient = 0.3f;
 
         internal const float superGrandSlamDOTLifetime = 4f;
+
+        // Super Cyloop
+
+        internal const float superCyloopLineIntersectWidth = 10f;
+
+        internal const float superCyloopCollisionWidth = 17f;
+
+        internal const float superCyloopDoubleDamageCoefficient = 50f;
+
+        internal const float superCyloopConstrictDuration = 8f;
 
     }
 }

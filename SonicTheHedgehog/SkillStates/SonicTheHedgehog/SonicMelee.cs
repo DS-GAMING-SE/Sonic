@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using R2API;
 using Rewired;
 using RiskOfOptions.Components.AssetResolution.Data;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
+using static SonicTheHedgehog.Modules.SkillDefs;
 
 namespace SonicTheHedgehog.SkillStates
 {
@@ -64,7 +66,7 @@ namespace SonicTheHedgehog.SkillStates
         private bool swingSoundPlayed = false;
         private bool bufferedHomingAttack = false;
 
-        public SkillDefs.IMeleeSkill meleeSkillDef;
+        public MeleeSkillDef meleeSkillDef;
 
         public override void OnEnter()
         {
@@ -76,7 +78,7 @@ namespace SonicTheHedgehog.SkillStates
             }
             this.hasFired = false;
 
-            meleeSkillDef = base.skillLocator.primary.skillDef as SkillDefs.IMeleeSkill;
+            meleeSkillDef = base.skillLocator.primary.skillDef as MeleeSkillDef;
 
             this.impactSound = swingIndex == 4 ? Modules.Assets.meleeFinalHitSoundEvent.index : Modules.Assets.meleeHitSoundEvent.index;
             this.swingSoundString = swingIndex == 4 ? "Play_sonicthehedgehog_swing_strong" : "Play_sonicthehedgehog_swing";
@@ -86,8 +88,8 @@ namespace SonicTheHedgehog.SkillStates
             this.attackRecoil = swingIndex == 4 ? 2.5f : 0.6f;
             this.duration = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed / this.attackSpeedStat;
             this.earlyExitTime = swingIndex == 4 ? Modules.StaticValues.finalMeleeBaseSpeed * 0.1f / this.attackSpeedStat : Modules.StaticValues.meleeBaseSpeed * 0.1f / this.attackSpeedStat;
-            this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of duration
-            this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of duration
+            this.attackStartTime = swingIndex == 4 ? 0.55f: 0.25f; //percent of startup
+            this.attackEndTime = swingIndex == 4 ? 0.7f : 0.35f; //percent of startup
             this.hitStopDuration = swingIndex == 4 ? 0.15f : 0.04f;
             this.hitHopVelocity = base.characterMotor.isFlying ? 0 : 3 + (3 / this.attackSpeedStat);
             StartAimMode();
@@ -117,7 +119,6 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             if (!this.hasFired && !this.cancelled) this.FireAttack();
-            base.PlayAnimation("FullBody, Override", "BufferEmpty");
             if (base.isAuthority)
             {
                 homingTracker.visible = false;
@@ -311,6 +312,7 @@ namespace SonicTheHedgehog.SkillStates
                 if (!swingSoundPlayed)
                 {
                     Util.PlayAttackSpeedSound(swingSoundString, base.gameObject, base.attackSpeedStat);
+                    if (swingIndex == 4) VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_attack", VoicelinePriority.Skill);
                     swingSoundPlayed = true;
                 }
             }
@@ -347,7 +349,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 if (bufferedHomingAttack && homingTracker.CanHomingAttack())
                 {
-                    HomingAttack homingAttack = EntityStateCatalog.InstantiateState(((SkillDefs.IMeleeSkill)base.skillLocator.primary.skillDef).homingAttackState.stateType) as HomingAttack;
+                    HomingAttack homingAttack = EntityStateCatalog.InstantiateState(((MeleeSkillDef)base.skillLocator.primary.skillDef).homingAttackState.stateType) as HomingAttack;
                     homingAttack.target = homingTracker.GetTrackingTarget();
                     this.outer.SetNextState(homingAttack);
                     base.characterBody.OnSkillActivated(skillLocator.primary);

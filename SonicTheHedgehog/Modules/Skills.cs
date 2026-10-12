@@ -12,8 +12,6 @@ namespace SonicTheHedgehog.Modules
     internal static class Skills
     {
         #region genericskills
-
-        public static GenericSkill passiveFamily;
         public static void CreateSkillFamilies(GameObject targetPrefab, bool destroyExisting = true)
         {
             if (destroyExisting)
@@ -26,8 +24,6 @@ namespace SonicTheHedgehog.Modules
 
             SkillLocator skillLocator = targetPrefab.GetComponent<SkillLocator>();
 
-
-            passiveFamily = CreateGenericSkillWithSkillFamily(targetPrefab, "Misc");
             skillLocator.primary = CreateGenericSkillWithSkillFamily(targetPrefab, "Primary");
             skillLocator.secondary = CreateGenericSkillWithSkillFamily(targetPrefab, "Secondary");
             skillLocator.utility = CreateGenericSkillWithSkillFamily(targetPrefab, "Utility");
@@ -90,10 +86,6 @@ namespace SonicTheHedgehog.Modules
         {
             AddSkillsToFamily(targetPrefab.GetComponent<SkillLocator>().special.skillFamily, skillDefs);
         }
-        public static void AddMiscSkills(GameObject targetPrefab, params SkillDef[] skillDefs)
-        {
-            AddSkillsToFamily(passiveFamily.skillFamily, skillDefs);
-        }
 
 
         /// <summary>
@@ -149,6 +141,9 @@ namespace SonicTheHedgehog.Modules
 
             skillDef.keywordTokens = skillDefInfo.keywordTokens;
 
+            skillDef.suppressSkillActivation = skillDefInfo.suppressSkillActivation;
+            skillDef.autoHandleLuminousShot = skillDefInfo.autoHandleLuminousShot;
+
             SonicTheHedgehog.Modules.Content.AddSkillDef(skillDef);
 
 
@@ -188,6 +183,9 @@ namespace SonicTheHedgehog.Modules
         public bool fullRestockOnAssign = true;
         public bool resetCooldownTimerOnUse;
         public bool mustKeyPress;
+
+        public bool suppressSkillActivation = false;
+        public bool autoHandleLuminousShot = true;
 
         #region constructors
         public SkillDefInfo() { }

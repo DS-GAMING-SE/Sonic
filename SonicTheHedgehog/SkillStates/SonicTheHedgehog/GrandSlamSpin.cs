@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using R2API;
 using R2API.Networking.Interfaces;
 using Rewired;
@@ -12,7 +13,7 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class GrandSlamSpin : BaseSkillState
+    public class GrandSlamSpin : BaseSkillState, ISkillState
     {
         protected string hitboxName = "Ball";
 
@@ -57,10 +58,12 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(true);
             this.maxAttackCount = (int) Math.Ceiling(base.characterBody.attackSpeed*baseAttackCount);
             this.hitboxName = "LargeBall";
             //base.PlayAnimation("FullBody, Override", "Roll", "Roll.playbackRate", this.attackDuration);
             base.PlayAnimation("FullBody, Override", "Ball", "Slash.playbackRate", this.attackDuration/maxAttackCount);
+            VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_buildup", VoicelinePriority.Skill);
             this.animator = base.GetModelAnimator();
             base.characterBody.outOfCombatStopwatch = 0f;
             this.animator.SetBool("attacking", true);
@@ -70,6 +73,7 @@ namespace SonicTheHedgehog.SkillStates
         {
             base.OnExit();
             this.animator.SetBool("attacking", false);
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             if (NetworkServer.active)
             {
                 base.characterBody.RemoveBuff(RoR2Content.Buffs.HiddenInvincibility);
@@ -106,7 +110,8 @@ namespace SonicTheHedgehog.SkillStates
         {
             this.outer.SetNextState(new GrandSlamFinal
             {
-                target = this.target
+                target = this.target,
+                activatorSkillSlot = this.activatorSkillSlot
             });
         }
 
@@ -160,6 +165,7 @@ namespace SonicTheHedgehog.SkillStates
             this.attack.hitBoxGroup = hitBoxGroup;
             this.attack.isCrit = base.RollCrit();
             this.attack.impactSound = this.impactSound;
+            this.attack.physForceFlags = PhysForceFlags.resetVelocity;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

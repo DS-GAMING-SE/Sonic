@@ -1,5 +1,6 @@
 ﻿using R2API;
 using SonicTheHedgehog.Components;
+using SonicTheHedgehog.Modules.Achievements;
 using System;
 using System.Drawing;
 using System.Text;
@@ -56,8 +57,8 @@ namespace SonicTheHedgehog.Modules
 
             #region Skins
 
-            LanguageAPI.Add(prefix + "DEFAULT_SKIN_NAME", "Default");
             LanguageAPI.Add(prefix + "MASTERY_SKIN_NAME", "Metal");
+            LanguageAPI.Add(prefix + "ANOINTED_SKIN_NAME", "Arthur"); // not currently used
 
             #endregion
 
@@ -68,8 +69,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "PRIMARY_MELEE_NAME", "Melee");
             string meleeDescription =
-                $"Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
-            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", meleeDescription + " This move can <style=cIsUtility>launch</style> lightweight enemies.");
+                $". Melee nearby enemies dealing <style=cIsDamage>{100f * StaticValues.meleeDamageCoefficient}% damage</style>. Every 5th hit deals <style=cIsDamage>{100f * StaticValues.finalMeleeDamageCoefficient}% damage</style>. Targeting an enemy in the distance will use the <style=cIsUtility>Homing Attack</style>, dealing <style=cIsDamage>{100f * StaticValues.homingAttackDamageCoefficient}% damage</style>.";
+            LanguageAPI.Add(prefix + "PRIMARY_MELEE_DESCRIPTION", "<style=cIsUtility>Launching</style>"+meleeDescription);
 
             #endregion
 
@@ -77,8 +78,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_NAME", HedgehogUtils.Helpers.SuperFormText("Super Melee"));
             LanguageAPI.Add(prefix + "SUPER_PRIMARY_MELEE_DESCRIPTION",
-                meleeDescription +
-                $" This move can <style=cIsUtility>launch</style> {HedgehogUtils.Helpers.SuperFormText("mediumweight")} enemies.\n{HedgehogUtils.Helpers.SuperFormText($"Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.")}");
+                $"{HedgehogUtils.Helpers.SuperFormText("Launching")}"+meleeDescription +
+                $"\n{HedgehogUtils.Helpers.SuperFormText($"Every close range attack fires a projectile dealing {(100f * StaticValues.superMeleeExtraDamagePercent)}% of the attack's damage.")}");
 
             #endregion
 
@@ -102,23 +103,23 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_NAME", "Parry");
             string parryOnHitDescription =
-                $"Getting hit in this stance will <style=cIsHealing>negate all damage</style>, give +{StaticValues.parryAttackSpeedBuff * 100}% <style=cIsDamage>attack speed</style> and <style=cIsUtility>movement speed</style>, and <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s.</style>";
+                $"Getting hit in this stance will <style=cIsHealing>nullify incoming damage</style>, give +{StaticValues.parryAttackSpeedBuff * 100}% <style=cIsDamage>attack speed</style> and <style=cIsUtility>movement speed</style>, <style=cIsUtility>reduce</style> all other skill cooldowns by <style=cIsUtility>{StaticValues.parryCooldownReduction}s</style>,";
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_DESCRIPTION",
-                $"Press or hold to enter the <style=cIsUtility>parry stance</style> for a brief period of time. {parryOnHitDescription} It will also temporarily <style=cIsUtility>replace this skill</style> with \"<style=cIsUtility>Follow Up</style>\", a wide <style=cIsUtility>launching</style> kick attack.");
+                $"Press or hold to briefly enter the <style=cIsUtility>parry stance</style>. {parryOnHitDescription} and temporarily <style=cIsUtility>replace this skill</style> with a wide <style=cIsUtility>Launching kick attack</style>.");
 
             #endregion
 
             #region Follow Up
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_NAME", "Follow Up");
             LanguageAPI.Add(prefix + "SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
-                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> mediumweight hit enemies.");
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>Launching</style> heavier enemies.");
 
             #endregion
 
             #region Super Follow Up
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Follow Up"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_FOLLOW_UP_DESCRIPTION",
-                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and <style=cIsUtility>launching</style> {HedgehogUtils.Helpers.SuperFormText("heavyweight")} hit enemies.");
+                $"Perform a wide kick dealing <style=cIsDamage>{StaticValues.followUpDamageCoefficient * 100f}%</style> and {HedgehogUtils.Helpers.SuperFormText("Launching")} heavier enemies.");
 
             #endregion
 
@@ -126,7 +127,7 @@ namespace SonicTheHedgehog.Modules
             string idwAttackName = $"IDW Attack";
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_NAME", HedgehogUtils.Helpers.SuperFormText("Perfect Parry"));
             LanguageAPI.Add(prefix + "SUPER_SECONDARY_PARRY_DESCRIPTION",
-                $"Enter the <style=cIsUtility>parry stance</style> for a {HedgehogUtils.Helpers.SuperFormText("very brief period of time")}. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($"It will also reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
+                $"{HedgehogUtils.Helpers.SuperFormText("Very briefly")} enter the <style=cIsUtility>parry stance</style>. {parryOnHitDescription} {HedgehogUtils.Helpers.SuperFormText($"reduce all nearby enemies' attack speed and movement speed by {(1 / StaticValues.superParryAttackSpeedDebuff) * 100}%, reduce armor by {StaticValues.superParryArmorDebuff}, and replace this skill with \"{idwAttackName}\" which deals damage in an area around the targeted enemy. \n\nThis can only be triggered once.")}");
 
             #endregion
 
@@ -176,8 +177,8 @@ namespace SonicTheHedgehog.Modules
 
             LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_NAME", "Grand Slam");
             string grandSlamDescription =
-                $"<style=cIsUtility>Homing</style>. Dash forward into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style> and <style=cIsUtility>launching</style> enemies.";
-            LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription);
+                $"<style=cIsUtility>Homing</style>. Dash forward into an enemy to attack with <style=cIsDamage>{100f * StaticValues.grandSlamSpinDamageCoefficient}% damage</style> repeatedly before unleashing a powerful attack from above dealing <style=cIsDamage>{100f * StaticValues.grandSlamFinalDamageCoefficient}% damage</style>";
+            LanguageAPI.Add(prefix + "SPECIAL_GRAND_SLAM_DESCRIPTION", grandSlamDescription + " and <style=cIsUtility>Launching</style> enemies.");
 
             #endregion
 
@@ -186,8 +187,31 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_NAME", HedgehogUtils.Helpers.SuperFormText("Super Grand Slam"));
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_GRAND_SLAM_DESCRIPTION",
                 grandSlamDescription +
-                $"\n{HedgehogUtils.Helpers.SuperFormText($"Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
+                $" and {HedgehogUtils.Helpers.SuperFormText("Launching")} enemies.\n{HedgehogUtils.Helpers.SuperFormText($"Create afterimages that rain down from the sky dealing {100f * (Modules.StaticValues.superGrandSlamDOTDamage * 3)}% damage per second.")}");
 
+            #endregion
+
+            #region Cyloop
+            // Achievement ideas:
+            // Defeat 4 mountain shrines in one run (reference to the 4 titans) "Tearing down walls" "Tall as titans"
+            // Enter A Moment, Whole or the Neural Sanctum "Walls Between Dimensions"
+            // Complete Void Fields "Break Free" "Tearing down walls"
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_NAME", "Cyloop");
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", $"Leave a trail behind you. Create a <style=cIsUtility>closed shape</style> and release to deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constrict</style> enemies inside. Cyloop again to <style=cIsUtility>Launch</style> them downwards for <style=cIsDamage>{StaticValues.cyloopDoubleDamageCoefficient * 100f}% damage</style>. Use your primary skill to perform a <style=cIsUtility>homing Quick Cyloop</style>.");
+            LanguageAPI.Add(prefix + "CYLOOP_KEYWORD",
+                $"<style=CKeywordName>Constrict</style><style=cSub>Immobilize and hold the enemy in the air. Increase damage taken from <style=cIsUtility>skills</style> by <style=cIsDamage>{StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%</style>.</style>");
+
+            LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_NAME", "Quick Cyloop");
+            LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them.");
+
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Cyloop"));
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_DESCRIPTION", $"Leave a trail behind you. Create a <style=cIsUtility>closed shape</style> and release to deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and {HedgehogUtils.Helpers.SuperFormText("Constrict")} enemies inside. Cyloop again to <style=cIsUtility>Launch</style> them downwards for {HedgehogUtils.Helpers.SuperFormText((StaticValues.superCyloopDoubleDamageCoefficient * 100f).ToString())}<style=cIsDamage>% damage</style>. Use your primary skill to perform a <style=cIsUtility>homing Super Quick Cyloop</style>.");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Quick Cyloop"));
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly {HedgehogUtils.Helpers.SuperFormText("Super Cyloop")} them.");
+            #endregion
+
+            #region Voicelines
+            LanguageAPI.Add(prefix + "VOICELINES_ENABLE_DESCRIPTION", $"Voicelines recorded by <style=cIsUtility>Jehtt</style>.");
             #endregion
 
             #region Achievements
@@ -197,10 +221,55 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICMASTERYUNLOCKABLE_DESCRIPTION",
                 "As Sonic, beat the game or obliterate on Monsoon.");
 
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicGrandMasteryAchievement.identifier + "_NAME",
+                "Sonic: Grand Mastery");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicGrandMasteryAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, beat the game or obliterate on Typhoon or Eclipse.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMeridianEventTriggerAchievement.identifier + "_NAME",
+                "Sonic: Cleared Prime Meridian");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMeridianEventTriggerAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, complete the Event on Prime Meridian.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDecompileAchievement.identifier + "_NAME",
+                "Sonic: Accept and Decompile");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDecompileAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, accept the offering of the Collective.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_NAME",
+                "Sonic: Purge");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, reject the offering of the Collective.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearGameHexesAchievement.identifier + "_NAME",
+                "Sonic: Against All Odds");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearGameHexesAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, complete a run while holding 10 Hexes.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearUltimaAchievement.identifier + "_NAME",
+                "Sonic: Memento Mori");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearUltimaAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, defeat what lies beyond the door of Soulbound Threshold.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearChampRushAchievement.identifier + "_NAME",
+                "Sonic: Dying to Meet You");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearChampRushAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, complete Soulbound Threshold before the 4th Teleporter event.");
+
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME",
                 "Sonic: Spinning Upside Down");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION",
                 $"As Sonic, hit {Achievements.SonicHomingAttackAirborneAchievement.countRequired} different enemies with the homing attack without touching the ground.");
+
+            /*LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_NAME",
+                "Sonic: The Murder of...");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicDieAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, be murdered.");*/
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_NAME",
+                "Sonic: Tearing Down Titans");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_DESCRIPTION",
+                $"As Sonic, complete {SonicMountainShrinesAchievement.requiredMountainShrines} total Shrines of the Mountain.");
 
             #endregion
 

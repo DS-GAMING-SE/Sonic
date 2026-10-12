@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using HedgehogUtils.Voicelines;
 using IL.RoR2.ConVar;
 using R2API;
 using Rewired;
@@ -12,7 +13,7 @@ using UnityEngine.Networking;
 
 namespace SonicTheHedgehog.SkillStates
 {
-    public class GrandSlamFinal : BaseSkillState
+    public class GrandSlamFinal : BaseSkillState, ISkillState
     {
         protected string hitboxName = "Stomp";
 
@@ -56,6 +57,7 @@ namespace SonicTheHedgehog.SkillStates
         private float speedMultiplier;
         private bool animationEnded=false;
         private bool effectFired = false;
+        private bool voicelinePlayed;
 
         protected float startUpVelocityMax = 60f;
         protected float startUpVelocityMin = 3f;
@@ -67,6 +69,7 @@ namespace SonicTheHedgehog.SkillStates
             {
                 base.characterBody.AddBuff(RoR2Content.Buffs.HiddenInvincibility);
             }
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(true);
             base.characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
             this.maxAttackTime = this.baseMaxAttackTime;
             this.hasFired = false;
@@ -85,6 +88,7 @@ namespace SonicTheHedgehog.SkillStates
         public override void OnExit()
         {
             base.characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+            if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             if (!this.animationEnded)
             {
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
@@ -147,6 +151,7 @@ namespace SonicTheHedgehog.SkillStates
                 animationEnded = true;
                 base.PlayAnimation("FullBody, Override", "BufferEmpty");
                 base.PlayAnimation("Body", "Backflip");
+                if (activatorSkillSlot) activatorSkillSlot.SetBlockedCooldownSkillState(false);
             }
 
             if (!this.inHitPause)
@@ -158,7 +163,11 @@ namespace SonicTheHedgehog.SkillStates
                 if (base.characterMotor) base.characterMotor.velocity = Vector3.zero;
                 if (this.animator) this.animator.SetFloat("Swing.playbackRate", 0f);
             }
-
+            if (fixedAge >= startUpTime && !voicelinePlayed)
+            {
+                voicelinePlayed = true;
+                VoicelineComponent.TryPlayVoiceline(gameObject, "Play_sonicthehedgehog_voiceline_grunt_strong", VoicelinePriority.PrioritySkill);
+            }
             if (base.isAuthority)
             {
                 if (!hasHit)

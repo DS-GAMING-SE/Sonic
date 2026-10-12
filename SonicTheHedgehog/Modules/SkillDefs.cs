@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using EntityStates;
+using HedgehogUtils.Boost.EntityStates;
+using HedgehogUtils.Forms;
 using JetBrains.Annotations;
 using RoR2;
 using RoR2.Skills;
-using EntityStates;
-using UnityEngine;
 using SonicTheHedgehog.Components;
 using SonicTheHedgehog.SkillStates;
-using HedgehogUtils.Forms;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
 using static HedgehogUtils.Forms.SkillDefs;
-using HedgehogUtils.Boost.EntityStates;
+using static SonicTheHedgehog.Modules.SkillDefs;
 
 namespace SonicTheHedgehog.Modules
 {
     public class SkillDefs
     {
-        public interface IMeleeSkill
-        {
-            SerializableEntityStateType homingAttackState { get; set; }
-        }
-        public class MeleeSkillDef : SkillDef, IMeleeSkill
+        public class MeleeSkillDef : SkillDef
         {
             public SerializableEntityStateType homingAttackState { get; set; }
 
@@ -40,13 +37,13 @@ namespace SonicTheHedgehog.Modules
             {
                 if (homingTracker && homingTracker.CanHomingAttack())
                 {
-                    EntityState entityState = EntityStateCatalog.InstantiateState(((IMeleeSkill)skillSlot.skillDef).homingAttackState.stateType);
+                    EntityState entityState = EntityStateCatalog.InstantiateState(((MeleeSkillDef)skillSlot.skillDef).homingAttackState.stateType);
                     ISkillState skillState = entityState as ISkillState;
                     if (skillState != null)
                     {
                         skillState.activatorSkillSlot = skillSlot;
                     }
-                    if (typeof(HomingAttack).IsAssignableFrom(((IMeleeSkill)skillSlot.skillDef).homingAttackState.stateType))
+                    if (typeof(HomingAttack).IsAssignableFrom(((MeleeSkillDef)skillSlot.skillDef).homingAttackState.stateType))
                     {
                         ((HomingAttack)entityState).target = homingTracker.GetTrackingTarget();
                     }
@@ -55,8 +52,7 @@ namespace SonicTheHedgehog.Modules
                 else
                 {
                     EntityState entityState = EntityStateCatalog.InstantiateState(skillSlot.activationState.stateType);
-                    ISkillState skillState = entityState as ISkillState;
-                    if (skillState != null)
+                    if (entityState is ISkillState skillState)
                     {
                         skillState.activatorSkillSlot = skillSlot;
                     }
@@ -74,44 +70,79 @@ namespace SonicTheHedgehog.Modules
             }
         }
 
-        public class RequiresFormMeleeSkillDef : RequiresFormSkillDef, IMeleeSkill
+        public class RequiresFormMeleeSkillDef : MeleeSkillDef, IRequiresFormSkillDef
         {
-            public SerializableEntityStateType homingAttackState { get; set; }
-
+            public FormDef requiredForm { get; set; }
+        }
+        public class RequiresTargetSkillDef : SkillDef
+        {
             public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
             {
-                MeleeInstanceData instanceData = new MeleeInstanceData
+                return new InstanceData
                 {
                     homingTracker = skillSlot.GetComponent<HomingTracker>()
                 };
-                instanceData.formComponent = ((InstanceData)base.OnAssigned(skillSlot)).formComponent;
-                return instanceData;
             }
-
-            public override EntityState InstantiateNextState([NotNull] GenericSkill skillSlot)
+            public override bool IsReady([NotNull] GenericSkill skillSlot)
             {
-                return MeleeSkillDef.DecideNextState(skillSlot, ((MeleeInstanceData)skillSlot.skillInstanceData).homingTracker, 0);
+                return base.IsReady(skillSlot) && ((RequiresTargetSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true);
             }
-
-            protected class MeleeInstanceData : RequiresFormSkillDef.InstanceData
+            protected class InstanceData : BaseSkillInstanceData
             {
                 public HomingTracker homingTracker;
             }
         }
 
-        public static T CopyMeleeSkillDef<T>(MeleeSkillDef originDef) where T : SkillDef, IMeleeSkill
+        public class RequiresFormTargetSkillDef : RequiresTargetSkillDef, IRequiresFormSkillDef
         {
-            SerializableEntityStateType homing = originDef.homingAttackState;
-            T meleeDef = HedgehogUtils.Helpers.CopySkillDef<T>(originDef);
-            meleeDef.homingAttackState = homing;
-            return meleeDef;
+            public FormDef requiredForm { get; set; }
         }
-        public static T CopyMeleeSkillDef<T>(RequiresFormMeleeSkillDef originDef) where T : SkillDef, IMeleeSkill
+
+        public class CyloopSkillDef : SkillDef
         {
-            SerializableEntityStateType homing = originDef.homingAttackState;
-            T meleeDef = HedgehogUtils.Helpers.CopySkillDef<T>(originDef);
-            meleeDef.homingAttackState = homing;
-            return meleeDef;
+            public SkillDef quickCyloopSkillDef { get; set; }
+            public override BaseSkillInstanceData OnAssigned([NotNull] GenericSkill skillSlot)
+            {
+                return new CyloopInstanceData()
+                {
+                    primarySkill = skillSlot.GetComponent<SkillLocator>().primary,
+                    inputBank = skillSlot.GetComponent<InputBankTest>(),
+                    bodyStateMachine = EntityStateMachine.FindByCustomName(skillSlot.gameObject, "Body")
+                };
+            }
+            public override bool CanExecute([NotNull] GenericSkill skillSlot)
+            {
+                return base.CanExecute(skillSlot) && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent;
+            }
+
+            public override void OnFixedUpdate([NotNull] GenericSkill skillSlot, float deltaTime)
+            {
+                base.OnFixedUpdate(skillSlot, deltaTime);
+                CyloopInstanceData instanceData = (CyloopInstanceData)skillSlot.skillInstanceData;
+                if (IsReady(skillSlot) && instanceData.inputBank.skill4.down && typeof(GenericCharacterMain).IsAssignableFrom(instanceData.bodyStateMachine.state.GetType()))
+                {
+                    instanceData.primarySkill.SetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+                }
+                else
+                {
+                    instanceData.primarySkill.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+                }
+            }
+            public override void OnUnassigned([NotNull] GenericSkill skillSlot)
+            {
+                base.OnUnassigned(skillSlot);
+                ((CyloopInstanceData)skillSlot.skillInstanceData).primarySkill.UnsetSkillOverride(this, quickCyloopSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+            }
+            protected class CyloopInstanceData : BaseSkillInstanceData 
+            {
+                public GenericSkill primarySkill;
+                public InputBankTest inputBank;
+                public EntityStateMachine bodyStateMachine;
+            }
+        }
+        public class RequiresFormCyloopSkillDef : CyloopSkillDef, IRequiresFormSkillDef
+        {
+            public FormDef requiredForm { get; set; }
         }
     }
 }

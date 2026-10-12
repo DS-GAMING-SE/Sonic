@@ -9,9 +9,13 @@ namespace SonicTheHedgehog.Modules
     public static class DamageTypes
     {
         public static DamageAPI.ModdedDamageType grandSlamJuggle;
+        public static DamageAPI.ModdedDamageType cyloop;
+        public static DamageAPI.ModdedDamageType superCyloop;
         public static void Initialize()
         {
             grandSlamJuggle = DamageAPI.ReserveDamageType();
+            cyloop = DamageAPI.ReserveDamageType();
+            superCyloop = DamageAPI.ReserveDamageType();
         }
     }
 }
