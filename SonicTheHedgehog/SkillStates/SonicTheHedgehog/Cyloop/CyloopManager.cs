@@ -48,7 +48,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         }
         private static void RerollSuperCyloopVFX(Stage stage)
         {
-            new NetworkSuperCyloopVFX((CyloopManager.SuperCyloopVFX)UnityEngine.Random.RandomRangeInt(0, 3)).Send(NetworkDestination.Clients);
+            new NetworkSuperCyloopVFX((CyloopManager.SuperCyloopVFX)UnityEngine.Random.RandomRangeInt(0, 2)).Send(NetworkDestination.Clients);
         }
         public static CyloopColliderController GetPooledCyloopColliderController(Cyloop cyloopState, Mesh[] meshes)
         {

@@ -359,7 +359,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             overlapAttack.damageType = DamageSource.Special;
             overlapAttack.damageType.AddModdedDamageType(DamageTypes.cyloop);
             overlapAttack.forceVector = Vector3.up * 33f;
-            overlapAttack.physForceFlags |= PhysForceFlags.massIsOne | PhysForceFlags.resetVelocity | PhysForceFlags.respectKnockbackImmuneFlag;
+            overlapAttack.physForceFlags |= PhysForceFlags.massIsOne | PhysForceFlags.resetVelocity | PhysForceFlags.respectKnockupImmuneFlag;
             overlapAttack.hitEffectPrefab = Modules.Assets.cyloopHitEffect;
             overlapAttack.isCrit = RollCrit(); // If I do multiple separate overlaps for different kinds of attacks, move this outside so it only happens once
             overlapAttack.teamIndex = characterBody.teamComponent.teamIndex;

@@ -51,6 +51,18 @@ namespace SonicTheHedgehog.Modules
         {
             return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Purge", false, "Automatically unlock the achievement \"Sonic: Purge\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
         }
+        public static ConfigEntry<bool> ForceUnlockClearChampRush()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Dying to Meet You", false, "Automatically unlock the achievement \"Sonic: Dying to Meet You\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
+        public static ConfigEntry<bool> ForceUnlockClearGameHexes()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Against All Odds", false, "Automatically unlock the achievement \"Sonic: Against All Odds\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
+        public static ConfigEntry<bool> ForceUnlockClearUltima()
+        {
+            return SonicTheHedgehogPlugin.instance.Config.Bind<bool>("Unlockables", "Sonic: Memento Mori", false, "Automatically unlock the achievement \"Sonic: Memento Mori\". Turning this setting off will relock the achievement. Relocking the achievement may require restarting the game to make it possible to achieve again.");
+        }
 
         public static ConfigEntry<bool> EnableLogs()
         {

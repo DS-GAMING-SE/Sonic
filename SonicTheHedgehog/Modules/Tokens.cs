@@ -197,7 +197,7 @@ namespace SonicTheHedgehog.Modules
             // Enter A Moment, Whole or the Neural Sanctum "Walls Between Dimensions"
             // Complete Void Fields "Break Free" "Tearing down walls"
             LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_NAME", "Cyloop");
-            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", $"Leave a trail behind you as you move. Create a <style=cIsUtility>closed shape</style> and release the skill to deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constrict</style> enemies inside. Cyloop again to <style=cIsUtility>Launch</style> them downwards for <style=cIsDamage>{StaticValues.cyloopDoubleDamageCoefficient * 100f}% damage</style>. Use your primary skill to perform a <style=cIsUtility>homing Quick Cyloop</style>.");
+            LanguageAPI.Add(prefix + "SPECIAL_CYLOOP_DESCRIPTION", $"Leave a trail behind you. Create a <style=cIsUtility>closed shape</style> and release to deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and <style=cIsUtility>Constrict</style> enemies inside. Cyloop again to <style=cIsUtility>Launch</style> them downwards for <style=cIsDamage>{StaticValues.cyloopDoubleDamageCoefficient * 100f}% damage</style>. Use your primary skill to perform a <style=cIsUtility>homing Quick Cyloop</style>.");
             LanguageAPI.Add(prefix + "CYLOOP_KEYWORD",
                 $"<style=CKeywordName>Constrict</style><style=cSub>Immobilize and hold the enemy in the air. Increase damage taken from <style=cIsUtility>skills</style> by <style=cIsDamage>{StaticValues.cyloopConstrictSkillDamageMultiplier * 100f}%</style>.</style>");
 
@@ -205,7 +205,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add(prefix + "SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly Cyloop them.");
 
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Cyloop"));
-            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_DESCRIPTION", $"Leave a trail behind you as you move. Create a <style=cIsUtility>closed shape</style> and release the skill to deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and {HedgehogUtils.Helpers.SuperFormText("Constrict")} enemies inside. Cyloop again to <style=cIsUtility>Launch</style> them downwards for {HedgehogUtils.Helpers.SuperFormText((StaticValues.superCyloopDoubleDamageCoefficient * 100f).ToString())}<style=cIsDamage>% damage</style>. Use your primary skill to perform a <style=cIsUtility>homing Super Quick Cyloop</style>.");
+            LanguageAPI.Add(prefix + "SUPER_SPECIAL_CYLOOP_DESCRIPTION", $"Leave a trail behind you. Create a <style=cIsUtility>closed shape</style> and release to deal <style=cIsDamage>{StaticValues.cyloopDamageCoefficient * 100f}% damage</style> and {HedgehogUtils.Helpers.SuperFormText("Constrict")} enemies inside. Cyloop again to <style=cIsUtility>Launch</style> them downwards for {HedgehogUtils.Helpers.SuperFormText((StaticValues.superCyloopDoubleDamageCoefficient * 100f).ToString())}<style=cIsDamage>% damage</style>. Use your primary skill to perform a <style=cIsUtility>homing Super Quick Cyloop</style>.");
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_NAME", HedgehogUtils.Helpers.SuperFormText("Super Quick Cyloop"));
             LanguageAPI.Add(prefix + "SUPER_SPECIAL_QUICK_CYLOOP_DESCRIPTION", $"Dash forward into an enemy and quickly {HedgehogUtils.Helpers.SuperFormText("Super Cyloop")} them.");
             #endregion
@@ -241,6 +241,21 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add("ACHIEVEMENT_" + SonicPurgeAchievement.identifier + "_DESCRIPTION",
                 "As Sonic, reject the offering of the Collective.");
 
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearGameHexesAchievement.identifier + "_NAME",
+                "Sonic: Against All Odds");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearGameHexesAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, complete a run while holding 10 Hexes.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearUltimaAchievement.identifier + "_NAME",
+                "Sonic: Memento Mori");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearUltimaAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, defeat what lies beyond the door of Soulbound Threshold.");
+
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearChampRushAchievement.identifier + "_NAME",
+                "Sonic: Dying to Meet You");
+            LanguageAPI.Add("ACHIEVEMENT_" + SonicClearChampRushAchievement.identifier + "_DESCRIPTION",
+                "As Sonic, complete Soulbound Threshold before the 4th Teleporter event.");
+
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_NAME",
                 "Sonic: Spinning Upside Down");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicTheHedgehogPlugin.DEVELOPER_PREFIX + "SONICPARRYUNLOCKABLE_DESCRIPTION",
@@ -254,7 +269,7 @@ namespace SonicTheHedgehog.Modules
             LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_NAME",
                 "Sonic: Tearing Down Titans");
             LanguageAPI.Add("ACHIEVEMENT_" + SonicMountainShrinesAchievement.identifier + "_DESCRIPTION",
-                $"As Sonic, activate and complete {SonicMountainShrinesAchievement.requiredMountainShrines} total Shrines of the Mountain.");
+                $"As Sonic, complete {SonicMountainShrinesAchievement.requiredMountainShrines} total Shrines of the Mountain.");
 
             #endregion
 
