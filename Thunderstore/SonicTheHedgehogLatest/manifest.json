@@ -1,6 +1,6 @@
 {
     "name": "SonicTheHedgehog",
-    "version_number": "5.0.0",
+    "version_number": "5.0.3",
     "website_url": "https://github.com/DS-GAMING-SE/Sonic",
     "description": "Adds Sonic the Hedgehog as a playable survivor.",
     "dependencies": [

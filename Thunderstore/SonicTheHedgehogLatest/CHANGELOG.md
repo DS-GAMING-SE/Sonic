@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.0.3
+ - (= Change) NPC Sonics with the alt-special will now only use the homing version of the move *since they couldn't use the move at all otherwise*
+ 
+ - (Bug Fix) The alt-special and IDW Attack can no longer be triggered if your movement speed is 0
+ - (Bug Fix) Possibly fixed crashes caused by the alt-special. *This is what I get for toying with powers beyond my understanding (Unity Jobs)*
+
+## v5.0.2
+Apparently my files weren't getting copied properly, so I was just uploading older versions of the mod again...
+
+## v5.0.1
+Issues that only appeared on the publicly released version of the mod - even though that's the same as the one I was testing with?
+
 ## v5.0.0
 Fixed for Hallowed Concepts
 
@@ -41,7 +53,6 @@ Fixed for Hallowed Concepts
 ### Known Issues
  - The new alternate special may hit in a larger area than expected. I didn't have time to work out that last technical challenge with Hallowed Concepts releasing unexpectedly quickly. The move is otherwise functional, so I didn't want to exclude it from the update because of this niche issue. Concave and convex meshes melt my puny brain
  - Jumping animation is not synced in multiplayer (Apparently they aren't synced for any survivor?! Maybe one day I will fix this...)
- - Using a non-one timescale (Photomode or changing timescale through console commands) while using the alternate special may crash the game
  - (HedgehogUtils) Launch projectiles' values aren't properly networked so they don't update any values changed after the projectile is spawned. Things like the unique vfx of a crit launch projectile won't update to clients if the values are updated during the launch, such as if you launch a launch projectile
  - (HedgehogUtils) Some enemies become invisible in their death animations after being killed by a launch
 

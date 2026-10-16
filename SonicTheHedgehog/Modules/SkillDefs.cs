@@ -85,7 +85,7 @@ namespace SonicTheHedgehog.Modules
             }
             public override bool IsReady([NotNull] GenericSkill skillSlot)
             {
-                return base.IsReady(skillSlot) && ((RequiresTargetSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true);
+                return base.IsReady(skillSlot) && ((RequiresTargetSkillDef.InstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true) && skillSlot.characterBody.moveSpeed > 0;
             }
             protected class InstanceData : BaseSkillInstanceData
             {
@@ -107,12 +107,26 @@ namespace SonicTheHedgehog.Modules
                 {
                     primarySkill = skillSlot.GetComponent<SkillLocator>().primary,
                     inputBank = skillSlot.GetComponent<InputBankTest>(),
-                    bodyStateMachine = EntityStateMachine.FindByCustomName(skillSlot.gameObject, "Body")
+                    bodyStateMachine = EntityStateMachine.FindByCustomName(skillSlot.gameObject, "Body"),
+                    homingTracker = skillSlot.GetComponent<HomingTracker>()
                 };
             }
             public override bool CanExecute([NotNull] GenericSkill skillSlot)
             {
-                return base.CanExecute(skillSlot) && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent;
+                return base.CanExecute(skillSlot) && skillSlot.characterBody.moveSpeed > 0 && ((skillSlot.characterBody.isPlayerControlled && skillSlot.characterBody.characterMotor && skillSlot.characterBody.characterMotor.velocity.magnitude >= skillSlot.characterBody.moveSpeed * SkillStates.Cyloop.Cyloop.minMoveSpeedPercent)
+                    || (!skillSlot.characterBody.isPlayerControlled && ((CyloopInstanceData)skillSlot.skillInstanceData).homingTracker.GetTrackingTarget(true)));
+            }
+            public override void OnExecute([NotNull] GenericSkill skillSlot)
+            {
+                if (skillSlot.characterBody.isPlayerControlled)
+                {
+                    base.OnExecute(skillSlot);
+                }
+                else
+                {
+                    // rewriting base is normal, Drifter does it
+                    ((CyloopInstanceData)skillSlot.skillInstanceData).bodyStateMachine.SetInterruptState(EntityStateCatalog.InstantiateState(ref quickCyloopSkillDef.activationState), quickCyloopSkillDef.interruptPriority);
+                }
             }
 
             public override void OnFixedUpdate([NotNull] GenericSkill skillSlot, float deltaTime)
@@ -138,6 +152,7 @@ namespace SonicTheHedgehog.Modules
                 public GenericSkill primarySkill;
                 public InputBankTest inputBank;
                 public EntityStateMachine bodyStateMachine;
+                public HomingTracker homingTracker;
             }
         }
         public class RequiresFormCyloopSkillDef : CyloopSkillDef, IRequiresFormSkillDef

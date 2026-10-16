@@ -15,6 +15,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 using static RoR2.SolusWing.SolusWingPodAI.Simulation.SimulationState;
 
 namespace SonicTheHedgehog.SkillStates.Cyloop
@@ -66,11 +67,11 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
         private NativeArray<Vector3> lineRendererPositions;
         private float lineIntersectColorLerp;
 
-        private JobHandle endJobHandle;
-        private NativeArray<JobHandle> endMeshCreationJobs;
+        //private JobHandle endJobHandle;
+        //private NativeArray<JobHandle> endMeshCreationJobs;
         private Mesh.MeshDataArray endCollisionMesh;
         public OverlapAttack overlapAttack;
-        private bool attacked;
+        //private bool attacked;
         private int endNumSections;
 
         public CyloopVFX cyloopVFX;
@@ -140,7 +141,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 }
                 if (isAuthority)
                 {
-                    if (characterMotor.velocity.magnitude < characterBody.moveSpeed * minMoveSpeedPercent)
+                    if (characterMotor.velocity.magnitude < characterBody.moveSpeed * minMoveSpeedPercent || Mathf.Approximately(characterBody.moveSpeed, 0))
                     {
                         minMoveSpeedTimer += Time.fixedDeltaTime;
                     }
@@ -218,7 +219,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                     // log something
                 }
             }
-            else if (isAuthority)
+            /*else if (isAuthority)
             {
                 endJobHandle.Complete();
                 attacked = true;
@@ -240,7 +241,7 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 CyloopManager.GetPooledCyloopColliderController(this, meshes);
 
                 this.outer.SetNextStateToMain();
-            }
+            }*/
         }
 
         public override void OnExit()
@@ -248,13 +249,13 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
             activatorSkillSlot.onSkillChanged -= OnSkillChanged;
             intersectJobHandle.Complete();
             lineRendererPositionsJobHandle.Complete();
-            endJobHandle.Complete();
+            //endJobHandle.Complete();
             cyloopPoints.Dispose();
             cyloopLines.Dispose();
             lineRendererPositions.Dispose();
             if (isAuthority) newIntersect.Dispose();
-            if (endMeshCreationJobs.IsCreated) endMeshCreationJobs.Dispose();
-            if (ending && !attacked) endCollisionMesh.Dispose();
+            //if (endMeshCreationJobs.IsCreated) endMeshCreationJobs.Dispose();
+            //if (ending && !attacked) endCollisionMesh.Dispose();
             cyloopVFX.EndAllVFX();
             Util.PlaySound("Stop_sonicthehedgehog_cyloop", gameObject);
             base.OnExit();
@@ -270,40 +271,38 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 // Figure out how many separate meshes to make using intersect sections and concave points
 
                 endCollisionMesh = Mesh.AllocateWritableMeshData(endNumSections);
-                endMeshCreationJobs = new NativeArray<JobHandle>(endNumSections * 2, Allocator.TempJob);
+                //endMeshCreationJobs = new NativeArray<JobHandle>(endNumSections * 2, Allocator.TempJob);
                 for (int i = 0; i < endNumSections; i++)
                 {
                     NativeSlice<float3> points = new NativeSlice<CyloopPoint>(cyloopPoints.GetSubArray(intersectIndices.Peek().x, intersectIndices.Dequeue().y)).SliceWithStride<float3>(0);
 
-                    Mesh.MeshData cyloopCollisionMeshData = endCollisionMesh[i];
-
-                    cyloopCollisionMeshData.SetVertexBufferParams(points.Length * 2, new VertexAttributeDescriptor(VertexAttribute.Position));
-                    var pos = cyloopCollisionMeshData.GetVertexData<float3>();
-                    endMeshCreationJobs[i * 2] = new CyloopMeshPointsJob()
+                    endCollisionMesh[i].SetVertexBufferParams(points.Length * 2, new VertexAttributeDescriptor(VertexAttribute.Position));
+                    var pos = endCollisionMesh[i].GetVertexData<float3>();
+                    // Had game crashing issues possibly related to these jobs. Seemed to happen more often with others than with me
+                    /*endMeshCreationJobs[i * 2] = new CyloopMeshPointsJob()
                     {
                         points = points,
                         width = cyloopCollisionWidth,
                         output = pos
-                    }.Schedule(pos.Length, 20);
+                    }.Schedule(pos.Length, 20);*/
 
-                    cyloopCollisionMeshData.SetIndexBufferParams(pos.Length * 3, IndexFormat.UInt16);
-                    var indexBuffer = cyloopCollisionMeshData.GetIndexData<ushort>();
+                    endCollisionMesh[i].SetIndexBufferParams(pos.Length * 3, IndexFormat.UInt16);
+                    var indexBuffer = endCollisionMesh[i].GetIndexData<ushort>();
+                    CreateMesh(points, ref indexBuffer, ref pos);
                     // Trigger colliders must be convex so I only have to make the sides of the mesh and the top and bottom are auto-generated
-                    endMeshCreationJobs[(i * 2) + 1] = new CyloopMeshTriangulateSidesJob()
+                    /*endMeshCreationJobs[(i * 2) + 1] = new CyloopMeshTriangulateSidesJob()
                     {
                         length = pos.Length,
                         indexBuffer = indexBuffer
-                    }.Schedule(pos.Length, 20);
+                    }.Schedule(pos.Length, 20);*/
                 }
-                endJobHandle = JobHandle.CombineDependencies(endMeshCreationJobs);
-                 
+                //endJobHandle = JobHandle.CombineDependencies(endMeshCreationJobs);
+                CreateCyloopColliders();
+
                 activatorSkillSlot.DeductStock(1);
                 characterBody.OnSkillActivated(activatorSkillSlot);
             }
-            else
-            {
-                this.outer.SetNextStateToMain();
-            }
+            this.outer.SetNextStateToMain();
 
             /* I don't think this Bayazit algorithm I found even works. If it did, then this would be used for splitting concave mesh into convex
              * List<List<float3>> convexPoints = new List<List<float3>>();
@@ -348,6 +347,45 @@ namespace SonicTheHedgehog.SkillStates.Cyloop
                 }
             }
              */
+        }
+        private void CreateMesh(NativeSlice<float3> points, ref NativeArray<ushort> indexBuffer, ref NativeArray<float3> vertexData)
+        {
+            for (int i = 0; i < vertexData.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    vertexData[i] = points[i / 2] - new float3(0f, cyloopCollisionWidth / 2, 0f);
+                }
+                else
+                {
+                    vertexData[i] = points[i / 2] + new float3(0f, cyloopCollisionWidth / 2, 0f);
+                }
+
+                int indexAdjusted = i * 3;
+                indexBuffer[indexAdjusted] = (ushort)i;
+                indexBuffer[indexAdjusted + 1] = (ushort)((i + 1) % vertexData.Length);
+                indexBuffer[indexAdjusted + 2] = (ushort)((i + 2) % vertexData.Length);
+            }
+        }
+
+        private void CreateCyloopColliders()
+        {
+            Mesh[] meshes = new Mesh[endNumSections];
+            for (int i = 0; i < endNumSections; i++)
+            {
+                Mesh.MeshData meshData = endCollisionMesh[i];
+                meshData.subMeshCount = 1;
+                meshData.SetSubMesh(0, new SubMeshDescriptor(0, meshData.GetIndexData<ushort>().Length));
+                meshes[i] = new Mesh();
+                meshes[i].name = "SonicCyloopCollisionMesh_" + i;
+            }
+            Mesh.ApplyAndDisposeWritableMeshData(endCollisionMesh, meshes, MeshUpdateFlags.DontValidateIndices);
+            for (int i = 0; i < endNumSections; i++)
+            {
+                Physics.BakeMesh(meshes[i].GetInstanceID(), true);
+            }
+            //Log.Message("Created " + meshes.Length + " CyloopCollider Mesh(es)");
+            CyloopManager.GetPooledCyloopColliderController(this, meshes);
         }
 
         public virtual void PrepareAttack(ref OverlapAttack overlapAttack)
